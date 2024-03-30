@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.2.4'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id 'org.asciidoctor.jvm.convert' version '3.3.2'
+	id 'com.diffplug.spotless' version '6.25.0'	// https://plugins.gradle.org/plugin/com.diffplug.spotless
 }
 
 group = 'com.sillim'
@@ -56,3 +57,18 @@ tasks.named('asciidoctor') {
 	inputs.dir snippetsDir
 	dependsOn test
 }
+
+spotless {
+
+	java {
+		// don't need to set target, it is inferred from java
+		importOrder()
+		removeUnusedImports()
+		cleanthat()
+		googleJavaFormat().aosp().reflowLongStrings().skipJavadocFormatting()
+		formatAnnotations()
+		indentWithTabs()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+} // https://github.com/diffplug/spotless/tree/main/plugin-gradle#quickstart
