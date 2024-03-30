@@ -1,0 +1,18 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+
+logging:
+  level:
+    com.sillim.recordit: debug  # ref: https://blog.datalust.co/choosing-the-right-log-levels/
