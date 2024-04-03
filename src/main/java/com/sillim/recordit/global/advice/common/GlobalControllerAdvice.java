@@ -3,6 +3,7 @@ package com.sillim.recordit.global.advice.common;
 import com.sillim.recordit.global.domain.MethodSignature;
 import com.sillim.recordit.global.dto.response.ErrorResponse;
 import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.EntityNotFoundException;
 import com.sillim.recordit.global.util.LoggingUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +24,14 @@ public class GlobalControllerAdvice {
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ResponseEntity<ErrorResponse> noHandlerFound(NoHandlerFoundException exception) {
 
-		LoggingUtils.exceptionLog(HttpStatus.BAD_REQUEST, exception);
-		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.REQUEST_NOT_FOUND));
+		LoggingUtils.exceptionLog(HttpStatus.NOT_FOUND, exception);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				.body(ErrorResponse.from(ErrorCode.REQUEST_NOT_FOUND));
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-	public ResponseEntity<Void> handleHttpMessageNotReadableException(
+	public ResponseEntity<Void> httpMessageNotReadable(
 			HandlerMethod handlerMethod, HttpMessageNotReadableException exception) {
 
 		LoggingUtils.exceptionLog(
@@ -53,7 +55,7 @@ public class GlobalControllerAdvice {
 
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+	public ResponseEntity<ErrorResponse> methodArgumentTypeMismatch(
 			HandlerMethod handlerMethod, MethodArgumentTypeMismatchException exception) {
 
 		String message = LoggingUtils.methodArgumentTypeMismatchMessage(exception);
@@ -66,14 +68,26 @@ public class GlobalControllerAdvice {
 
 	@ExceptionHandler(MissingServletRequestParameterException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ErrorResponse> handleMissingRequestParameterException(
+	public ResponseEntity<ErrorResponse> missingRequestParameter(
 			HandlerMethod handlerMethod, MissingServletRequestParameterException exception) {
 
 		String message = LoggingUtils.missingRequestParameterMessage(exception);
 		LoggingUtils.exceptionLog(
 				MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
 
-		ErrorResponse errorResponse = ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message);
-		return ResponseEntity.badRequest().body(errorResponse);
+		return ResponseEntity.badRequest()
+				.body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
+	}
+
+	@ExceptionHandler(EntityNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ResponseEntity<ErrorResponse> entityNotFound(
+			HandlerMethod handlerMethod, EntityNotFoundException exception) {
+
+		LoggingUtils.exceptionLog(
+				MethodSignature.extract(handlerMethod), HttpStatus.NOT_FOUND, exception);
+
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				.body(ErrorResponse.from(exception.getErrorCode()));
 	}
 }
