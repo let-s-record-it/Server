@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class MonthlyGoalService {
+public class MonthlyGoalUpdateService {
 
 	private final MonthlyGoalJpaRepository monthlyGoalJpaRepository;
 
