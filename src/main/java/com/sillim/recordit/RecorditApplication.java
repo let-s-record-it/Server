@@ -1,3 +1,4 @@
+/* (C)2024 */
 package com.sillim.recordit;
 
 import org.springframework.boot.SpringApplication;
@@ -9,5 +10,4 @@ public class RecorditApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(RecorditApplication.class, args);
 	}
-
 }
