@@ -8,7 +8,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalAddRequest;
+import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.service.MonthlyGoalUpdateService;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
 import org.junit.jupiter.api.DisplayName;
@@ -27,8 +27,8 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	@DisplayName("월 목표 추가 API")
 	void monthlyGoalAddTest() throws Exception {
 
-		MonthlyGoalAddRequest request =
-				new MonthlyGoalAddRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 2024, 4, "#83c8ef");
+		MonthlyGoalUpdateRequest request =
+				new MonthlyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 2024, 4, "#83c8ef");
 
 		ResultActions perform =
 				mockMvc.perform(

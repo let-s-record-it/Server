@@ -4,7 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
-import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalAddRequest;
+import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -25,8 +25,8 @@ public class MonthlyGoalUpdateServiceTest {
 	@DisplayName("월 목표 추가 테스트")
 	void addTest() {
 
-		MonthlyGoalAddRequest request =
-				new MonthlyGoalAddRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 2024, 4, "#83c8ef");
+		MonthlyGoalUpdateRequest request =
+				new MonthlyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 2024, 4, "#83c8ef");
 
 		monthlyGoalUpdateService.add(request, 1L);
 
