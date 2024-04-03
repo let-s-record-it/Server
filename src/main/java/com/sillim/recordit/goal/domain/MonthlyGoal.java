@@ -31,10 +31,10 @@ public class MonthlyGoal extends BaseTime {
 	private String description;
 
 	@Column(nullable = false)
-	private Integer year;
+	private Integer goalYear;
 
 	@Column(nullable = false)
-	private Integer month;
+	private Integer goalMonth;
 
 	@Column(nullable = false)
 	private String colorHex;
@@ -55,15 +55,17 @@ public class MonthlyGoal extends BaseTime {
 	public MonthlyGoal(
 			String title,
 			String description,
-			Integer year,
-			Integer month,
+			Integer goalYear,
+			Integer goalMonth,
 			String colorHex,
 			Member member) {
 		this.title = title;
 		this.description = description;
-		this.year = year;
-		this.month = month;
+		this.goalYear = goalYear;
+		this.goalMonth = goalMonth;
 		this.colorHex = colorHex;
+		this.achieved = false;
+		this.deleted = false;
 		this.member = member;
 	}
 }
