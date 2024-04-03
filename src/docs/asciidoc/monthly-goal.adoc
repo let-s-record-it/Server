@@ -1,0 +1,25 @@
+= Monthly Goal API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+== 월 목표 추가 API
+
+=== Header
+
+include::{snippets}/monthly-goal-add/request-headers.adoc[]
+
+=== Body
+
+include::{snippets}/monthly-goal-add/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/monthly-goal-add/http-response.adoc[]
