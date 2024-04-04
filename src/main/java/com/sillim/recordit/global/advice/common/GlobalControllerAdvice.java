@@ -3,7 +3,7 @@ package com.sillim.recordit.global.advice.common;
 import com.sillim.recordit.global.domain.MethodSignature;
 import com.sillim.recordit.global.dto.response.ErrorResponse;
 import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.EntityNotFoundException;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.global.util.LoggingUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,10 +79,10 @@ public class GlobalControllerAdvice {
 				.body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
 	}
 
-	@ExceptionHandler(EntityNotFoundException.class)
+	@ExceptionHandler(RecordNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ResponseEntity<ErrorResponse> entityNotFound(
-			HandlerMethod handlerMethod, EntityNotFoundException exception) {
+			HandlerMethod handlerMethod, RecordNotFoundException exception) {
 
 		LoggingUtils.exceptionLog(
 				MethodSignature.extract(handlerMethod), HttpStatus.NOT_FOUND, exception);
