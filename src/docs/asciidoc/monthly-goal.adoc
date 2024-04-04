@@ -22,4 +22,26 @@ include::{snippets}/monthly-goal-add/http-request.adoc[]
 
 === Response
 
+==== 200 OK
+
 include::{snippets}/monthly-goal-add/http-response.adoc[]
+
+== 월 목표 수정 API
+
+=== Header
+
+include::{snippets}/monthly-goal-modify/request-headers.adoc[]
+
+=== Body
+
+include::{snippets}/monthly-goal-modify/http-request.adoc[]
+
+=== Response
+
+==== 204 NO CONTENT
+
+include::{snippets}/monthly-goal-modify/http-response.adoc[]
+
+==== 404 NO FOUND
+
+include::{snippets}/monthly-goal-modify-monthly-goal-not-found/http-response.adoc[]
