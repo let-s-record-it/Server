@@ -1,8 +1,8 @@
 package com.sillim.recordit.goal.service;
 
 import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
-import com.sillim.recordit.goal.exception.MonthlyGoalQueryException;
 import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,6 @@ public class MonthlyGoalQueryService {
 
 		return monthlyGoalJpaRepository
 				.findById(monthlyGoalId)
-				.orElseThrow(() -> new MonthlyGoalQueryException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 	}
 }
