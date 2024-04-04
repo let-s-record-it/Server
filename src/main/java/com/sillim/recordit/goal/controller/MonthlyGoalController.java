@@ -31,7 +31,8 @@ public class MonthlyGoalController {
 
 	@PutMapping("/months/{monthlyGoalId}")
 	public ResponseEntity<Void> monthlyGoalModify(
-			@Valid @RequestBody MonthlyGoalUpdateRequest request, @PathVariable Long monthlyGoalId) {
+			@Valid @RequestBody MonthlyGoalUpdateRequest request,
+			@PathVariable Long monthlyGoalId) {
 
 		monthlyGoalUpdateService.modify(request, monthlyGoalId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
