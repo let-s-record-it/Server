@@ -68,4 +68,17 @@ public class MonthlyGoal extends BaseTime {
 		this.deleted = false;
 		this.member = member;
 	}
+
+	public void modify(
+			String title,
+			String description,
+			Integer goalYear,
+			Integer goalMonth,
+			String colorHex) {
+		this.title = title;
+		this.description = description;
+		this.goalYear = goalYear;
+		this.goalMonth = goalMonth;
+		this.colorHex = colorHex;
+	}
 }

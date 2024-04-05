@@ -8,14 +8,14 @@ import com.sillim.recordit.goal.domain.MonthlyGoal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class MonthlyAddRequestTest {
+public class MonthlyUpdateRequestTest {
 
 	@Test
 	@DisplayName("MonthlyAddRequest 엔티티 매핑")
 	void toEntityTest() {
 
-		MonthlyGoalAddRequest request =
-				new MonthlyGoalAddRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 2024, 4, "#83c8ef");
+		MonthlyGoalUpdateRequest request =
+				new MonthlyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 2024, 4, "#83c8ef");
 		Member member = new Member();
 
 		MonthlyGoal monthlyGoal = request.toEntity(member);

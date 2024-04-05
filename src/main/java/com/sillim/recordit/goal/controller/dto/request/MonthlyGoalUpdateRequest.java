@@ -4,7 +4,7 @@ import com.sillim.recordit.goal.domain.Member;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 
 // TODO: validation 추가
-public record MonthlyGoalAddRequest(
+public record MonthlyGoalUpdateRequest(
 		String title, String description, Integer goalYear, Integer goalMonth, String colorHex) {
 
 	public MonthlyGoal toEntity(Member member) {

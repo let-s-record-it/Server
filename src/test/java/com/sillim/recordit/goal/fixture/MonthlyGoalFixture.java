@@ -4,13 +4,14 @@ import com.sillim.recordit.goal.domain.Member;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 
 public enum MonthlyGoalFixture {
-	MONTHLY_GOAL("취뽀하기!", "취업할 때까지 숨 참는다!", 2024, 5, "#83c8ef");
+	DEFAULT("취뽀하기!", "취업할 때까지 숨 참는다!", 2024, 5, "#83c8ef"),
+	MODIFIED("(수정)취뽀하기!", "(수정)취업할 때까지 숨 참는다!", 2024, 12, "#123456");
 
-	private String title;
-	private String description;
-	private Integer goalYear;
-	private Integer goalMonth;
-	private String colorHex;
+	private final String title;
+	private final String description;
+	private final Integer goalYear;
+	private final Integer goalMonth;
+	private final String colorHex;
 
 	MonthlyGoalFixture(
 			String title,
