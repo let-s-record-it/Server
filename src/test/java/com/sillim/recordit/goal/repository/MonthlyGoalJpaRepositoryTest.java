@@ -27,7 +27,7 @@ public class MonthlyGoalJpaRepositoryTest {
 	}
 
 	@Test
-	@DisplayName("월 목표 저장 repository 테스트")
+	@DisplayName("새로운 월 목표 레코드를 저장한다.")
 	void saveTest() {
 		// given
 		final MonthlyGoal expected = MonthlyGoalFixture.DEFAULT.getWithMember(member);
@@ -36,16 +36,21 @@ public class MonthlyGoalJpaRepositoryTest {
 				monthlyGoalJpaRepository.save(MonthlyGoalFixture.DEFAULT.getWithMember(member));
 		// then
 		MonthlyGoal found = em.find(MonthlyGoal.class, saved.getId());
+
+		// 자동 생성 필드가 null이 아닌지 검증
 		assertThat(found.getId()).isNotNull();
+		assertThat(found.getCreatedAt()).isNotNull();
+		assertThat(found.getModifiedAt()).isNotNull();
+
 		assertThat(found)
 				.usingRecursiveComparison()
-				.ignoringFields("id", "member")
+				.ignoringFields("id", "member", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
 		assertThat(found.getMember()).usingRecursiveComparison().isEqualTo(expected.getMember());
 	}
 
 	@Test
-	@DisplayName("월 목표 수정 repository 테스트")
+	@DisplayName("기존의 월 목표 레코드를 갱신한다.")
 	void updateTest() {
 		// given
 		final MonthlyGoal expected = MonthlyGoalFixture.MODIFIED.getWithMember(member);
@@ -64,7 +69,7 @@ public class MonthlyGoalJpaRepositoryTest {
 		MonthlyGoal found = em.find(MonthlyGoal.class, saved.getId());
 		assertThat(found)
 				.usingRecursiveComparison()
-				.ignoringFields("id", "member")
+				.ignoringFields("id", "member", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
 	}
 }
