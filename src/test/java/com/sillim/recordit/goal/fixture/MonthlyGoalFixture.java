@@ -37,4 +37,17 @@ public enum MonthlyGoalFixture {
 				.member(member)
 				.build();
 	}
+
+	public MonthlyGoal getWithGoalYearAndGoalMonth(
+			Integer goalYear, Integer goalMonth, Member member) {
+
+		return MonthlyGoal.builder()
+				.title(title)
+				.description(description)
+				.goalYear(goalYear)
+				.goalMonth(goalMonth)
+				.colorHex(colorHex)
+				.member(member)
+				.build();
+	}
 }
