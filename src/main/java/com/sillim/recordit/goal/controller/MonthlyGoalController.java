@@ -35,6 +35,6 @@ public class MonthlyGoalController {
 			@PathVariable Long monthlyGoalId) {
 
 		monthlyGoalUpdateService.modify(request, monthlyGoalId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.noContent().build();
 	}
 }
