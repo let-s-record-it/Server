@@ -28,7 +28,7 @@ public class MonthlyGoalQueryServiceTest {
 	Member member;
 
 	@Test
-	@DisplayName("월 목표 조회 service 테스트")
+	@DisplayName("id를 기반으로 월 목표를 조회한다.")
 	void searchTest() {
 
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
@@ -40,7 +40,7 @@ public class MonthlyGoalQueryServiceTest {
 	}
 
 	@Test
-	@DisplayName("월 목표 조회 service 테스트 예외 - MonthlyGoal Not Found")
+	@DisplayName("id에 해당하는 월 목표가 존재하지 않을 경우 RecordNotFoundException을 발생시킨다.")
 	void searchTestMonthlyGoalNotFound() {
 
 		given(monthlyGoalJpaRepository.findById(anyLong()))

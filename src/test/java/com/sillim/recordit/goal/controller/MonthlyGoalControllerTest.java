@@ -30,7 +30,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	@MockBean MonthlyGoalUpdateService monthlyGoalUpdateService;
 
 	@Test
-	@DisplayName("월 목표 추가 API")
+	@DisplayName("새로운 월 목표를 추가한다.")
 	void monthlyGoalAddTest() throws Exception {
 
 		MonthlyGoalUpdateRequest request =
@@ -57,7 +57,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	// TODO: Member Not Found 예외 추가
 
 	@Test
-	@DisplayName("월 목표 수정 API")
+	@DisplayName("기존의 월 목표를 수정한다.")
 	void monthlyGoalModifyTest() throws Exception {
 
 		MonthlyGoalUpdateRequest request =
@@ -83,7 +83,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	}
 
 	@Test
-	@DisplayName("월 목표 수정 API - MonthlyGoal Not Found")
+	@DisplayName("존재하지 않는 월 목표를 조회할 경우 NOT FOUND 응답을 반환한다.")
 	void monthlyGoalModifyTestMonthlyGoalNotFound() throws Exception {
 
 		MonthlyGoalUpdateRequest request =

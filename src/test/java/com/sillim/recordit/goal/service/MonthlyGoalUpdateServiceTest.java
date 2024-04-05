@@ -27,7 +27,7 @@ public class MonthlyGoalUpdateServiceTest {
 	Member member = new Member();
 
 	@Test
-	@DisplayName("월 목표 추가 service 테스트")
+	@DisplayName("새로운 월 목표를 추가한다.")
 	void addTest() {
 
 		MonthlyGoalUpdateRequest request =
@@ -40,7 +40,7 @@ public class MonthlyGoalUpdateServiceTest {
 	}
 
 	@Test
-	@DisplayName("월 목표 수정 service 테스트")
+	@DisplayName("기존의 월 목표를 수정한다.")
 	void modifyTest() {
 
 		MonthlyGoalUpdateRequest request =
