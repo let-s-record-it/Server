@@ -33,7 +33,7 @@ public class MonthlyGoalUpdateServiceTest {
 		MonthlyGoalUpdateRequest request =
 				new MonthlyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 2024, 4, "#83c8ef");
 
-		monthlyGoalUpdateService.add(request, 1L);
+		monthlyGoalUpdateService.add(request, anyLong());
 
 		// TODO: Member 조회 행위 검증
 		then(monthlyGoalJpaRepository).should(times(1)).save(any(MonthlyGoal.class));
