@@ -138,9 +138,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 									MonthlyGoal goal =
 											spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
 									given(goal.getId()).willReturn(id);
-									if (id % 2 == 0) {
-										given(goal.getAchieved()).willReturn(true);
-									}
+									given(goal.getAchieved()).willReturn(id % 2 == 0);
 									return goal;
 								})
 						.toList();
@@ -153,7 +151,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 						get("/api/v1/goals/months")
 								.headers(authorizationHeader())
 								.queryParam("goalYear", "2024")
-								.queryParam("goalMonth", "05"));
+								.queryParam("goalMonth", "5"));
 
 		perform.andExpect(status().isOk()).andExpect(jsonPath("$.size()").value(3));
 
