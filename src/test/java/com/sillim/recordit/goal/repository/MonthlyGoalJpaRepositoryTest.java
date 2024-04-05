@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.sillim.recordit.goal.domain.Member;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,5 +72,34 @@ public class MonthlyGoalJpaRepositoryTest {
 				.usingRecursiveComparison()
 				.ignoringFields("id", "member", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("해당 년, 월에 해당하는 월 목표 목록을 조회한다.")
+	void findByGoalYearAndGoalMonthAndMember() {
+		// given
+		final MonthlyGoal expected =
+				MonthlyGoalFixture.DEFAULT.getWithGoalYearAndGoalMonth(2024, 5, member);
+		List<MonthlyGoal> savedList =
+				monthlyGoalJpaRepository.saveAll(
+						List.of(
+								MonthlyGoalFixture.DEFAULT.getWithGoalYearAndGoalMonth(
+										2024, 5, member),
+								MonthlyGoalFixture.DEFAULT.getWithGoalYearAndGoalMonth(
+										2024, 5, member),
+								MonthlyGoalFixture.DEFAULT.getWithGoalYearAndGoalMonth(
+										2024, 6, member)));
+		// when
+		List<MonthlyGoal> foundList =
+				monthlyGoalJpaRepository.findByGoalYearAndGoalMonthAndMember(
+						expected.getGoalYear(), expected.getGoalMonth(), member);
+		// then
+		assertThat(foundList).hasSize(2);
+		for (MonthlyGoal found : foundList) {
+			assertThat(found)
+					.usingRecursiveComparison()
+					.comparingOnlyFields("goalYear", "goalMonth")
+					.isEqualTo(expected);
+		}
 	}
 }

@@ -1,6 +1,8 @@
 package com.sillim.recordit.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -12,7 +14,9 @@ import com.sillim.recordit.goal.domain.Member;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.LongStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,5 +53,26 @@ public class MonthlyGoalQueryServiceTest {
 		assertThatThrownBy(() -> monthlyGoalQueryService.search(anyLong()))
 				.isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.MONTHLY_GOAL_NOT_FOUND.getDescription());
+	}
+
+	@Test
+	@DisplayName("goalYear와 goalMonth를 기반으로 월 목표를 조회한다.")
+	void searchAllByDateTest() {
+
+		List<MonthlyGoal> monthlyGoals =
+				LongStream.rangeClosed(1, 3)
+						.mapToObj((id) -> MonthlyGoalFixture.DEFAULT.getWithMember(member))
+						.toList();
+		given(
+						monthlyGoalJpaRepository.findByGoalYearAndGoalMonthAndMember(
+								anyInt(), anyInt(), any(Member.class)))
+				.willReturn(monthlyGoals);
+
+		monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), anyLong());
+
+		// TODO: Member 조회 행위 검증
+		then(monthlyGoalJpaRepository)
+				.should(times(1))
+				.findByGoalYearAndGoalMonthAndMember(anyInt(), anyInt(), any(Member.class));
 	}
 }
