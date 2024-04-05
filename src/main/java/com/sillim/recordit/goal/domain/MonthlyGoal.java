@@ -69,7 +69,7 @@ public class MonthlyGoal extends BaseTime {
 		this.member = member;
 	}
 
-	public void update(
+	public void modify(
 			String title,
 			String description,
 			Integer goalYear,

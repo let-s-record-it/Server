@@ -24,7 +24,7 @@ public class MonthlyGoalUpdateService {
 	public void modify(MonthlyGoalUpdateRequest request, Long monthlyGoalId) {
 
 		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId);
-		monthlyGoal.update(
+		monthlyGoal.modify(
 				request.title(),
 				request.description(),
 				request.goalYear(),
