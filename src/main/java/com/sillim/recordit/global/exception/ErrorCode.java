@@ -11,7 +11,7 @@ public enum ErrorCode {
 	UNHANDLED_EXCEPTION("ERR_GLOBAL_999", "예상치 못한 오류가 발생했습니다."),
 
 	// monthly-goal
-	MONTHLY_GOAL_NOT_FOUND("ERROR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다.");
+	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다.");
 
 	private final String code;
 	private final String description;
