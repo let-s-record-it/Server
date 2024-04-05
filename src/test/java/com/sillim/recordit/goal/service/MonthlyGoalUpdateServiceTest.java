@@ -44,8 +44,8 @@ public class MonthlyGoalUpdateServiceTest {
 	void modifyTest() {
 
 		MonthlyGoalUpdateRequest request =
-				new MonthlyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 2024, 4, "#83c8ef");
-		MonthlyGoal monthlyGoal = MonthlyGoalFixture.MONTHLY_GOAL.getWithMember(member);
+				new MonthlyGoalUpdateRequest("(수정)취뽀하기!", "(수정)취업할 때까지 숨 참는다.", 2024, 5, "#123456");
+		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
 		given(monthlyGoalQueryService.search(anyLong())).willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.modify(request, anyLong());

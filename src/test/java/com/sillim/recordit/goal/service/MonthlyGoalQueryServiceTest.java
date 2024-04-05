@@ -31,10 +31,10 @@ public class MonthlyGoalQueryServiceTest {
 	@DisplayName("월 목표 조회 service 테스트")
 	void searchTest() {
 
-		MonthlyGoal monthlyGoal = MonthlyGoalFixture.MONTHLY_GOAL.getWithMember(member);
+		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
 		given(monthlyGoalJpaRepository.findById(anyLong())).willReturn(Optional.of(monthlyGoal));
 
-		MonthlyGoal found = monthlyGoalQueryService.search(anyLong());
+		monthlyGoalQueryService.search(anyLong());
 
 		then(monthlyGoalJpaRepository).should(times(1)).findById(anyLong());
 	}
