@@ -45,3 +45,23 @@ include::{snippets}/monthly-goal-modify/http-response.adoc[]
 ==== 404 NO FOUND
 
 include::{snippets}/monthly-goal-modify-monthly-goal-not-found/http-response.adoc[]
+
+== 월 목표 수정 API
+
+=== Header
+
+include::{snippets}/monthly-goal-list/request-headers.adoc[]
+
+=== Query Parameter
+
+include::{snippets}/monthly-goal-list/query-parameters.adoc[]
+
+=== Body
+
+include::{snippets}/monthly-goal-list/http-request.adoc[]
+
+=== Response
+
+==== 204 NO CONTENT
+
+include::{snippets}/monthly-goal-modify/http-response.adoc[]
