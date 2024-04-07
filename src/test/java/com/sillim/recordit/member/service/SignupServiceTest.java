@@ -15,7 +15,6 @@ import com.sillim.recordit.member.dto.kakao.KakaoUserInfo;
 import com.sillim.recordit.member.dto.request.SignupRequest;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.repository.MemberRepository;
-import java.net.http.HttpHeaders;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -57,9 +56,15 @@ class SignupServiceTest {
 		Member target = MemberFixture.DEFAULT.getMember();
 		given(memberRepository.findByAuthOauthAccount(anyString())).willReturn(Optional.empty());
 		given(memberRepository.save(any(Member.class))).willReturn(target);
-		KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(1L, LocalDateTime.now(),
-				new KakaoAccount(false, false, false,
-						new KakaoProfile("nickname", "url", "url", false, false)));
+		KakaoUserInfo kakaoUserInfo =
+				new KakaoUserInfo(
+						1L,
+						LocalDateTime.now(),
+						new KakaoAccount(
+								false,
+								false,
+								false,
+								new KakaoProfile("nickname", "url", "url", false, false)));
 		given(restTemplate.exchange(any(RequestEntity.class), eq(KakaoUserInfo.class)))
 				.willReturn(ResponseEntity.ok(kakaoUserInfo));
 

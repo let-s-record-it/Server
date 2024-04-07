@@ -49,5 +49,4 @@ public class KakaoAuthenticationService implements AuthenticationService {
 
 		return payload.getUserId();
 	}
-
 }

@@ -37,7 +37,8 @@ public class SignupService {
 
 	@Transactional
 	public Member signupIfNotExistsByAccount(String account, String accessToken) {
-		return memberRepository.findByAuthOauthAccount(account)
+		return memberRepository
+				.findByAuthOauthAccount(account)
 				.orElseGet(() -> signupByAccessToken(accessToken));
 	}
 
@@ -58,10 +59,12 @@ public class SignupService {
 			throw new InvalidAccessTokenException(ErrorCode.INVALID_KAKAO_TOKEN);
 		}
 
-		return memberRepository.save(SignupRequest.builder()
-				.oauthAccount(response.getBody().id().toString())
-				.oAuthProvider(OAuthProvider.KAKAO)
-				.name(response.getBody().kakaoAccount().profile().nickname())
-				.build().toMember());
+		return memberRepository.save(
+				SignupRequest.builder()
+						.oauthAccount(response.getBody().id().toString())
+						.oAuthProvider(OAuthProvider.KAKAO)
+						.name(response.getBody().kakaoAccount().profile().nickname())
+						.build()
+						.toMember());
 	}
 }

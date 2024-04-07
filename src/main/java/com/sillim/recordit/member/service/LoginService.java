@@ -17,7 +17,9 @@ public class LoginService {
 
 	@Transactional
 	public AuthorizationToken login(LoginRequest loginRequest) throws IOException {
-		return jwtProvider.generateAuthorizationToken(authenticationService
-				.authenticateToken(loginRequest.idToken(), loginRequest.accessToken()).getId());
+		return jwtProvider.generateAuthorizationToken(
+				authenticationService
+						.authenticateToken(loginRequest.idToken(), loginRequest.accessToken())
+						.getId());
 	}
 }

@@ -38,8 +38,9 @@ class KakaoAuthenticationServiceTest {
 		Member target = MemberFixture.DEFAULT.getMember();
 		KakaoIdTokenHeader mockIdTokenHeader = mock(KakaoIdTokenHeader.class);
 		KakaoIdTokenPayload mockIdTokenPayload = mock(KakaoIdTokenPayload.class);
-		KakaoOidePublicKeys publicKeys = new KakaoOidePublicKeys(List.of(
-				new KakaoOidcPublicKey("kid", "alg", "kty", "use", "n", "e")));
+		KakaoOidePublicKeys publicKeys =
+				new KakaoOidePublicKeys(
+						List.of(new KakaoOidcPublicKey("kid", "alg", "kty", "use", "n", "e")));
 		String idToken = "header.payload.signature";
 		String accessToken = "accessToken";
 		String account = "account";
@@ -48,8 +49,8 @@ class KakaoAuthenticationServiceTest {
 		given(objectMapper.readValue(any(byte[].class), eq(KakaoIdTokenPayload.class)))
 				.willReturn(mockIdTokenPayload);
 		given(kakaoOidcClient.getKakaoOidcPublicKeys()).willReturn(publicKeys);
-		given(signupService.signupIfNotExistsByAccount(anyString(), anyString())).willReturn(
-				target);
+		given(signupService.signupIfNotExistsByAccount(anyString(), anyString()))
+				.willReturn(target);
 		given(mockIdTokenPayload.getUserId()).willReturn(account);
 
 		Member member = kakaoAuthenticationService.authenticateToken(idToken, accessToken);

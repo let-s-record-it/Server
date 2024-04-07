@@ -10,15 +10,15 @@ import org.junit.jupiter.api.Test;
 
 class AuthorizedUserMapperTest {
 
-    @Test
-    @DisplayName("멤버를 인증된 멤버로 변환한다.")
-    void mappingMemberToAuthorizedMember() {
-        Member member = MemberFixture.DEFAULT.getMember();
-        AuthorizedUserMapper mapper = new AuthorizedUserMapper();
+	@Test
+	@DisplayName("멤버를 인증된 멤버로 변환한다.")
+	void mappingMemberToAuthorizedMember() {
+		Member member = MemberFixture.DEFAULT.getMember();
+		AuthorizedUserMapper mapper = new AuthorizedUserMapper();
 
-        AuthorizedUser authorizedUser = mapper.toAuthorizedUser(member);
+		AuthorizedUser authorizedUser = mapper.toAuthorizedUser(member);
 
-        assertThat(authorizedUser.getMemberId()).isEqualTo(member.getId());
-        assertThat(authorizedUser.getAuthorities()).isEqualTo(member.getAuthorities());
-    }
+		assertThat(authorizedUser.getMemberId()).isEqualTo(member.getId());
+		assertThat(authorizedUser.getAuthorities()).isEqualTo(member.getAuthorities());
+	}
 }

@@ -9,11 +9,8 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class ApiConfig {
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplateBuilder()
-                .setConnectTimeout(Duration.ofSeconds(3))
-                .build();
-    }
-
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(3)).build();
+	}
 }
