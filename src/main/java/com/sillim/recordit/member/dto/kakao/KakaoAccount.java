@@ -1,8 +1,11 @@
-package com.sillim.recordit.member.dto.response;
+package com.sillim.recordit.member.dto.kakao;
 
-public record KakaoAccount(Boolean profileNeedsAgreement,
-                           Boolean profileNicknameNeedsAgreement,
-                           Boolean profileImageNeedsAgreement,
-                           KakaoProfile profile) {
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-}
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public record KakaoAccount(
+		Boolean profileNeedsAgreement,
+		Boolean profileNicknameNeedsAgreement,
+		Boolean profileImageNeedsAgreement,
+		KakaoProfile profile) {}

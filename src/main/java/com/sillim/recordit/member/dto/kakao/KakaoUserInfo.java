@@ -1,9 +1,8 @@
-package com.sillim.recordit.member.dto.response;
+package com.sillim.recordit.member.dto.kakao;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
 
-public record KakaoUserInfo(Long id,
-                            LocalDateTime connectedAt,
-                            KakaoAccount kakaoAccount) {
-
-}
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public record KakaoUserInfo(Long id, LocalDateTime connectedAt, KakaoAccount kakaoAccount) {}
