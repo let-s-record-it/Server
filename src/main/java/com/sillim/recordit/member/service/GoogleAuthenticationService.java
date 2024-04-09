@@ -4,8 +4,8 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.member.InvalidAccessTokenException;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.dto.oidc.IdToken;
-import com.sillim.recordit.member.dto.oidc.kakao.KakaoOidcClient;
-import com.sillim.recordit.member.dto.oidc.kakao.KakaoUserInfo;
+import com.sillim.recordit.member.dto.oidc.google.GoogleOidcClient;
+import com.sillim.recordit.member.dto.oidc.google.GoogleUserInfo;
 import com.sillim.recordit.member.dto.request.SignupRequest;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -14,47 +14,46 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KakaoAuthenticationService implements AuthenticationService {
+public class GoogleAuthenticationService implements AuthenticationService {
 
-	private static final String ISS = "https://kauth.kakao.com";
-	private static final String KAKAO_USER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
+	private static final String ISS = "https://accounts.google.com";
+	public static final String GOOGLE_USER_INFO_URL =
+			"https://openidconnect.googleapis.com/v1/userinfo";
 
 	private final RestTemplate restTemplate;
-	private final KakaoOidcClient kakaoOidcClient;
+	private final GoogleOidcClient googleOidcClient;
 
-	@Value("${app-key.kakao}")
+	@Value("${app-key.google}")
 	private String appKey;
 
 	@Override
-	@Transactional
 	public String authenticate(IdToken idToken) {
-		return idToken.authenticateToken(kakaoOidcClient.getOidcPublicKeys(), ISS, appKey);
+		return idToken.authenticateToken(googleOidcClient.getOidcPublicKeys(), ISS, appKey);
 	}
 
 	@Override
 	public SignupRequest getMemberInfoByAccessToken(String accessToken) {
 		HttpHeaders authorizationHeader = setAuthorizationHeader(accessToken);
-		URI uri = UriComponentsBuilder.fromUriString(KAKAO_USER_INFO_URL).encode().build().toUri();
-		ResponseEntity<KakaoUserInfo> response =
+		URI uri = UriComponentsBuilder.fromUriString(GOOGLE_USER_INFO_URL).encode().build().toUri();
+		ResponseEntity<GoogleUserInfo> response =
 				restTemplate.exchange(
 						new RequestEntity<>(authorizationHeader, HttpMethod.GET, uri),
-						KakaoUserInfo.class);
+						GoogleUserInfo.class);
 
 		if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
 			throw new InvalidAccessTokenException(ErrorCode.INVALID_KAKAO_TOKEN);
 		}
 
 		return SignupRequest.builder()
-				.oauthAccount(response.getBody().id().toString())
-				.oAuthProvider(OAuthProvider.KAKAO)
-				.name(response.getBody().kakaoAccount().profile().nickname())
+				.oauthAccount(response.getBody().sub())
+				.oAuthProvider(OAuthProvider.GOOGLE)
+				.name(response.getBody().name())
 				.build();
 	}
 

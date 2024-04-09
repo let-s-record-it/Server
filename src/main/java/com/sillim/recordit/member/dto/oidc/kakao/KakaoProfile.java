@@ -1,4 +1,4 @@
-package com.sillim.recordit.member.dto.kakao;
+package com.sillim.recordit.member.dto.oidc.kakao;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

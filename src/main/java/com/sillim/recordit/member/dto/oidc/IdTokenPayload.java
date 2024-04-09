@@ -1,4 +1,4 @@
-package com.sillim.recordit.member.dto.kakao;
+package com.sillim.recordit.member.dto.oidc;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.member.InvalidIdTokenException;
@@ -6,16 +6,14 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-public record KakaoIdTokenPayload(String iss, String aud, Long exp, String sub) {
-
-	private static final String ISS = "https://kauth.kakao.com";
+public record IdTokenPayload(String iss, String aud, Long exp, String sub) {
 
 	public String getUserId() {
 		return sub;
 	}
 
-	public void validatePayload(String aud) {
-		if (!equalsIss()) {
+	public void validatePayload(String iss, String aud) {
+		if (!equalsIss(iss)) {
 			throw new InvalidIdTokenException(ErrorCode.ID_TOKEN_UNSUPPORTED);
 		}
 
@@ -28,8 +26,8 @@ public record KakaoIdTokenPayload(String iss, String aud, Long exp, String sub) 
 		}
 	}
 
-	private boolean equalsIss() {
-		return this.iss.equals(ISS);
+	private boolean equalsIss(String iss) {
+		return this.iss.equals(iss);
 	}
 
 	private boolean equalsAud(String appKey) {

@@ -1,9 +1,13 @@
 package com.sillim.recordit.member.service;
 
-import com.sillim.recordit.member.domain.Member;
-import java.io.IOException;
+import com.sillim.recordit.member.dto.oidc.IdToken;
+import com.sillim.recordit.member.dto.request.SignupRequest;
 
 public interface AuthenticationService {
 
-	Member authenticateToken(String idToken, String accessToken) throws IOException;
+	String BEARER = "Bearer ";
+
+	String authenticate(IdToken idToken);
+
+	SignupRequest getMemberInfoByAccessToken(String accessToken);
 }
