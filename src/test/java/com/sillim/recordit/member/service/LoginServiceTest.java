@@ -1,17 +1,22 @@
 package com.sillim.recordit.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sillim.recordit.config.security.jwt.AuthorizationToken;
 import com.sillim.recordit.config.security.jwt.JwtProvider;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
+import com.sillim.recordit.member.dto.oidc.IdToken;
 import com.sillim.recordit.member.dto.request.LoginRequest;
 import com.sillim.recordit.member.fixture.AuthorizationTokenFixture;
 import com.sillim.recordit.member.fixture.MemberFixture;
+import com.sillim.recordit.member.repository.MemberRepository;
 import java.io.IOException;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +27,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class LoginServiceTest {
 
-	@Mock AuthenticationService authenticationService;
+	@Mock KakaoAuthenticationService kakaoAuthenticationService;
 	@Mock JwtProvider jwtProvider;
+	@Mock MemberRepository memberRepository;
+	@Mock ObjectMapper objectMapper;
 	@InjectMocks LoginService loginService;
 
 	@Test
@@ -31,14 +38,14 @@ class LoginServiceTest {
 	void login() throws IOException {
 		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
 		Member member = MemberFixture.DEFAULT.getMember();
-		String idToken = "idToken";
-		String accessToken = "accessToken";
-		OAuthProvider provider = OAuthProvider.KAKAO;
-		given(authenticationService.authenticateToken(idToken, accessToken)).willReturn(member);
+		String idToken = "header.payload.signature";
+		String account = "account";
+		given(kakaoAuthenticationService.authenticate(any(IdToken.class))).willReturn(account);
+		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.of(member));
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
 		AuthorizationToken authorizationToken =
-				loginService.login(new LoginRequest(idToken, accessToken, provider));
+				loginService.login(new LoginRequest(idToken, "accessToken", OAuthProvider.KAKAO));
 
 		assertThat(authorizationToken.accessToken()).isEqualTo(target.accessToken());
 		assertThat(authorizationToken.refreshToken()).isEqualTo(target.refreshToken());

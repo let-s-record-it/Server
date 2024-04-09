@@ -28,9 +28,10 @@ class MemberQueryServiceTest {
 		String account = target.getAuth().getOauthAccount();
 		given(memberRepository.findByAuthOauthAccount(account)).willReturn(Optional.of(target));
 
-		Member member = memberQueryService.findByOAuthAccount(account);
+		Optional<Member> member = memberQueryService.findByOauthAccount(account);
 
-		assertThat(member.getAuth().getOauthAccount()).isEqualTo(account);
+		assertThat(member).isNotEmpty();
+		assertThat(member.get().getAuth().getOauthAccount()).isEqualTo(account);
 	}
 
 	@Test

@@ -1,6 +1,6 @@
 package com.sillim.recordit.member.fixture;
 
-import com.sillim.recordit.member.dto.kakao.KakaoOidcPublicKey;
+import com.sillim.recordit.member.dto.oidc.OidcPublicKey;
 
 public enum KakaoOidcPublicKeyFixture {
 	DEFAULT("9f252dadd5f233f93d2fa528d12fea", "RS256", "", "", "", "");
@@ -21,7 +21,7 @@ public enum KakaoOidcPublicKeyFixture {
 		this.e = e;
 	}
 
-	public KakaoOidcPublicKey getKey() {
-		return new KakaoOidcPublicKey(this.kid, this.alg, this.kty, this.use, this.n, this.e);
+	public OidcPublicKey getKey() {
+		return new OidcPublicKey(this.kid, this.alg, this.kty, this.use, this.n, this.e);
 	}
 }
