@@ -1,6 +1,7 @@
 package com.sillim.recordit.goal.controller;
 
 import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
+import com.sillim.recordit.goal.controller.dto.response.MonthlyGoalDetailsResponse;
 import com.sillim.recordit.goal.controller.dto.response.MonthlyGoalListResponse;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.goal.service.MonthlyGoalUpdateService;
@@ -53,5 +54,13 @@ public class MonthlyGoalController {
 				monthlyGoalQueryService.searchAllByDate(goalYear, goalMonth, 1L).stream()
 						.map(MonthlyGoalListResponse::from)
 						.toList());
+	}
+
+	@GetMapping("/months/{monthlyGoalId}")
+	public ResponseEntity<MonthlyGoalDetailsResponse> monthlyGoalDetails(
+			@PathVariable Long monthlyGoalId) {
+
+		return ResponseEntity.ok(
+				MonthlyGoalDetailsResponse.from(monthlyGoalQueryService.search(monthlyGoalId)));
 	}
 }
