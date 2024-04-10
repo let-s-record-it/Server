@@ -7,12 +7,22 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.global.exception.member.InvalidIdTokenException;
-import com.sillim.recordit.member.dto.oidc.*;
+import com.sillim.recordit.member.dto.oidc.IdToken;
+import com.sillim.recordit.member.dto.oidc.IdTokenHeader;
+import com.sillim.recordit.member.dto.oidc.IdTokenPayload;
+import com.sillim.recordit.member.dto.oidc.OidcPublicKey;
+import com.sillim.recordit.member.dto.oidc.OidcPublicKeys;
+import com.sillim.recordit.member.dto.oidc.kakao.KakaoAccount;
+import com.sillim.recordit.member.dto.oidc.kakao.KakaoProfile;
+import com.sillim.recordit.member.dto.oidc.kakao.KakaoUserInfo;
+import com.sillim.recordit.member.dto.request.MemberInfo;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,6 +32,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class KakaoAuthenticationServiceTest {
 
 	@Mock KakaoOidcClient kakaoOidcClient;
+	@Mock KakaoUserInfoClient kakaoUserInfoClient;
 	@InjectMocks KakaoAuthenticationService kakaoAuthenticationService;
 
 	@Test
@@ -60,5 +71,19 @@ class KakaoAuthenticationServiceTest {
 
 		Assertions.assertThatThrownBy(() -> kakaoAuthenticationService.authenticate(idToken))
 				.isInstanceOf(InvalidIdTokenException.class);
+	}
+
+	@Test
+	@DisplayName("access token을 통해 Kakao User 정보를 가져온다.")
+	void getKakaoUserInfoByAccessToken() {
+		KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(1234567L, LocalDateTime.now(),
+				new KakaoAccount(false, false, false,
+						new KakaoProfile("nickname", "image", "image", false, false)));
+		BDDMockito.given(kakaoUserInfoClient.getKakaoUserInfo(anyString())).willReturn(kakaoUserInfo);
+
+		MemberInfo memberInfo = kakaoAuthenticationService.getMemberInfoByAccessToken(
+				"accessToken");
+
+		assertThat(memberInfo.oauthAccount()).isEqualTo(kakaoUserInfo.id().toString());
 	}
 }

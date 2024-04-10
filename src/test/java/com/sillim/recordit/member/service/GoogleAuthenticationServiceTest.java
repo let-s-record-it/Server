@@ -7,12 +7,19 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.global.exception.member.InvalidIdTokenException;
-import com.sillim.recordit.member.dto.oidc.*;
+import com.sillim.recordit.member.dto.oidc.IdToken;
+import com.sillim.recordit.member.dto.oidc.IdTokenHeader;
+import com.sillim.recordit.member.dto.oidc.IdTokenPayload;
+import com.sillim.recordit.member.dto.oidc.OidcPublicKey;
+import com.sillim.recordit.member.dto.oidc.OidcPublicKeys;
+import com.sillim.recordit.member.dto.oidc.google.GoogleUserInfo;
+import com.sillim.recordit.member.dto.request.MemberInfo;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,6 +29,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class GoogleAuthenticationServiceTest {
 
 	@Mock GoogleOidcClient googleOidcClient;
+	@Mock GoogleUserInfoClient googleUserInfoClient;
 	@InjectMocks GoogleAuthenticationService googleAuthenticationService;
 
 	@Test
@@ -60,5 +68,18 @@ class GoogleAuthenticationServiceTest {
 
 		Assertions.assertThatThrownBy(() -> googleAuthenticationService.authenticate(idToken))
 				.isInstanceOf(InvalidIdTokenException.class);
+	}
+
+	@Test
+	@DisplayName("access token을 통해 Google User 정보를 가져온다.")
+	void getGoogleUserInfoByAccessToken() {
+		GoogleUserInfo googleUserInfo = new GoogleUserInfo("sub", "name", "name", "picture",
+				"email", true, "ko");
+		BDDMockito.given(googleUserInfoClient.getGoogleUserInfo(anyString())).willReturn(googleUserInfo);
+
+		MemberInfo memberInfo = googleAuthenticationService.getMemberInfoByAccessToken(
+				"accessToken");
+
+		assertThat(memberInfo.oauthAccount()).isEqualTo(googleUserInfo.sub());
 	}
 }
