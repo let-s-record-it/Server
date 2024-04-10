@@ -1,6 +1,8 @@
 package com.sillim.recordit.member.domain;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class Auth {
 
 	private String oauthAccount;
+
+	@Enumerated(EnumType.STRING)
 	private OAuthProvider oauthProvider;
 
 	public Auth(String oauthAccount, OAuthProvider oauthProvider) {

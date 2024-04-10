@@ -1,16 +1,16 @@
-package com.sillim.recordit.member.dto.oidc.google;
+package com.sillim.recordit.member.service;
 
-import com.sillim.recordit.member.dto.oidc.OidcClient;
+import com.sillim.recordit.member.service.OidcClient;
 import com.sillim.recordit.member.dto.oidc.OidcPublicKeys;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@FeignClient(name = "GoogleOidcClient", url = "https://www.googleapis.com")
+@FeignClient(name = "KakaoOidcClient", url = "https://kauth.kakao.com")
 @Component
-public interface GoogleOidcClient extends OidcClient {
+public interface KakaoOidcClient extends OidcClient {
 
 	@Override
-	@GetMapping("/oauth2/v3/certs")
+	@GetMapping("/.well-known/jwks.json")
 	OidcPublicKeys getOidcPublicKeys();
 }

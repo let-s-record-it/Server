@@ -8,7 +8,6 @@ import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.global.exception.member.InvalidIdTokenException;
 import com.sillim.recordit.member.dto.oidc.*;
-import com.sillim.recordit.member.dto.oidc.google.GoogleOidcClient;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
