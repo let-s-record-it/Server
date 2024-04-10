@@ -6,7 +6,7 @@ import static org.mockito.BDDMockito.given;
 
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
-import com.sillim.recordit.member.dto.request.SignupRequest;
+import com.sillim.recordit.member.dto.request.MemberInfo;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +31,7 @@ class SignupServiceTest {
 		String name = target.getName();
 		given(memberRepository.save(any(Member.class))).willReturn(target);
 
-		Member member = signupService.signup(new SignupRequest(account, provider, name));
+		Member member = signupService.signup(new MemberInfo(account, provider, name));
 
 		assertThat(member.getAuth().getOauthAccount()).isEqualTo(account);
 		assertThat(member.getAuth().getOauthProvider()).isEqualTo(provider);

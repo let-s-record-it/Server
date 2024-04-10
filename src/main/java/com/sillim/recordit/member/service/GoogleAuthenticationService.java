@@ -4,7 +4,7 @@ import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.domain.TokenType;
 import com.sillim.recordit.member.dto.oidc.IdToken;
 import com.sillim.recordit.member.dto.oidc.google.GoogleUserInfo;
-import com.sillim.recordit.member.dto.request.SignupRequest;
+import com.sillim.recordit.member.dto.request.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,11 +29,12 @@ public class GoogleAuthenticationService implements AuthenticationService {
 	}
 
 	@Override
-	public SignupRequest getMemberInfoByAccessToken(String accessToken) {
-		GoogleUserInfo googleUserInfo = googleUserInfoClient.getGoogleUserInfo(
-				TokenType.BEARER.getValueWithSpace() + accessToken);
+	public MemberInfo getMemberInfoByAccessToken(String accessToken) {
+		GoogleUserInfo googleUserInfo =
+				googleUserInfoClient.getGoogleUserInfo(
+						TokenType.BEARER.getValueWithSpace() + accessToken);
 
-		return SignupRequest.builder()
+		return MemberInfo.builder()
 				.oauthAccount(googleUserInfo.sub())
 				.oAuthProvider(OAuthProvider.GOOGLE)
 				.name(googleUserInfo.name())

@@ -1,6 +1,5 @@
 package com.sillim.recordit.member.service;
 
-import com.sillim.recordit.member.service.OidcClient;
 import com.sillim.recordit.member.dto.oidc.OidcPublicKeys;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;

@@ -3,12 +3,12 @@ package com.sillim.recordit.member.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sillim.recordit.config.security.jwt.AuthorizationToken;
 import com.sillim.recordit.config.security.jwt.JwtProvider;
-import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.dto.oidc.IdToken;
 import com.sillim.recordit.member.dto.oidc.IdTokenHeader;
 import com.sillim.recordit.member.dto.oidc.IdTokenPayload;
 import com.sillim.recordit.member.dto.request.LoginRequest;
+import com.sillim.recordit.member.dto.request.MemberInfo;
 import com.sillim.recordit.member.repository.MemberRepository;
 import java.io.IOException;
 import java.util.Base64;
@@ -33,13 +33,15 @@ public class LoginService {
 			MemberRepository memberRepository,
 			SignupService signupService,
 			KakaoAuthenticationService kakaoAuthenticationService,
-			GoogleAuthenticationService googleAuthenticationService) {
+			GoogleAuthenticationService googleAuthenticationService,
+			NaverAuthenticationService naverAuthenticationService) {
 		this.jwtProvider = jwtProvider;
 		this.objectMapper = objectMapper;
 		this.memberRepository = memberRepository;
 		this.signupService = signupService;
 		authenticationServiceMap.put(OAuthProvider.KAKAO, kakaoAuthenticationService);
 		authenticationServiceMap.put(OAuthProvider.GOOGLE, googleAuthenticationService);
+		authenticationServiceMap.put(OAuthProvider.NAVER, naverAuthenticationService);
 	}
 
 	@Transactional
@@ -47,7 +49,11 @@ public class LoginService {
 		AuthenticationService authenticationService =
 				authenticationServiceMap.get(loginRequest.provider());
 
-		Member member =
+		if (loginRequest.provider().equals(OAuthProvider.NAVER)) {
+			return loginWithoutOidc(loginRequest, authenticationService);
+		}
+
+		return jwtProvider.generateAuthorizationToken(
 				memberRepository
 						.findByAuthOauthAccount(
 								authenticationService.authenticate(
@@ -56,9 +62,19 @@ public class LoginService {
 								() ->
 										signupService.signup(
 												authenticationService.getMemberInfoByAccessToken(
-														loginRequest.accessToken())));
+														loginRequest.accessToken())))
+						.getId());
+	}
 
-		return jwtProvider.generateAuthorizationToken(member.getId());
+	private AuthorizationToken loginWithoutOidc(
+			LoginRequest loginRequest, AuthenticationService authenticationService) {
+		MemberInfo memberInfo =
+				authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
+		return jwtProvider.generateAuthorizationToken(
+				memberRepository
+						.findByAuthOauthAccount(memberInfo.oauthAccount())
+						.orElseGet(() -> signupService.signup(memberInfo))
+						.getId());
 	}
 
 	private IdToken parseToken(String idToken) throws IOException {

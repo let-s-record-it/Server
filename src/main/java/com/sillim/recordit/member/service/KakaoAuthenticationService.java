@@ -4,7 +4,7 @@ import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.domain.TokenType;
 import com.sillim.recordit.member.dto.oidc.IdToken;
 import com.sillim.recordit.member.dto.oidc.kakao.KakaoUserInfo;
-import com.sillim.recordit.member.dto.request.SignupRequest;
+import com.sillim.recordit.member.dto.request.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,15 +31,15 @@ public class KakaoAuthenticationService implements AuthenticationService {
 	}
 
 	@Override
-	public SignupRequest getMemberInfoByAccessToken(String accessToken) {
-		KakaoUserInfo kakaoUserInfo = kakaoUserInfoClient.getKakaoUserInfo(
-				TokenType.BEARER.getValueWithSpace() + accessToken);
+	public MemberInfo getMemberInfoByAccessToken(String accessToken) {
+		KakaoUserInfo kakaoUserInfo =
+				kakaoUserInfoClient.getKakaoUserInfo(
+						TokenType.BEARER.getValueWithSpace() + accessToken);
 
-		return SignupRequest.builder()
+		return MemberInfo.builder()
 				.oauthAccount(kakaoUserInfo.id().toString())
 				.oAuthProvider(OAuthProvider.KAKAO)
 				.name(kakaoUserInfo.kakaoAccount().profile().nickname())
 				.build();
 	}
-
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record SignupRequest(String oauthAccount, OAuthProvider oAuthProvider, String name) {
+public record MemberInfo(String oauthAccount, OAuthProvider oAuthProvider, String name) {
 
 	public Member toMember() {
 		return Member.builder()
