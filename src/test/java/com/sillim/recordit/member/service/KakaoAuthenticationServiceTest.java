@@ -76,13 +76,20 @@ class KakaoAuthenticationServiceTest {
 	@Test
 	@DisplayName("access token을 통해 Kakao User 정보를 가져온다.")
 	void getKakaoUserInfoByAccessToken() {
-		KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(1234567L, LocalDateTime.now(),
-				new KakaoAccount(false, false, false,
-						new KakaoProfile("nickname", "image", "image", false, false)));
-		BDDMockito.given(kakaoUserInfoClient.getKakaoUserInfo(anyString())).willReturn(kakaoUserInfo);
+		KakaoUserInfo kakaoUserInfo =
+				new KakaoUserInfo(
+						1234567L,
+						LocalDateTime.now(),
+						new KakaoAccount(
+								false,
+								false,
+								false,
+								new KakaoProfile("nickname", "image", "image", false, false)));
+		BDDMockito.given(kakaoUserInfoClient.getKakaoUserInfo(anyString()))
+				.willReturn(kakaoUserInfo);
 
-		MemberInfo memberInfo = kakaoAuthenticationService.getMemberInfoByAccessToken(
-				"accessToken");
+		MemberInfo memberInfo =
+				kakaoAuthenticationService.getMemberInfoByAccessToken("accessToken");
 
 		assertThat(memberInfo.oauthAccount()).isEqualTo(kakaoUserInfo.id().toString());
 	}

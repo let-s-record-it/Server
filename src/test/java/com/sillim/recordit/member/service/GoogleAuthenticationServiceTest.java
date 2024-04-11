@@ -73,12 +73,13 @@ class GoogleAuthenticationServiceTest {
 	@Test
 	@DisplayName("access token을 통해 Google User 정보를 가져온다.")
 	void getGoogleUserInfoByAccessToken() {
-		GoogleUserInfo googleUserInfo = new GoogleUserInfo("sub", "name", "name", "picture",
-				"email", true, "ko");
-		BDDMockito.given(googleUserInfoClient.getGoogleUserInfo(anyString())).willReturn(googleUserInfo);
+		GoogleUserInfo googleUserInfo =
+				new GoogleUserInfo("sub", "name", "name", "picture", "email", true, "ko");
+		BDDMockito.given(googleUserInfoClient.getGoogleUserInfo(anyString()))
+				.willReturn(googleUserInfo);
 
-		MemberInfo memberInfo = googleAuthenticationService.getMemberInfoByAccessToken(
-				"accessToken");
+		MemberInfo memberInfo =
+				googleAuthenticationService.getMemberInfoByAccessToken("accessToken");
 
 		assertThat(memberInfo.oauthAccount()).isEqualTo(googleUserInfo.sub());
 	}
