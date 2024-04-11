@@ -9,8 +9,7 @@ import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 
 public final class RsaKeyUtils {
-	private RsaKeyUtils() {
-	}
+	private RsaKeyUtils() {}
 
 	public static Key getKeyByRsa(String modulus, String exponent)
 			throws InvalidKeySpecException, NoSuchAlgorithmException {
