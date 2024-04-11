@@ -8,9 +8,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 
-public interface RsaKeyUtils {
+public final class RsaKeyUtils {
+	private RsaKeyUtils() {
+	}
 
-	static Key getKeyByRsa(String modulus, String exponent)
+	public static Key getKeyByRsa(String modulus, String exponent)
 			throws InvalidKeySpecException, NoSuchAlgorithmException {
 		byte[] decodedModulus = Base64.getUrlDecoder().decode(modulus);
 		byte[] decodeExponent = Base64.getUrlDecoder().decode(exponent);
