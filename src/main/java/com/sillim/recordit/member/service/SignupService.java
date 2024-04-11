@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SignupService {
 
-	public static final String BEARER = "Bearer ";
-
 	private final MemberRepository memberRepository;
 
 	@Transactional
