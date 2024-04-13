@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @FeignClient(name = "GoogleOidcClient", url = "https://www.googleapis.com")
-@Component
 public interface GoogleOidcClient {
 
 	@Cacheable(cacheNames = "publicKeys", key = "'google'")

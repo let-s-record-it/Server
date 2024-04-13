@@ -2,20 +2,16 @@ package com.sillim.recordit.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.sillim.recordit.RecorditApplication;
 import com.sillim.recordit.member.dto.oidc.OidcPublicKeys;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = RecorditApplication.class)
+@SpringBootTest
 class GoogleOidcClientTest {
 
 	@Autowired CacheManager cacheManager;
