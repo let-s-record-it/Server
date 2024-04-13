@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sillim.recordit.member.dto.oidc.OidcPublicKeys;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +16,18 @@ class GoogleOidcClientTest {
 	@Autowired CacheManager cacheManager;
 	@Autowired GoogleOidcClient googleOidcClient;
 
-	@BeforeEach
-	void setUp() {
-		googleOidcClient.getOidcPublicKeys();
+	@Test
+	@DisplayName("Google PublicKeys를 조회한다.")
+	void findGooglePublicKeys() {
+		OidcPublicKeys oidcPublicKeys = googleOidcClient.getOidcPublicKeys();
+
+		assertThat(oidcPublicKeys.keys()).hasSizeGreaterThan(0);
 	}
 
 	@Test
 	@DisplayName("Google PublicKeys 요청 시 캐싱된 것을 먼저 불러온다.")
-	void findKakaoPublicKeysThatCached() {
+	void findGooglePublicKeysThatCached() {
+		googleOidcClient.getOidcPublicKeys();
 		Optional<OidcPublicKeys> cachedPublicKeys =
 				Optional.ofNullable(cacheManager.getCache("publicKeys"))
 						.map(cache -> cache.get("google", OidcPublicKeys.class));
