@@ -9,14 +9,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SoftDelete;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SoftDelete
 public class MonthlyGoal extends BaseTime {
 
 	@Id
@@ -43,10 +46,6 @@ public class MonthlyGoal extends BaseTime {
 	@ColumnDefault("false")
 	private Boolean achieved;
 
-	@Column(nullable = false)
-	@ColumnDefault("false")
-	private Boolean deleted;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
@@ -64,8 +63,7 @@ public class MonthlyGoal extends BaseTime {
 		this.goalYear = goalYear;
 		this.goalMonth = goalMonth;
 		this.colorHex = colorHex;
-		this.achieved = false;
-		this.deleted = false;
+		this.achieved = Boolean.FALSE;
 		this.member = member;
 	}
 
