@@ -1,10 +1,11 @@
-package com.sillim.recordit.member.service;
+package com.sillim.recordit.member.service.naver;
 
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.domain.TokenType;
 import com.sillim.recordit.member.dto.oidc.IdToken;
 import com.sillim.recordit.member.dto.oidc.naver.NaverUserInfo;
 import com.sillim.recordit.member.dto.request.MemberInfo;
+import com.sillim.recordit.member.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

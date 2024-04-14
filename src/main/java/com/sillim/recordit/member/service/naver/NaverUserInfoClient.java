@@ -1,4 +1,4 @@
-package com.sillim.recordit.member.service;
+package com.sillim.recordit.member.service.naver;
 
 import com.sillim.recordit.member.dto.oidc.naver.NaverUserInfo;
 import org.springframework.cloud.openfeign.FeignClient;

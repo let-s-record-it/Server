@@ -15,6 +15,7 @@ import com.sillim.recordit.member.dto.request.LoginRequest;
 import com.sillim.recordit.member.fixture.AuthorizationTokenFixture;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.repository.MemberRepository;
+import com.sillim.recordit.member.service.kakao.KakaoAuthenticationService;
 import java.io.IOException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;

@@ -1,4 +1,4 @@
-package com.sillim.recordit.member.service;
+package com.sillim.recordit.member.service.kakao;
 
 import com.sillim.recordit.member.dto.oidc.kakao.KakaoUserInfo;
 import org.springframework.cloud.openfeign.FeignClient;

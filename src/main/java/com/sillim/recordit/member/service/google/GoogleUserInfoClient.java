@@ -1,4 +1,4 @@
-package com.sillim.recordit.member.service;
+package com.sillim.recordit.member.service.google;
 
 import com.sillim.recordit.member.dto.oidc.google.GoogleUserInfo;
 import org.springframework.cloud.openfeign.FeignClient;

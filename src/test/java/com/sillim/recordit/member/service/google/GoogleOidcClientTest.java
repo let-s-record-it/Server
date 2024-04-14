@@ -1,4 +1,4 @@
-package com.sillim.recordit.member.service;
+package com.sillim.recordit.member.service.google;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

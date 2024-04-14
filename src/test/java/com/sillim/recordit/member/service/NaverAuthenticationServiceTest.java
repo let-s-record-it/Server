@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import com.sillim.recordit.member.dto.oidc.naver.NaverProfile;
 import com.sillim.recordit.member.dto.oidc.naver.NaverUserInfo;
 import com.sillim.recordit.member.dto.request.MemberInfo;
+import com.sillim.recordit.member.service.naver.NaverAuthenticationService;
+import com.sillim.recordit.member.service.naver.NaverUserInfoClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
