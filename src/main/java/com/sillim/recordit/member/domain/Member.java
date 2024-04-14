@@ -54,6 +54,16 @@ public class Member extends BaseTime {
 		this.memberRole = memberRole;
 	}
 
+	public static Member createNoJobMember(Auth auth, String name) {
+		return Member.builder()
+				.auth(auth)
+				.name(name)
+				.job("")
+				.deleted(false)
+				.memberRole(List.of(MemberRole.ROLE_USER))
+				.build();
+	}
+
 	public List<SimpleGrantedAuthority> getAuthorities() {
 		return memberRole.stream().map(MemberRole::name).map(SimpleGrantedAuthority::new).toList();
 	}
