@@ -14,6 +14,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -99,7 +100,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	}
 
 	@Test
-	@DisplayName("존재하지 않는 월 목표를 조회할 경우 NOT FOUND 응답을 반환한다.")
+	@DisplayName("존재하지 않는 월 목표를 수정할 경우 NOT FOUND 응답을 반환한다.")
 	void monthlyGoalModifyTestMonthlyGoalNotFound() throws Exception {
 
 		MonthlyGoalUpdateRequest request =
@@ -122,9 +123,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 				.andDo(
 						document(
 								"monthly-goal-modify-monthly-goal-not-found",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc())));
+								getDocumentResponse()));
 	}
 
 	@Test
@@ -169,4 +168,58 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 	// TODO: Member Not Found 예외 추가
 
+	@Test
+	@DisplayName("특정 id의 월 목표를 상세하게 조회한다.")
+	void monthlyGoalDetailsTest() throws Exception {
+
+		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		given(monthlyGoal.getId()).willReturn(1L);
+
+		given(monthlyGoalQueryService.search(anyLong())).willReturn(monthlyGoal);
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/goals/months/{monthlyGoalId}", 1L)
+								.headers(authorizationHeader()));
+
+		perform.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(monthlyGoal.getId()))
+				.andExpect(jsonPath("$.title").value(monthlyGoal.getTitle()))
+				.andExpect(jsonPath("$.goalYear").value(monthlyGoal.getGoalYear()))
+				.andExpect(jsonPath("$.goalMonth").value(monthlyGoal.getGoalMonth()))
+				.andExpect(jsonPath("$.description").value(monthlyGoal.getDescription()))
+				.andExpect(jsonPath("$.colorHex").value(monthlyGoal.getColorHex()));
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"monthly-goal-details",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								requestHeaders(authorizationDesc()),
+								pathParameters(
+										parameterWithName("monthlyGoalId")
+												.description("조회할 월 목표 id"))));
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 월 목표를 상세하게 조회할 경우 NOT FOUND 응답을 반환한다.")
+	void monthlyGoalDetailsNotFoundTest() throws Exception {
+
+		given(monthlyGoalQueryService.search(anyLong()))
+				.willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/goals/months/{monthlyGoalId}", 1L)
+								.headers(authorizationHeader()));
+
+		perform.andExpect(status().isNotFound());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"monthly-goal-details-monthly-goal-not-found",
+								getDocumentResponse()));
+	}
 }
