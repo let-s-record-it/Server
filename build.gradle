@@ -15,6 +15,7 @@ java {
 }
 
 configurations {
+	asciidoctorExt
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -66,6 +67,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
@@ -81,7 +83,15 @@ tasks.named('test') {
 
 tasks.named('asciidoctor') {
 	inputs.dir snippetsDir
+	configurations 'asciidoctorExt'
 	dependsOn test
+}
+
+bootJar { // jar의 templates에 문서 복사
+	dependsOn asciidoctor
+	from ("${asciidoctor.outputDir}") {
+		into 'BOOT-INF/classes/templates'
+	}
 }
 
 spotless {
