@@ -123,9 +123,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 				.andDo(
 						document(
 								"monthly-goal-modify-monthly-goal-not-found",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc())));
+								getDocumentResponse()));
 	}
 
 	@Test
@@ -222,11 +220,6 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 				.andDo(
 						document(
 								"monthly-goal-details-monthly-goal-not-found",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc()),
-								pathParameters(
-										parameterWithName("monthlyGoalId")
-												.description("조회할 월 목표 id"))));
+								getDocumentResponse()));
 	}
 }
