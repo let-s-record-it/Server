@@ -21,6 +21,8 @@ public enum ErrorCode {
 	JWT_UNSUPPORTED("ERR_JWT_003", "지원되지 않는 JWT 형식입니다."),
 	JWT_INVALID_SIGNATURE("ERR_JWT_004", "JWT의 Signature가 유효하지 않습니다."),
 
+	MEMBER_NOT_FOUND("MEMBER_001", "요청한 멤버를 찾을 수 없습니다."),
+
 	INVALID_KAKAO_TOKEN("ERR_KAKAO_001", "유효하지 않은 Kakao Access Token입니다."),
 	;
 

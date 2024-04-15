@@ -1,8 +1,9 @@
 package com.sillim.recordit.member.service;
 
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.repository.MemberRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,8 @@ public class MemberQueryService {
 	private final MemberRepository memberRepository;
 
 	public Member findByMemberId(Long memberId) {
-		return memberRepository.findById(memberId).orElseThrow(EntityNotFoundException::new);
-	}
-
-	public Optional<Member> findByOauthAccount(String account) {
-		return memberRepository.findByAuthOauthAccount(account);
+		return memberRepository
+				.findById(memberId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 	}
 }
