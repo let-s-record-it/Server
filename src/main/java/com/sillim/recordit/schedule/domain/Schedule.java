@@ -62,15 +62,14 @@ public class Schedule {
 			Double longitude,
 			Boolean setAlarm,
 			LocalDateTime alarmTime) {
-		this.title = new Title(title);
-		this.description = new Description(description);
-		this.schedulePeriod =
-				isAllDay
-						? SchedulePeriod.createAllDay(startDatetime, endDatetime)
-						: SchedulePeriod.create(startDatetime, endDatetime);
-		this.colorHex = new ColorHex(colorHex);
-		this.place = place;
-		this.location = setLocation ? Location.create(latitude, longitude) : Location.noLocation();
-		this.alarmTime = setAlarm ? AlarmTime.create(alarmTime) : AlarmTime.noAlarmTime();
+		this(new Title(title),
+				new Description(description),
+				SchedulePeriod.create(isAllDay, startDatetime, endDatetime),
+				new ColorHex(colorHex),
+				place,
+				Location.create(setLocation, latitude, longitude),
+				AlarmTime.create(setAlarm, alarmTime)
+		);
 	}
+
 }

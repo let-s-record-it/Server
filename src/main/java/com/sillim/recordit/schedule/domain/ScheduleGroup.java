@@ -23,7 +23,8 @@ public class ScheduleGroup {
 	private Long isRecurred;
 
 	@Column(nullable = false)
-	private String recurrentType;
+	@Enumerated(EnumType.STRING)
+	private ScheduleRecurrenceType recurrentType;
 
 	@Column(nullable = false)
 	private Integer recurrencePeriod;
@@ -45,7 +46,7 @@ public class ScheduleGroup {
 	@Builder
 	public ScheduleGroup(
 			Long isRecurred,
-			String recurrentType,
+			ScheduleRecurrenceType recurrentType,
 			Integer recurrencePeriod,
 			LocalDateTime recurrenceStartDate,
 			LocalDateTime recurrenceEndDate,

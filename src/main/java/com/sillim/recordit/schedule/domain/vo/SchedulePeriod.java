@@ -42,8 +42,16 @@ public class SchedulePeriod {
 				LocalDateTime.of(endDatetime.toLocalDate(), LocalTime.MIN));
 	}
 
-	public static SchedulePeriod create(LocalDateTime startDatetime, LocalDateTime endDatetime) {
+	public static SchedulePeriod createNotAllDay(LocalDateTime startDatetime, LocalDateTime endDatetime) {
 		return new SchedulePeriod(false, startDatetime, endDatetime);
+	}
+
+	public static SchedulePeriod create(Boolean isAllDay, LocalDateTime startDatetime,
+			LocalDateTime endDatetime) {
+		if (isAllDay) {
+			return createAllDay(startDatetime, endDatetime);
+		}
+		return createNotAllDay(startDatetime, endDatetime);
 	}
 
 	private void validate(LocalDateTime startDatetime, LocalDateTime endDatetime) {

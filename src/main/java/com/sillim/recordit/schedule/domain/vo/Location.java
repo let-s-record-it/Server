@@ -38,7 +38,10 @@ public class Location {
 		return new Location(false, null, null);
 	}
 
-	public static Location create(double latitude, double longitude) {
+	public static Location create(Boolean setLocation, double latitude, double longitude) {
+		if (!setLocation) {
+			return noLocation();
+		}
 		validate(latitude, longitude);
 		return new Location(true, BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude));
 	}

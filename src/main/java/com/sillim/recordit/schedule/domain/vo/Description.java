@@ -20,6 +20,7 @@ public class Description {
 	private String description;
 
 	public Description(String description) {
+		validate(description);
 		this.description = description;
 	}
 

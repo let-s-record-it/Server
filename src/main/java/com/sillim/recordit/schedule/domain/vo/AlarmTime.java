@@ -28,7 +28,10 @@ public class AlarmTime {
 		return new AlarmTime(false, null);
 	}
 
-	public static AlarmTime create(LocalDateTime alarmTime) {
+	public static AlarmTime create(Boolean setAlarm, LocalDateTime alarmTime) {
+		if (!setAlarm) {
+			return noAlarmTime();
+		}
 		return new AlarmTime(true, alarmTime);
 	}
 }
