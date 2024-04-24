@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SchedulePeriod {
+public class ScheduleDuration {
 
 	@Column(nullable = false)
 	private Boolean isAllDay;
@@ -26,7 +26,7 @@ public class SchedulePeriod {
 	@Column(nullable = false)
 	private LocalDateTime endDatetime;
 
-	private SchedulePeriod(
+	private ScheduleDuration(
 			Boolean isAllDay, LocalDateTime startDatetime, LocalDateTime endDatetime) {
 		validate(startDatetime, endDatetime);
 		this.isAllDay = isAllDay;
@@ -34,19 +34,19 @@ public class SchedulePeriod {
 		this.endDatetime = endDatetime;
 	}
 
-	public static SchedulePeriod createAllDay(
+	public static ScheduleDuration createAllDay(
 			LocalDateTime startDatetime, LocalDateTime endDatetime) {
-		return new SchedulePeriod(
+		return new ScheduleDuration(
 				true,
 				LocalDateTime.of(startDatetime.toLocalDate(), LocalTime.MIN),
 				LocalDateTime.of(endDatetime.toLocalDate(), LocalTime.MIN));
 	}
 
-	public static SchedulePeriod createNotAllDay(LocalDateTime startDatetime, LocalDateTime endDatetime) {
-		return new SchedulePeriod(false, startDatetime, endDatetime);
+	public static ScheduleDuration createNotAllDay(LocalDateTime startDatetime, LocalDateTime endDatetime) {
+		return new ScheduleDuration(false, startDatetime, endDatetime);
 	}
 
-	public static SchedulePeriod create(Boolean isAllDay, LocalDateTime startDatetime,
+	public static ScheduleDuration create(Boolean isAllDay, LocalDateTime startDatetime,
 			LocalDateTime endDatetime) {
 		if (isAllDay) {
 			return createAllDay(startDatetime, endDatetime);

@@ -21,7 +21,7 @@ public class Schedule {
 
 	@Embedded private Description description;
 
-	@Embedded private SchedulePeriod schedulePeriod;
+	@Embedded private ScheduleDuration scheduleDuration;
 
 	@Embedded private ColorHex colorHex;
 
@@ -35,14 +35,14 @@ public class Schedule {
 	public Schedule(
 			Title title,
 			Description description,
-			SchedulePeriod schedulePeriod,
+			ScheduleDuration scheduleDuration,
 			ColorHex colorHex,
 			String place,
 			Location location,
 			AlarmTime alarmTime) {
 		this.title = title;
 		this.description = description;
-		this.schedulePeriod = schedulePeriod;
+		this.scheduleDuration = scheduleDuration;
 		this.colorHex = colorHex;
 		this.place = place;
 		this.location = location;
@@ -64,7 +64,7 @@ public class Schedule {
 			LocalDateTime alarmTime) {
 		this(new Title(title),
 				new Description(description),
-				SchedulePeriod.create(isAllDay, startDatetime, endDatetime),
+				ScheduleDuration.create(isAllDay, startDatetime, endDatetime),
 				new ColorHex(colorHex),
 				place,
 				Location.create(setLocation, latitude, longitude),
