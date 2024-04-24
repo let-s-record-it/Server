@@ -42,12 +42,13 @@ public class ScheduleDuration {
 				LocalDateTime.of(endDatetime.toLocalDate(), LocalTime.MIN));
 	}
 
-	public static ScheduleDuration createNotAllDay(LocalDateTime startDatetime, LocalDateTime endDatetime) {
+	public static ScheduleDuration createNotAllDay(
+			LocalDateTime startDatetime, LocalDateTime endDatetime) {
 		return new ScheduleDuration(false, startDatetime, endDatetime);
 	}
 
-	public static ScheduleDuration create(Boolean isAllDay, LocalDateTime startDatetime,
-			LocalDateTime endDatetime) {
+	public static ScheduleDuration create(
+			Boolean isAllDay, LocalDateTime startDatetime, LocalDateTime endDatetime) {
 		if (isAllDay) {
 			return createAllDay(startDatetime, endDatetime);
 		}

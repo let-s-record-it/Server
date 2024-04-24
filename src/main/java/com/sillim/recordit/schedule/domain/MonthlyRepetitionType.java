@@ -1,6 +1,6 @@
 package com.sillim.recordit.schedule.domain;
 
-public enum MonthlyRecurrenceType {
+public enum MonthlyRepetitionType {
 	DATE,
 	WEEKDAY
 }

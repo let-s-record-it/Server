@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MonthlyRecurrence {
+public class MonthlyRepetition {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,7 +16,7 @@ public class MonthlyRecurrence {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private MonthlyRecurrenceType recurrenceType;
+	private MonthlyRepetitionType recurrenceType;
 
 	@Column private Integer date;
 
@@ -31,8 +31,8 @@ public class MonthlyRecurrence {
 	private ScheduleGroup scheduleGroup;
 
 	@Builder
-	public MonthlyRecurrence(
-			MonthlyRecurrenceType recurrenceType,
+	public MonthlyRepetition(
+			MonthlyRepetitionType recurrenceType,
 			Integer date,
 			Integer weekNumber,
 			String weekday,

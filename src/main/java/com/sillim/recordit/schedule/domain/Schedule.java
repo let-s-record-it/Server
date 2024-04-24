@@ -62,14 +62,13 @@ public class Schedule {
 			Double longitude,
 			Boolean setAlarm,
 			LocalDateTime alarmTime) {
-		this(new Title(title),
+		this(
+				new Title(title),
 				new Description(description),
 				ScheduleDuration.create(isAllDay, startDatetime, endDatetime),
 				new ColorHex(colorHex),
 				place,
 				Location.create(setLocation, latitude, longitude),
-				AlarmTime.create(setAlarm, alarmTime)
-		);
+				AlarmTime.create(setAlarm, alarmTime));
 	}
-
 }

@@ -20,20 +20,20 @@ public class ScheduleGroup {
 	private Long id;
 
 	@Column(nullable = false)
-	private Long isRecurred;
+	private Long isRepeated;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private ScheduleRecurrenceType recurrentType;
+	private ScheduleRepetitionType recurrentType;
 
 	@Column(nullable = false)
-	private Integer recurrencePeriod;
+	private Integer repetitionPeriod;
 
 	@Column(nullable = false)
-	private LocalDateTime recurrenceStartDate;
+	private LocalDateTime repetitionStartDate;
 
 	@Column(nullable = false)
-	private LocalDateTime recurrenceEndDate;
+	private LocalDateTime repetitionEndDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "calendar_id")
@@ -45,18 +45,18 @@ public class ScheduleGroup {
 
 	@Builder
 	public ScheduleGroup(
-			Long isRecurred,
-			ScheduleRecurrenceType recurrentType,
-			Integer recurrencePeriod,
-			LocalDateTime recurrenceStartDate,
-			LocalDateTime recurrenceEndDate,
+			Long isRepeated,
+			ScheduleRepetitionType recurrentType,
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
 			Calendar calendar,
 			Member member) {
-		this.isRecurred = isRecurred;
+		this.isRepeated = isRepeated;
 		this.recurrentType = recurrentType;
-		this.recurrencePeriod = recurrencePeriod;
-		this.recurrenceStartDate = recurrenceStartDate;
-		this.recurrenceEndDate = recurrenceEndDate;
+		this.repetitionPeriod = repetitionPeriod;
+		this.repetitionStartDate = repetitionStartDate;
+		this.repetitionEndDate = repetitionEndDate;
 		this.calendar = calendar;
 		this.member = member;
 	}

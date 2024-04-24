@@ -5,12 +5,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.*;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class YearlyRecurrence {
+public class YearlyRepetition {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +18,7 @@ public class YearlyRecurrence {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private YearlyRecurrenceType recurrenceType;
+	private YearlyRepetitionType repetitionType;
 
 	@Column(nullable = false)
 	private Integer month;
@@ -35,14 +34,14 @@ public class YearlyRecurrence {
 	private ScheduleGroup scheduleGroup;
 
 	@Builder
-	public YearlyRecurrence(
-			YearlyRecurrenceType recurrenceType,
+	public YearlyRepetition(
+			YearlyRepetitionType repetitionType,
 			Integer month,
 			Integer date,
 			Integer weekNumber,
 			Integer weekday,
 			ScheduleGroup scheduleGroup) {
-		this.recurrenceType = recurrenceType;
+		this.repetitionType = repetitionType;
 		this.month = month;
 		this.date = date;
 		this.weekNumber = weekNumber;

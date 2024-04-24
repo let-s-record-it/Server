@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class WeeklyRecurrence {
+public class WeeklyRepetition {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ public class WeeklyRecurrence {
 	private ScheduleGroup scheduleGroup;
 
 	@Builder
-	public WeeklyRecurrence(
+	public WeeklyRepetition(
 			Boolean monday,
 			Boolean tuesday,
 			Boolean wednesday,
