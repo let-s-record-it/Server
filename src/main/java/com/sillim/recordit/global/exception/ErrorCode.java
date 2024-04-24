@@ -24,6 +24,13 @@ public enum ErrorCode {
 	MEMBER_NOT_FOUND("MEMBER_001", "요청한 멤버를 찾을 수 없습니다."),
 
 	INVALID_KAKAO_TOKEN("ERR_KAKAO_001", "유효하지 않은 Kakao Access Token입니다."),
+
+	INVALID_TITLE("ERR_SCHEDULE_001", "유효하지 않은 제목입니다."),
+	INVALID_DESCRIPTION("ERR_SCHEDULE_002", "유효하지 않은 설명입니다."),
+	INVALID_COLOR_HEX("ERR_SCHEDULE_003", "유효하지 않은 색상 값입니다."),
+	INVALID_LATITUDE("ERR_SCHEDULE_004", "유효하지 않은 위도 값입니다."),
+	INVALID_LONGITUDE("ERR_SCHEDULE_005", "유효하지 않은 경도 값입니다."),
+	INVALID_SCHEDULE_PERIOD("ERR_SCHEDULE_006", "잘못된 일정 기간입니다."),
 	;
 
 	private final String code;
