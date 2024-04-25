@@ -22,7 +22,7 @@ public enum ErrorCode {
 
 	MEMBER_NOT_FOUND("MEMBER_001", "요청한 멤버를 찾을 수 없습니다."),
 
-    INVALID_KAKAO_TOKEN("ERR_KAKAO_001", "유효하지 않은 Kakao Access Token입니다."),
+	INVALID_KAKAO_TOKEN("ERR_KAKAO_001", "유효하지 않은 Kakao Access Token입니다."),
 	// monthly-goal
 	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다.");
 

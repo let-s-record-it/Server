@@ -4,6 +4,8 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
+import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.service.MemberQueryService;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MonthlyGoalQueryService {
 
+	private final MemberQueryService memberQueryService;
 	private final MonthlyGoalJpaRepository monthlyGoalJpaRepository;
 
 	public MonthlyGoal search(final Long monthlyGoalId) {
@@ -27,8 +30,8 @@ public class MonthlyGoalQueryService {
 	public List<MonthlyGoal> searchAllByDate(
 			final LocalDate startDate, final LocalDate endDate, final Long memberId) {
 
-//		Member member = new Member(); // TODO Member Entity 구현 완료 시 변경
+		Member member = memberQueryService.findByMemberId(memberId);
 		return monthlyGoalJpaRepository.findByStartDateAfterAndEndDateBeforeAndMember(
-				startDate, endDate, null);
+				startDate, endDate, member);
 	}
 }
