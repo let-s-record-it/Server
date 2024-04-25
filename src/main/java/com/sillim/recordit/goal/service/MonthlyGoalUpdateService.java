@@ -1,7 +1,6 @@
 package com.sillim.recordit.goal.service;
 
 import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
-import com.sillim.recordit.goal.domain.Member;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +16,8 @@ public class MonthlyGoalUpdateService {
 	private final MonthlyGoalJpaRepository monthlyGoalJpaRepository;
 
 	public void add(MonthlyGoalUpdateRequest request, Long memberId) {
-		Member member = new Member(); // TODO Member Entity 구현 완료 시 변경
-		monthlyGoalJpaRepository.save(request.toEntity(member));
+		//Member member = new Member(); // TODO Member Entity 구현 완료 시 변경
+		monthlyGoalJpaRepository.save(request.toEntity(null));
 	}
 
 	public void modify(MonthlyGoalUpdateRequest request, Long monthlyGoalId) {
@@ -27,8 +26,8 @@ public class MonthlyGoalUpdateService {
 		monthlyGoal.modify(
 				request.title(),
 				request.description(),
-				request.goalYear(),
-				request.goalMonth(),
+				request.startDate(),
+				request.endDate(),
 				request.colorHex());
 	}
 }

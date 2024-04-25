@@ -6,6 +6,7 @@ import com.sillim.recordit.goal.controller.dto.response.MonthlyGoalListResponse;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.goal.service.MonthlyGoalUpdateService;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,10 +49,10 @@ public class MonthlyGoalController {
 	// TODO: Security 적용 시 UserDetails 받도록 변경
 	@GetMapping("/months")
 	public ResponseEntity<List<MonthlyGoalListResponse>> monthlyGoalList(
-			@RequestParam Integer goalYear, @RequestParam Integer goalMonth) {
+			@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
 
 		return ResponseEntity.ok(
-				monthlyGoalQueryService.searchAllByDate(goalYear, goalMonth, 1L).stream()
+				monthlyGoalQueryService.searchAllByDate(startDate, endDate, 1L).stream()
 						.map(MonthlyGoalListResponse::from)
 						.toList());
 	}

@@ -2,9 +2,9 @@ package com.sillim.recordit.goal.service;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
-import com.sillim.recordit.goal.domain.Member;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,10 +25,10 @@ public class MonthlyGoalQueryService {
 	}
 
 	public List<MonthlyGoal> searchAllByDate(
-			final Integer goalYear, final Integer goalMonth, final Long memberId) {
+			final LocalDate startDate, final LocalDate endDate, final Long memberId) {
 
-		Member member = new Member(); // TODO Member Entity 구현 완료 시 변경
-		return monthlyGoalJpaRepository.findByGoalYearAndGoalMonthAndMember(
-				goalYear, goalMonth, member);
+//		Member member = new Member(); // TODO Member Entity 구현 완료 시 변경
+		return monthlyGoalJpaRepository.findByStartDateAfterAndEndDateBeforeAndMember(
+				startDate, endDate, null);
 	}
 }

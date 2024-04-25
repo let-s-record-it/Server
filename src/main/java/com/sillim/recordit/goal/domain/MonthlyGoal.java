@@ -1,6 +1,7 @@
 package com.sillim.recordit.goal.domain;
 
 import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,7 +9,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,19 +30,20 @@ public class MonthlyGoal extends BaseTime {
 	@Column(name = "monthly_goal_id")
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 200)
 	private String title;
 
+	@Lob
 	@Column(nullable = false)
 	private String description;
 
 	@Column(nullable = false)
-	private Integer goalYear;
+	private LocalDate startDate;
 
 	@Column(nullable = false)
-	private Integer goalMonth;
+	private LocalDate endDate;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 8)
 	private String colorHex;
 
 	@Column(nullable = false)
@@ -54,14 +58,14 @@ public class MonthlyGoal extends BaseTime {
 	public MonthlyGoal(
 			String title,
 			String description,
-			Integer goalYear,
-			Integer goalMonth,
+			LocalDate startDate,
+			LocalDate endDate,
 			String colorHex,
 			Member member) {
 		this.title = title;
 		this.description = description;
-		this.goalYear = goalYear;
-		this.goalMonth = goalMonth;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.colorHex = colorHex;
 		this.achieved = Boolean.FALSE;
 		this.member = member;
@@ -70,13 +74,13 @@ public class MonthlyGoal extends BaseTime {
 	public void modify(
 			String title,
 			String description,
-			Integer goalYear,
-			Integer goalMonth,
+			LocalDate startDate,
+			LocalDate endDate,
 			String colorHex) {
 		this.title = title;
 		this.description = description;
-		this.goalYear = goalYear;
-		this.goalMonth = goalMonth;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.colorHex = colorHex;
 	}
 }
