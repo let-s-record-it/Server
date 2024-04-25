@@ -8,6 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sillim.recordit.config.security.filter.AuthExceptionTranslationFilter;
+import com.sillim.recordit.config.security.filter.JwtAuthenticationFilter;
+import com.sillim.recordit.config.security.handler.AuthenticationExceptionHandler;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.RestDocumentationContextProvider;
@@ -38,6 +42,11 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 public abstract class RestDocsTest {
 
 	@Autowired private ObjectMapper objectMapper;
+
+	@MockBean AuthenticationExceptionHandler handler;
+	@MockBean AuthExceptionTranslationFilter exceptionTranslationFilter;
+	@MockBean JwtAuthenticationFilter jwtAuthenticationFilter;
+
 	protected MockMvc mockMvc;
 
 	@BeforeEach
