@@ -31,7 +31,7 @@ public class MonthlyGoalQueryService {
 			final LocalDate startDate, final LocalDate endDate, final Long memberId) {
 
 		Member member = memberQueryService.findByMemberId(memberId);
-		return monthlyGoalJpaRepository.findByStartDateAfterAndEndDateBeforeAndMember(
+		return monthlyGoalJpaRepository.findByStartDateAndEndDateAndMember(
 				startDate, endDate, member);
 	}
 }
