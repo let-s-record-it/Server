@@ -7,6 +7,7 @@ import com.sillim.recordit.schedule.domain.vo.DayOfMonth;
 import com.sillim.recordit.schedule.domain.vo.MonthOfYear;
 import com.sillim.recordit.schedule.domain.vo.WeekdayBit;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -51,15 +52,15 @@ public class RepetitionPattern extends BaseTime {
 	@Column(nullable = false)
 	private LocalDateTime repetitionEndDate;
 
-	@Column private MonthOfYear monthOfYear;
+	@Embedded private MonthOfYear monthOfYear;
 
-	@Column private DayOfMonth dayOfMonth;
+	@Embedded private DayOfMonth dayOfMonth;
 
 	@Column private WeekNumber weekNumber;
 
 	@Column private Weekday weekday;
 
-	@Column private WeekdayBit weekdayBit;
+	@Embedded private WeekdayBit weekdayBit;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_group_id", unique = true)
