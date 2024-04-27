@@ -29,9 +29,6 @@ import org.springframework.test.web.servlet.ResultActions;
 class LoginControllerTest extends RestDocsTest {
 
 	@MockBean LoginService loginService;
-	@MockBean AuthenticationExceptionHandler handler;
-	@MockBean AuthExceptionTranslationFilter exceptionTranslationFilter;
-	@MockBean JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@Test
 	@DisplayName("인가 받은 토큰으로 로그인을 한다.")
