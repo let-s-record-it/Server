@@ -185,39 +185,7 @@ public enum RepetitionPatternFixture {
 				scheduleGroup);
 	}
 
-	public RepetitionType getRepetitionType() {
-		return repetitionType;
-	}
-
-	public Integer getRepetitionPeriod() {
-		return repetitionPeriod;
-	}
-
 	public LocalDateTime getRepetitionStartDate() {
 		return repetitionStartDate;
-	}
-
-	public LocalDateTime getRepetitionEndDate() {
-		return repetitionEndDate;
-	}
-
-	public Integer getMonthOfYear() {
-		return monthOfYear;
-	}
-
-	public Integer getDayOfMonth() {
-		return dayOfMonth;
-	}
-
-	public WeekNumber getWeekNumber() {
-		return weekNumber;
-	}
-
-	public Weekday getWeekday() {
-		return weekday;
-	}
-
-	public Integer getWeekdayBit() {
-		return weekdayBit;
 	}
 }
