@@ -1,6 +1,5 @@
 package com.sillim.recordit.global.validation.schedule;
 
-
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import jakarta.validation.constraints.Null;
@@ -21,7 +20,9 @@ import org.hibernate.validator.constraints.Range;
 @Documented
 @Constraint(validatedBy = {})
 public @interface ValidMonth {
-    String message() default "월은 1 이상 12 이하여야 합니다.";
-    Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
+	String message() default "월은 1 이상 12 이하여야 합니다.";
+
+	Class<?>[] groups() default {};
+
+	Class<? extends Payload>[] payload() default {};
 }

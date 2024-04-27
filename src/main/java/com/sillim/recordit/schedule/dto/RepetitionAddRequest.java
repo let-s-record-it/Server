@@ -10,14 +10,13 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import org.hibernate.validator.constraints.Range;
 
-public record RepetitionAddRequest(@NotNull RepetitionType repetitionType,
-                                   @Range(min = 1, max = 999) Integer repetitionPeriod,
-                                   @NotNull LocalDateTime repetitionStartDate,
-                                   @NotNull LocalDateTime repetitionEndDate,
-                                   @ValidMonth Integer monthOfYear,
-                                   @ValidDayOfMonth Integer dayOfMonth,
-                                   WeekNumber weekNumber,
-                                   Weekday weekday,
-                                   @ValidWeekdayBit Integer weekdayBit) {
-
-}
+public record RepetitionAddRequest(
+		@NotNull RepetitionType repetitionType,
+		@Range(min = 1, max = 999) Integer repetitionPeriod,
+		@NotNull LocalDateTime repetitionStartDate,
+		@NotNull LocalDateTime repetitionEndDate,
+		@ValidMonth Integer monthOfYear,
+		@ValidDayOfMonth Integer dayOfMonth,
+		WeekNumber weekNumber,
+		Weekday weekday,
+		@ValidWeekdayBit Integer weekdayBit) {}

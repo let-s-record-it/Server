@@ -21,7 +21,9 @@ import org.hibernate.validator.constraints.Range;
 @Constraint(validatedBy = {})
 public @interface ValidLongitude {
 
-    String message() default "경도 값은 0 이상 180 이하여야 합니다.";
-    Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
+	String message() default "경도 값은 0 이상 180 이하여야 합니다.";
+
+	Class<?>[] groups() default {};
+
+	Class<? extends Payload>[] payload() default {};
 }

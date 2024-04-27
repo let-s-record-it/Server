@@ -26,52 +26,45 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ScheduleGroupServiceTest {
 
-    @Mock
-    ScheduleGroupRepository scheduleGroupRepository;
-    @Mock
-    CalendarService calendarService;
-    @Mock
-    MemberQueryService memberQueryService;
-    @InjectMocks
-    ScheduleGroupService scheduleGroupService;
+	@Mock ScheduleGroupRepository scheduleGroupRepository;
+	@Mock CalendarService calendarService;
+	@Mock MemberQueryService memberQueryService;
+	@InjectMocks ScheduleGroupService scheduleGroupService;
 
-    Member member;
-    Calendar calendar;
-    long calendarId = 1L;
-    long memberId = 1L;
+	Member member;
+	Calendar calendar;
+	long calendarId = 1L;
+	long memberId = 1L;
 
-    @BeforeEach
-    void initObjects() {
-        member = Member.builder()
-                .auth(new Auth("1234567", OAuthProvider.KAKAO))
-                .name("name")
-                .job("job")
-                .deleted(false)
-                .memberRole(List.of(MemberRole.ROLE_USER))
-                .build();
-        calendar = Calendar.builder()
-                .title("calendar1")
-                .colorHex("#aabbff")
-                .member(member)
-                .build();
-    }
+	@BeforeEach
+	void initObjects() {
+		member =
+				Member.builder()
+						.auth(new Auth("1234567", OAuthProvider.KAKAO))
+						.name("name")
+						.job("job")
+						.deleted(false)
+						.memberRole(List.of(MemberRole.ROLE_USER))
+						.build();
+		calendar = Calendar.builder().title("calendar1").colorHex("#aabbff").member(member).build();
+	}
 
-    @Test
-    @DisplayName("스케줄 그룹을 추가할 수 있다.")
-    void addScheduleGroup() {
-        ScheduleGroup expectScheduleGroup = ScheduleGroup.builder()
-                .isRepeated(false)
-                .calendar(calendar)
-                .member(member)
-                .build();
-        given(scheduleGroupRepository.save(any(ScheduleGroup.class))).willReturn(expectScheduleGroup);
+	@Test
+	@DisplayName("스케줄 그룹을 추가할 수 있다.")
+	void addScheduleGroup() {
+		ScheduleGroup expectScheduleGroup =
+				ScheduleGroup.builder().isRepeated(false).calendar(calendar).member(member).build();
+		given(scheduleGroupRepository.save(any(ScheduleGroup.class)))
+				.willReturn(expectScheduleGroup);
 
-        ScheduleGroup scheduleGroup = scheduleGroupService.addScheduleGroup(false, calendarId, memberId);
+		ScheduleGroup scheduleGroup =
+				scheduleGroupService.addScheduleGroup(false, calendarId, memberId);
 
-        assertAll(() -> {
-            assertThat(scheduleGroup.getIsRepeated()).isEqualTo(false);
-            assertThat(scheduleGroup.getMember()).isEqualTo(member);
-            assertThat(scheduleGroup.getCalendar()).isEqualTo(calendar);
-        });
-    }
+		assertAll(
+				() -> {
+					assertThat(scheduleGroup.getIsRepeated()).isEqualTo(false);
+					assertThat(scheduleGroup.getMember()).isEqualTo(member);
+					assertThat(scheduleGroup.getCalendar()).isEqualTo(calendar);
+				});
+	}
 }

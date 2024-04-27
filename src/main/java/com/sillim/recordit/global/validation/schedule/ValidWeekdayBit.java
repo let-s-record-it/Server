@@ -21,7 +21,9 @@ import org.hibernate.validator.constraints.Range;
 @Constraint(validatedBy = {})
 public @interface ValidWeekdayBit {
 
-    String message() default "요일 비트 값은 1 이상 127 이하여야 합니다.";
-    Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
+	String message() default "요일 비트 값은 1 이상 127 이하여야 합니다.";
+
+	Class<?>[] groups() default {};
+
+	Class<? extends Payload>[] payload() default {};
 }

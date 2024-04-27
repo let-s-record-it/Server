@@ -21,7 +21,6 @@ public class Location {
 	private static final int LATITUDE_MAX = 90;
 	private static final int LONGITUDE_MAX = 180;
 
-
 	@Column private BigDecimal latitude;
 
 	@Column private BigDecimal longitude;

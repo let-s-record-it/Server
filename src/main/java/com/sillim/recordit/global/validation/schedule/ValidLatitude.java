@@ -20,7 +20,9 @@ import org.hibernate.validator.constraints.Range;
 @Documented
 @Constraint(validatedBy = {})
 public @interface ValidLatitude {
-    String message() default "위도 값은 0 이상 90 이하여야 합니다.";
-    Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
+	String message() default "위도 값은 0 이상 90 이하여야 합니다.";
+
+	Class<?>[] groups() default {};
+
+	Class<? extends Payload>[] payload() default {};
 }

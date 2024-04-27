@@ -19,38 +19,39 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class MockAuthenticationFilter implements Filter {
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        Filter.super.init(filterConfig);
-    }
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+		Filter.super.init(filterConfig);
+	}
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-        Member member = createMember();
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		Member member = createMember();
 
-        AuthorizedUser authorizedUser = new AuthorizedUser(member, new HashMap<>(),
-                member.getAuthorities());
+		AuthorizedUser authorizedUser =
+				new AuthorizedUser(member, new HashMap<>(), member.getAuthorities());
 
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        authorizedUser, "password", authorizedUser.getAuthorities()));
+		SecurityContextHolder.getContext()
+				.setAuthentication(
+						new UsernamePasswordAuthenticationToken(
+								authorizedUser, "password", authorizedUser.getAuthorities()));
 
-        chain.doFilter(request, response);
-    }
+		chain.doFilter(request, response);
+	}
 
-    @Override
-    public void destroy() {
-        Filter.super.destroy();
-    }
+	@Override
+	public void destroy() {
+		Filter.super.destroy();
+	}
 
-    private Member createMember() {
-        return Member.builder()
-                .auth(new Auth("1234567", OAuthProvider.KAKAO))
-                .name("mock")
-                .job("")
-                .deleted(false)
-                .memberRole(List.of(MemberRole.ROLE_USER))
-                .build();
-    }
+	private Member createMember() {
+		return Member.builder()
+				.auth(new Auth("1234567", OAuthProvider.KAKAO))
+				.name("mock")
+				.job("")
+				.deleted(false)
+				.memberRole(List.of(MemberRole.ROLE_USER))
+				.build();
+	}
 }

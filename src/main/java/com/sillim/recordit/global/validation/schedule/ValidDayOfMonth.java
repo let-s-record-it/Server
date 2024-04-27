@@ -21,7 +21,9 @@ import org.hibernate.validator.constraints.Range;
 @Constraint(validatedBy = {})
 public @interface ValidDayOfMonth {
 
-    String message() default "일은 1 이상 31 이하여야 합니다.";
-    Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
+	String message() default "일은 1 이상 31 이하여야 합니다.";
+
+	Class<?>[] groups() default {};
+
+	Class<? extends Payload>[] payload() default {};
 }

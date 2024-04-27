@@ -44,12 +44,9 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 public abstract class RestDocsTest {
 
 	@Autowired private ObjectMapper objectMapper;
-	@MockBean
-	AuthenticationExceptionHandler handler;
-	@MockBean
-	AuthExceptionTranslationFilter exceptionTranslationFilter;
-	@MockBean
-	JwtAuthenticationFilter jwtAuthenticationFilter;
+	@MockBean AuthenticationExceptionHandler handler;
+	@MockBean AuthExceptionTranslationFilter exceptionTranslationFilter;
+	@MockBean JwtAuthenticationFilter jwtAuthenticationFilter;
 	protected MockMvc mockMvc;
 
 	@BeforeEach

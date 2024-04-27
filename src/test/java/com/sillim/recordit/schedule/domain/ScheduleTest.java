@@ -22,65 +22,66 @@ import org.junit.jupiter.api.Test;
 
 class ScheduleTest {
 
-    Member member;
-    Calendar calendar;
-    ScheduleGroup scheduleGroup;
+	Member member;
+	Calendar calendar;
+	ScheduleGroup scheduleGroup;
 
-    @BeforeEach
-    void initObjects() {
-        member = Member.builder()
-                .auth(new Auth("1234567", OAuthProvider.KAKAO))
-                .name("name")
-                .job("job")
-                .deleted(false)
-                .memberRole(List.of(MemberRole.ROLE_USER))
-                .build();
-        calendar = Calendar.builder()
-                .title("title")
-                .colorHex("#aabbff")
-                .member(member)
-                .build();
-        scheduleGroup = ScheduleGroup.builder()
-                .isRepeated(false)
-                .member(member)
-                .calendar(calendar).build();
-    }
+	@BeforeEach
+	void initObjects() {
+		member =
+				Member.builder()
+						.auth(new Auth("1234567", OAuthProvider.KAKAO))
+						.name("name")
+						.job("job")
+						.deleted(false)
+						.memberRole(List.of(MemberRole.ROLE_USER))
+						.build();
+		calendar = Calendar.builder().title("title").colorHex("#aabbff").member(member).build();
+		scheduleGroup =
+				ScheduleGroup.builder().isRepeated(false).member(member).calendar(calendar).build();
+	}
 
-    @Test
-    @DisplayName("스케줄을 생성할 수 있다.")
-    void createSchedule() {
-        Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup);
-        ScheduleFixture fixture = ScheduleFixture.DEFAULT;
+	@Test
+	@DisplayName("스케줄을 생성할 수 있다.")
+	void createSchedule() {
+		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup);
+		ScheduleFixture fixture = ScheduleFixture.DEFAULT;
 
-        assertAll(() -> {
-            assertThat(schedule.getTitle()).isEqualTo(new Title(fixture.getTitle()));
-            assertThat(schedule.getDescription()).isEqualTo(new Description(fixture.getDescription()));
-            assertThat(schedule.getScheduleDuration()).isEqualTo(
-                    ScheduleDuration.createNotAllDay(fixture.getStartDatetime(),
-                            fixture.getEndDatetime()));
-            assertThat(schedule.getColorHex()).isEqualTo(new ColorHex(fixture.getColorHex()));
-            assertThat(schedule.getPlace()).isEqualTo(fixture.getPlace());
-            assertThat(schedule.getSetLocation()).isEqualTo(fixture.getSetLocation());
-            assertThat(schedule.getLocation()).isEqualTo(
-                    Location.create(fixture.getLatitude(), fixture.getLongitude()));
-            assertThat(schedule.getSetAlarm()).isEqualTo(fixture.getSetAlarm());
-            assertThat(schedule.getAlarmTime()).isEqualTo(AlarmTime.create(fixture.getAlarmTime()));
-        });
-    }
+		assertAll(
+				() -> {
+					assertThat(schedule.getTitle()).isEqualTo(new Title(fixture.getTitle()));
+					assertThat(schedule.getDescription())
+							.isEqualTo(new Description(fixture.getDescription()));
+					assertThat(schedule.getScheduleDuration())
+							.isEqualTo(
+									ScheduleDuration.createNotAllDay(
+											fixture.getStartDatetime(), fixture.getEndDatetime()));
+					assertThat(schedule.getColorHex())
+							.isEqualTo(new ColorHex(fixture.getColorHex()));
+					assertThat(schedule.getPlace()).isEqualTo(fixture.getPlace());
+					assertThat(schedule.getSetLocation()).isEqualTo(fixture.getSetLocation());
+					assertThat(schedule.getLocation())
+							.isEqualTo(
+									Location.create(fixture.getLatitude(), fixture.getLongitude()));
+					assertThat(schedule.getSetAlarm()).isEqualTo(fixture.getSetAlarm());
+					assertThat(schedule.getAlarmTime())
+							.isEqualTo(AlarmTime.create(fixture.getAlarmTime()));
+				});
+	}
 
-    @Test
-    @DisplayName("위치 설정 여부가 false이면 위치 값이 null이 저장된다.")
-    void locationIsNullWhenSetLocationIsFalse() {
-        Schedule schedule = ScheduleFixture.NOT_SET_LOCATION.getSchedule(scheduleGroup);
+	@Test
+	@DisplayName("위치 설정 여부가 false이면 위치 값이 null이 저장된다.")
+	void locationIsNullWhenSetLocationIsFalse() {
+		Schedule schedule = ScheduleFixture.NOT_SET_LOCATION.getSchedule(scheduleGroup);
 
-        assertThat(schedule.getLocation()).isNull();
-    }
+		assertThat(schedule.getLocation()).isNull();
+	}
 
-    @Test
-    @DisplayName("알람 설정 여부가 false이면 알람 값이 null이 저장된다.")
-    void alarmTimeIsNullWhenSetAlarmIsFalse() {
-        Schedule schedule = ScheduleFixture.NOT_SET_ALARM.getSchedule(scheduleGroup);
+	@Test
+	@DisplayName("알람 설정 여부가 false이면 알람 값이 null이 저장된다.")
+	void alarmTimeIsNullWhenSetAlarmIsFalse() {
+		Schedule schedule = ScheduleFixture.NOT_SET_ALARM.getSchedule(scheduleGroup);
 
-        assertThat(schedule.getAlarmTime()).isNull();
-    }
+		assertThat(schedule.getAlarmTime()).isNull();
+	}
 }

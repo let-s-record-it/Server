@@ -19,11 +19,9 @@ public class Calendar {
 	@Column(name = "calendar_id", nullable = false)
 	private Long id;
 
-	@Embedded
-	private Title title;
+	@Embedded private Title title;
 
-	@Embedded
-	private ColorHex colorHex;
+	@Embedded private ColorHex colorHex;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")

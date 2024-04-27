@@ -14,26 +14,30 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final ScheduleRepository scheduleRepository;
-    private final ScheduleGroupService scheduleGroupService;
-    private final RepetitionPatternService repetitionPatternService;
+	private final ScheduleRepository scheduleRepository;
+	private final ScheduleGroupService scheduleGroupService;
+	private final RepetitionPatternService repetitionPatternService;
 
-    public List<Schedule> addSchedules(ScheduleAddRequest request, Long memberId) {
-        ScheduleGroup scheduleGroup = scheduleGroupService.addScheduleGroup(request.isRepeated(),
-                request.calendarId(), memberId);
+	public List<Schedule> addSchedules(ScheduleAddRequest request, Long memberId) {
+		ScheduleGroup scheduleGroup =
+				scheduleGroupService.addScheduleGroup(
+						request.isRepeated(), request.calendarId(), memberId);
 
-        if (request.isRepeated()) {
-            return addRepeatingSchedule(request, scheduleGroup);
-        }
-        return List.of(scheduleRepository.save(request.toSchedule(scheduleGroup)));
-    }
+		if (request.isRepeated()) {
+			return addRepeatingSchedule(request, scheduleGroup);
+		}
+		return List.of(scheduleRepository.save(request.toSchedule(scheduleGroup)));
+	}
 
-    private List<Schedule> addRepeatingSchedule(ScheduleAddRequest request,
-            ScheduleGroup scheduleGroup) {
-        return repetitionPatternService.addRepetitionPattern(request.repetition(), scheduleGroup)
-                .repeatingStream()
-                .map(temporalAmount -> scheduleRepository.save(
-                        request.toSchedule(temporalAmount, scheduleGroup)))
-                .toList();
-    }
+	private List<Schedule> addRepeatingSchedule(
+			ScheduleAddRequest request, ScheduleGroup scheduleGroup) {
+		return repetitionPatternService
+				.addRepetitionPattern(request.repetition(), scheduleGroup)
+				.repeatingStream()
+				.map(
+						temporalAmount ->
+								scheduleRepository.save(
+										request.toSchedule(temporalAmount, scheduleGroup)))
+				.toList();
+	}
 }

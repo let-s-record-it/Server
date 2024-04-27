@@ -46,11 +46,7 @@ public class Member extends BaseTime {
 
 	@Builder
 	public Member(
-			Auth auth,
-			String name,
-			String job,
-			Boolean deleted,
-			List<MemberRole> memberRole) {
+			Auth auth, String name, String job, Boolean deleted, List<MemberRole> memberRole) {
 		this.auth = auth;
 		this.name = name;
 		this.job = job;

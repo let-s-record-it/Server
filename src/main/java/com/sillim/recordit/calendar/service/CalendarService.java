@@ -11,10 +11,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CalendarService {
 
-    private final CalendarRepository calendarRepository;
+	private final CalendarRepository calendarRepository;
 
-    public Calendar findByCalendarId(Long calendarId) {
-        return calendarRepository.findById(calendarId)
-                .orElseThrow(() -> new RecordNotFoundException(ErrorCode.CALENDAR_NOT_FOUND));
-    }
+	public Calendar findByCalendarId(Long calendarId) {
+		return calendarRepository
+				.findById(calendarId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.CALENDAR_NOT_FOUND));
+	}
 }

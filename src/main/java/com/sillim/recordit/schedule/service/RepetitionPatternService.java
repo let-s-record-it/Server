@@ -11,15 +11,21 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RepetitionPatternService {
 
-    private final RepetitionPatternRepository repetitionPatternRepository;
+	private final RepetitionPatternRepository repetitionPatternRepository;
 
-    public RepetitionPattern addRepetitionPattern(RepetitionAddRequest request,
-            ScheduleGroup scheduleGroup) {
-        return repetitionPatternRepository.save(
-                RepetitionPattern.create(request.repetitionType(), request.repetitionPeriod(),
-                        request.repetitionStartDate(), request.repetitionEndDate(), request.monthOfYear(),
-                        request.dayOfMonth(), request.weekNumber(), request.weekday(),
-                        request.weekdayBit(),
-                        scheduleGroup));
-    }
+	public RepetitionPattern addRepetitionPattern(
+			RepetitionAddRequest request, ScheduleGroup scheduleGroup) {
+		return repetitionPatternRepository.save(
+				RepetitionPattern.create(
+						request.repetitionType(),
+						request.repetitionPeriod(),
+						request.repetitionStartDate(),
+						request.repetitionEndDate(),
+						request.monthOfYear(),
+						request.dayOfMonth(),
+						request.weekNumber(),
+						request.weekday(),
+						request.weekdayBit(),
+						scheduleGroup));
+	}
 }

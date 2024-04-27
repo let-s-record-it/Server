@@ -42,7 +42,8 @@ public class DayOfMonth {
 			throw new InvalidDayOfMonthException(ErrorCode.INVALID_DAY_OF_MONTH);
 		}
 
-		if ((monthOfYear == 4 || monthOfYear == 6 || monthOfYear == 9 || monthOfYear == 11) && dayOfMonth > 30) {
+		if ((monthOfYear == 4 || monthOfYear == 6 || monthOfYear == 9 || monthOfYear == 11)
+				&& dayOfMonth > 30) {
 			throw new InvalidDayOfMonthException(ErrorCode.INVALID_DAY_OF_MONTH);
 		}
 	}

@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ScheduleController {
 
-    private final ScheduleService scheduleService;
+	private final ScheduleService scheduleService;
 
-    @PostMapping
-    public ResponseEntity<List<Schedule>> addSchedules(
-            @Validated @RequestBody ScheduleAddRequest request, @AuthenticationPrincipal
-    AuthorizedUser authorizedUser) {
-        return ResponseEntity.ok(
-                scheduleService.addSchedules(request, authorizedUser.getMemberId()));
-    }
+	@PostMapping
+	public ResponseEntity<List<Schedule>> addSchedules(
+			@Validated @RequestBody ScheduleAddRequest request,
+			@AuthenticationPrincipal AuthorizedUser authorizedUser) {
+		return ResponseEntity.ok(
+				scheduleService.addSchedules(request, authorizedUser.getMemberId()));
+	}
 }

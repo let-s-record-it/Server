@@ -14,24 +14,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WeekdayBit {
 
-    private static final int WEEKDAY_BIT_MIN = 0;
-    private static final int WEEKDAY_BIT_MAX = 127;
+	private static final int WEEKDAY_BIT_MIN = 0;
+	private static final int WEEKDAY_BIT_MAX = 127;
 
-    @Column
-    private Integer weekdayBit;
+	@Column private Integer weekdayBit;
 
-    public WeekdayBit(Integer weekdayBit) {
-        validate(weekdayBit);
-        this.weekdayBit = weekdayBit;
-    }
+	public WeekdayBit(Integer weekdayBit) {
+		validate(weekdayBit);
+		this.weekdayBit = weekdayBit;
+	}
 
-    private void validate(Integer weekdayBit) {
-        if (weekdayBit < WEEKDAY_BIT_MIN || weekdayBit > WEEKDAY_BIT_MAX) {
-            throw new InvalidWeekdayBitException(ErrorCode.WEEKDAY_BIT_OUT_OF_RANGE);
-        }
-    }
+	private void validate(Integer weekdayBit) {
+		if (weekdayBit < WEEKDAY_BIT_MIN || weekdayBit > WEEKDAY_BIT_MAX) {
+			throw new InvalidWeekdayBitException(ErrorCode.WEEKDAY_BIT_OUT_OF_RANGE);
+		}
+	}
 
-    public boolean isValidWeekday(DayOfWeek dayOfWeek) {
-        return (weekdayBit & (1 << (dayOfWeek.getValue() - 1))) > 0;
-    }
+	public boolean isValidWeekday(DayOfWeek dayOfWeek) {
+		return (weekdayBit & (1 << (dayOfWeek.getValue() - 1))) > 0;
+	}
 }
