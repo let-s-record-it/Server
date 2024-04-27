@@ -1,4 +1,4 @@
-package com.sillim.recordit.schedule.domain.vo;
+package com.sillim.recordit.calendar.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidColorHexException;

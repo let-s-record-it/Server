@@ -4,6 +4,7 @@ import com.sillim.recordit.schedule.domain.vo.*;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,9 +29,19 @@ public class Schedule {
 	@Column(nullable = false)
 	private String place;
 
+	@Column(nullable = false)
+	private Boolean setLocation;
+
 	@Embedded private Location location;
 
+	@Column(nullable = false)
+	private Boolean setAlarm;
+
 	@Embedded private AlarmTime alarmTime;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "schedule_group_id")
+	private ScheduleGroup scheduleGroup;
 
 	public Schedule(
 			Title title,
@@ -38,17 +49,24 @@ public class Schedule {
 			ScheduleDuration scheduleDuration,
 			ColorHex colorHex,
 			String place,
+			Boolean setLocation,
 			Location location,
-			AlarmTime alarmTime) {
+			Boolean setAlarm,
+			AlarmTime alarmTime,
+			ScheduleGroup scheduleGroup) {
 		this.title = title;
 		this.description = description;
 		this.scheduleDuration = scheduleDuration;
 		this.colorHex = colorHex;
 		this.place = place;
+		this.setLocation = setLocation;
 		this.location = location;
+		this.setAlarm = setAlarm;
 		this.alarmTime = alarmTime;
+		this.scheduleGroup = scheduleGroup;
 	}
 
+	@Builder
 	public Schedule(
 			String title,
 			String description,
@@ -61,14 +79,18 @@ public class Schedule {
 			Double latitude,
 			Double longitude,
 			Boolean setAlarm,
-			LocalDateTime alarmTime) {
+			LocalDateTime alarmTime,
+			ScheduleGroup scheduleGroup) {
 		this(
 				new Title(title),
 				new Description(description),
 				ScheduleDuration.create(isAllDay, startDatetime, endDatetime),
 				new ColorHex(colorHex),
 				place,
-				Location.create(setLocation, latitude, longitude),
-				AlarmTime.create(setAlarm, alarmTime));
+				setLocation,
+				setLocation ? Location.create(latitude, longitude) : null,
+				setAlarm,
+				setAlarm ? AlarmTime.create(alarmTime) : null,
+				scheduleGroup);
 	}
 }

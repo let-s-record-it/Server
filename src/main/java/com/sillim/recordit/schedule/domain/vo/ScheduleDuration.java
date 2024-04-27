@@ -1,7 +1,7 @@
 package com.sillim.recordit.schedule.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.schedule.InvalidSchedulePeriodException;
+import com.sillim.recordit.global.exception.schedule.InvalidScheduleDurationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.time.LocalDateTime;
@@ -57,8 +57,7 @@ public class ScheduleDuration {
 
 	private void validate(LocalDateTime startDatetime, LocalDateTime endDatetime) {
 		if (startDatetime.isAfter(endDatetime)) {
-			throw new InvalidSchedulePeriodException(
-					ErrorCode.INVALID_SCHEDULE_PERIOD, "시작시간은 종료시간보다 클 수 없습니다.");
+			throw new InvalidScheduleDurationException(ErrorCode.INVALID_DURATION);
 		}
 	}
 }

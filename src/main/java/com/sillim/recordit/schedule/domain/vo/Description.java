@@ -16,7 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Description {
 
-	@Column(nullable = false)
+	private static final int DESCRIPTION_MAX_LENGTH = 500;
+
+	@Column(nullable = false, length = DESCRIPTION_MAX_LENGTH)
 	private String description;
 
 	public Description(String description) {
@@ -26,13 +28,11 @@ public class Description {
 
 	private void validate(String description) {
 		if (Objects.isNull(description)) {
-			throw new InvalidDescriptionException(
-					ErrorCode.INVALID_DESCRIPTION, "설명은 null일 수 없습니다.");
+			throw new InvalidDescriptionException(ErrorCode.NULL_SCHEDULE_DESCRIPTION);
 		}
 
-		if (description.length() > 500) {
-			throw new InvalidDescriptionException(
-					ErrorCode.INVALID_DESCRIPTION, "설명의 길이는 500자를 넘을 수 없습니다.");
+		if (description.length() > DESCRIPTION_MAX_LENGTH) {
+			throw new InvalidDescriptionException(ErrorCode.INVALID_SCHEDULE_DESCRIPTION_LENGTH);
 		}
 	}
 }

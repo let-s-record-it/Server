@@ -21,38 +21,28 @@ public class Location {
 	private static final int LATITUDE_MAX = 90;
 	private static final int LONGITUDE_MAX = 180;
 
-	@Column(nullable = false)
-	private Boolean setLocation;
 
 	@Column private BigDecimal latitude;
 
 	@Column private BigDecimal longitude;
 
-	private Location(Boolean setLocation, BigDecimal latitude, BigDecimal longitude) {
-		this.setLocation = setLocation;
+	private Location(BigDecimal latitude, BigDecimal longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
 
-	public static Location noLocation() {
-		return new Location(false, null, null);
-	}
-
-	public static Location create(Boolean setLocation, double latitude, double longitude) {
-		if (!setLocation) {
-			return noLocation();
-		}
+	public static Location create(double latitude, double longitude) {
 		validate(latitude, longitude);
-		return new Location(true, BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude));
+		return new Location(BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude));
 	}
 
 	private static void validate(double latitude, double longitude) {
 		if (latitude < LATITUDE_MIN || latitude > LATITUDE_MAX) {
-			throw new InvalidLocationException(ErrorCode.INVALID_LATITUDE);
+			throw new InvalidLocationException(ErrorCode.LATITUDE_OUT_OF_RANGE);
 		}
 
 		if (longitude < LONGITUDE_MIN || longitude > LONGITUDE_MAX) {
-			throw new InvalidLocationException(ErrorCode.INVALID_LONGITUDE);
+			throw new InvalidLocationException(ErrorCode.LONGITUDE_OUT_OF_RANGE);
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package com.sillim.recordit.calendar.domain;
 
+import com.sillim.recordit.calendar.domain.vo.ColorHex;
+import com.sillim.recordit.calendar.domain.vo.Title;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -17,11 +19,11 @@ public class Calendar {
 	@Column(name = "calendar_id", nullable = false)
 	private Long id;
 
-	@Column(nullable = false)
-	private String title;
+	@Embedded
+	private Title title;
 
-	@Column(nullable = false)
-	private String colorHex;
+	@Embedded
+	private ColorHex colorHex;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
@@ -29,8 +31,8 @@ public class Calendar {
 
 	@Builder
 	public Calendar(String title, String colorHex, Member member) {
-		this.title = title;
-		this.colorHex = colorHex;
+		this.title = new Title(title);
+		this.colorHex = new ColorHex(colorHex);
 		this.member = member;
 	}
 }

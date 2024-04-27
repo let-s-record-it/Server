@@ -1,4 +1,4 @@
-package com.sillim.recordit.schedule.domain.vo;
+package com.sillim.recordit.calendar.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidTitleException;
@@ -28,15 +28,15 @@ public class Title {
 
 	private void validate(String title) {
 		if (Objects.isNull(title)) {
-			throw new InvalidTitleException(ErrorCode.NULL_SCHEDULE_TITLE);
+			throw new InvalidTitleException(ErrorCode.NULL_CALENDAR_TITLE);
 		}
 
 		if (title.isBlank()) {
-			throw new InvalidTitleException(ErrorCode.BLANK_SCHEDULE_TITLE);
+			throw new InvalidTitleException(ErrorCode.BLANK_CALENDAR_TITLE);
 		}
 
 		if (title.length() > TITLE_LENGTH_MAX) {
-			throw new InvalidTitleException(ErrorCode.INVALID_SCHEDULE_TITLE_LENGTH);
+			throw new InvalidTitleException(ErrorCode.INVALID_CALENDAR_TITLE_LENGTH);
 		}
 	}
 }

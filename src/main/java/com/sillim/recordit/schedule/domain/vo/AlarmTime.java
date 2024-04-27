@@ -14,24 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AlarmTime {
 
-	@Column(nullable = false)
-	private Boolean setAlarm;
-
 	@Column private LocalDateTime alarmTime;
 
-	private AlarmTime(Boolean setAlarm, LocalDateTime alarmTime) {
-		this.setAlarm = setAlarm;
+	private AlarmTime(LocalDateTime alarmTime) {
 		this.alarmTime = alarmTime;
 	}
 
-	public static AlarmTime noAlarmTime() {
-		return new AlarmTime(false, null);
-	}
-
-	public static AlarmTime create(Boolean setAlarm, LocalDateTime alarmTime) {
-		if (!setAlarm) {
-			return noAlarmTime();
-		}
-		return new AlarmTime(true, alarmTime);
+	public static AlarmTime create(LocalDateTime alarmTime) {
+		return new AlarmTime(alarmTime);
 	}
 }
