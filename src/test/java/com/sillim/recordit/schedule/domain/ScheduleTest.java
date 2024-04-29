@@ -62,8 +62,7 @@ class ScheduleTest {
 					assertThat(schedule.getPlace()).isEqualTo(fixture.getPlace());
 					assertThat(schedule.getSetLocation()).isEqualTo(fixture.getSetLocation());
 					assertThat(schedule.getLocation())
-							.isEqualTo(
-									Location.create(fixture.getLatitude(), fixture.getLongitude()));
+							.isEqualTo(new Location(fixture.getLatitude(), fixture.getLongitude()));
 					assertThat(schedule.getSetAlarm()).isEqualTo(fixture.getSetAlarm());
 					assertThat(schedule.getAlarmTime())
 							.isEqualTo(AlarmTime.create(fixture.getAlarmTime()));
