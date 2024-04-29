@@ -18,7 +18,7 @@ public record ScheduleAddRequest(
 		@NotNull LocalDateTime endDatetime,
 		@NotNull Boolean isRepeated,
 		@Validated RepetitionAddRequest repetition,
-		@Pattern(regexp = "#[0-9a-fA-F]{8}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}") String colorHex,
+		@Pattern(regexp = "[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3}") String colorHex,
 		@NotNull String place,
 		@NotNull Boolean setLocation,
 		@ValidLongitude Double latitude,

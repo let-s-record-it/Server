@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.MemberRole;
@@ -46,7 +47,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						.deleted(false)
 						.memberRole(List.of(MemberRole.ROLE_USER))
 						.build();
-		calendar = Calendar.builder().title("calendar1").colorHex("#aabbff").member(member).build();
+		calendar = CalendarFixture.DEFAULT.getCalendar(member);
 	}
 
 	@Test
@@ -63,7 +64,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						LocalDateTime.of(2024, 2, 1, 0, 0),
 						false,
 						null,
-						"#aaffbb",
+						"aaffbb",
 						"서울역",
 						true,
 						36.0,
@@ -80,7 +81,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						.isAllDay(false)
 						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
-						.colorHex("#aaffbb")
+						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
 						.latitude(36.0)

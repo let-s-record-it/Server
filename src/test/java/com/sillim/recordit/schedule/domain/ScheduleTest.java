@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.MemberRole;
@@ -36,7 +37,7 @@ class ScheduleTest {
 						.deleted(false)
 						.memberRole(List.of(MemberRole.ROLE_USER))
 						.build();
-		calendar = Calendar.builder().title("title").colorHex("#aabbff").member(member).build();
+		calendar = CalendarFixture.DEFAULT.getCalendar(member);
 		scheduleGroup =
 				ScheduleGroup.builder().isRepeated(false).member(member).calendar(calendar).build();
 	}
