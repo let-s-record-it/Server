@@ -6,7 +6,6 @@ public enum WeekNumber {
 	THIRD(3),
 	FOURTH(4),
 	FIFTH(5),
-	LAST(-1),
 	;
 	private final Integer value;
 
