@@ -4,7 +4,6 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidColorHexException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-
 import java.util.Objects;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
