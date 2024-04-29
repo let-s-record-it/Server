@@ -14,9 +14,9 @@ import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.RepetitionType;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
-import com.sillim.recordit.schedule.domain.vo.Description;
+import com.sillim.recordit.schedule.domain.vo.ScheduleDescription;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
-import com.sillim.recordit.schedule.domain.vo.Title;
+import com.sillim.recordit.schedule.domain.vo.ScheduleTitle;
 import com.sillim.recordit.schedule.dto.RepetitionAddRequest;
 import com.sillim.recordit.schedule.dto.ScheduleAddRequest;
 import com.sillim.recordit.schedule.repository.ScheduleRepository;
@@ -103,9 +103,9 @@ class ScheduleServiceTest {
 		assertAll(
 				() -> {
 					assertThat(schedules).hasSize(1);
-					assertThat(schedules.get(0).getTitle()).isEqualTo(new Title("title"));
+					assertThat(schedules.get(0).getTitle()).isEqualTo(new ScheduleTitle("title"));
 					assertThat(schedules.get(0).getDescription())
-							.isEqualTo(new Description("description"));
+							.isEqualTo(new ScheduleDescription("description"));
 					assertThat(schedules.get(0).getScheduleDuration())
 							.isEqualTo(
 									ScheduleDuration.createNotAllDay(
@@ -181,9 +181,9 @@ class ScheduleServiceTest {
 		assertAll(
 				() -> {
 					assertThat(schedules).hasSize(32);
-					assertThat(schedules.get(0).getTitle()).isEqualTo(new Title("title"));
+					assertThat(schedules.get(0).getTitle()).isEqualTo(new ScheduleTitle("title"));
 					assertThat(schedules.get(0).getDescription())
-							.isEqualTo(new Description("description"));
+							.isEqualTo(new ScheduleDescription("description"));
 					assertThat(schedules.get(0).getScheduleDuration())
 							.isEqualTo(
 									ScheduleDuration.createNotAllDay(

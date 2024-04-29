@@ -24,7 +24,7 @@ public class Location {
 
 	@Column private double longitude;
 
-	private Location(double latitude, double longitude) {
+	public Location(double latitude, double longitude) {
 		validate(latitude, longitude);
 		this.latitude = latitude;
 		this.longitude = longitude;

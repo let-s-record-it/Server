@@ -1,4 +1,4 @@
-package com.sillim.recordit.calendar.domain.vo;
+package com.sillim.recordit.schedule.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidTitleException;
@@ -14,29 +14,29 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Title {
+public class ScheduleTitle {
 
 	private static final int TITLE_LENGTH_MAX = 30;
 
 	@Column(nullable = false, length = TITLE_LENGTH_MAX)
 	private String title;
 
-	public Title(String title) {
+	public ScheduleTitle(String title) {
 		validate(title);
 		this.title = title;
 	}
 
 	private void validate(String title) {
 		if (Objects.isNull(title)) {
-			throw new InvalidTitleException(ErrorCode.NULL_CALENDAR_TITLE);
+			throw new InvalidTitleException(ErrorCode.NULL_SCHEDULE_TITLE);
 		}
 
 		if (title.isBlank()) {
-			throw new InvalidTitleException(ErrorCode.BLANK_CALENDAR_TITLE);
+			throw new InvalidTitleException(ErrorCode.BLANK_SCHEDULE_TITLE);
 		}
 
 		if (title.length() > TITLE_LENGTH_MAX) {
-			throw new InvalidTitleException(ErrorCode.INVALID_CALENDAR_TITLE_LENGTH);
+			throw new InvalidTitleException(ErrorCode.INVALID_SCHEDULE_TITLE_LENGTH);
 		}
 	}
 }

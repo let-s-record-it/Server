@@ -9,24 +9,24 @@ import com.sillim.recordit.global.exception.schedule.InvalidDescriptionException
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class DescriptionTest {
+class ScheduleDescriptionTest {
 
 	@Test
 	@DisplayName("500자 이하인 설명을 생성할 수 있다.")
 	void validIfDescriptionLengthIs500OrUnder() {
-		Description description = new Description("123");
+		ScheduleDescription scheduleDescription = new ScheduleDescription("123");
 
 		assertAll(
 				() -> {
-					assertThat(description).isEqualTo(new Description("123"));
-					assertThat(description.getDescription()).isEqualTo("123");
+					assertThat(scheduleDescription).isEqualTo(new ScheduleDescription("123"));
+					assertThat(scheduleDescription.getDescription()).isEqualTo("123");
 				});
 	}
 
 	@Test
 	@DisplayName("설명이 null이면 InvalidDescriptionException이 발생한다.")
 	void throwInvalidDescriptionExceptionIfDescriptionIsNull() {
-		assertThatCode(() -> new Description(null))
+		assertThatCode(() -> new ScheduleDescription(null))
 				.isInstanceOf(InvalidDescriptionException.class)
 				.hasMessage(ErrorCode.NULL_SCHEDULE_DESCRIPTION.getDescription());
 	}
@@ -34,7 +34,7 @@ class DescriptionTest {
 	@Test
 	@DisplayName("설명이 500자 초과이면 InvalidDescriptionException이 발생한다.")
 	void throwInvalidDescriptionExceptionIfDescriptionLengthIs500Over() {
-		assertThatCode(() -> new Description("1234567890".repeat(51)))
+		assertThatCode(() -> new ScheduleDescription("1234567890".repeat(51)))
 				.isInstanceOf(InvalidDescriptionException.class)
 				.hasMessage(ErrorCode.INVALID_SCHEDULE_DESCRIPTION_LENGTH.getDescription());
 	}

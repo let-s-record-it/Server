@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ColorHex {
+public class ScheduleColorHex {
 
 	private static final String COLOR_HEX_REGEX = "#[0-9a-fA-F]{8}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}";
 
 	@Column(nullable = false)
 	private String colorHex;
 
-	public ColorHex(final String colorHex) {
+	public ScheduleColorHex(final String colorHex) {
 		validate(colorHex);
 		this.colorHex = colorHex;
 	}

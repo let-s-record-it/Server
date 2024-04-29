@@ -9,23 +9,23 @@ import com.sillim.recordit.global.exception.schedule.InvalidColorHexException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class ColorHexTest {
+class CalendarScheduleColorHexTest {
 
 	@Test
 	@DisplayName("color hex 값에 맞는 ColorHex를 생성할 수 있다.")
 	void validIfFitColorHex() {
-		ColorHex colorHex1 = new ColorHex("#112233");
-		ColorHex colorHex2 = new ColorHex("#ffda12fb");
-		ColorHex colorHex3 = new ColorHex("#fab");
+		CalendarColorHex calendarColorHex1 = new CalendarColorHex("#112233");
+		CalendarColorHex calendarColorHex2 = new CalendarColorHex("#ffda12fb");
+		CalendarColorHex calendarColorHex3 = new CalendarColorHex("#fab");
 
 		assertAll(
 				() -> {
-					assertThat(colorHex1).isEqualTo(new ColorHex("#112233"));
-					assertThat(colorHex2).isEqualTo(new ColorHex("#ffda12fb"));
-					assertThat(colorHex3).isEqualTo(new ColorHex("#fab"));
-					assertThat(colorHex1.getColorHex()).isEqualTo("#112233");
-					assertThat(colorHex2.getColorHex()).isEqualTo("#ffda12fb");
-					assertThat(colorHex3.getColorHex()).isEqualTo("#fab");
+					assertThat(calendarColorHex1).isEqualTo(new CalendarColorHex("#112233"));
+					assertThat(calendarColorHex2).isEqualTo(new CalendarColorHex("#ffda12fb"));
+					assertThat(calendarColorHex3).isEqualTo(new CalendarColorHex("#fab"));
+					assertThat(calendarColorHex1.getColorHex()).isEqualTo("#112233");
+					assertThat(calendarColorHex2.getColorHex()).isEqualTo("#ffda12fb");
+					assertThat(calendarColorHex3.getColorHex()).isEqualTo("#fab");
 				});
 	}
 
@@ -34,19 +34,19 @@ class ColorHexTest {
 	void throwInvalidColorHexExceptionIfNotFitColorHex() {
 		assertAll(
 				() -> {
-					assertThatCode(() -> new ColorHex("11233"))
+					assertThatCode(() -> new CalendarColorHex("11233"))
 							.isInstanceOf(InvalidColorHexException.class)
 							.hasMessage(ErrorCode.INVALID_CALENDAR_COLOR_HEX.getDescription());
-					assertThatCode(() -> new ColorHex("#ggg"))
+					assertThatCode(() -> new CalendarColorHex("#ggg"))
 							.isInstanceOf(InvalidColorHexException.class)
 							.hasMessage(ErrorCode.INVALID_CALENDAR_COLOR_HEX.getDescription());
-					assertThatCode(() -> new ColorHex("#11233"))
+					assertThatCode(() -> new CalendarColorHex("#11233"))
 							.isInstanceOf(InvalidColorHexException.class)
 							.hasMessage(ErrorCode.INVALID_CALENDAR_COLOR_HEX.getDescription());
-					assertThatCode(() -> new ColorHex("#ffda12f"))
+					assertThatCode(() -> new CalendarColorHex("#ffda12f"))
 							.isInstanceOf(InvalidColorHexException.class)
 							.hasMessage(ErrorCode.INVALID_CALENDAR_COLOR_HEX.getDescription());
-					assertThatCode(() -> new ColorHex("#fb"))
+					assertThatCode(() -> new CalendarColorHex("#fb"))
 							.isInstanceOf(InvalidColorHexException.class)
 							.hasMessage(ErrorCode.INVALID_CALENDAR_COLOR_HEX.getDescription());
 				});

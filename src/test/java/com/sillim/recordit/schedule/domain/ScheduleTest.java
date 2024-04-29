@@ -9,11 +9,11 @@ import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.MemberRole;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.schedule.domain.vo.AlarmTime;
-import com.sillim.recordit.schedule.domain.vo.ColorHex;
-import com.sillim.recordit.schedule.domain.vo.Description;
 import com.sillim.recordit.schedule.domain.vo.Location;
+import com.sillim.recordit.schedule.domain.vo.ScheduleColorHex;
+import com.sillim.recordit.schedule.domain.vo.ScheduleDescription;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
-import com.sillim.recordit.schedule.domain.vo.Title;
+import com.sillim.recordit.schedule.domain.vo.ScheduleTitle;
 import com.sillim.recordit.schedule.fixture.ScheduleFixture;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,15 +49,16 @@ class ScheduleTest {
 
 		assertAll(
 				() -> {
-					assertThat(schedule.getTitle()).isEqualTo(new Title(fixture.getTitle()));
+					assertThat(schedule.getTitle())
+							.isEqualTo(new ScheduleTitle(fixture.getTitle()));
 					assertThat(schedule.getDescription())
-							.isEqualTo(new Description(fixture.getDescription()));
+							.isEqualTo(new ScheduleDescription(fixture.getDescription()));
 					assertThat(schedule.getScheduleDuration())
 							.isEqualTo(
 									ScheduleDuration.createNotAllDay(
 											fixture.getStartDatetime(), fixture.getEndDatetime()));
 					assertThat(schedule.getColorHex())
-							.isEqualTo(new ColorHex(fixture.getColorHex()));
+							.isEqualTo(new ScheduleColorHex(fixture.getColorHex()));
 					assertThat(schedule.getPlace()).isEqualTo(fixture.getPlace());
 					assertThat(schedule.getSetLocation()).isEqualTo(fixture.getSetLocation());
 					assertThat(schedule.getLocation())

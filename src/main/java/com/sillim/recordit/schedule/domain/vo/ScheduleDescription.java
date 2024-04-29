@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Description {
+public class ScheduleDescription {
 
 	private static final int DESCRIPTION_MAX_LENGTH = 500;
 
 	@Column(nullable = false, length = DESCRIPTION_MAX_LENGTH)
 	private String description;
 
-	public Description(String description) {
+	public ScheduleDescription(String description) {
 		validate(description);
 		this.description = description;
 	}

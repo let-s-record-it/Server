@@ -18,13 +18,13 @@ public class Schedule {
 	@Column(name = "schedule_id", nullable = false)
 	private Long id;
 
-	@Embedded private Title title;
+	@Embedded private ScheduleTitle title;
 
-	@Embedded private Description description;
+	@Embedded private ScheduleDescription description;
 
 	@Embedded private ScheduleDuration scheduleDuration;
 
-	@Embedded private ColorHex colorHex;
+	@Embedded private ScheduleColorHex colorHex;
 
 	@Column(nullable = false)
 	private String place;
@@ -44,10 +44,10 @@ public class Schedule {
 	private ScheduleGroup scheduleGroup;
 
 	public Schedule(
-			Title title,
-			Description description,
+			ScheduleTitle title,
+			ScheduleDescription description,
 			ScheduleDuration scheduleDuration,
-			ColorHex colorHex,
+			ScheduleColorHex colorHex,
 			String place,
 			Boolean setLocation,
 			Location location,
@@ -82,13 +82,13 @@ public class Schedule {
 			LocalDateTime alarmTime,
 			ScheduleGroup scheduleGroup) {
 		this(
-				new Title(title),
-				new Description(description),
+				new ScheduleTitle(title),
+				new ScheduleDescription(description),
 				ScheduleDuration.create(isAllDay, startDatetime, endDatetime),
-				new ColorHex(colorHex),
+				new ScheduleColorHex(colorHex),
 				place,
 				setLocation,
-				setLocation ? Location.create(latitude, longitude) : null,
+				setLocation ? new Location(latitude, longitude) : null,
 				setAlarm,
 				setAlarm ? AlarmTime.create(alarmTime) : null,
 				scheduleGroup);

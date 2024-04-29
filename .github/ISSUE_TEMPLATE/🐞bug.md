@@ -1,7 +1,7 @@
 ---
 name: "\U0001F41EBUG"
 about: BUG 발생 시 작성해주세요.
-title: "[Bug]"
+calendarTitle: "[Bug]"
 labels: bug
 assignees: ''
 
