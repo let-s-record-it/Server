@@ -4,7 +4,6 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidLocationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,18 +20,14 @@ public class Location {
 	private static final int LATITUDE_MAX = 90;
 	private static final int LONGITUDE_MAX = 180;
 
-	@Column private BigDecimal latitude;
+	@Column private double latitude;
 
-	@Column private BigDecimal longitude;
+	@Column private double longitude;
 
-	private Location(BigDecimal latitude, BigDecimal longitude) {
+	private Location(double latitude, double longitude) {
+		validate(latitude, longitude);
 		this.latitude = latitude;
 		this.longitude = longitude;
-	}
-
-	public static Location create(double latitude, double longitude) {
-		validate(latitude, longitude);
-		return new Location(BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude));
 	}
 
 	private static void validate(double latitude, double longitude) {
