@@ -47,14 +47,6 @@ public class ScheduleDuration {
 		return new ScheduleDuration(false, startDatetime, endDatetime);
 	}
 
-	public static ScheduleDuration create(
-			Boolean isAllDay, LocalDateTime startDatetime, LocalDateTime endDatetime) {
-		if (isAllDay) {
-			return createAllDay(startDatetime, endDatetime);
-		}
-		return createNotAllDay(startDatetime, endDatetime);
-	}
-
 	private void validate(LocalDateTime startDatetime, LocalDateTime endDatetime) {
 		if (startDatetime.isAfter(endDatetime)) {
 			throw new InvalidScheduleDurationException(ErrorCode.INVALID_DURATION);

@@ -17,22 +17,16 @@ class ScheduleDurationTest {
 	void validScheduleDurationIfStartDateIsBeforeEndDate() {
 		LocalDateTime start = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime end = LocalDateTime.of(2024, 1, 2, 0, 0);
-		ScheduleDuration scheduleDuration1 = ScheduleDuration.createNotAllDay(start, end);
-		ScheduleDuration scheduleDuration2 = ScheduleDuration.create(false, start, end);
-		ScheduleDuration allDayScheduleDuration1 = ScheduleDuration.createAllDay(start, end);
-		ScheduleDuration allDayScheduleDuration2 = ScheduleDuration.create(true, start, end);
+		ScheduleDuration scheduleDuration = ScheduleDuration.createNotAllDay(start, end);
+		ScheduleDuration allDayScheduleDuration = ScheduleDuration.createAllDay(start, end);
 
 		assertAll(
 				() -> {
-					assertThat(scheduleDuration1)
+					assertThat(scheduleDuration)
 							.isEqualTo(ScheduleDuration.createNotAllDay(start, end));
-					assertThat(scheduleDuration2)
-							.isEqualTo(ScheduleDuration.createNotAllDay(start, end));
-					assertThat(allDayScheduleDuration1)
+					assertThat(allDayScheduleDuration)
 							.isEqualTo(ScheduleDuration.createAllDay(start, end));
-					assertThat(allDayScheduleDuration2)
-							.isEqualTo(ScheduleDuration.createAllDay(start, end));
-					assertThat(allDayScheduleDuration1)
+					assertThat(allDayScheduleDuration)
 							.isNotEqualTo(ScheduleDuration.createNotAllDay(start, end));
 				});
 	}

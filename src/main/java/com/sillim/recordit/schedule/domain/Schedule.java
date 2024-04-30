@@ -84,7 +84,9 @@ public class Schedule {
 		this(
 				new ScheduleTitle(title),
 				new ScheduleDescription(description),
-				ScheduleDuration.create(isAllDay, startDatetime, endDatetime),
+				isAllDay
+						? ScheduleDuration.createAllDay(startDatetime, endDatetime)
+						: ScheduleDuration.createNotAllDay(startDatetime, endDatetime),
 				new ScheduleColorHex(colorHex),
 				place,
 				setLocation,
