@@ -20,11 +20,38 @@ public enum ErrorCode {
 	JWT_UNSUPPORTED("ERR_JWT_003", "지원되지 않는 JWT 형식입니다."),
 	JWT_INVALID_SIGNATURE("ERR_JWT_004", "JWT의 Signature가 유효하지 않습니다."),
 
-	MEMBER_NOT_FOUND("MEMBER_001", "요청한 멤버를 찾을 수 없습니다."),
+	MEMBER_NOT_FOUND("ERR_MEMBER_001", "요청한 멤버를 찾을 수 없습니다."),
 
 	INVALID_KAKAO_TOKEN("ERR_KAKAO_001", "유효하지 않은 Kakao Access Token입니다."),
-	// monthly-goal
-	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다.");
+
+	NULL_SCHEDULE_TITLE("ERR_SCHEDULE_001", "일정 제목은 null일 수 없습니다."),
+	BLANK_SCHEDULE_TITLE("ERR_SCHEDULE_002", "일정 제목은 빈 값일 수 없습니다."),
+	INVALID_SCHEDULE_TITLE_LENGTH("ERR_SCHEDULE_003", "일정 제목의 길이는 30자를 넘을 수 없습니다."),
+	NULL_SCHEDULE_DESCRIPTION("ERR_SCHEDULE_004", "일정 설명은 null일 수 없습니다."),
+	INVALID_SCHEDULE_DESCRIPTION_LENGTH("ERR_SCHEDULE_005", "설명의 길이는 500자를 넘을 수 없습니다."),
+	NULL_SCHEDULE_COLOR_HEX("ERR_SCHEDULE_006", "일정 색상 값은 null일 수 없습니다."),
+	INVALID_SCHEDULE_COLOR_HEX("ERR_SCHEDULE_007", "유효하지 않은 일정 색상 값입니다."),
+	LATITUDE_OUT_OF_RANGE("ERR_SCHEDULE_008", "위도 값은 0 이상 90 이하여야 합니다."),
+	LONGITUDE_OUT_OF_RANGE("ERR_SCHEDULE_009", "경도 값은 0 이상 180 이하여야 합니다."),
+	INVALID_DURATION("ERR_SCHEDULE_010", "일정 시작 시간은 종료 시간보다 클 수 없습니다."),
+	INVALID_REPETITION_PERIOD("ERR_SCHEDULE_011", "일정 반복 주기는 1 이상 999 이하여야 합니다."),
+	INVALID_MONTH_OF_YEAR("ERR_SCHEDULE_012", "월은 1 이상 12 이하여야 입니다."),
+	INVALID_DAY_OF_MONTH("ERR_SCHEDULE_013", "유효하지 않은 일입니다."),
+	INVALID_REPETITION_TYPE("ERR_SCHEDULE_014", "유효하지 않은 반복 타입입니다."),
+	WEEKDAY_BIT_OUT_OF_RANGE("ERR_SCHEDULE_015", "요일 비트는 1 이상 127 이하여야 합니다."),
+	NOT_EQUAL_DAY_OF_MONTH("ERR_SCHEDULE_016", "dayOfMonth와 startDate의 월이 일치하지 않습니다."),
+	NOT_EQUAL_MONTH_OF_YEAR("ERR_SCHEDULE_017", "monthOfYear과 startDate의 년이 일치하지 않습니다."),
+
+	NULL_CALENDAR_TITLE("ERR_CALENDAR_001", "캘린더 제목은 null일 수 없습니다."),
+	BLANK_CALENDAR_TITLE("ERR_CALENDAR_002", "캘린더 제목은 빈 값일 수 없습니다."),
+	INVALID_CALENDAR_TITLE_LENGTH("ERR_CALENDAR_003", "캘린더 제목의 길이는 30자를 넘을 수 없습니다."),
+	INVALID_CALENDAR_COLOR_HEX("ERR_CALENDAR_004", "유효하지 않은 캘린더 색상 값입니다."),
+	NULL_CALENDAR_COLOR_HEX("ERR_CALENDAR_005", "캘린더 색상 값은 null일 수 없습니다."),
+  CALENDAR_NOT_FOUND("ERR_CALENDAR_006", "요청한 캘린더를 찾을 수 없습니다."),
+  
+  // monthly-goal
+	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다.")
+	;
 
 	private final String code;
 	private final String description;
