@@ -1,28 +1,39 @@
 package com.sillim.recordit.goal.fixture;
 
-import com.sillim.recordit.goal.domain.Member;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
+import com.sillim.recordit.member.domain.Member;
+import java.time.LocalDate;
 
 public enum MonthlyGoalFixture {
-	DEFAULT("취뽀하기!", "취업할 때까지 숨 참는다!", 2024, 5, "#83c8ef"),
-	MODIFIED("(수정)취뽀하기!", "(수정)취업할 때까지 숨 참는다!", 2024, 12, "#123456");
+	DEFAULT(
+			"취뽀하기!",
+			"취업할 때까지 숨 참는다!",
+			LocalDate.of(2024, 4, 1),
+			LocalDate.of(2024, 4, 30),
+			"ff83c8ef"),
+	MODIFIED(
+			"(수정)취뽀하기!",
+			"(수정)취업할 때까지 숨 참는다!",
+			LocalDate.of(2024, 5, 1),
+			LocalDate.of(2024, 5, 31),
+			"ff123456");
 
 	private final String title;
 	private final String description;
-	private final Integer goalYear;
-	private final Integer goalMonth;
+	private final LocalDate startDate;
+	private final LocalDate endDate;
 	private final String colorHex;
 
 	MonthlyGoalFixture(
 			String title,
 			String description,
-			Integer goalYear,
-			Integer goalMonth,
+			LocalDate startDate,
+			LocalDate endDate,
 			String colorHex) {
 		this.title = title;
 		this.description = description;
-		this.goalYear = goalYear;
-		this.goalMonth = goalMonth;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.colorHex = colorHex;
 	}
 
@@ -31,21 +42,21 @@ public enum MonthlyGoalFixture {
 		return MonthlyGoal.builder()
 				.title(title)
 				.description(description)
-				.goalYear(goalYear)
-				.goalMonth(goalMonth)
+				.startDate(startDate)
+				.endDate(endDate)
 				.colorHex(colorHex)
 				.member(member)
 				.build();
 	}
 
-	public MonthlyGoal getWithGoalYearAndGoalMonth(
-			Integer goalYear, Integer goalMonth, Member member) {
+	public MonthlyGoal getWithStartDateAndEndDate(
+			LocalDate startDate, LocalDate endDate, Member member) {
 
 		return MonthlyGoal.builder()
 				.title(title)
 				.description(description)
-				.goalYear(goalYear)
-				.goalMonth(goalMonth)
+				.startDate(startDate)
+				.endDate(endDate)
 				.colorHex(colorHex)
 				.member(member)
 				.build();

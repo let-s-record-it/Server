@@ -38,6 +38,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 public abstract class RestDocsTest {
 
 	@Autowired private ObjectMapper objectMapper;
+
 	protected MockMvc mockMvc;
 
 	@BeforeEach

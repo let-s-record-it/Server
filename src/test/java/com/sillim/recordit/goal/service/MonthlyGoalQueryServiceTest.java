@@ -2,7 +2,6 @@ package com.sillim.recordit.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -10,13 +9,17 @@ import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
-import com.sillim.recordit.goal.domain.Member;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
+import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.fixture.MemberFixture;
+import com.sillim.recordit.member.service.MemberQueryService;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.LongStream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,9 +30,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class MonthlyGoalQueryServiceTest {
 
+	@Mock MemberQueryService memberQueryService;
 	@Mock MonthlyGoalJpaRepository monthlyGoalJpaRepository;
 	@InjectMocks MonthlyGoalQueryService monthlyGoalQueryService;
-	Member member;
+	private Member member;
+
+	@BeforeEach
+	void beforeEach() {
+		member = MemberFixture.DEFAULT.getMember();
+	}
 
 	@Test
 	@DisplayName("id를 기반으로 월 목표를 조회한다.")
@@ -56,23 +65,26 @@ public class MonthlyGoalQueryServiceTest {
 	}
 
 	@Test
-	@DisplayName("goalYear와 goalMonth를 기반으로 월 목표를 조회한다.")
+	@DisplayName("startDate와 endDate를 기반으로 해당 월 목표들을 조회한다.")
 	void searchAllByDateTest() {
 
 		List<MonthlyGoal> monthlyGoals =
 				LongStream.rangeClosed(1, 3)
 						.mapToObj((id) -> MonthlyGoalFixture.DEFAULT.getWithMember(member))
 						.toList();
+		given(memberQueryService.findByMemberId(anyLong())).willReturn(member);
 		given(
-						monthlyGoalJpaRepository.findByGoalYearAndGoalMonthAndMember(
-								anyInt(), anyInt(), any(Member.class)))
+						monthlyGoalJpaRepository.findByStartDateAndEndDateAndMember(
+								any(LocalDate.class), any(LocalDate.class), any(Member.class)))
 				.willReturn(monthlyGoals);
 
-		monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), anyLong());
+		monthlyGoalQueryService.searchAllByDate(
+				LocalDate.of(2024, 4, 1), LocalDate.of(2024, 4, 30), 1L);
 
-		// TODO: Member 조회 행위 검증
+		then(memberQueryService).should(times(1)).findByMemberId(anyLong());
 		then(monthlyGoalJpaRepository)
 				.should(times(1))
-				.findByGoalYearAndGoalMonthAndMember(anyInt(), anyInt(), any(Member.class));
+				.findByStartDateAndEndDateAndMember(
+						any(LocalDate.class), any(LocalDate.class), any(Member.class));
 	}
 }
