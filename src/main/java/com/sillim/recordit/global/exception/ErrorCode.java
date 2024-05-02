@@ -6,7 +6,6 @@ import lombok.Getter;
 public enum ErrorCode {
 
 	// global
-
 	INVALID_ARGUMENT("ERR_GLOBAL_001", "올바르지 않은 값이 전달되었습니다."),
 	REQUEST_NOT_FOUND("ERR_GLOBAL_002", "요청을 찾을 수 없습니다."),
 	UNHANDLED_EXCEPTION("ERR_GLOBAL_999", "예상치 못한 오류가 발생했습니다."),
@@ -24,8 +23,6 @@ public enum ErrorCode {
 	MEMBER_NOT_FOUND("ERR_MEMBER_001", "요청한 멤버를 찾을 수 없습니다."),
 
 	INVALID_KAKAO_TOKEN("ERR_KAKAO_001", "유효하지 않은 Kakao Access Token입니다."),
-
-	CALENDAR_NOT_FOUND("ERR_CALENDAR_001", "요청한 캘린더를 찾을 수 없습니다."),
 
 	NULL_SCHEDULE_TITLE("ERR_SCHEDULE_001", "일정 제목은 null일 수 없습니다."),
 	BLANK_SCHEDULE_TITLE("ERR_SCHEDULE_002", "일정 제목은 빈 값일 수 없습니다."),
@@ -50,7 +47,10 @@ public enum ErrorCode {
 	INVALID_CALENDAR_TITLE_LENGTH("ERR_CALENDAR_003", "캘린더 제목의 길이는 30자를 넘을 수 없습니다."),
 	INVALID_CALENDAR_COLOR_HEX("ERR_CALENDAR_004", "유효하지 않은 캘린더 색상 값입니다."),
 	NULL_CALENDAR_COLOR_HEX("ERR_CALENDAR_005", "캘린더 색상 값은 null일 수 없습니다."),
-	;
+	CALENDAR_NOT_FOUND("ERR_CALENDAR_006", "요청한 캘린더를 찾을 수 없습니다."),
+
+	// monthly-goal
+	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다.");
 
 	private final String code;
 	private final String description;
