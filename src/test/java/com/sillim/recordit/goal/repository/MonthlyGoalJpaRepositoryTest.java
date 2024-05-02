@@ -2,9 +2,11 @@ package com.sillim.recordit.goal.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.sillim.recordit.goal.domain.Member;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
+import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.fixture.MemberFixture;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,18 +14,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+@EnableJpaAuditing
 @DataJpaTest
 public class MonthlyGoalJpaRepositoryTest {
 
 	@Autowired MonthlyGoalJpaRepository monthlyGoalJpaRepository;
 	@Autowired TestEntityManager em;
 
-	// TODO: Member 엔티티 구현 완료 후 변경
-	Member member = new Member();
+	private Member member;
 
 	@BeforeEach
 	void beforeEach() {
+		member = MemberFixture.DEFAULT.getMember();
 		em.persist(member);
 	}
 
@@ -62,8 +66,8 @@ public class MonthlyGoalJpaRepositoryTest {
 		saved.modify(
 				expected.getTitle(),
 				expected.getDescription(),
-				expected.getGoalYear(),
-				expected.getGoalMonth(),
+				expected.getStartDate(),
+				expected.getEndDate(),
 				expected.getColorHex());
 
 		// then
@@ -79,20 +83,27 @@ public class MonthlyGoalJpaRepositoryTest {
 	void findByGoalYearAndGoalMonthAndMember() {
 		// given
 		final MonthlyGoal expected =
-				MonthlyGoalFixture.DEFAULT.getWithGoalYearAndGoalMonth(2024, 5, member);
+				MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
+						LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31), member);
 		List<MonthlyGoal> savedList =
 				monthlyGoalJpaRepository.saveAll(
 						List.of(
-								MonthlyGoalFixture.DEFAULT.getWithGoalYearAndGoalMonth(
-										2024, 5, member),
-								MonthlyGoalFixture.DEFAULT.getWithGoalYearAndGoalMonth(
-										2024, 5, member),
-								MonthlyGoalFixture.DEFAULT.getWithGoalYearAndGoalMonth(
-										2024, 6, member)));
+								MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
+										LocalDate.of(2024, 5, 1),
+										LocalDate.of(2024, 5, 31),
+										member),
+								MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
+										LocalDate.of(2024, 5, 1),
+										LocalDate.of(2024, 5, 31),
+										member),
+								MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
+										LocalDate.of(2024, 6, 1),
+										LocalDate.of(2024, 6, 30),
+										member)));
 		// when
 		List<MonthlyGoal> foundList =
-				monthlyGoalJpaRepository.findByGoalYearAndGoalMonthAndMember(
-						expected.getGoalYear(), expected.getGoalMonth(), member);
+				monthlyGoalJpaRepository.findByStartDateAndEndDateAndMember(
+						expected.getStartDate(), expected.getEndDate(), member);
 		// then
 		assertThat(foundList).hasSize(2);
 		for (MonthlyGoal found : foundList) {

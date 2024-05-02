@@ -3,7 +3,6 @@ package com.sillim.recordit.goal.controller;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentRequest;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -23,14 +22,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
-import com.sillim.recordit.goal.domain.Member;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.goal.service.MonthlyGoalUpdateService;
+import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.LongStream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -44,14 +46,24 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	@MockBean MonthlyGoalUpdateService monthlyGoalUpdateService;
 	@MockBean MonthlyGoalQueryService monthlyGoalQueryService;
 
-	Member member = new Member();
+	private Member member;
+
+	@BeforeEach
+	void beforeEach() {
+		member = MemberFixture.DEFAULT.getMember();
+	}
 
 	@Test
 	@DisplayName("새로운 월 목표를 추가한다.")
 	void monthlyGoalAddTest() throws Exception {
 
 		MonthlyGoalUpdateRequest request =
-				new MonthlyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 2024, 4, "#83c8ef");
+				new MonthlyGoalUpdateRequest(
+						"취뽀하기!",
+						"취업할 때까지 숨 참는다.",
+						LocalDate.of(2024, 4, 1),
+						LocalDate.of(2024, 4, 30),
+						"ff83c8ef");
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -71,7 +83,34 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 								requestHeaders(authorizationDesc())));
 	}
 
-	// TODO: Member Not Found 예외 추가
+	@Test
+	@DisplayName("존재하지 않는 사용자가 새로운 월 목표를 추가한다.")
+	void monthlyGoalAddTestMemberNotFound() throws Exception {
+
+		MonthlyGoalUpdateRequest request =
+				new MonthlyGoalUpdateRequest(
+						"취뽀하기!",
+						"취업할 때까지 숨 참는다.",
+						LocalDate.of(2024, 4, 1),
+						LocalDate.of(2024, 4, 30),
+						"ff83c8ef");
+
+		willThrow(new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND))
+				.given(monthlyGoalUpdateService)
+				.add(any(MonthlyGoalUpdateRequest.class), anyLong());
+
+		ResultActions perform =
+				mockMvc.perform(
+						post("/api/v1/goals/months")
+								.headers(authorizationHeader())
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
+
+		perform.andExpect(status().isNotFound());
+
+		perform.andDo(print())
+				.andDo(document("monthly-goal-add-member-not-found", getDocumentResponse()));
+	}
 
 	@Test
 	@DisplayName("기존의 월 목표를 수정한다.")
@@ -79,7 +118,11 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 		MonthlyGoalUpdateRequest request =
 				new MonthlyGoalUpdateRequest(
-						"(수정)취뽀하기!", "(수정)취업할 때까지 숨 참는다.", 2024, 12, "#123456");
+						"(수정)취뽀하기!",
+						"(수정)취업할 때까지 숨 참는다.",
+						LocalDate.of(2024, 5, 1),
+						LocalDate.of(2024, 5, 31),
+						"ff123456");
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -105,7 +148,11 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 		MonthlyGoalUpdateRequest request =
 				new MonthlyGoalUpdateRequest(
-						"(수정)취뽀하기!", "(수정)취업할 때까지 숨 참는다.", 2024, 12, "#123456");
+						"(수정)취뽀하기!",
+						"(수정)취업할 때까지 숨 참는다.",
+						LocalDate.of(2024, 5, 1),
+						LocalDate.of(2024, 5, 31),
+						"ff123456");
 		willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND))
 				.given(monthlyGoalUpdateService)
 				.modify(any(MonthlyGoalUpdateRequest.class), anyLong());
@@ -129,7 +176,6 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	@Test
 	@DisplayName("당월의 월 목표 목록을 조회한다.")
 	void monthlyGoalListTest() throws Exception {
-
 		List<MonthlyGoal> monthlyGoals =
 				LongStream.rangeClosed(1, 3)
 						.mapToObj(
@@ -142,17 +188,29 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 								})
 						.toList();
 
-		given(monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), anyLong()))
+		given(
+						monthlyGoalQueryService.searchAllByDate(
+								any(LocalDate.class), any(LocalDate.class), anyLong()))
 				.willReturn(monthlyGoals);
 
 		ResultActions perform =
 				mockMvc.perform(
 						get("/api/v1/goals/months")
 								.headers(authorizationHeader())
-								.queryParam("goalYear", "2024")
-								.queryParam("goalMonth", "5"));
+								.queryParam("startDate", "2024-04-01")
+								.queryParam("endDate", "2024-04-30"));
 
-		perform.andExpect(status().isOk()).andExpect(jsonPath("$.size()").value(3));
+		perform.andExpect(status().isOk())
+				.andExpect(jsonPath("$.size()").value(3))
+				.andExpect(jsonPath("$.[0].id").value(1))
+				.andExpect(jsonPath("$.[0].title").value("취뽀하기!"))
+				.andExpect(jsonPath("$.[0].achieved").value(false))
+				.andExpect(jsonPath("$.[1].id").value(2))
+				.andExpect(jsonPath("$.[1].title").value("취뽀하기!"))
+				.andExpect(jsonPath("$.[1].achieved").value(true))
+				.andExpect(jsonPath("$.[2].id").value(3))
+				.andExpect(jsonPath("$.[2].title").value("취뽀하기!"))
+				.andExpect(jsonPath("$.[2].achieved").value(false));
 
 		perform.andDo(print())
 				.andDo(
@@ -162,11 +220,31 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								queryParameters(
-										parameterWithName("goalYear").description("조회 연도"),
-										parameterWithName("goalMonth").description("조회 월"))));
+										parameterWithName("startDate").description("월 목표 시작일"),
+										parameterWithName("endDate").description("월 목표 종료일"))));
 	}
 
-	// TODO: Member Not Found 예외 추가
+	@Test
+	@DisplayName("존재하지 않는 Member의 월 목표 목록을 조회하는 경우 NOT FOUND 응답을 반환한다.")
+	void monthlyGoalListTestMemberNotFound() throws Exception {
+
+		given(
+						monthlyGoalQueryService.searchAllByDate(
+								any(LocalDate.class), any(LocalDate.class), anyLong()))
+				.willThrow(new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/goals/months")
+								.headers(authorizationHeader())
+								.queryParam("startDate", "2024-04-01")
+								.queryParam("endDate", "2024-04-30"));
+
+		perform.andExpect(status().isNotFound());
+
+		perform.andDo(print())
+				.andDo(document("monthly-goal-list-member-not-found", getDocumentResponse()));
+	}
 
 	@Test
 	@DisplayName("특정 id의 월 목표를 상세하게 조회한다.")
@@ -185,8 +263,8 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 		perform.andExpect(status().isOk())
 				.andExpect(jsonPath("$.id").value(monthlyGoal.getId()))
 				.andExpect(jsonPath("$.title").value(monthlyGoal.getTitle()))
-				.andExpect(jsonPath("$.goalYear").value(monthlyGoal.getGoalYear()))
-				.andExpect(jsonPath("$.goalMonth").value(monthlyGoal.getGoalMonth()))
+				.andExpect(jsonPath("$.startDate").value(monthlyGoal.getStartDate().toString()))
+				.andExpect(jsonPath("$.endDate").value(monthlyGoal.getEndDate().toString()))
 				.andExpect(jsonPath("$.description").value(monthlyGoal.getDescription()))
 				.andExpect(jsonPath("$.colorHex").value(monthlyGoal.getColorHex()));
 
