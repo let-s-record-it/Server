@@ -19,9 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sillim.recordit.config.security.filter.AuthExceptionTranslationFilter;
-import com.sillim.recordit.config.security.filter.JwtAuthenticationFilter;
-import com.sillim.recordit.config.security.handler.AuthenticationExceptionHandler;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
@@ -45,10 +42,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(MonthlyGoalController.class)
 public class MonthlyGoalControllerTest extends RestDocsTest {
-
-	@MockBean AuthenticationExceptionHandler handler;
-	@MockBean AuthExceptionTranslationFilter exceptionTranslationFilter;
-	@MockBean JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@MockBean MonthlyGoalUpdateService monthlyGoalUpdateService;
 	@MockBean MonthlyGoalQueryService monthlyGoalQueryService;
