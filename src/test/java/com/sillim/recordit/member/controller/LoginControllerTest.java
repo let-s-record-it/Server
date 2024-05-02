@@ -10,9 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sillim.recordit.config.security.filter.AuthExceptionTranslationFilter;
-import com.sillim.recordit.config.security.filter.JwtAuthenticationFilter;
-import com.sillim.recordit.config.security.handler.AuthenticationExceptionHandler;
 import com.sillim.recordit.config.security.jwt.AuthorizationToken;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.dto.request.LoginRequest;
@@ -29,9 +26,6 @@ import org.springframework.test.web.servlet.ResultActions;
 class LoginControllerTest extends RestDocsTest {
 
 	@MockBean LoginService loginService;
-	@MockBean AuthenticationExceptionHandler handler;
-	@MockBean AuthExceptionTranslationFilter exceptionTranslationFilter;
-	@MockBean JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@Test
 	@DisplayName("인가 받은 토큰으로 로그인을 한다.")
