@@ -4,10 +4,15 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sillim.recordit.config.security.filter.AuthExceptionTranslationFilter;
+import com.sillim.recordit.config.security.filter.JwtAuthenticationFilter;
+import com.sillim.recordit.config.security.handler.AuthenticationExceptionHandler;
+import com.sillim.recordit.support.security.MockAuthenticationFilter;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.RestDocumentationContextProvider;
@@ -38,6 +44,9 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 public abstract class RestDocsTest {
 
 	@Autowired private ObjectMapper objectMapper;
+	@MockBean AuthenticationExceptionHandler handler;
+	@MockBean AuthExceptionTranslationFilter exceptionTranslationFilter;
+	@MockBean JwtAuthenticationFilter jwtAuthenticationFilter;
 	protected MockMvc mockMvc;
 
 	@BeforeEach
@@ -50,6 +59,7 @@ public abstract class RestDocsTest {
 										.uris()
 										.withScheme("https")
 										.withHost("dev.recordit.store"))
+						.apply(springSecurity(new MockAuthenticationFilter()))
 						.addFilter(new CharacterEncodingFilter("UTF-8", true))
 						.alwaysDo(print())
 						.alwaysDo(document("api/v1"))
