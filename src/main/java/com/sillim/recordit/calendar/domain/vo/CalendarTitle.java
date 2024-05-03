@@ -1,7 +1,7 @@
 package com.sillim.recordit.calendar.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.schedule.InvalidTitleException;
+import com.sillim.recordit.global.exception.common.InvalidTitleException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;

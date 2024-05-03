@@ -1,7 +1,7 @@
 package com.sillim.recordit.schedule.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.schedule.InvalidDescriptionException;
+import com.sillim.recordit.global.exception.common.InvalidDescriptionException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
