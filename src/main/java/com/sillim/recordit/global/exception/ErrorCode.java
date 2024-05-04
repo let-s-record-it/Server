@@ -3,7 +3,7 @@ package com.sillim.recordit.global.exception;
 import lombok.Getter;
 
 @Getter
-public enum ErrorCode {
+public enum ErrorCode implements DescriptionFormatter {
 
 	// global
 	INVALID_ARGUMENT("ERR_GLOBAL_001", "올바르지 않은 값이 전달되었습니다."),
@@ -50,7 +50,26 @@ public enum ErrorCode {
 	CALENDAR_NOT_FOUND("ERR_CALENDAR_006", "요청한 캘린더를 찾을 수 없습니다."),
 
 	// monthly-goal
-	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다.");
+	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다."),
+	DIFFERENT_YEAR_MONTH("ERR_MONTHLY_GOAL_002", "월 목표 기간 시작일과 종료일의 년,월은 같아야 합니다."),
+	INVALID_START_DAY_OF_MONTH("ERR_MONTHLY_GOAL_003", "월 목표 기간의 시작일은 1일이어야 합니다."),
+	INVALID_END_DAY_OF_MONTH("ERR_MONTHLY_GOAL_004", "월 목표 기간의 종료일은 %d일이어야 합니다.") {
+		@Override
+		public String getDescription(Object... args) {
+			return String.format(getDescription(), args);
+		}
+	},
+	// goal
+	NULL_GOAL_TITLE("ERR_GOAL_001", "목표 제목은 null일 수 없습니다."),
+	BLANK_GOAL_TITLE("ERR_GOAL_002", "목표 제목은 빈 값일 수 없습니다."),
+	INVALID_GOAL_TITLE_LENGTH("ERR_GOAL_003", "목표 제목의 길이는 30자를 넘을 수 없습니다."),
+	NULL_GOAL_DESCRIPTION("ERR_GOAL_004", "목표 설명은 null일 수 없습니다."),
+	BLANK_GOAL_DESCRIPTION("ERR_GOAL_005", "목표 설명은 빈 값일 수 없습니다."),
+	INVALID_GOAL_DESCRIPTION_LENGTH("ERR_GOAL_006", "목표 설명의 길이는 500자를 넘을 수 없습니다."),
+	NULL_GOAL_COLOR_HEX("ERR_GOAL_007", "일정 색상 값은 null일 수 없습니다."),
+	INVALID_GOAL_COLOR_HEX("ERR_GOAL_008", "유효하지 않은 일정 색상 값입니다."),
+	NULL_GOAL_PERIOD("ERR_GOAL_009", "목표 기간 시작일과 종료일은 null일 수 없습니다."),
+	;
 
 	private final String code;
 	private final String description;
@@ -58,5 +77,10 @@ public enum ErrorCode {
 	ErrorCode(String code, String description) {
 		this.code = code;
 		this.description = description;
+	}
+
+	@Override
+	public String getDescription() {
+		return this.description;
 	}
 }
