@@ -74,7 +74,7 @@ public class MonthlyGoalQueryServiceTest {
 						.toList();
 		given(memberQueryService.findByMemberId(anyLong())).willReturn(member);
 		given(
-						monthlyGoalJpaRepository.findByStartDateAndEndDateAndMember(
+						monthlyGoalJpaRepository.findByPeriod_StartDateAndPeriod_EndDateAndMember(
 								any(LocalDate.class), any(LocalDate.class), any(Member.class)))
 				.willReturn(monthlyGoals);
 
@@ -84,7 +84,7 @@ public class MonthlyGoalQueryServiceTest {
 		then(memberQueryService).should(times(1)).findByMemberId(anyLong());
 		then(monthlyGoalJpaRepository)
 				.should(times(1))
-				.findByStartDateAndEndDateAndMember(
+				.findByPeriod_StartDateAndPeriod_EndDateAndMember(
 						any(LocalDate.class), any(LocalDate.class), any(Member.class));
 	}
 }

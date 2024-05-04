@@ -84,7 +84,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	}
 
 	@Test
-	@DisplayName("존재하지 않는 사용자가 새로운 월 목표를 추가한다.")
+	@DisplayName("존재하지 않는 사용자가 새로운 월 목표를 추가한다면 NOT FOUND 응답을 반환한다.")
 	void monthlyGoalAddTestMemberNotFound() throws Exception {
 
 		MonthlyGoalUpdateRequest request =
@@ -183,7 +183,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 									MonthlyGoal goal =
 											spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
 									given(goal.getId()).willReturn(id);
-									given(goal.getAchieved()).willReturn(id % 2 == 0);
+									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
 								})
 						.toList();

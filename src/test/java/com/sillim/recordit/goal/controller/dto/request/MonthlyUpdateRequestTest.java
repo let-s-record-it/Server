@@ -33,7 +33,7 @@ public class MonthlyUpdateRequestTest {
 					assertThat(monthlyGoal.getStartDate()).isEqualTo(request.startDate());
 					assertThat(monthlyGoal.getEndDate()).isEqualTo(request.endDate());
 					assertThat(monthlyGoal.getColorHex()).isEqualTo(request.colorHex());
-					assertThat(monthlyGoal.getAchieved()).isEqualTo(Boolean.FALSE);
+					assertThat(monthlyGoal.isAchieved()).isEqualTo(false);
 					assertThat(monthlyGoal.getMember()).isEqualTo(member);
 				});
 	}
