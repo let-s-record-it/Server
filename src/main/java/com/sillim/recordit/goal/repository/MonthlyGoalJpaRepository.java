@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MonthlyGoalJpaRepository extends JpaRepository<MonthlyGoal, Long> {
 
-	List<MonthlyGoal> findByStartDateAndEndDateAndMember(
+	List<MonthlyGoal> findByPeriod_StartDateAndPeriod_EndDateAndMember(
 			LocalDate startDate, LocalDate endDate, Member member);
 }

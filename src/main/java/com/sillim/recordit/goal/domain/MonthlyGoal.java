@@ -1,15 +1,19 @@
 package com.sillim.recordit.goal.domain;
 
 import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.goal.domain.vo.GoalColorHex;
+import com.sillim.recordit.goal.domain.vo.GoalDescription;
+import com.sillim.recordit.goal.domain.vo.GoalPeriod;
+import com.sillim.recordit.goal.domain.vo.GoalTitle;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -19,68 +23,80 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SoftDelete;
 
-@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SoftDelete
 public class MonthlyGoal extends BaseTime {
 
+	@Getter
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "monthly_goal_id")
 	private Long id;
 
-	@Column(nullable = false, length = 200)
-	private String title;
+	@Embedded private GoalTitle title;
 
-	@Lob
-	@Column(nullable = false)
-	private String description;
+	@Embedded private GoalDescription description;
 
-	@Column(nullable = false)
-	private LocalDate startDate;
+	@Embedded private GoalPeriod period;
 
-	@Column(nullable = false)
-	private LocalDate endDate;
+	@Embedded private GoalColorHex colorHex;
 
-	@Column(nullable = false, length = 8)
-	private String colorHex;
-
+	@Getter
 	@Column(nullable = false)
 	@ColumnDefault("false")
-	private Boolean achieved;
+	private boolean achieved;
 
+	@Getter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
 	@Builder
 	public MonthlyGoal(
-			String title,
-			String description,
-			LocalDate startDate,
-			LocalDate endDate,
-			String colorHex,
-			Member member) {
-		this.title = title;
-		this.description = description;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.colorHex = colorHex;
-		this.achieved = Boolean.FALSE;
+			final String title,
+			final String description,
+			final LocalDate startDate,
+			final LocalDate endDate,
+			final String colorHex,
+			final Member member) {
+		this.title = new GoalTitle(title);
+		this.description = new GoalDescription(description);
+		this.period = new GoalPeriod(startDate, endDate);
+		this.colorHex = new GoalColorHex(colorHex);
+		this.achieved = false;
 		this.member = member;
 	}
 
 	public void modify(
-			String title,
-			String description,
-			LocalDate startDate,
-			LocalDate endDate,
-			String colorHex) {
-		this.title = title;
-		this.description = description;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.colorHex = colorHex;
+			String newTitle,
+			String newDescription,
+			LocalDate newStartDate,
+			LocalDate newEndDate,
+			String newColorHex) {
+		this.title = new GoalTitle(newTitle);
+		this.description = new GoalDescription(newDescription);
+		this.period = new GoalPeriod(newStartDate, newEndDate);
+		this.colorHex = new GoalColorHex(newColorHex);
+	}
+
+	public String getTitle() {
+		return title.getTitle();
+	}
+
+	public String getDescription() {
+		return description.getDescription();
+	}
+
+	public LocalDate getStartDate() {
+		return period.getStartDate();
+	}
+
+	public LocalDate getEndDate() {
+		return period.getEndDate();
+	}
+
+	public String getColorHex() {
+		return colorHex.getColorHex();
 	}
 }
