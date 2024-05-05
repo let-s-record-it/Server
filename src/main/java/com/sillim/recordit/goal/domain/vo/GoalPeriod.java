@@ -35,26 +35,37 @@ public class GoalPeriod {
 		if (Objects.isNull(startDate) || Objects.isNull(endDate)) {
 			throw new InvalidPeriodException(ErrorCode.NULL_GOAL_PERIOD);
 		}
-		if (!hasSameYearMonth(startDate, endDate)) {
+		// 시작일과 종료일의 년, 월은 같아야 한다.
+		checkIfHasSameYearMonth(startDate, endDate);
+		// 월 목표의 시작일은 1일이어야 한다.
+		checkIfFirstDayOfMonth(startDate);
+		// 월 목표의 종료일은 해당 월의 말일이어야 한다.
+		checkIfLastDayOfMonth(endDate);
+	}
+
+	private void checkIfHasSameYearMonth(final LocalDate startDate, final LocalDate endDate) {
+
+		if ((startDate.getYear() != endDate.getYear())
+				|| (startDate.getMonth() != endDate.getMonth())) {
 			throw new InvalidPeriodException(ErrorCode.DIFFERENT_YEAR_MONTH);
 		}
-		// 월 목표의 시작일은 1일이어야 한다.
+	}
+
+	private void checkIfFirstDayOfMonth(final LocalDate startDate) {
+
 		if (startDate.getDayOfMonth() != 1) {
 			throw new InvalidPeriodException(ErrorCode.INVALID_START_DAY_OF_MONTH);
 		}
-		// 월 목표의 종료일은 해당 월의 말일이어야 한다.
+	}
+
+	private void checkIfLastDayOfMonth(final LocalDate endDate) {
+
 		YearMonth endDateYearMonth = YearMonth.from(endDate);
 		if (endDate.getDayOfMonth() != endDateYearMonth.lengthOfMonth()) {
 			throw new InvalidPeriodException(
 					ErrorCode.INVALID_END_DAY_OF_MONTH,
-					ErrorCode.INVALID_END_DAY_OF_MONTH.getDescription(
+					ErrorCode.INVALID_END_DAY_OF_MONTH.getFormattedDescription(
 							endDateYearMonth.lengthOfMonth()));
 		}
-	}
-
-	private boolean hasSameYearMonth(LocalDate startDate, LocalDate endDate) {
-
-		return (startDate.getYear() == endDate.getYear())
-				&& (startDate.getMonth() == endDate.getMonth());
 	}
 }

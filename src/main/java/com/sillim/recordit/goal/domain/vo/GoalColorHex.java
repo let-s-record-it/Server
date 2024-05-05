@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 @EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class GoalColorHex {
 
 	private static final String COLOR_HEX_REGEX = "[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3}";
 
 	@Column(nullable = false)
-	private String colorHex;
+	private final String colorHex;
 
 	public GoalColorHex(final String colorHex) {
 		validate(colorHex);
