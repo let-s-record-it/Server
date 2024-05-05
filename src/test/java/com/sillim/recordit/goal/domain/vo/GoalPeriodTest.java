@@ -73,6 +73,6 @@ class GoalPeriodTest {
 		assertThatThrownBy(
 						() -> new GoalPeriod(LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 28)))
 				.isInstanceOf(InvalidPeriodException.class)
-				.hasMessage(ErrorCode.INVALID_END_DAY_OF_MONTH.getDescription(31));
+				.hasMessage(ErrorCode.INVALID_END_DAY_OF_MONTH.getFormattedDescription(31));
 	}
 }

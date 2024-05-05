@@ -3,7 +3,7 @@ package com.sillim.recordit.global.exception;
 import lombok.Getter;
 
 @Getter
-public enum ErrorCode implements DescriptionFormatter {
+public enum ErrorCode {
 
 	// global
 	INVALID_ARGUMENT("ERR_GLOBAL_001", "올바르지 않은 값이 전달되었습니다."),
@@ -53,12 +53,7 @@ public enum ErrorCode implements DescriptionFormatter {
 	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다."),
 	DIFFERENT_YEAR_MONTH("ERR_MONTHLY_GOAL_002", "월 목표 기간 시작일과 종료일의 년,월은 같아야 합니다."),
 	INVALID_START_DAY_OF_MONTH("ERR_MONTHLY_GOAL_003", "월 목표 기간의 시작일은 1일이어야 합니다."),
-	INVALID_END_DAY_OF_MONTH("ERR_MONTHLY_GOAL_004", "월 목표 기간의 종료일은 %d일이어야 합니다.") {
-		@Override
-		public String getDescription(Object... args) {
-			return String.format(getDescription(), args);
-		}
-	},
+	INVALID_END_DAY_OF_MONTH("ERR_MONTHLY_GOAL_004", "월 목표 기간의 종료일은 %d일이어야 합니다."),
 	// goal
 	NULL_GOAL_TITLE("ERR_GOAL_001", "목표 제목은 null일 수 없습니다."),
 	BLANK_GOAL_TITLE("ERR_GOAL_002", "목표 제목은 빈 값일 수 없습니다."),
@@ -72,15 +67,14 @@ public enum ErrorCode implements DescriptionFormatter {
 	;
 
 	private final String code;
-	private final String description;
+	@Getter private final String description;
 
 	ErrorCode(String code, String description) {
 		this.code = code;
 		this.description = description;
 	}
 
-	@Override
-	public String getDescription() {
-		return this.description;
+	public String getFormattedDescription(Object... args) {
+		return String.format(this.description, args);
 	}
 }
