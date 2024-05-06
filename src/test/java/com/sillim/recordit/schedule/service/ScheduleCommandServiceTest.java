@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.given;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.calendar.service.CalendarService;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.MemberRole;
@@ -18,8 +19,8 @@ import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDescription;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
 import com.sillim.recordit.schedule.domain.vo.ScheduleTitle;
-import com.sillim.recordit.schedule.dto.RepetitionAddRequest;
-import com.sillim.recordit.schedule.dto.ScheduleAddRequest;
+import com.sillim.recordit.schedule.dto.request.RepetitionAddRequest;
+import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
 import com.sillim.recordit.schedule.repository.ScheduleRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,17 +33,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ScheduleServiceTest {
+class ScheduleCommandServiceTest {
 
 	@Mock ScheduleRepository scheduleRepository;
+	@Mock CalendarService calendarService;
 	@Mock ScheduleGroupService scheduleGroupService;
 	@Mock RepetitionPatternService repetitionPatternService;
-	@InjectMocks ScheduleService scheduleService;
+	@InjectMocks ScheduleCommandService scheduleCommandService;
 
 	Member member;
 	Calendar calendar;
 	long calendarId = 1L;
-	long memberId = 1L;
 
 	@BeforeEach
 	void initObjects() {
@@ -77,8 +78,7 @@ class ScheduleServiceTest {
 						true,
 						LocalDateTime.of(2024, 1, 1, 0, 0),
 						calendarId);
-		ScheduleGroup scheduleGroup =
-				ScheduleGroup.builder().isRepeated(false).member(member).calendar(calendar).build();
+		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule =
 				Schedule.builder()
 						.title("title")
@@ -93,13 +93,12 @@ class ScheduleServiceTest {
 						.longitude(127.0)
 						.setAlarm(true)
 						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.calendar(calendar)
 						.scheduleGroup(scheduleGroup)
 						.build();
-		given(scheduleGroupService.addScheduleGroup(false, calendarId, memberId))
-				.willReturn(scheduleGroup);
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 
-		List<Schedule> schedules = scheduleService.addSchedules(scheduleAddRequest, memberId);
+		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest);
 
 		assertAll(
 				() -> {
@@ -112,6 +111,7 @@ class ScheduleServiceTest {
 									ScheduleDuration.createNotAllDay(
 											LocalDateTime.of(2024, 1, 1, 0, 0),
 											LocalDateTime.of(2024, 2, 1, 0, 0)));
+					assertThat(schedules.get(0).getScheduleGroup()).isEqualTo(scheduleGroup);
 				});
 	}
 
@@ -150,8 +150,7 @@ class ScheduleServiceTest {
 						true,
 						LocalDateTime.of(2024, 1, 1, 0, 0),
 						calendarId);
-		ScheduleGroup scheduleGroup =
-				ScheduleGroup.builder().isRepeated(false).member(member).calendar(calendar).build();
+		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
 		RepetitionPattern repetitionPattern =
 				RepetitionPattern.createDaily(
 						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
@@ -169,15 +168,15 @@ class ScheduleServiceTest {
 						.longitude(127.0)
 						.setAlarm(true)
 						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.calendar(calendar)
 						.scheduleGroup(scheduleGroup)
 						.build();
-		given(scheduleGroupService.addScheduleGroup(true, calendarId, memberId))
-				.willReturn(scheduleGroup);
+		given(scheduleGroupService.addScheduleGroup(true)).willReturn(scheduleGroup);
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 		given(repetitionPatternService.addRepetitionPattern(repetitionAddRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
 
-		List<Schedule> schedules = scheduleService.addSchedules(scheduleAddRequest, memberId);
+		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest);
 
 		assertAll(
 				() -> {

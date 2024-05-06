@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
 import com.sillim.recordit.member.domain.Auth;
@@ -23,7 +21,6 @@ import org.junit.jupiter.api.Test;
 class RepetitionPatternTest {
 
 	Member member;
-	Calendar calendar;
 	ScheduleGroup scheduleGroup;
 
 	@BeforeEach
@@ -36,9 +33,7 @@ class RepetitionPatternTest {
 						.deleted(false)
 						.memberRole(List.of(MemberRole.ROLE_USER))
 						.build();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
-		scheduleGroup =
-				ScheduleGroup.builder().isRepeated(false).member(member).calendar(calendar).build();
+		scheduleGroup = new ScheduleGroup(false);
 	}
 
 	@Test

@@ -23,6 +23,7 @@ import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.TemporalAmount;
+import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -90,6 +91,26 @@ public class RepetitionPattern extends BaseTime {
 		this.weekday = weekday;
 		this.weekdayBit = weekdayBit;
 		this.scheduleGroup = scheduleGroup;
+	}
+
+	public Optional<MonthOfYear> getMonthOfYear() {
+		return Optional.ofNullable(this.monthOfYear);
+	}
+
+	public Optional<DayOfMonth> getDayOfMonth() {
+		return Optional.ofNullable(this.dayOfMonth);
+	}
+
+	public Optional<WeekNumber> getWeekNumber() {
+		return Optional.ofNullable(this.weekNumber);
+	}
+
+	public Optional<Weekday> getWeekday() {
+		return Optional.ofNullable(this.weekday);
+	}
+
+	public Optional<WeekdayBit> getWeekdayBit() {
+		return Optional.ofNullable(this.weekdayBit);
 	}
 
 	private static void validatePeriod(Integer repetitionPeriod) {

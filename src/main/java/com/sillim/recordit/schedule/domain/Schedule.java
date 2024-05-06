@@ -1,8 +1,10 @@
 package com.sillim.recordit.schedule.domain;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.schedule.domain.vo.*;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,6 +42,10 @@ public class Schedule {
 	@Embedded private AlarmTime alarmTime;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "calendar_id")
+	private Calendar calendar;
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_group_id")
 	private ScheduleGroup scheduleGroup;
 
@@ -53,6 +59,7 @@ public class Schedule {
 			Location location,
 			Boolean setAlarm,
 			AlarmTime alarmTime,
+			Calendar calendar,
 			ScheduleGroup scheduleGroup) {
 		this.title = title;
 		this.description = description;
@@ -63,6 +70,7 @@ public class Schedule {
 		this.location = location;
 		this.setAlarm = setAlarm;
 		this.alarmTime = alarmTime;
+		this.calendar = calendar;
 		this.scheduleGroup = scheduleGroup;
 	}
 
@@ -80,6 +88,7 @@ public class Schedule {
 			Double longitude,
 			Boolean setAlarm,
 			LocalDateTime alarmTime,
+			Calendar calendar,
 			ScheduleGroup scheduleGroup) {
 		this(
 				new ScheduleTitle(title),
@@ -93,6 +102,15 @@ public class Schedule {
 				setLocation ? new Location(latitude, longitude) : null,
 				setAlarm,
 				setAlarm ? AlarmTime.create(alarmTime) : null,
+				calendar,
 				scheduleGroup);
+	}
+
+	public Optional<Location> getLocation() {
+		return Optional.ofNullable(this.location);
+	}
+
+	public Optional<AlarmTime> getAlarmTime() {
+		return Optional.ofNullable(this.alarmTime);
 	}
 }
