@@ -18,14 +18,15 @@ public class MonthlyGoalUpdateService {
 	private final MemberQueryService memberQueryService;
 	private final MonthlyGoalJpaRepository monthlyGoalJpaRepository;
 
-	public void add(MonthlyGoalUpdateRequest request, Long memberId) {
+	public void add(final MonthlyGoalUpdateRequest request, final Long memberId) {
 		Member member = memberQueryService.findByMemberId(memberId);
 		monthlyGoalJpaRepository.save(request.toEntity(member));
 	}
 
-	public void modify(MonthlyGoalUpdateRequest request, Long monthlyGoalId) {
+	public void modify(
+			final MonthlyGoalUpdateRequest request, final Long monthlyGoalId, final Long memberId) {
 
-		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId);
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
 		monthlyGoal.modify(
 				request.title(),
 				request.description(),

@@ -70,10 +70,6 @@ include::{snippets}/monthly-goal-list/http-request.adoc[]
 
 include::{snippets}/monthly-goal-list/http-response.adoc[]
 
-==== 404 NOT FOUND
-
-include::{snippets}/monthly-goal-list-member-not-found/http-response.adoc[]
-
 == 월 목표 상세 조회 API
 
 === Header

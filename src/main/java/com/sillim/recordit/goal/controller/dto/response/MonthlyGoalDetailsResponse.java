@@ -6,9 +6,9 @@ import java.time.LocalDate;
 public record MonthlyGoalDetailsResponse(
 		Long id,
 		String title,
+		String description,
 		LocalDate startDate,
 		LocalDate endDate,
-		String description,
 		String colorHex) {
 
 	public static MonthlyGoalDetailsResponse from(MonthlyGoal monthlyGoal) {
@@ -16,9 +16,9 @@ public record MonthlyGoalDetailsResponse(
 		return new MonthlyGoalDetailsResponse(
 				monthlyGoal.getId(),
 				monthlyGoal.getTitle(),
+				monthlyGoal.getDescription(),
 				monthlyGoal.getStartDate(),
 				monthlyGoal.getEndDate(),
-				monthlyGoal.getDescription(),
 				monthlyGoal.getColorHex());
 	}
 }

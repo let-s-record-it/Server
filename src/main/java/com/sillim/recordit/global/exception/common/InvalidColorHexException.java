@@ -1,7 +1,6 @@
-package com.sillim.recordit.global.exception.schedule;
+package com.sillim.recordit.global.exception.common;
 
 import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.ApplicationException;
 
 public class InvalidColorHexException extends ApplicationException {
 

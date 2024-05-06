@@ -85,24 +85,17 @@ public class MonthlyGoalJpaRepositoryTest {
 		final MonthlyGoal expected =
 				MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
 						LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31), member);
-		List<MonthlyGoal> savedList =
-				monthlyGoalJpaRepository.saveAll(
-						List.of(
-								MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
-										LocalDate.of(2024, 5, 1),
-										LocalDate.of(2024, 5, 31),
-										member),
-								MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
-										LocalDate.of(2024, 5, 1),
-										LocalDate.of(2024, 5, 31),
-										member),
-								MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
-										LocalDate.of(2024, 6, 1),
-										LocalDate.of(2024, 6, 30),
-										member)));
+		monthlyGoalJpaRepository.saveAll(
+				List.of(
+						MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
+								LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31), member),
+						MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
+								LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31), member),
+						MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
+								LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30), member)));
 		// when
 		List<MonthlyGoal> foundList =
-				monthlyGoalJpaRepository.findByStartDateAndEndDateAndMember(
+				monthlyGoalJpaRepository.findByPeriod_StartDateAndPeriod_EndDateAndMember(
 						expected.getStartDate(), expected.getEndDate(), member);
 		// then
 		assertThat(foundList).hasSize(2);

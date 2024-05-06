@@ -1,4 +1,4 @@
-package com.sillim.recordit.schedule.domain.vo;
+package com.sillim.recordit.goal.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidDescriptionException;
@@ -13,26 +13,29 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 @EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ScheduleDescription {
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+public class GoalDescription {
 
 	private static final int DESCRIPTION_MAX_LENGTH = 500;
 
 	@Column(nullable = false, length = DESCRIPTION_MAX_LENGTH)
-	private String description;
+	private final String description;
 
-	public ScheduleDescription(String description) {
+	public GoalDescription(final String description) {
 		validate(description);
 		this.description = description;
 	}
 
-	private void validate(String description) {
-		if (Objects.isNull(description)) {
-			throw new InvalidDescriptionException(ErrorCode.NULL_SCHEDULE_DESCRIPTION);
-		}
+	private void validate(final String description) {
 
+		if (Objects.isNull(description)) {
+			throw new InvalidDescriptionException(ErrorCode.NULL_GOAL_DESCRIPTION);
+		}
+		if (description.isBlank()) {
+			throw new InvalidDescriptionException(ErrorCode.BLANK_GOAL_DESCRIPTION);
+		}
 		if (description.length() > DESCRIPTION_MAX_LENGTH) {
-			throw new InvalidDescriptionException(ErrorCode.INVALID_SCHEDULE_DESCRIPTION_LENGTH);
+			throw new InvalidDescriptionException(ErrorCode.INVALID_GOAL_DESCRIPTION_LENGTH);
 		}
 	}
 }

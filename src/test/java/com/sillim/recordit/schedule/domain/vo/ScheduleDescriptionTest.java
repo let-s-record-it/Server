@@ -5,7 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.schedule.InvalidDescriptionException;
+import com.sillim.recordit.global.exception.common.InvalidDescriptionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

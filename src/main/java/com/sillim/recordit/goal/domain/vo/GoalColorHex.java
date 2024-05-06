@@ -1,4 +1,4 @@
-package com.sillim.recordit.calendar.domain.vo;
+package com.sillim.recordit.goal.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidColorHexException;
@@ -14,26 +14,26 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 @EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CalendarColorHex {
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+public class GoalColorHex {
 
 	private static final String COLOR_HEX_REGEX = "[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3}";
 
 	@Column(nullable = false)
-	private String colorHex;
+	private final String colorHex;
 
-	public CalendarColorHex(String colorHex) {
+	public GoalColorHex(final String colorHex) {
 		validate(colorHex);
 		this.colorHex = colorHex;
 	}
 
 	private void validate(final String colorHex) {
 		if (Objects.isNull(colorHex)) {
-			throw new InvalidColorHexException(ErrorCode.NULL_CALENDAR_COLOR_HEX);
+			throw new InvalidColorHexException(ErrorCode.NULL_GOAL_COLOR_HEX);
 		}
 
 		if (!Pattern.matches(COLOR_HEX_REGEX, colorHex)) {
-			throw new InvalidColorHexException(ErrorCode.INVALID_CALENDAR_COLOR_HEX);
+			throw new InvalidColorHexException(ErrorCode.INVALID_GOAL_COLOR_HEX);
 		}
 	}
 }

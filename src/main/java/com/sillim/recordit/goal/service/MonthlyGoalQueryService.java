@@ -20,18 +20,19 @@ public class MonthlyGoalQueryService {
 	private final MemberQueryService memberQueryService;
 	private final MonthlyGoalJpaRepository monthlyGoalJpaRepository;
 
-	public MonthlyGoal search(final Long monthlyGoalId) {
+	public MonthlyGoal search(final Long monthlyGoalId, final Long memberId) {
 
+		final Member member = memberQueryService.findByMemberId(memberId);
 		return monthlyGoalJpaRepository
-				.findById(monthlyGoalId)
+				.findByIdAndMember(monthlyGoalId, member)
 				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 	}
 
 	public List<MonthlyGoal> searchAllByDate(
-			final LocalDate startDate, final LocalDate endDate, final Long memberId) {
+			LocalDate startDate, final LocalDate endDate, final Long memberId) {
 
-		Member member = memberQueryService.findByMemberId(memberId);
-		return monthlyGoalJpaRepository.findByStartDateAndEndDateAndMember(
+		final Member member = memberQueryService.findByMemberId(memberId);
+		return monthlyGoalJpaRepository.findByPeriod_StartDateAndPeriod_EndDateAndMember(
 				startDate, endDate, member);
 	}
 }
