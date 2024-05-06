@@ -5,12 +5,14 @@ import com.sillim.recordit.goal.controller.dto.response.MonthlyGoalDetailsRespon
 import com.sillim.recordit.goal.controller.dto.response.MonthlyGoalListResponse;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.goal.service.MonthlyGoalUpdateService;
+import com.sillim.recordit.member.domain.AuthorizedUser;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,40 +30,47 @@ public class MonthlyGoalController {
 	private final MonthlyGoalUpdateService monthlyGoalUpdateService;
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
 
-	// TODO: Security 적용 시 UserDetails 받도록 변경
 	@PostMapping("/months")
 	public ResponseEntity<Void> monthlyGoalAdd(
-			@Valid @RequestBody MonthlyGoalUpdateRequest request) {
+			@Valid @RequestBody final MonthlyGoalUpdateRequest request,
+			@AuthenticationPrincipal final AuthorizedUser authorizedUser) {
 
-		monthlyGoalUpdateService.add(request, 1L);
+		monthlyGoalUpdateService.add(request, authorizedUser.getMemberId());
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PutMapping("/months/{monthlyGoalId}")
 	public ResponseEntity<Void> monthlyGoalModify(
-			@Valid @RequestBody MonthlyGoalUpdateRequest request,
-			@PathVariable Long monthlyGoalId) {
+			@Valid @RequestBody final MonthlyGoalUpdateRequest request,
+			@PathVariable final Long monthlyGoalId,
+			@AuthenticationPrincipal AuthorizedUser authorizedUser) {
 
-		monthlyGoalUpdateService.modify(request, monthlyGoalId);
+		monthlyGoalUpdateService.modify(request, monthlyGoalId, authorizedUser.getMemberId());
 		return ResponseEntity.noContent().build();
 	}
 
-	// TODO: Security 적용 시 UserDetails 받도록 변경
 	@GetMapping("/months")
 	public ResponseEntity<List<MonthlyGoalListResponse>> monthlyGoalList(
-			@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+			@RequestParam("startDate") final LocalDate startDate,
+			@RequestParam("endDate") final LocalDate endDate,
+			@AuthenticationPrincipal final AuthorizedUser authorizedUser) {
 
 		return ResponseEntity.ok(
-				monthlyGoalQueryService.searchAllByDate(startDate, endDate, 1L).stream()
+				monthlyGoalQueryService
+						.searchAllByDate(startDate, endDate, authorizedUser.getMemberId())
+						.stream()
 						.map(MonthlyGoalListResponse::from)
 						.toList());
 	}
 
 	@GetMapping("/months/{monthlyGoalId}")
 	public ResponseEntity<MonthlyGoalDetailsResponse> monthlyGoalDetails(
-			@PathVariable Long monthlyGoalId) {
+			@PathVariable final Long monthlyGoalId,
+			@AuthenticationPrincipal final AuthorizedUser authorizedUser) {
 
 		return ResponseEntity.ok(
-				MonthlyGoalDetailsResponse.from(monthlyGoalQueryService.search(monthlyGoalId)));
+				MonthlyGoalDetailsResponse.from(
+						monthlyGoalQueryService.search(
+								monthlyGoalId, authorizedUser.getMemberId())));
 	}
 }

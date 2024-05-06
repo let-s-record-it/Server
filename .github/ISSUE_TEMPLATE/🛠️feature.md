@@ -1,7 +1,7 @@
 ---
 name: "\U0001F6E0️FEATURE"
 about: feature 작업 사항을 입력해주세요.
-calendarTitle: "[Feature]"
+title: "[Feature]"
 labels: feature
 assignees: ''
 

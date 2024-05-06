@@ -1,7 +1,7 @@
 package com.sillim.recordit.goal.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -39,7 +39,7 @@ public class MonthlyGoalUpdateServiceTest {
 	@Test
 	@DisplayName("새로운 월 목표를 추가한다.")
 	void addTest() {
-
+		Long memberId = 1L;
 		MonthlyGoalUpdateRequest request =
 				new MonthlyGoalUpdateRequest(
 						"취뽀하기!",
@@ -48,19 +48,19 @@ public class MonthlyGoalUpdateServiceTest {
 						LocalDate.of(2024, 4, 30),
 						"ff83c8ef");
 
-		given(memberQueryService.findByMemberId(anyLong())).willReturn(member);
+		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 
-		monthlyGoalUpdateService.add(request, anyLong());
+		monthlyGoalUpdateService.add(request, memberId);
 
-		// TODO: Member 조회 행위 검증
-		then(memberQueryService).should(times(1)).findByMemberId(anyLong());
+		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
 		then(monthlyGoalJpaRepository).should(times(1)).save(any(MonthlyGoal.class));
 	}
 
 	@Test
 	@DisplayName("기존의 월 목표를 수정한다.")
 	void modifyTest() {
-
+		Long memberId = 1L;
+		Long monthlyGoalId = 2L;
 		MonthlyGoalUpdateRequest request =
 				new MonthlyGoalUpdateRequest(
 						"(수정)취뽀하기!",
@@ -69,10 +69,11 @@ public class MonthlyGoalUpdateServiceTest {
 						LocalDate.of(2024, 5, 31),
 						"ff123456");
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(monthlyGoalQueryService.search(anyLong())).willReturn(monthlyGoal);
+		given(monthlyGoalQueryService.search(eq(monthlyGoalId), eq(memberId)))
+				.willReturn(monthlyGoal);
 
-		monthlyGoalUpdateService.modify(request, anyLong());
+		monthlyGoalUpdateService.modify(request, monthlyGoalId, memberId);
 
-		then(monthlyGoalQueryService).should(times(1)).search(anyLong());
+		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
 	}
 }
