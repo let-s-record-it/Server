@@ -69,10 +69,10 @@ public class MonthlyGoalUpdateServiceTest {
 						LocalDate.of(2024, 5, 31),
 						"ff123456");
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(monthlyGoalQueryService.search(anyLong())).willReturn(monthlyGoal);
+		given(monthlyGoalQueryService.search(anyLong(), anyLong())).willReturn(monthlyGoal);
 
-		monthlyGoalUpdateService.modify(request, anyLong());
+		monthlyGoalUpdateService.modify(request, anyLong(), anyLong());
 
-		then(monthlyGoalQueryService).should(times(1)).search(anyLong());
+		then(monthlyGoalQueryService).should(times(1)).search(anyLong(), anyLong());
 	}
 }

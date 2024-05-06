@@ -45,21 +45,22 @@ public class MonthlyGoalQueryServiceTest {
 	void searchTest() {
 
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(monthlyGoalJpaRepository.findById(anyLong())).willReturn(Optional.of(monthlyGoal));
+		given(monthlyGoalJpaRepository.findByIdAndMemberId(anyLong(), anyLong()))
+				.willReturn(Optional.of(monthlyGoal));
 
-		monthlyGoalQueryService.search(anyLong());
+		monthlyGoalQueryService.search(anyLong(), anyLong());
 
-		then(monthlyGoalJpaRepository).should(times(1)).findById(anyLong());
+		then(monthlyGoalJpaRepository).should(times(1)).findByIdAndMemberId(anyLong(), anyLong());
 	}
 
 	@Test
 	@DisplayName("id에 해당하는 월 목표가 존재하지 않을 경우 RecordNotFoundException을 발생시킨다.")
 	void searchTestMonthlyGoalNotFound() {
 
-		given(monthlyGoalJpaRepository.findById(anyLong()))
+		given(monthlyGoalJpaRepository.findByIdAndMemberId(anyLong(), anyLong()))
 				.willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 
-		assertThatThrownBy(() -> monthlyGoalQueryService.search(anyLong()))
+		assertThatThrownBy(() -> monthlyGoalQueryService.search(anyLong(), anyLong()))
 				.isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.MONTHLY_GOAL_NOT_FOUND.getDescription());
 	}
@@ -72,19 +73,18 @@ public class MonthlyGoalQueryServiceTest {
 				LongStream.rangeClosed(1, 3)
 						.mapToObj((id) -> MonthlyGoalFixture.DEFAULT.getWithMember(member))
 						.toList();
-		given(memberQueryService.findByMemberId(anyLong())).willReturn(member);
 		given(
-						monthlyGoalJpaRepository.findByPeriod_StartDateAndPeriod_EndDateAndMember(
-								any(LocalDate.class), any(LocalDate.class), any(Member.class)))
+						monthlyGoalJpaRepository
+								.findByPeriod_StartDateAndPeriod_EndDateAndMember_Id(
+										any(LocalDate.class), any(LocalDate.class), anyLong()))
 				.willReturn(monthlyGoals);
 
 		monthlyGoalQueryService.searchAllByDate(
 				LocalDate.of(2024, 4, 1), LocalDate.of(2024, 4, 30), 1L);
 
-		then(memberQueryService).should(times(1)).findByMemberId(anyLong());
 		then(monthlyGoalJpaRepository)
 				.should(times(1))
-				.findByPeriod_StartDateAndPeriod_EndDateAndMember(
-						any(LocalDate.class), any(LocalDate.class), any(Member.class));
+				.findByPeriod_StartDateAndPeriod_EndDateAndMember_Id(
+						any(LocalDate.class), any(LocalDate.class), anyLong());
 	}
 }

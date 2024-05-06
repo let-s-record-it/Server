@@ -50,7 +50,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 	@BeforeEach
 	void beforeEach() {
-		member = MemberFixture.DEFAULT.getMember();
+		member = spy(MemberFixture.DEFAULT.getMember());
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 		willThrow(new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND))
 				.given(monthlyGoalUpdateService)
-				.add(any(MonthlyGoalUpdateRequest.class), anyLong());
+				.add(any(MonthlyGoalUpdateRequest.class), any());
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -155,7 +155,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 						"ff123456");
 		willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND))
 				.given(monthlyGoalUpdateService)
-				.modify(any(MonthlyGoalUpdateRequest.class), anyLong());
+				.modify(any(MonthlyGoalUpdateRequest.class), anyLong(), any());
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -190,7 +190,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 		given(
 						monthlyGoalQueryService.searchAllByDate(
-								any(LocalDate.class), any(LocalDate.class), anyLong()))
+								any(LocalDate.class), any(LocalDate.class), any()))
 				.willReturn(monthlyGoals);
 
 		ResultActions perform =
@@ -225,35 +225,13 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	}
 
 	@Test
-	@DisplayName("존재하지 않는 Member의 월 목표 목록을 조회하는 경우 NOT FOUND 응답을 반환한다.")
-	void monthlyGoalListTestMemberNotFound() throws Exception {
-
-		given(
-						monthlyGoalQueryService.searchAllByDate(
-								any(LocalDate.class), any(LocalDate.class), anyLong()))
-				.willThrow(new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-
-		ResultActions perform =
-				mockMvc.perform(
-						get("/api/v1/goals/months")
-								.headers(authorizationHeader())
-								.queryParam("startDate", "2024-04-01")
-								.queryParam("endDate", "2024-04-30"));
-
-		perform.andExpect(status().isNotFound());
-
-		perform.andDo(print())
-				.andDo(document("monthly-goal-list-member-not-found", getDocumentResponse()));
-	}
-
-	@Test
 	@DisplayName("특정 id의 월 목표를 상세하게 조회한다.")
 	void monthlyGoalDetailsTest() throws Exception {
 
 		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
 		given(monthlyGoal.getId()).willReturn(1L);
 
-		given(monthlyGoalQueryService.search(anyLong())).willReturn(monthlyGoal);
+		given(monthlyGoalQueryService.search(anyLong(), any())).willReturn(monthlyGoal);
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -284,7 +262,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	@DisplayName("존재하지 않는 월 목표를 상세하게 조회할 경우 NOT FOUND 응답을 반환한다.")
 	void monthlyGoalDetailsNotFoundTest() throws Exception {
 
-		given(monthlyGoalQueryService.search(anyLong()))
+		given(monthlyGoalQueryService.search(anyLong(), any()))
 				.willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 
 		ResultActions perform =
