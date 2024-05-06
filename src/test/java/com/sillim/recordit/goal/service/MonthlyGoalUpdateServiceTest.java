@@ -1,7 +1,7 @@
 package com.sillim.recordit.goal.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -48,12 +48,12 @@ public class MonthlyGoalUpdateServiceTest {
 						LocalDate.of(2024, 4, 30),
 						"ff83c8ef");
 
-		given(memberQueryService.findByMemberId(anyLong())).willReturn(member);
+		given(memberQueryService.findByMemberId(eq(1L))).willReturn(member);
 
-		monthlyGoalUpdateService.add(request, anyLong());
+		monthlyGoalUpdateService.add(request, 1L);
 
 		// TODO: Member 조회 행위 검증
-		then(memberQueryService).should(times(1)).findByMemberId(anyLong());
+		then(memberQueryService).should(times(1)).findByMemberId(eq(1L));
 		then(monthlyGoalJpaRepository).should(times(1)).save(any(MonthlyGoal.class));
 	}
 
@@ -69,10 +69,10 @@ public class MonthlyGoalUpdateServiceTest {
 						LocalDate.of(2024, 5, 31),
 						"ff123456");
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(monthlyGoalQueryService.search(anyLong(), anyLong())).willReturn(monthlyGoal);
+		given(monthlyGoalQueryService.search(eq(1L), eq(1L))).willReturn(monthlyGoal);
 
-		monthlyGoalUpdateService.modify(request, anyLong(), anyLong());
+		monthlyGoalUpdateService.modify(request, 1L, 1L);
 
-		then(monthlyGoalQueryService).should(times(1)).search(anyLong(), anyLong());
+		then(monthlyGoalQueryService).should(times(1)).search(1L, 1L);
 	}
 }

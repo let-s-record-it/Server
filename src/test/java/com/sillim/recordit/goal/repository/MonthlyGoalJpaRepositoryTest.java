@@ -95,8 +95,8 @@ public class MonthlyGoalJpaRepositoryTest {
 								LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30), member)));
 		// when
 		List<MonthlyGoal> foundList =
-				monthlyGoalJpaRepository.findByPeriod_StartDateAndPeriod_EndDateAndMember_Id(
-						expected.getStartDate(), expected.getEndDate(), member.getId());
+				monthlyGoalJpaRepository.findByPeriod_StartDateAndPeriod_EndDateAndMember(
+						expected.getStartDate(), expected.getEndDate(), member);
 		// then
 		assertThat(foundList).hasSize(2);
 		for (MonthlyGoal found : foundList) {

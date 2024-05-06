@@ -1,6 +1,7 @@
 package com.sillim.recordit.goal.repository;
 
 import com.sillim.recordit.goal.domain.MonthlyGoal;
+import com.sillim.recordit.member.domain.Member;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -10,8 +11,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MonthlyGoalJpaRepository extends JpaRepository<MonthlyGoal, Long> {
 
-	Optional<MonthlyGoal> findByIdAndMemberId(Long monthlyGoalId, Long memberId);
+	Optional<MonthlyGoal> findByIdAndMember(Long monthlyGoalId, Member member);
 
-	List<MonthlyGoal> findByPeriod_StartDateAndPeriod_EndDateAndMember_Id(
-			LocalDate startDate, LocalDate endDate, Long memberId);
+	List<MonthlyGoal> findByPeriod_StartDateAndPeriod_EndDateAndMember(
+			LocalDate startDate, LocalDate endDate, Member member);
 }

@@ -50,7 +50,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 	@BeforeEach
 	void beforeEach() {
-		member = spy(MemberFixture.DEFAULT.getMember());
+		member = MemberFixture.DEFAULT.getMember();
 	}
 
 	@Test
