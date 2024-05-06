@@ -23,9 +23,9 @@ public class MonthlyGoalUpdateService {
 		monthlyGoalJpaRepository.save(request.toEntity(member));
 	}
 
-	public void modify(MonthlyGoalUpdateRequest request, Long monthlyGoalId) {
+	public void modify(MonthlyGoalUpdateRequest request, Long monthlyGoalId, Long memberId) {
 
-		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId);
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
 		monthlyGoal.modify(
 				request.title(),
 				request.description(),
