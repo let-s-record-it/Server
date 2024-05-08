@@ -1,0 +1,18 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+app-key:
+  kakao: ${KAKAO_APP_KEY}
+  google: ${GOOGLE_APP_KEY}
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+
+logging:
+  level:
+    com.sillim.recordit: debug  # ref: https://blog.datalust.co/choosing-the-right-log-levels/
