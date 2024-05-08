@@ -4,7 +4,8 @@ WORKDIR /app
 COPY . .
 
 RUN chmod +x ./gradlew
-RUN ./gradlew clean build -x test -x asciidoctor
+RUN ./gradlew clean test
+RUN ./gradlew build
 
 FROM azul/zulu-openjdk:17-latest
 WORKDIR /app
