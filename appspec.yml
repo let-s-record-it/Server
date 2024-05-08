@@ -1,0 +1,11 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ec2-user/
+    overwrite: yes
+
+hooks:
+  ApplicationStart:
+    - location: deploy/deploy.sh
+      runas: ec2-user
