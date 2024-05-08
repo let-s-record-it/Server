@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WeekdayBit {
 
-	private static final int WEEKDAY_BIT_MIN = 0;
-	private static final int WEEKDAY_BIT_MAX = 127;
+	private static final int MIN_WEEKDAY_BIT = 0;
+	private static final int MAX_WEEKDAY_BIT = 127;
 
 	@Column private Integer weekdayBit;
 
@@ -25,7 +25,7 @@ public class WeekdayBit {
 	}
 
 	private void validate(Integer weekdayBit) {
-		if (weekdayBit < WEEKDAY_BIT_MIN || weekdayBit > WEEKDAY_BIT_MAX) {
+		if (weekdayBit < MIN_WEEKDAY_BIT || weekdayBit > MAX_WEEKDAY_BIT) {
 			throw new InvalidWeekdayBitException(ErrorCode.WEEKDAY_BIT_OUT_OF_RANGE);
 		}
 	}

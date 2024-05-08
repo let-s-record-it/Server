@@ -1,5 +1,6 @@
-package com.sillim.recordit.schedule.dto;
+package com.sillim.recordit.schedule.dto.request;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.global.validation.schedule.ValidLongitude;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
@@ -27,7 +28,8 @@ public record ScheduleAddRequest(
 		LocalDateTime alarmTime,
 		@NotNull Long calendarId) {
 
-	public Schedule toSchedule(TemporalAmount plusAmount, ScheduleGroup scheduleGroup) {
+	public Schedule toSchedule(
+			TemporalAmount plusAmount, Calendar calendar, ScheduleGroup scheduleGroup) {
 		return Schedule.builder()
 				.title(title)
 				.description(description)
@@ -41,11 +43,12 @@ public record ScheduleAddRequest(
 				.longitude(longitude)
 				.setAlarm(setAlarm)
 				.alarmTime(alarmTime)
+				.calendar(calendar)
 				.scheduleGroup(scheduleGroup)
 				.build();
 	}
 
-	public Schedule toSchedule(ScheduleGroup scheduleGroup) {
+	public Schedule toSchedule(Calendar calendar, ScheduleGroup scheduleGroup) {
 		return Schedule.builder()
 				.title(title)
 				.description(description)
@@ -59,6 +62,7 @@ public record ScheduleAddRequest(
 				.longitude(longitude)
 				.setAlarm(setAlarm)
 				.alarmTime(alarmTime)
+				.calendar(calendar)
 				.scheduleGroup(scheduleGroup)
 				.build();
 	}

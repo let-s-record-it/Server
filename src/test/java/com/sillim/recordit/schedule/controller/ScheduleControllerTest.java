@@ -2,8 +2,11 @@ package com.sillim.recordit.schedule.controller;
 
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentRequest;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -14,10 +17,14 @@ import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.MemberRole;
 import com.sillim.recordit.member.domain.OAuthProvider;
+import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
-import com.sillim.recordit.schedule.dto.ScheduleAddRequest;
-import com.sillim.recordit.schedule.service.ScheduleService;
+import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
+import com.sillim.recordit.schedule.fixture.RepetitionPatternFixture;
+import com.sillim.recordit.schedule.service.RepetitionPatternService;
+import com.sillim.recordit.schedule.service.ScheduleCommandService;
+import com.sillim.recordit.schedule.service.ScheduleQueryService;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,7 +39,9 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(ScheduleController.class)
 class ScheduleControllerTest extends RestDocsTest {
 
-	@MockBean ScheduleService scheduleService;
+	@MockBean ScheduleCommandService scheduleCommandService;
+	@MockBean ScheduleQueryService scheduleQueryService;
+	@MockBean RepetitionPatternService repetitionPatternService;
 
 	Member member;
 	Calendar calendar;
@@ -51,10 +60,9 @@ class ScheduleControllerTest extends RestDocsTest {
 	}
 
 	@Test
-	@DisplayName("스케줄을 생성한다.")
+	@DisplayName("일정을 생성한다.")
 	void addSchedule() throws Exception {
 		long calendarId = 1L;
-		long memberId = 1L;
 		ScheduleAddRequest scheduleAddRequest =
 				new ScheduleAddRequest(
 						"title",
@@ -72,8 +80,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						true,
 						LocalDateTime.of(2024, 1, 1, 0, 0),
 						calendarId);
-		ScheduleGroup scheduleGroup =
-				ScheduleGroup.builder().isRepeated(false).member(member).calendar(calendar).build();
+		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule =
 				Schedule.builder()
 						.title("title")
@@ -90,7 +97,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.scheduleGroup(scheduleGroup)
 						.build();
-		given(scheduleService.addSchedules(scheduleAddRequest, memberId))
+		given(scheduleCommandService.addSchedules(scheduleAddRequest))
 				.willReturn(List.of(schedule));
 
 		ResultActions perform =
@@ -103,5 +110,75 @@ class ScheduleControllerTest extends RestDocsTest {
 
 		perform.andDo(print())
 				.andDo(document("add-schedule", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("상세 일정을 조회한다.")
+	void scheduleDetails() throws Exception {
+		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		Schedule schedule =
+				Schedule.builder()
+						.title("title")
+						.description("description")
+						.isAllDay(false)
+						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+						.colorHex("aaffbb")
+						.setLocation(true)
+						.place("서울역")
+						.latitude(36.0)
+						.longitude(127.0)
+						.setAlarm(true)
+						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.scheduleGroup(scheduleGroup)
+						.build();
+		given(scheduleQueryService.searchSchedule(anyLong())).willReturn(schedule);
+		long scheduleId = 1L;
+
+		ResultActions perform = mockMvc.perform(get("/api/v1/schedules/{scheduleId}", scheduleId));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(document("schedule-details", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("반복이 있는 상세 일정을 조회한다.")
+	void repeatedScheduleDetails() throws Exception {
+		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
+		Schedule schedule =
+				Schedule.builder()
+						.title("title")
+						.description("description")
+						.isAllDay(false)
+						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+						.colorHex("aaffbb")
+						.setLocation(true)
+						.place("서울역")
+						.latitude(36.0)
+						.longitude(127.0)
+						.setAlarm(true)
+						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.scheduleGroup(scheduleGroup)
+						.build();
+		RepetitionPattern repetitionPattern =
+				RepetitionPatternFixture.WEEKLY.getRepetitionPattern(scheduleGroup);
+		given(repetitionPatternService.searchByScheduleGroupId(any()))
+				.willReturn(repetitionPattern);
+		given(scheduleQueryService.searchSchedule(anyLong())).willReturn(schedule);
+		long scheduleId = 1L;
+
+		ResultActions perform = mockMvc.perform(get("/api/v1/schedules/{scheduleId}", scheduleId));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"repeated-schedule-details",
+								getDocumentRequest(),
+								getDocumentResponse()));
 	}
 }

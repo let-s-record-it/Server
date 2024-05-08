@@ -41,6 +41,9 @@ public enum ErrorCode {
 	WEEKDAY_BIT_OUT_OF_RANGE("ERR_SCHEDULE_015", "요일 비트는 1 이상 127 이하여야 합니다."),
 	NOT_EQUAL_DAY_OF_MONTH("ERR_SCHEDULE_016", "dayOfMonth와 startDate의 월이 일치하지 않습니다."),
 	NOT_EQUAL_MONTH_OF_YEAR("ERR_SCHEDULE_017", "monthOfYear과 startDate의 년이 일치하지 않습니다."),
+	SCHEDULE_NOT_FOUND("ERR_SCHEDULE_018", "요청한 일정을 찾을 수 없습니다."),
+	SCHEDULE_GROUP_NOT_FOUND("ERR_SCHEDULE_019", "요청한 일정 그룹을 찾을 수 없습니다."),
+	REPETITION_PATTERN_NOT_FOUND("ERR_SCHEDULE_020", "요청한 반복 패턴을 찾을 수 없습니다."),
 
 	NULL_CALENDAR_TITLE("ERR_CALENDAR_001", "캘린더 제목은 null일 수 없습니다."),
 	BLANK_CALENDAR_TITLE("ERR_CALENDAR_002", "캘린더 제목은 빈 값일 수 없습니다."),

@@ -1,4 +1,4 @@
-package com.sillim.recordit.schedule.dto;
+package com.sillim.recordit.schedule.dto.request;
 
 import com.sillim.recordit.global.validation.schedule.ValidDayOfMonth;
 import com.sillim.recordit.global.validation.schedule.ValidMonth;
