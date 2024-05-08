@@ -1,14 +1,19 @@
 package com.sillim.recordit.schedule.controller;
 
-import com.sillim.recordit.member.domain.AuthorizedUser;
 import com.sillim.recordit.schedule.domain.Schedule;
-import com.sillim.recordit.schedule.dto.ScheduleAddRequest;
-import com.sillim.recordit.schedule.service.ScheduleService;
+import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
+import com.sillim.recordit.schedule.dto.response.DayScheduleResponse;
+import com.sillim.recordit.schedule.dto.response.MonthScheduleResponse;
+import com.sillim.recordit.schedule.dto.response.RepetitionPatternResponse;
+import com.sillim.recordit.schedule.service.RepetitionPatternService;
+import com.sillim.recordit.schedule.service.ScheduleCommandService;
+import com.sillim.recordit.schedule.service.ScheduleQueryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +24,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ScheduleController {
 
-	private final ScheduleService scheduleService;
+	private final ScheduleCommandService scheduleCommandService;
+	private final ScheduleQueryService scheduleQueryService;
+	private final RepetitionPatternService repetitionPatternService;
 
 	@PostMapping
-	public ResponseEntity<List<Schedule>> addSchedules(
-			@Validated @RequestBody ScheduleAddRequest request,
-			@AuthenticationPrincipal AuthorizedUser authorizedUser) {
+	public ResponseEntity<List<MonthScheduleResponse>> addSchedules(
+			@Validated @RequestBody ScheduleAddRequest request) {
 		return ResponseEntity.ok(
-				scheduleService.addSchedules(request, authorizedUser.getMemberId()));
+				scheduleCommandService.addSchedules(request).stream()
+						.map(MonthScheduleResponse::from)
+						.toList());
+	}
+
+	@GetMapping("/{scheduleId}")
+	public ResponseEntity<DayScheduleResponse> scheduleDetails(@PathVariable Long scheduleId) {
+		Schedule schedule = scheduleQueryService.searchSchedule(scheduleId);
+
+		if (schedule.getScheduleGroup().getIsRepeated()) {
+			return ResponseEntity.ok(
+					DayScheduleResponse.of(
+							schedule,
+							true,
+							RepetitionPatternResponse.from(
+									repetitionPatternService.searchByScheduleGroupId(
+											schedule.getScheduleGroup().getId()))));
+		}
+
+		return ResponseEntity.ok(DayScheduleResponse.of(schedule, false, null));
 	}
 }

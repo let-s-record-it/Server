@@ -23,6 +23,7 @@ import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.TemporalAmount;
+import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,6 +34,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RepetitionPattern extends BaseTime {
+
+	private static final int MAX_PERIOD = 999;
+	private static final int MIN_PERIOD = 1;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,8 +96,28 @@ public class RepetitionPattern extends BaseTime {
 		this.scheduleGroup = scheduleGroup;
 	}
 
+	public Optional<MonthOfYear> getMonthOfYear() {
+		return Optional.ofNullable(this.monthOfYear);
+	}
+
+	public Optional<DayOfMonth> getDayOfMonth() {
+		return Optional.ofNullable(this.dayOfMonth);
+	}
+
+	public Optional<WeekNumber> getWeekNumber() {
+		return Optional.ofNullable(this.weekNumber);
+	}
+
+	public Optional<Weekday> getWeekday() {
+		return Optional.ofNullable(this.weekday);
+	}
+
+	public Optional<WeekdayBit> getWeekdayBit() {
+		return Optional.ofNullable(this.weekdayBit);
+	}
+
 	private static void validatePeriod(Integer repetitionPeriod) {
-		if (repetitionPeriod < 1 || repetitionPeriod > 999) {
+		if (repetitionPeriod < MIN_PERIOD || repetitionPeriod > MAX_PERIOD) {
 			throw new InvalidRepetitionException(ErrorCode.INVALID_REPETITION_PERIOD);
 		}
 	}

@@ -1,5 +1,7 @@
 package com.sillim.recordit.schedule.domain;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Weekday {
 	MON(1),
 	TUE(2),
@@ -16,6 +18,7 @@ public enum Weekday {
 		this.value = value;
 	}
 
+	@JsonValue
 	public Integer getValue() {
 		return value;
 	}

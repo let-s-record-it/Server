@@ -1,12 +1,10 @@
 package com.sillim.recordit.schedule.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.MemberRole;
@@ -14,7 +12,7 @@ import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.RepetitionType;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
-import com.sillim.recordit.schedule.dto.RepetitionAddRequest;
+import com.sillim.recordit.schedule.dto.request.RepetitionAddRequest;
 import com.sillim.recordit.schedule.repository.RepetitionPatternRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,9 +31,6 @@ class RepetitionPatternServiceTest {
 	@InjectMocks RepetitionPatternService repetitionPatternService;
 
 	Member member;
-	Calendar calendar;
-	long calendarId = 1L;
-	long memberId = 1L;
 
 	@BeforeEach
 	void initObjects() {
@@ -47,7 +42,6 @@ class RepetitionPatternServiceTest {
 						.deleted(false)
 						.memberRole(List.of(MemberRole.ROLE_USER))
 						.build();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
 	}
 
 	@Test
@@ -55,8 +49,7 @@ class RepetitionPatternServiceTest {
 	void addRepetitionPattern() {
 		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
-		ScheduleGroup scheduleGroup =
-				ScheduleGroup.builder().isRepeated(true).calendar(calendar).member(member).build();
+		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
 		RepetitionPattern expectedRepetitionPattern =
 				RepetitionPattern.createDaily(
 						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
