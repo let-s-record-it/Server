@@ -7,7 +7,7 @@ RUN chmod +x ./gradlew
 RUN ./gradlew spotlessApply
 RUN ./gradlew clean build -x test -x asciidoctor
 
-FROM azul/zulu-openjdk:17-latese
+FROM azul/zulu-openjdk:17-latest
 WORKDIR /app
 
 COPY --from=builder /app/build/libs/*.jar app.jar
