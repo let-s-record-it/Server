@@ -12,13 +12,13 @@ public record MonthScheduleResponse(
 		LocalDateTime endDatetime,
 		String colorHex) {
 
-	public static MonthScheduleResponse of(Schedule schedule) {
+	public static MonthScheduleResponse from(Schedule schedule) {
 		return MonthScheduleResponse.builder()
 				.id(schedule.getId())
-				.isAllDay(schedule.getScheduleDuration().getIsAllDay())
-				.startDatetime(schedule.getScheduleDuration().getStartDatetime())
-				.endDatetime(schedule.getScheduleDuration().getEndDatetime())
-				.colorHex(schedule.getColorHex().getColorHex())
+				.isAllDay(schedule.getIsAllDay())
+				.startDatetime(schedule.getStartDatetime())
+				.endDatetime(schedule.getEndDatetime())
+				.colorHex(schedule.getColorHex())
 				.build();
 	}
 }

@@ -14,7 +14,7 @@ public record RepeatedWeekday(
 		Boolean saturday,
 		Boolean sunday) {
 
-	public static RepeatedWeekday of(WeekdayBit weekdayBit) {
+	public static RepeatedWeekday from(WeekdayBit weekdayBit) {
 		return RepeatedWeekday.builder()
 				.monday(weekdayBit.isValidWeekday(DayOfWeek.MONDAY))
 				.tuesday(weekdayBit.isValidWeekday(DayOfWeek.TUESDAY))

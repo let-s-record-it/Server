@@ -33,7 +33,7 @@ public class ScheduleController {
 			@Validated @RequestBody ScheduleAddRequest request) {
 		return ResponseEntity.ok(
 				scheduleCommandService.addSchedules(request).stream()
-						.map(MonthScheduleResponse::of)
+						.map(MonthScheduleResponse::from)
 						.toList());
 	}
 
@@ -46,7 +46,7 @@ public class ScheduleController {
 					DayScheduleResponse.of(
 							schedule,
 							true,
-							RepetitionPatternResponse.of(
+							RepetitionPatternResponse.from(
 									repetitionPatternService.searchByScheduleGroupId(
 											schedule.getScheduleGroup().getId()))));
 		}

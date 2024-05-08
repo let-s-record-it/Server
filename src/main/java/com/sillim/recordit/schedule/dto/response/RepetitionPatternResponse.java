@@ -21,7 +21,7 @@ public record RepetitionPatternResponse(
 		Weekday weekday,
 		RepeatedWeekday repeatedWeekday) {
 
-	public static RepetitionPatternResponse of(RepetitionPattern repetitionPattern) {
+	public static RepetitionPatternResponse from(RepetitionPattern repetitionPattern) {
 		return RepetitionPatternResponse.builder()
 				.repetitionType(repetitionPattern.getRepetitionType())
 				.repetitionPeriod(repetitionPattern.getRepetitionPeriod())
@@ -40,7 +40,7 @@ public record RepetitionPatternResponse(
 				.weekNumber(repetitionPattern.getWeekNumber().orElse(null))
 				.weekday(repetitionPattern.getWeekday().orElse(null))
 				.repeatedWeekday(
-						repetitionPattern.getWeekdayBit().map(RepeatedWeekday::of).orElse(null))
+						repetitionPattern.getWeekdayBit().map(RepeatedWeekday::from).orElse(null))
 				.build();
 	}
 }

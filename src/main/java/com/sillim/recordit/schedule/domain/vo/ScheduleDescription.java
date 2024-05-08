@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ScheduleDescription {
 
-	private static final int DESCRIPTION_MAX_LENGTH = 500;
+	private static final int MAX_DESCRIPTION_LENGTH = 500;
 
-	@Column(nullable = false, length = DESCRIPTION_MAX_LENGTH)
+	@Column(nullable = false, length = MAX_DESCRIPTION_LENGTH)
 	private String description;
 
 	public ScheduleDescription(String description) {
@@ -31,7 +31,7 @@ public class ScheduleDescription {
 			throw new InvalidDescriptionException(ErrorCode.NULL_SCHEDULE_DESCRIPTION);
 		}
 
-		if (description.length() > DESCRIPTION_MAX_LENGTH) {
+		if (description.length() > MAX_DESCRIPTION_LENGTH) {
 			throw new InvalidDescriptionException(ErrorCode.INVALID_SCHEDULE_DESCRIPTION_LENGTH);
 		}
 	}

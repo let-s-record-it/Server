@@ -1,8 +1,6 @@
 package com.sillim.recordit.schedule.dto.response;
 
 import com.sillim.recordit.schedule.domain.Schedule;
-import com.sillim.recordit.schedule.domain.vo.AlarmTime;
-import com.sillim.recordit.schedule.domain.vo.Location;
 import java.time.LocalDateTime;
 import lombok.Builder;
 
@@ -28,17 +26,17 @@ public record DayScheduleResponse(
 			Boolean isRepeated,
 			RepetitionPatternResponse repetitionPatternResponse) {
 		return DayScheduleResponse.builder()
-				.title(schedule.getTitle().getTitle())
-				.description(schedule.getDescription().getDescription())
-				.isAllDay(schedule.getScheduleDuration().getIsAllDay())
-				.startDatetime(schedule.getScheduleDuration().getStartDatetime())
-				.endDatetime(schedule.getScheduleDuration().getEndDatetime())
-				.colorHex(schedule.getColorHex().getColorHex())
+				.title(schedule.getTitle())
+				.description(schedule.getDescription())
+				.isAllDay(schedule.getIsAllDay())
+				.startDatetime(schedule.getStartDatetime())
+				.endDatetime(schedule.getEndDatetime())
+				.colorHex(schedule.getColorHex())
 				.place(schedule.getPlace())
-				.latitude(schedule.getLocation().map(Location::getLatitude).orElse(null))
-				.longitude(schedule.getLocation().map(Location::getLongitude).orElse(null))
+				.latitude(schedule.getLatitude())
+				.longitude(schedule.getLongitude())
 				.setAlarm(schedule.getSetAlarm())
-				.alarmTime(schedule.getAlarmTime().map(AlarmTime::getAlarmTime).orElse(null))
+				.alarmTime(schedule.getAlarmTime())
 				.isRepeated(isRepeated)
 				.repetitionPattern(repetitionPatternResponse)
 				.build();

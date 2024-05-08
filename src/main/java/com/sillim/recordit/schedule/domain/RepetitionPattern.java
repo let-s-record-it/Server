@@ -35,6 +35,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RepetitionPattern extends BaseTime {
 
+	private static final int MAX_PERIOD = 999;
+	private static final int MIN_PERIOD = 1;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "repetition_pattern_id", nullable = false)
@@ -114,7 +117,7 @@ public class RepetitionPattern extends BaseTime {
 	}
 
 	private static void validatePeriod(Integer repetitionPeriod) {
-		if (repetitionPeriod < 1 || repetitionPeriod > 999) {
+		if (repetitionPeriod < MIN_PERIOD || repetitionPeriod > MAX_PERIOD) {
 			throw new InvalidRepetitionException(ErrorCode.INVALID_REPETITION_PERIOD);
 		}
 	}

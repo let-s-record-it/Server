@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MonthOfYear {
 
-	private static final int MONTH_OF_YEAR_MIN = 1;
-	private static final int MONTH_OF_YEAR_MAX = 12;
+	private static final int MIN_MONTH_OF_YEAR = 1;
+	private static final int MAX_MONTH_OF_YEAR = 12;
 
 	@Column(nullable = false)
 	private Integer monthOfYear;
@@ -27,7 +27,7 @@ public class MonthOfYear {
 	}
 
 	private void validate(Integer monthOfYear) {
-		if (monthOfYear < MONTH_OF_YEAR_MIN || monthOfYear > MONTH_OF_YEAR_MAX) {
+		if (monthOfYear < MIN_MONTH_OF_YEAR || monthOfYear > MAX_MONTH_OF_YEAR) {
 			throw new InvalidMonthOfYearException(ErrorCode.INVALID_MONTH_OF_YEAR);
 		}
 	}

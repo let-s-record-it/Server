@@ -1,8 +1,21 @@
 package com.sillim.recordit.schedule.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.schedule.domain.vo.*;
-import jakarta.persistence.*;
+import com.sillim.recordit.schedule.domain.vo.AlarmTime;
+import com.sillim.recordit.schedule.domain.vo.Location;
+import com.sillim.recordit.schedule.domain.vo.ScheduleColorHex;
+import com.sillim.recordit.schedule.domain.vo.ScheduleDescription;
+import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
+import com.sillim.recordit.schedule.domain.vo.ScheduleTitle;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.AccessLevel;
@@ -106,11 +119,39 @@ public class Schedule {
 				scheduleGroup);
 	}
 
-	public Optional<Location> getLocation() {
-		return Optional.ofNullable(this.location);
+	public String getTitle() {
+		return title.getTitle();
 	}
 
-	public Optional<AlarmTime> getAlarmTime() {
-		return Optional.ofNullable(this.alarmTime);
+	public String getDescription() {
+		return description.getDescription();
+	}
+
+	public Boolean getIsAllDay() {
+		return scheduleDuration.getIsAllDay();
+	}
+
+	public LocalDateTime getStartDatetime() {
+		return scheduleDuration.getStartDatetime();
+	}
+
+	public LocalDateTime getEndDatetime() {
+		return scheduleDuration.getEndDatetime();
+	}
+
+	public String getColorHex() {
+		return colorHex.getColorHex();
+	}
+
+	public Double getLatitude() {
+		return Optional.ofNullable(location).map(Location::getLatitude).orElse(null);
+	}
+
+	public Double getLongitude() {
+		return Optional.ofNullable(location).map(Location::getLongitude).orElse(null);
+	}
+
+	public LocalDateTime getAlarmTime() {
+		return Optional.ofNullable(this.alarmTime).map(AlarmTime::getAlarmTime).orElse(null);
 	}
 }
