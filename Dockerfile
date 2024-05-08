@@ -4,7 +4,6 @@ WORKDIR /app
 COPY . .
 
 RUN chmod +x ./gradlew
-RUN ./gradlew spotlessApply
 RUN ./gradlew clean build -x test -x asciidoctor
 
 FROM azul/zulu-openjdk:17-latest
