@@ -2,7 +2,7 @@ name: LetsRecordIt Server CI with Gradle
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ "main", "release-*" ]
 
 jobs:
   build:
@@ -27,25 +27,6 @@ jobs:
 
       - name: Test with Gradle Wrapper
         run: ./gradlew clean spotlessCheck test
-
-      - name: Build with Gradle Wrapper
-        run: ./gradlew build
-
-      - name: Make zip file
-        run: zip -r ./$GITHUB_SHA.zip .
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Upload to S3
-        run: aws s3 cp --region ${{ secrets.AWS_REGION }} ./$GITHUB_SHA.zip s3://${{ secrets.S3_BUCKET_NAME }}/$GITHUB_SHA.zip
-
-      - name: Code Deploy
-        run: aws deploy create-deployment --application-name ${{ secrets.CODEDEPLOY_NAME }} --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name ${{ secrets.CODEDEPLOY_GROUP }} --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=$GITHUB_SHA.zip
 
       - name: Send Notification to Discord
         uses: sarisia/actions-status-discord@v1.14.0
