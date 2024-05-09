@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk:17-latest AS builder
+FROM azul/zulu-openjdk-alpine:17-latest AS builder
 WORKDIR /app
 
 COPY . .
@@ -7,7 +7,7 @@ RUN chmod +x ./gradlew
 RUN ./gradlew clean test
 RUN ./gradlew build
 
-FROM azul/zulu-openjdk:17-latest
+FROM azul/zulu-openjdk-alpine:17-latest
 WORKDIR /app
 
 COPY --from=builder /app/build/libs/*.jar app.jar
