@@ -1,0 +1,19 @@
+version: "3"
+services:
+  spring:
+    container_name: server
+    build:
+      context: .
+    environment:
+      KAKAO_APP_KEY: ${KAKAO_APP_KEY}
+      GOOGLE_APP_KEY: ${GOOGLE_APP_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    ports:
+      - "8080:8080"
+    networks:
+      - deploy
+    restart: always
+
+networks:
+  deploy:
+    external: true
