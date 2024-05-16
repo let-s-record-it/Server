@@ -29,8 +29,7 @@ public class ScheduleCommandService {
 		return List.of(
 				scheduleRepository.save(
 						request.toSchedule(
-								calendarService.findByCalendarId(calendarId),
-								scheduleGroup)));
+								calendarService.findByCalendarId(calendarId), scheduleGroup)));
 	}
 
 	private List<Schedule> addRepeatingSchedule(

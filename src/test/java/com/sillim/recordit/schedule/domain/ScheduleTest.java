@@ -5,14 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
-import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.domain.MemberRole;
-import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
 import com.sillim.recordit.schedule.fixture.ScheduleFixture;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

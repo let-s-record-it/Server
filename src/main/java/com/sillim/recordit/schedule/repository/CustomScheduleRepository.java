@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface CustomScheduleRepository {
 
-    List<Schedule> findScheduleInMonth(Long calendarId, Integer year, Integer month);
+	List<Schedule> findScheduleInMonth(Long calendarId, Integer year, Integer month);
 }

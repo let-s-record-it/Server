@@ -95,7 +95,8 @@ class ScheduleCommandServiceTest {
 						.build();
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 
-		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest, calendarId);
+		List<Schedule> schedules =
+				scheduleCommandService.addSchedules(scheduleAddRequest, calendarId);
 
 		assertAll(
 				() -> {
@@ -171,7 +172,8 @@ class ScheduleCommandServiceTest {
 		given(repetitionPatternService.addRepetitionPattern(repetitionAddRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
 
-		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest, calendarId);
+		List<Schedule> schedules =
+				scheduleCommandService.addSchedules(scheduleAddRequest, calendarId);
 
 		assertAll(
 				() -> {
