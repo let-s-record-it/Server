@@ -74,8 +74,7 @@ class ScheduleCommandServiceTest {
 						36.0,
 						127.0,
 						true,
-						LocalDateTime.of(2024, 1, 1, 0, 0),
-						calendarId);
+						LocalDateTime.of(2024, 1, 1, 0, 0));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule =
 				Schedule.builder()
@@ -96,7 +95,7 @@ class ScheduleCommandServiceTest {
 						.build();
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 
-		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest);
+		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest, calendarId);
 
 		assertAll(
 				() -> {
@@ -145,8 +144,7 @@ class ScheduleCommandServiceTest {
 						36.0,
 						127.0,
 						true,
-						LocalDateTime.of(2024, 1, 1, 0, 0),
-						calendarId);
+						LocalDateTime.of(2024, 1, 1, 0, 0));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
 		RepetitionPattern repetitionPattern =
 				RepetitionPattern.createDaily(
@@ -173,7 +171,7 @@ class ScheduleCommandServiceTest {
 		given(repetitionPatternService.addRepetitionPattern(repetitionAddRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
 
-		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest);
+		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest, calendarId);
 
 		assertAll(
 				() -> {

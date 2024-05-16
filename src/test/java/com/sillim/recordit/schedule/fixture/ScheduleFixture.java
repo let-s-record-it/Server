@@ -1,5 +1,6 @@
 package com.sillim.recordit.schedule.fixture;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import java.time.LocalDateTime;
@@ -86,7 +87,7 @@ public enum ScheduleFixture {
 		this.alarmTime = alarmTime;
 	}
 
-	public Schedule getSchedule(ScheduleGroup scheduleGroup) {
+	public Schedule getSchedule(ScheduleGroup scheduleGroup, Calendar calendar) {
 		return Schedule.builder()
 				.title(title)
 				.description(description)
@@ -101,6 +102,7 @@ public enum ScheduleFixture {
 				.setAlarm(setAlarm)
 				.alarmTime(alarmTime)
 				.scheduleGroup(scheduleGroup)
+				.calendar(calendar)
 				.build();
 	}
 

@@ -25,8 +25,7 @@ public record ScheduleAddRequest(
 		@ValidLongitude Double latitude,
 		@ValidLongitude Double longitude,
 		@NotNull Boolean setAlarm,
-		LocalDateTime alarmTime,
-		@NotNull Long calendarId) {
+		LocalDateTime alarmTime) {
 
 	public Schedule toSchedule(
 			TemporalAmount plusAmount, Calendar calendar, ScheduleGroup scheduleGroup) {
