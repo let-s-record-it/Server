@@ -1,11 +1,11 @@
 package com.sillim.recordit.schedule.dto.request;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.global.validation.common.ColorHexValid;
 import com.sillim.recordit.global.validation.schedule.ValidLongitude;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAmount;
 import org.hibernate.validator.constraints.Length;
@@ -19,7 +19,7 @@ public record ScheduleAddRequest(
 		@NotNull LocalDateTime endDatetime,
 		@NotNull Boolean isRepeated,
 		@Validated RepetitionAddRequest repetition,
-		@Pattern(regexp = "[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3}") String colorHex,
+		@ColorHexValid String colorHex,
 		@NotNull String place,
 		@NotNull Boolean setLocation,
 		@ValidLongitude Double latitude,
