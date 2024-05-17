@@ -30,7 +30,7 @@ public class CalendarService {
 	public void deleteByCalendarId(Long calendarId, Long memberId) {
 		Calendar calendar = searchByCalendarId(calendarId);
 
-		if (!calendar.getMember().getId().equals(memberId)) {
+		if (!calendar.equalsMemberId(memberId)) {
 			throw new InvalidCalendarException(ErrorCode.INVALID_CALENDAR_DELETE_REQUEST);
 		}
 		calendarRepository.delete(calendar);
