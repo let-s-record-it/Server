@@ -4,7 +4,7 @@ import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentR
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -64,7 +64,7 @@ class CalendarControllerTest extends RestDocsTest {
 	@DisplayName("캘린더를 삭제한다.")
 	void deleteCalendar() throws Exception {
 		long calendarId = 1L;
-		doNothing().when(calendarService).deleteByCalendarId(any(), any());
+		willDoNothing().given(calendarService).deleteByCalendarId(any(), any());
 
 		ResultActions perform =
 				mockMvc.perform(delete("/api/v1/calendars/{calendarId}", calendarId));

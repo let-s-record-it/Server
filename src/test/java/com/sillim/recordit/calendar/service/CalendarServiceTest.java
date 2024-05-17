@@ -1,12 +1,12 @@
 package com.sillim.recordit.calendar.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.repository.CalendarRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.calendar.InvalidCalendarException;
@@ -41,10 +41,10 @@ class CalendarServiceTest {
 	void deleteCalendarByCalendarIdAndMemberId() {
 		long calendarId = 1L;
 		long memberId = 1L;
-		Member member = mock(Member.class);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
 
-		given(member.getId()).willReturn(1L);
+		Calendar calendar = mock(Calendar.class);
+
+		given(calendar.equalsMemberId(any())).willReturn(true);
 		given(calendarRepository.findById(eq(1L))).willReturn(Optional.of(calendar));
 
 		assertThatCode(() -> calendarService.deleteByCalendarId(calendarId, memberId))
@@ -57,10 +57,9 @@ class CalendarServiceTest {
 		long calendarId = 1L;
 		long memberId = 1L;
 
-		Member member = mock(Member.class);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		Calendar calendar = mock(Calendar.class);
 
-		given(member.getId()).willReturn(2L);
+		given(calendar.equalsMemberId(any())).willReturn(false);
 		given(calendarRepository.findById(eq(1L))).willReturn(Optional.of(calendar));
 
 		assertThatCode(() -> calendarService.deleteByCalendarId(calendarId, memberId))
