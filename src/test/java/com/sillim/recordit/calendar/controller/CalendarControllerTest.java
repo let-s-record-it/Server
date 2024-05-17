@@ -62,8 +62,8 @@ class CalendarControllerTest extends RestDocsTest {
 		perform.andDo(print())
 				.andDo(document("calendar-list", getDocumentRequest(), getDocumentResponse()));
 	}
-  
-  @Test
+
+	@Test
 	@DisplayName("캘린더를 추가한다.")
 	void addCalendar() throws Exception {
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
@@ -96,6 +96,5 @@ class CalendarControllerTest extends RestDocsTest {
 
 		perform.andDo(print())
 				.andDo(document("calendar-delete", getDocumentRequest(), getDocumentResponse()));
-  }
-
+	}
 }

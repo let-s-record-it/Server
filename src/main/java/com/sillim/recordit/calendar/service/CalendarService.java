@@ -30,7 +30,7 @@ public class CalendarService {
 		return calendarRepository.findByMemberId(memberId);
 	}
 
-  @Transactional
+	@Transactional
 	public Calendar addCalendar(CalendarAddRequest request, Long memberId) {
 		return calendarRepository.save(
 				request.toCalendar(memberQueryService.findByMemberId(memberId)));
@@ -44,6 +44,5 @@ public class CalendarService {
 			throw new InvalidCalendarException(ErrorCode.INVALID_CALENDAR_DELETE_REQUEST);
 		}
 		calendarRepository.delete(calendar);
-  }
-  
+	}
 }

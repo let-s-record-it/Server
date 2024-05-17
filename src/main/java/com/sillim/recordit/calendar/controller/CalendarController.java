@@ -33,7 +33,7 @@ public class CalendarController {
 						.toList());
 	}
 
-  @PostMapping
+	@PostMapping
 	public ResponseEntity<CalendarResponse> addCalendar(
 			@RequestBody CalendarAddRequest request, @CurrentMember Member member) {
 		Calendar calendar = calendarService.addCalendar(request, member.getId());
@@ -46,5 +46,5 @@ public class CalendarController {
 			@PathVariable Long calendarId, @CurrentMember Member member) {
 		calendarService.deleteByCalendarId(calendarId, member.getId());
 		return ResponseEntity.noContent().build();
-  }
+	}
 }

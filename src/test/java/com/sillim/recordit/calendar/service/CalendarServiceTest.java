@@ -1,19 +1,19 @@
 package com.sillim.recordit.calendar.service;
 
-import static org.mockito.Mockito.mock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
-import com.sillim.recordit.global.exception.calendar.InvalidCalendarException;
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.repository.CalendarRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.calendar.InvalidCalendarException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
@@ -42,7 +42,7 @@ class CalendarServiceTest {
 		member = MemberFixture.DEFAULT.getMember();
 	}
 
-  @Test
+	@Test
 	@DisplayName("calendar id를 통해 캘린더를 조회할 수 있다.")
 	void searchByCalendarId() {
 		Calendar expectedCalendar = CalendarFixture.DEFAULT.getCalendar(member);
@@ -93,8 +93,8 @@ class CalendarServiceTest {
 
 		assertThat(calendar).isEqualTo(expectedCalendar);
 	}
-  
-  @Test
+
+	@Test
 	@DisplayName("calendar id와 member id를 통해 캘린더를 삭제할 수 있다.")
 	void deleteCalendarByCalendarIdAndMemberId() {
 		long calendarId = 1L;
@@ -123,5 +123,5 @@ class CalendarServiceTest {
 		assertThatCode(() -> calendarService.deleteByCalendarId(calendarId, memberId))
 				.isInstanceOf(InvalidCalendarException.class)
 				.hasMessage(ErrorCode.INVALID_CALENDAR_DELETE_REQUEST.getDescription());
-  }
+	}
 }
