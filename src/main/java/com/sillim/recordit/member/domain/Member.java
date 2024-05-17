@@ -67,4 +67,8 @@ public class Member extends BaseTime {
 	public List<SimpleGrantedAuthority> getAuthorities() {
 		return memberRole.stream().map(MemberRole::name).map(SimpleGrantedAuthority::new).toList();
 	}
+
+	public boolean equalsId(Long id) {
+		return this.id.equals(id);
+	}
 }
