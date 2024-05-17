@@ -78,6 +78,14 @@ class CustomScheduleRepositoryTest {
 		List<Schedule> scheduleInMonth =
 				customScheduleRepository.findScheduleInMonth(calendar.getId(), 2024, 2);
 
+		scheduleInMonth.forEach(
+				schedule -> {
+					System.out.println(
+							schedule.getScheduleDuration().getStartDatetime()
+									+ " => "
+									+ schedule.getScheduleDuration().getEndDatetime());
+				});
+
 		assertThat(scheduleInMonth).hasSize(3);
 	}
 }
