@@ -24,53 +24,60 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @DataJpaTest
 class CustomScheduleRepositoryTest {
 
-    @Qualifier("customScheduleRepositoryImpl")
-    @Autowired
-    CustomScheduleRepository customScheduleRepository;
+	@Qualifier("customScheduleRepositoryImpl") @Autowired
+	CustomScheduleRepository customScheduleRepository;
 
-    @Autowired
-    ScheduleRepository scheduleRepository;
-    @Autowired
-    TestEntityManager em;
+	@Autowired ScheduleRepository scheduleRepository;
+	@Autowired TestEntityManager em;
 
-    Member member;
-    Calendar calendar;
-    ScheduleGroup scheduleGroup;
+	Member member;
+	Calendar calendar;
+	ScheduleGroup scheduleGroup;
 
-    @BeforeEach
-    void setEntities() {
-        member = em.persist(MemberFixture.DEFAULT.getMember());
-        calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member));
-        scheduleGroup = em.persist(new ScheduleGroup(false));
-    }
+	@BeforeEach
+	void setEntities() {
+		member = em.persist(MemberFixture.DEFAULT.getMember());
+		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member));
+		scheduleGroup = em.persist(new ScheduleGroup(false));
+	}
 
-    @Test
-    @DisplayName("년 월에 맞는 일정을 조회한다.")
-    void searchSchedules() {
-        scheduleRepository.save(
-                ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar,
-                        LocalDateTime.of(2023, 2, 1, 0, 0),
-                        LocalDateTime.of(2024, 1, 1, 0, 0)));
-        scheduleRepository.save(
-                ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar,
-                        LocalDateTime.of(2023, 2, 1, 0, 0),
-                        LocalDateTime.of(2024, 2, 1, 0, 0)));
-        scheduleRepository.save(
-                ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar,
-                        LocalDateTime.of(2024, 1, 1, 0, 0),
-                        LocalDateTime.of(2025, 1, 1, 0, 0)));
-        scheduleRepository.save(
-                ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar,
-                        LocalDateTime.of(2024, 2, 1, 0, 0),
-                        LocalDateTime.of(2025, 1, 1, 0, 0)));
-        scheduleRepository.save(
-                ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar,
-                        LocalDateTime.of(2024, 3, 1, 0, 0),
-                        LocalDateTime.of(2025, 1, 1, 0, 0)));
+	@Test
+	@DisplayName("년 월에 맞는 일정을 조회한다.")
+	void searchSchedules() {
+		scheduleRepository.save(
+				ScheduleFixture.DEFAULT.getSchedule(
+						scheduleGroup,
+						calendar,
+						LocalDateTime.of(2023, 2, 1, 0, 0),
+						LocalDateTime.of(2024, 1, 1, 0, 0)));
+		scheduleRepository.save(
+				ScheduleFixture.DEFAULT.getSchedule(
+						scheduleGroup,
+						calendar,
+						LocalDateTime.of(2023, 2, 1, 0, 0),
+						LocalDateTime.of(2024, 2, 1, 0, 0)));
+		scheduleRepository.save(
+				ScheduleFixture.DEFAULT.getSchedule(
+						scheduleGroup,
+						calendar,
+						LocalDateTime.of(2024, 1, 1, 0, 0),
+						LocalDateTime.of(2025, 1, 1, 0, 0)));
+		scheduleRepository.save(
+				ScheduleFixture.DEFAULT.getSchedule(
+						scheduleGroup,
+						calendar,
+						LocalDateTime.of(2024, 2, 1, 0, 0),
+						LocalDateTime.of(2025, 1, 1, 0, 0)));
+		scheduleRepository.save(
+				ScheduleFixture.DEFAULT.getSchedule(
+						scheduleGroup,
+						calendar,
+						LocalDateTime.of(2024, 3, 1, 0, 0),
+						LocalDateTime.of(2025, 1, 1, 0, 0)));
 
-        List<Schedule> scheduleInMonth =
-                customScheduleRepository.findScheduleInMonth(calendar.getId(), 2024, 2);
+		List<Schedule> scheduleInMonth =
+				customScheduleRepository.findScheduleInMonth(calendar.getId(), 2024, 2);
 
-        assertThat(scheduleInMonth).hasSize(3);
-    }
+		assertThat(scheduleInMonth).hasSize(3);
+	}
 }

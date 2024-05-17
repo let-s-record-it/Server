@@ -106,8 +106,11 @@ public enum ScheduleFixture {
 				.build();
 	}
 
-	public Schedule getSchedule(ScheduleGroup scheduleGroup, Calendar calendar,
-			LocalDateTime startDatetime, LocalDateTime endDatetime) {
+	public Schedule getSchedule(
+			ScheduleGroup scheduleGroup,
+			Calendar calendar,
+			LocalDateTime startDatetime,
+			LocalDateTime endDatetime) {
 		return Schedule.builder()
 				.title(title)
 				.description(description)
