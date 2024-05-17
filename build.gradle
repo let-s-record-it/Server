@@ -1,139 +1,185 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.4'
-	id 'io.spring.dependency-management' version '1.1.4'
-	id 'org.asciidoctor.jvm.convert' version '3.3.2'
-	id 'com.diffplug.spotless' version '6.25.0'	// https://plugins.gradle.org/plugin/com.diffplug.spotless
-	id 'jacoco'
+    id 'java'
+    id 'org.springframework.boot' version '3.2.4'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    id 'com.diffplug.spotless' version '6.25.0'
+    // https://plugins.gradle.org/plugin/com.diffplug.spotless
+    id 'jacoco'
 }
 
 group = 'com.sillim'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '17'
+    sourceCompatibility = '17'
 }
 
 configurations {
-	asciidoctorExt
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    asciidoctorExt
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 ext {
-	set('snippetsDir', file("build/generated-snippets"))
+    set('snippetsDir', file("build/generated-snippets"))
 }
 
 jacoco {
-	toolVersion = '0.8.11'
+    toolVersion = '0.8.11'
 }
 
 dependencies {
 
-	// spring boot
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // spring boot
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	// database
-	runtimeOnly 'com.h2database:h2'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+    // database
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
-	// lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	// spring security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	testImplementation 'org.springframework.security:spring-security-test'
+    // spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    testImplementation 'org.springframework.security:spring-security-test'
 
-	// jwt
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-	// open feign
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.1'
+    // open feign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.1'
 
-	// cache
-	implementation 'org.springframework.boot:spring-boot-starter-cache'
-	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+    // cache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
-	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    // querydsl
+    implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 tasks.named('test') {
-	outputs.dir snippetsDir
-	useJUnitPlatform()
-	jacoco {
-		enabled = true
-	}
-	finalizedBy jacocoTestReport
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+    jacoco {
+        enabled = true
+    }
+    finalizedBy jacocoTestReport
 }
 
 tasks.named('asciidoctor') {
-	inputs.dir snippetsDir
-	configurations 'asciidoctorExt'
-	dependsOn test
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
+    dependsOn test
 }
 
 bootJar { // jar의 templates에 문서 복사
-	dependsOn asciidoctor
-	from ("${asciidoctor.outputDir}") {
-		into 'BOOT-INF/classes/templates'
-	}
+    dependsOn asciidoctor
+    from("${asciidoctor.outputDir}") {
+        into 'BOOT-INF/classes/templates'
+    }
 }
 
 spotless {
 
-	java {
-		// don't need to set target, it is inferred from java
-		importOrder()
-		removeUnusedImports()
-		cleanthat()
-		googleJavaFormat().aosp().reflowLongStrings().skipJavadocFormatting()
-		formatAnnotations()
-		indentWithTabs()
-		trimTrailingWhitespace()
-		endWithNewline()
-	}
+    java {
+        // don't need to set target, it is inferred from java
+        importOrder()
+        removeUnusedImports()
+        cleanthat()
+        googleJavaFormat().aosp().reflowLongStrings().skipJavadocFormatting()
+        formatAnnotations()
+        indentWithTabs()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 } // https://github.com/diffplug/spotless/tree/main/plugin-gradle#quickstart
 
 jacocoTestReport {
-	reports {
-		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
-		xml.required = false
-		xml.required = false
-	}
-	finalizedBy jacocoTestCoverageVerification
+    reports {
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+        xml.required = false
+        xml.required = false
+    }
+
+    def QDomains = []
+
+    for (qPattern in '**/QA'..'**/QZ') {
+        QDomains.add(qPattern + '*')
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, excludes: [
+                            '*.dto.*',
+                            '*.util.LoggingUtils',
+                    ] + QDomains)
+                })
+        )
+    }
+    finalizedBy jacocoTestCoverageVerification
 }
 
 jacocoTestCoverageVerification {
-	violationRules {
-		rule {
-			enabled = true
-			element = 'CLASS'
 
-			limit {
-				counter = 'BRANCH'
-				value = 'COVEREDRATIO'
-				minimum = 0.7
-			}
+    def QDomains = []
 
-			excludes = [
-					'*.dto.*',
-					'*.util.LoggingUtils',
-			]
-		}
-	}
+    for (qPattern in '*.QA'..'*.QZ') {
+        QDomains.add(qPattern + '*')
+    }
+
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.7
+            }
+
+            excludes = [
+                    '*.dto.*',
+                    '*.util.LoggingUtils',
+            ] + QDomains
+        }
+    }
+}
+
+// Querydsl Settings
+def querydslDir = layout.buildDirectory.dir("/generated/querydsl")
+
+sourceSets {
+    main.java.srcDirs += [querydslDir]
+}
+
+tasks.withType(JavaCompile) {
+    options.generatedSourceOutputDirectory.file(querydslDir)
+}
+
+clean.doLast {
+    file(querydslDir).deleteDir()
 }

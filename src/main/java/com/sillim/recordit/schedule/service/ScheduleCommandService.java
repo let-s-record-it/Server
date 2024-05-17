@@ -20,21 +20,20 @@ public class ScheduleCommandService {
 	private final ScheduleGroupService scheduleGroupService;
 	private final RepetitionPatternService repetitionPatternService;
 
-	public List<Schedule> addSchedules(ScheduleAddRequest request) {
+	public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId) {
 		ScheduleGroup scheduleGroup = scheduleGroupService.addScheduleGroup(request.isRepeated());
 
 		if (request.isRepeated()) {
-			return addRepeatingSchedule(request, scheduleGroup);
+			return addRepeatingSchedule(request, scheduleGroup, calendarId);
 		}
 		return List.of(
 				scheduleRepository.save(
 						request.toSchedule(
-								calendarService.findByCalendarId(request.calendarId()),
-								scheduleGroup)));
+								calendarService.findByCalendarId(calendarId), scheduleGroup)));
 	}
 
 	private List<Schedule> addRepeatingSchedule(
-			ScheduleAddRequest request, ScheduleGroup scheduleGroup) {
+			ScheduleAddRequest request, ScheduleGroup scheduleGroup, Long calendarId) {
 		return repetitionPatternService
 				.addRepetitionPattern(request.repetition(), scheduleGroup)
 				.repeatingStream()
@@ -43,8 +42,7 @@ public class ScheduleCommandService {
 								scheduleRepository.save(
 										request.toSchedule(
 												temporalAmount,
-												calendarService.findByCalendarId(
-														request.calendarId()),
+												calendarService.findByCalendarId(calendarId),
 												scheduleGroup)))
 				.toList();
 	}

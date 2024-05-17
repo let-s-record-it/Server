@@ -78,8 +78,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						36.0,
 						127.0,
 						true,
-						LocalDateTime.of(2024, 1, 1, 0, 0),
-						calendarId);
+						LocalDateTime.of(2024, 1, 1, 0, 0));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule =
 				Schedule.builder()
@@ -97,12 +96,12 @@ class ScheduleControllerTest extends RestDocsTest {
 						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.scheduleGroup(scheduleGroup)
 						.build();
-		given(scheduleCommandService.addSchedules(scheduleAddRequest))
+		given(scheduleCommandService.addSchedules(scheduleAddRequest, calendarId))
 				.willReturn(List.of(schedule));
 
 		ResultActions perform =
 				mockMvc.perform(
-						post("/api/v1/schedules")
+						post("/api/v1/calendars/{calendarId}/schedules", calendarId)
 								.contentType(MediaType.APPLICATION_JSON)
 								.content(toJson(scheduleAddRequest)));
 
@@ -133,9 +132,15 @@ class ScheduleControllerTest extends RestDocsTest {
 						.scheduleGroup(scheduleGroup)
 						.build();
 		given(scheduleQueryService.searchSchedule(anyLong())).willReturn(schedule);
+		long calendarId = 1L;
 		long scheduleId = 1L;
 
-		ResultActions perform = mockMvc.perform(get("/api/v1/schedules/{scheduleId}", scheduleId));
+		ResultActions perform =
+				mockMvc.perform(
+						get(
+								"/api/v1/calendars/{calendarId}/schedules/{scheduleId}",
+								calendarId,
+								scheduleId));
 
 		perform.andExpect(status().isOk());
 
@@ -168,9 +173,15 @@ class ScheduleControllerTest extends RestDocsTest {
 		given(repetitionPatternService.searchByScheduleGroupId(any()))
 				.willReturn(repetitionPattern);
 		given(scheduleQueryService.searchSchedule(anyLong())).willReturn(schedule);
+		long calendarId = 1L;
 		long scheduleId = 1L;
 
-		ResultActions perform = mockMvc.perform(get("/api/v1/schedules/{scheduleId}", scheduleId));
+		ResultActions perform =
+				mockMvc.perform(
+						get(
+								"/api/v1/calendars/{calendarId}/schedules/{scheduleId}",
+								calendarId,
+								scheduleId));
 
 		perform.andExpect(status().isOk());
 
@@ -180,5 +191,42 @@ class ScheduleControllerTest extends RestDocsTest {
 								"repeated-schedule-details",
 								getDocumentRequest(),
 								getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("특정 달의 일정을 조회한다.")
+	void scheduleList() throws Exception {
+		long calendarId = 1L;
+		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		Schedule schedule =
+				Schedule.builder()
+						.title("title")
+						.description("description")
+						.isAllDay(false)
+						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+						.colorHex("aaffbb")
+						.setLocation(true)
+						.place("서울역")
+						.latitude(36.0)
+						.longitude(127.0)
+						.setAlarm(true)
+						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.scheduleGroup(scheduleGroup)
+						.build();
+		given(scheduleQueryService.searchSchedulesInMonth(calendarId, 2024, 1))
+				.willReturn(List.of(schedule));
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/calendars/{calendarId}/schedules", calendarId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.queryParam("year", "2024")
+								.queryParam("month", "1"));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(document("schedule-list", getDocumentRequest(), getDocumentResponse()));
 	}
 }
