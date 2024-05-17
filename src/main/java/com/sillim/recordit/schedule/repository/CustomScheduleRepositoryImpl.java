@@ -8,33 +8,27 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
-		implements CustomScheduleRepository {
+        implements CustomScheduleRepository {
 
-	public CustomScheduleRepositoryImpl() {
-		super(Schedule.class);
-	}
+    public CustomScheduleRepositoryImpl() {
+        super(Schedule.class);
+    }
 
-	@Override
-	public List<Schedule> findScheduleInMonth(Long calendarId, Integer year, Integer month) {
-		QSchedule schedule = QSchedule.schedule;
-		return selectFrom(schedule)
-				.where(schedule.calendar.id.eq(calendarId))
-				.where(
-						schedule.scheduleDuration
-								.startDatetime
-								.year()
-								.eq(year)
-								.and(schedule.scheduleDuration.startDatetime.month().eq(month))
-								.or(
-										schedule.scheduleDuration
-												.endDatetime
-												.year()
-												.eq(year)
-												.and(
-														schedule.scheduleDuration
-																.endDatetime
-																.month()
-																.eq(month))))
-				.fetch();
-	}
+    @Override
+    public List<Schedule> findScheduleInMonth(Long calendarId, Integer year, Integer month) {
+        QSchedule schedule = QSchedule.schedule;
+        return selectFrom(schedule)
+                .where(schedule.calendar.id.eq(calendarId))
+                .where(
+                        schedule.scheduleDuration
+                                .startDatetime.year().lt(year)
+                                .or(schedule.scheduleDuration.startDatetime.year().eq(year)
+                                        .and(schedule.scheduleDuration.startDatetime.month()
+                                                .loe(month)))
+                                .and(schedule.scheduleDuration.endDatetime.year().gt(year)
+                                        .or(schedule.scheduleDuration.endDatetime.year().eq(year)
+                                                .and(schedule.scheduleDuration.endDatetime.month()
+                                                        .goe(month)))))
+                .fetch();
+    }
 }

@@ -106,6 +106,26 @@ public enum ScheduleFixture {
 				.build();
 	}
 
+	public Schedule getSchedule(ScheduleGroup scheduleGroup, Calendar calendar,
+			LocalDateTime startDatetime, LocalDateTime endDatetime) {
+		return Schedule.builder()
+				.title(title)
+				.description(description)
+				.isAllDay(isAllDay)
+				.startDatetime(startDatetime)
+				.endDatetime(endDatetime)
+				.colorHex(colorHex)
+				.place(place)
+				.setLocation(setLocation)
+				.latitude(latitude)
+				.longitude(longitude)
+				.setAlarm(setAlarm)
+				.alarmTime(alarmTime)
+				.scheduleGroup(scheduleGroup)
+				.calendar(calendar)
+				.build();
+	}
+
 	public String getTitle() {
 		return title;
 	}
