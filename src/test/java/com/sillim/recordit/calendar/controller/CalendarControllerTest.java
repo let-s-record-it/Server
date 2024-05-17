@@ -75,7 +75,7 @@ class CalendarControllerTest extends RestDocsTest {
 								.contentType(MediaType.APPLICATION_JSON)
 								.content(toJson(request)));
 
-		perform.andExpect(status().isOk());
+		perform.andExpect(status().isCreated());
 
 		perform.andDo(print())
 				.andDo(document("add-calendar", getDocumentRequest(), getDocumentResponse()));
