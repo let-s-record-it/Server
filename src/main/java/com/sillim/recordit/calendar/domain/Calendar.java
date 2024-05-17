@@ -41,4 +41,8 @@ public class Calendar {
 	public String getColorHex() {
 		return colorHex.getColorHex();
 	}
+
+	public boolean equalsMemberId(Long memberId) {
+		return this.member.equalsId(memberId);
+	}
 }
