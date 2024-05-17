@@ -7,6 +7,7 @@ import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.member.domain.Member;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ public class CalendarController {
 	@PostMapping
 	public ResponseEntity<CalendarResponse> addCalendar(
 			@RequestBody CalendarAddRequest request, @CurrentMember Member member) {
-		return ResponseEntity.ok(
-				CalendarResponse.from(calendarService.addCalendar(request, member.getId())));
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(CalendarResponse.from(calendarService.addCalendar(request, member.getId())));
 	}
 }
