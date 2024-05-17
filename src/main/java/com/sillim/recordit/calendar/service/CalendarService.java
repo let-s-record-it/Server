@@ -1,18 +1,23 @@
 package com.sillim.recordit.calendar.service;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
 import com.sillim.recordit.calendar.repository.CalendarRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
+import com.sillim.recordit.member.service.MemberQueryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CalendarService {
 
 	private final CalendarRepository calendarRepository;
+	private final MemberQueryService memberQueryService;
 
 	public Calendar searchByCalendarId(Long calendarId) {
 		return calendarRepository
@@ -22,5 +27,11 @@ public class CalendarService {
 
 	public List<Calendar> searchByMemberId(Long memberId) {
 		return calendarRepository.findByMemberId(memberId);
+	}
+
+	@Transactional
+	public Calendar addCalendar(CalendarAddRequest request, Long memberId) {
+		return calendarRepository.save(
+				request.toCalendar(memberQueryService.findByMemberId(memberId)));
 	}
 }
