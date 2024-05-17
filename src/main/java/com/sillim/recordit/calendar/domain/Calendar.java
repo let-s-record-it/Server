@@ -33,4 +33,12 @@ public class Calendar {
 		this.colorHex = new CalendarColorHex(colorHex);
 		this.member = member;
 	}
+
+	public String getTitle() {
+		return title.getTitle();
+	}
+
+	public String getColorHex() {
+		return colorHex.getColorHex();
+	}
 }

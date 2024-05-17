@@ -35,6 +35,10 @@ public class AuthorizedUser implements OAuth2User {
 		return member.getId().toString();
 	}
 
+	public Member getMember() {
+		return member;
+	}
+
 	public Long getMemberId() {
 		return member.getId();
 	}
