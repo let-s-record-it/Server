@@ -29,7 +29,7 @@ public class ScheduleCommandService {
 		return List.of(
 				scheduleRepository.save(
 						request.toSchedule(
-								calendarService.findByCalendarId(calendarId), scheduleGroup)));
+								calendarService.searchByCalendarId(calendarId), scheduleGroup)));
 	}
 
 	private List<Schedule> addRepeatingSchedule(
@@ -42,7 +42,7 @@ public class ScheduleCommandService {
 								scheduleRepository.save(
 										request.toSchedule(
 												temporalAmount,
-												calendarService.findByCalendarId(calendarId),
+												calendarService.searchByCalendarId(calendarId),
 												scheduleGroup)))
 				.toList();
 	}
