@@ -2,6 +2,7 @@ package com.sillim.recordit.schedule.dto.request;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.global.validation.common.ColorHexValid;
+import com.sillim.recordit.global.validation.schedule.ValidLatitude;
 import com.sillim.recordit.global.validation.schedule.ValidLongitude;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
@@ -22,7 +23,7 @@ public record ScheduleAddRequest(
 		@ColorHexValid String colorHex,
 		@NotNull String place,
 		@NotNull Boolean setLocation,
-		@ValidLongitude Double latitude,
+		@ValidLatitude Double latitude,
 		@ValidLongitude Double longitude,
 		@NotNull Boolean setAlarm,
 		LocalDateTime alarmTime) {
