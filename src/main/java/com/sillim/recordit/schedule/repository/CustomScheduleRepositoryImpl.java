@@ -21,6 +21,7 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.where(QSchedule.schedule.calendar.id.eq(calendarId))
 				.where(startLtYear(year).or(startEqYear(year).and(StartLoeMonth(month))))
 				.where(endGtYear(year).or(endEqYear(year).and(endGoeMonth(month))))
+				.orderBy(QSchedule.schedule.scheduleDuration.startDatetime.asc())
 				.fetch();
 	}
 

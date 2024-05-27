@@ -50,24 +50,27 @@ class CustomScheduleRepositoryTest {
 						calendar,
 						LocalDateTime.of(2023, 2, 1, 0, 0),
 						LocalDateTime.of(2024, 1, 1, 0, 0)));
-		scheduleRepository.save(
-				ScheduleFixture.DEFAULT.getSchedule(
-						scheduleGroup,
-						calendar,
-						LocalDateTime.of(2023, 2, 1, 0, 0),
-						LocalDateTime.of(2024, 2, 1, 0, 0)));
-		scheduleRepository.save(
-				ScheduleFixture.DEFAULT.getSchedule(
-						scheduleGroup,
-						calendar,
-						LocalDateTime.of(2024, 1, 1, 0, 0),
-						LocalDateTime.of(2025, 1, 1, 0, 0)));
-		scheduleRepository.save(
-				ScheduleFixture.DEFAULT.getSchedule(
-						scheduleGroup,
-						calendar,
-						LocalDateTime.of(2024, 2, 1, 0, 0),
-						LocalDateTime.of(2025, 1, 1, 0, 0)));
+		Schedule schedule2 =
+				scheduleRepository.save(
+						ScheduleFixture.DEFAULT.getSchedule(
+								scheduleGroup,
+								calendar,
+								LocalDateTime.of(2023, 2, 1, 0, 0),
+								LocalDateTime.of(2024, 2, 1, 0, 0)));
+		Schedule schedule3 =
+				scheduleRepository.save(
+						ScheduleFixture.DEFAULT.getSchedule(
+								scheduleGroup,
+								calendar,
+								LocalDateTime.of(2024, 1, 1, 0, 0),
+								LocalDateTime.of(2025, 1, 1, 0, 0)));
+		Schedule schedule4 =
+				scheduleRepository.save(
+						ScheduleFixture.DEFAULT.getSchedule(
+								scheduleGroup,
+								calendar,
+								LocalDateTime.of(2024, 2, 1, 0, 0),
+								LocalDateTime.of(2025, 1, 1, 0, 0)));
 		scheduleRepository.save(
 				ScheduleFixture.DEFAULT.getSchedule(
 						scheduleGroup,
@@ -78,14 +81,7 @@ class CustomScheduleRepositoryTest {
 		List<Schedule> scheduleInMonth =
 				customScheduleRepository.findScheduleInMonth(calendar.getId(), 2024, 2);
 
-		scheduleInMonth.forEach(
-				schedule -> {
-					System.out.println(
-							schedule.getScheduleDuration().getStartDatetime()
-									+ " => "
-									+ schedule.getScheduleDuration().getEndDatetime());
-				});
-
 		assertThat(scheduleInMonth).hasSize(3);
+		assertThat(scheduleInMonth).containsExactlyInAnyOrder(schedule2, schedule3, schedule4);
 	}
 }
