@@ -2,8 +2,12 @@ package com.sillim.recordit.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.given;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.service.CalendarService;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.dto.request.MemberInfo;
@@ -20,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class SignupServiceTest {
 
 	@Mock MemberRepository memberRepository;
+	@Mock CalendarService calendarService;
 	@InjectMocks SignupService signupService;
 
 	@Test
@@ -30,6 +35,9 @@ class SignupServiceTest {
 		OAuthProvider provider = target.getAuth().getOauthProvider();
 		String name = target.getName();
 		given(memberRepository.save(any(Member.class))).willReturn(target);
+		given(calendarService.addCalendar(any(), eq(target.getId())))
+				.willReturn(
+						Calendar.builder().title("일반").colorHex("ff40d974").member(target).build());
 
 		Member member = signupService.signup(new MemberInfo(account, provider, name));
 
