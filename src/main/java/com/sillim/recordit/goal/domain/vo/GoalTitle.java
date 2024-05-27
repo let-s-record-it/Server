@@ -26,7 +26,7 @@ public class GoalTitle {
 		this.title = title;
 	}
 
-	private void validate(final String title) {
+	private static void validate(final String title) {
 
 		if (Objects.isNull(title)) {
 			throw new InvalidTitleException(ErrorCode.NULL_GOAL_TITLE);
