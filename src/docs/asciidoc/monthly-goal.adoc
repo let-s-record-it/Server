@@ -93,3 +93,31 @@ include::{snippets}/monthly-goal-details/http-response.adoc[]
 ==== 404 NOT FOUND
 
 include::{snippets}/monthly-goal-details-monthly-goal-not-found/http-response.adoc[]
+
+== 월 목표 상세 조회 API
+
+=== Header
+
+include::{snippets}/monthly-goal-change-achieve-status/request-headers.adoc[]
+
+=== Path Parameter
+
+include::{snippets}/monthly-goal-change-achieve-status/path-parameters.adoc[]
+
+=== Query Parameter
+
+include::{snippets}/monthly-goal-change-achieve-status/query-parameters.adoc[]
+
+=== Body
+
+include::{snippets}/monthly-goal-change-achieve-status/http-request.adoc[]
+
+=== Response
+
+==== 200 OK
+
+include::{snippets}/monthly-goal-change-achieve-status/http-response.adoc[]
+
+==== 404 NOT FOUND
+
+include::{snippets}/monthly-goal-change-achieve-status-not-found/http-response.adoc[]
