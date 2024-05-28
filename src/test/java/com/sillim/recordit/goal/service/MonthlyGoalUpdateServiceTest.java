@@ -1,5 +1,6 @@
 package com.sillim.recordit.goal.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -75,5 +76,21 @@ public class MonthlyGoalUpdateServiceTest {
 		monthlyGoalUpdateService.modify(request, monthlyGoalId, memberId);
 
 		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
+	}
+
+	@Test
+	@DisplayName("월 목표의 달성 상태를 변경한다.")
+	void changeAchieveStatusTest() {
+		Long memberId = 1L;
+		Long monthlyGoalId = 2L;
+		Boolean status = true;
+		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		given(monthlyGoalQueryService.search(eq(monthlyGoalId), eq(memberId)))
+				.willReturn(monthlyGoal);
+
+		monthlyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
+
+		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
+		assertThat(monthlyGoal.isAchieved()).isTrue();
 	}
 }

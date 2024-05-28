@@ -40,6 +40,7 @@ public class MonthlyGoalRepositoryTest {
 		// when
 		MonthlyGoal saved =
 				monthlyGoalRepository.save(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+
 		// then
 		// 자동 생성 필드가 null이 아닌지 검증
 		assertThat(saved.getId()).isNotNull();
