@@ -46,8 +46,8 @@ public class ScheduleDuration {
 			LocalDateTime startDatetime, LocalDateTime endDatetime) {
 		return new ScheduleDuration(
 				false,
-				startDatetime.withHour(0).withMinute(0).withSecond(0).withNano(0),
-				endDatetime.withHour(0).withMinute(0).withSecond(0).withNano(0));
+				startDatetime.withSecond(0).withNano(0),
+				endDatetime.withSecond(0).withNano(0));
 	}
 
 	private void validate(LocalDateTime startDatetime, LocalDateTime endDatetime) {
