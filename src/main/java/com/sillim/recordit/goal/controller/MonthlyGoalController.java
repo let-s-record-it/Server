@@ -1,18 +1,19 @@
 package com.sillim.recordit.goal.controller;
 
-import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
-import com.sillim.recordit.goal.controller.dto.response.MonthlyGoalDetailsResponse;
-import com.sillim.recordit.goal.controller.dto.response.MonthlyGoalListResponse;
+import com.sillim.recordit.global.validation.goal.ValidMonth;
+import com.sillim.recordit.global.validation.goal.ValidYear;
+import com.sillim.recordit.goal.dto.request.MonthlyGoalUpdateRequest;
+import com.sillim.recordit.goal.dto.response.MonthlyGoalDetailsResponse;
+import com.sillim.recordit.goal.dto.response.MonthlyGoalListResponse;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.goal.service.MonthlyGoalUpdateService;
 import com.sillim.recordit.member.domain.AuthorizedUser;
-import jakarta.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ public class MonthlyGoalController {
 
 	@PostMapping("/months")
 	public ResponseEntity<Void> monthlyGoalAdd(
-			@Valid @RequestBody final MonthlyGoalUpdateRequest request,
+			@Validated @RequestBody final MonthlyGoalUpdateRequest request,
 			@AuthenticationPrincipal final AuthorizedUser authorizedUser) {
 
 		monthlyGoalUpdateService.add(request, authorizedUser.getMemberId());
@@ -41,7 +42,7 @@ public class MonthlyGoalController {
 
 	@PutMapping("/months/{monthlyGoalId}")
 	public ResponseEntity<Void> monthlyGoalModify(
-			@Valid @RequestBody final MonthlyGoalUpdateRequest request,
+			@Validated @RequestBody final MonthlyGoalUpdateRequest request,
 			@PathVariable final Long monthlyGoalId,
 			@AuthenticationPrincipal AuthorizedUser authorizedUser) {
 
@@ -51,13 +52,12 @@ public class MonthlyGoalController {
 
 	@GetMapping("/months")
 	public ResponseEntity<List<MonthlyGoalListResponse>> monthlyGoalList(
-			@RequestParam("startDate") final LocalDate startDate,
-			@RequestParam("endDate") final LocalDate endDate,
+			@RequestParam @ValidYear final Integer year,
+			@RequestParam @ValidMonth final Integer month,
 			@AuthenticationPrincipal final AuthorizedUser authorizedUser) {
-
 		return ResponseEntity.ok(
 				monthlyGoalQueryService
-						.searchAllByDate(startDate, endDate, authorizedUser.getMemberId())
+						.searchAllByDate(year, month, authorizedUser.getMemberId())
 						.stream()
 						.map(MonthlyGoalListResponse::from)
 						.toList());
