@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -75,6 +76,17 @@ public class GlobalControllerAdvice {
 		LoggingUtils.exceptionLog(
 				MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
 
+		return ResponseEntity.badRequest()
+				.body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
+	}
+
+	@ExceptionHandler(HandlerMethodValidationException.class)
+	public ResponseEntity<ErrorResponse> handlerMethodValidation(
+			HandlerMethod handlerMethod, HandlerMethodValidationException exception) {
+
+		String message = LoggingUtils.handlerMethodValidationMessage(exception);
+		LoggingUtils.exceptionLog(
+				MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
 		return ResponseEntity.badRequest()
 				.body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
 	}
