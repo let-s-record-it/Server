@@ -3,6 +3,7 @@ package com.sillim.recordit.goal.controller;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentRequest;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -21,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
-import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
+import com.sillim.recordit.goal.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.goal.service.MonthlyGoalUpdateService;
@@ -188,17 +189,15 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 								})
 						.toList();
 
-		given(
-						monthlyGoalQueryService.searchAllByDate(
-								any(LocalDate.class), any(LocalDate.class), any()))
+		given(monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), any()))
 				.willReturn(monthlyGoals);
 
 		ResultActions perform =
 				mockMvc.perform(
 						get("/api/v1/goals/months")
 								.headers(authorizationHeader())
-								.queryParam("startDate", "2024-04-01")
-								.queryParam("endDate", "2024-04-30"));
+								.queryParam("year", "2024")
+								.queryParam("month", "4"));
 
 		perform.andExpect(status().isOk())
 				.andExpect(jsonPath("$.size()").value(3))
@@ -220,8 +219,8 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								queryParameters(
-										parameterWithName("startDate").description("월 목표 시작일"),
-										parameterWithName("endDate").description("월 목표 종료일"))));
+										parameterWithName("year").description("조회할 연도"),
+										parameterWithName("month").description("조회할 월"))));
 	}
 
 	@Test

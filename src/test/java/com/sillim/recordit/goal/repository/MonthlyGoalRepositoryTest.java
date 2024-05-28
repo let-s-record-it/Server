@@ -1,6 +1,7 @@
 package com.sillim.recordit.goal.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
@@ -18,9 +19,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
 @DataJpaTest
-public class MonthlyGoalJpaRepositoryTest {
+public class MonthlyGoalRepositoryTest {
 
-	@Autowired MonthlyGoalJpaRepository monthlyGoalJpaRepository;
+	@Autowired MonthlyGoalRepository monthlyGoalRepository;
 	@Autowired TestEntityManager em;
 
 	private Member member;
@@ -38,20 +39,18 @@ public class MonthlyGoalJpaRepositoryTest {
 		final MonthlyGoal expected = MonthlyGoalFixture.DEFAULT.getWithMember(member);
 		// when
 		MonthlyGoal saved =
-				monthlyGoalJpaRepository.save(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+				monthlyGoalRepository.save(MonthlyGoalFixture.DEFAULT.getWithMember(member));
 		// then
-		MonthlyGoal found = em.find(MonthlyGoal.class, saved.getId());
-
 		// 자동 생성 필드가 null이 아닌지 검증
-		assertThat(found.getId()).isNotNull();
-		assertThat(found.getCreatedAt()).isNotNull();
-		assertThat(found.getModifiedAt()).isNotNull();
+		assertThat(saved.getId()).isNotNull();
+		assertThat(saved.getCreatedAt()).isNotNull();
+		assertThat(saved.getModifiedAt()).isNotNull();
 
-		assertThat(found)
+		assertThat(saved)
 				.usingRecursiveComparison()
 				.ignoringFields("id", "member", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
-		assertThat(found.getMember()).usingRecursiveComparison().isEqualTo(expected.getMember());
+		assertThat(saved.getMember()).usingRecursiveComparison().isEqualTo(expected.getMember());
 	}
 
 	@Test
@@ -59,20 +58,23 @@ public class MonthlyGoalJpaRepositoryTest {
 	void updateTest() {
 		// given
 		final MonthlyGoal expected = MonthlyGoalFixture.MODIFIED.getWithMember(member);
-		MonthlyGoal saved =
-				monthlyGoalJpaRepository.save(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		MonthlyGoal actual = em.persist(MonthlyGoalFixture.DEFAULT.getWithMember(member));
 
-		// when
-		saved.modify(
-				expected.getTitle(),
-				expected.getDescription(),
-				expected.getStartDate(),
-				expected.getEndDate(),
-				expected.getColorHex());
+		// when, then
+		assertThatCode(
+						() -> {
+							actual.modify(
+									expected.getTitle(),
+									expected.getDescription(),
+									expected.getStartDate(),
+									expected.getEndDate(),
+									expected.getColorHex());
+							em.flush();
+						})
+				.doesNotThrowAnyException();
 
-		// then
-		MonthlyGoal found = em.find(MonthlyGoal.class, saved.getId());
-		assertThat(found)
+		assertThat(actual.getModifiedAt()).isNotEqualTo(actual.getCreatedAt());
+		assertThat(actual)
 				.usingRecursiveComparison()
 				.ignoringFields("id", "member", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
@@ -85,7 +87,7 @@ public class MonthlyGoalJpaRepositoryTest {
 		final MonthlyGoal expected =
 				MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
 						LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31), member);
-		monthlyGoalJpaRepository.saveAll(
+		monthlyGoalRepository.saveAll(
 				List.of(
 						MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
 								LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31), member),
@@ -95,8 +97,10 @@ public class MonthlyGoalJpaRepositoryTest {
 								LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30), member)));
 		// when
 		List<MonthlyGoal> foundList =
-				monthlyGoalJpaRepository.findByPeriod_StartDateAndPeriod_EndDateAndMember(
-						expected.getStartDate(), expected.getEndDate(), member);
+				monthlyGoalRepository.findMonthlyGoalInMonth(
+						expected.getStartDate().getYear(),
+						expected.getStartDate().getMonthValue(),
+						member);
 		// then
 		assertThat(foundList).hasSize(2);
 		for (MonthlyGoal found : foundList) {

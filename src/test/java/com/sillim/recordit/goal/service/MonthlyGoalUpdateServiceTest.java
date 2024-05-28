@@ -6,10 +6,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
-import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
+import com.sillim.recordit.goal.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
-import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
+import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
@@ -27,7 +27,7 @@ public class MonthlyGoalUpdateServiceTest {
 
 	@Mock MonthlyGoalQueryService monthlyGoalQueryService;
 	@Mock MemberQueryService memberQueryService;
-	@Mock MonthlyGoalJpaRepository monthlyGoalJpaRepository;
+	@Mock MonthlyGoalRepository monthlyGoalRepository;
 	@InjectMocks MonthlyGoalUpdateService monthlyGoalUpdateService;
 	private Member member;
 
@@ -53,7 +53,7 @@ public class MonthlyGoalUpdateServiceTest {
 		monthlyGoalUpdateService.add(request, memberId);
 
 		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
-		then(monthlyGoalJpaRepository).should(times(1)).save(any(MonthlyGoal.class));
+		then(monthlyGoalRepository).should(times(1)).save(any(MonthlyGoal.class));
 	}
 
 	@Test
