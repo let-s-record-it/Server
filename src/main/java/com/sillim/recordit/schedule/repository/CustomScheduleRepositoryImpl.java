@@ -22,6 +22,7 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.where(startLtYear(year).or(startEqYear(year).and(StartLoeMonth(month))))
 				.where(endGtYear(year).or(endEqYear(year).and(endGoeMonth(month))))
 				.orderBy(QSchedule.schedule.scheduleDuration.startDatetime.asc())
+				.orderBy(QSchedule.schedule.scheduleDuration.endDatetime.desc())
 				.fetch();
 	}
 
