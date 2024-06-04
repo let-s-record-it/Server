@@ -11,6 +11,4 @@ public interface MonthlyGoalRepository
 		extends JpaRepository<MonthlyGoal, Long>, CustomMonthlyGoalRepository {
 
 	Optional<MonthlyGoal> findByIdAndMember(Long monthlyGoalId, Member member);
-
-	void deleteByIdAndMember(Long monthlyGoalId, Member member);
 }
