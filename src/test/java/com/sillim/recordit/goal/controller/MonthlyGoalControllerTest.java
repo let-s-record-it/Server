@@ -3,14 +3,17 @@ package com.sillim.recordit.goal.controller;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentRequest;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.spy;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -275,6 +278,60 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 				.andDo(
 						document(
 								"monthly-goal-details-monthly-goal-not-found",
+								getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("특정 id의 월 목표를 달성 상태로 변경한다.")
+	void monthlyGoalChangeAchieveStatusTest() throws Exception {
+
+		willDoNothing()
+				.given(monthlyGoalUpdateService)
+				.changeAchieveStatus(anyLong(), anyBoolean(), any());
+
+		ResultActions perform =
+				mockMvc.perform(
+						patch("/api/v1/goals/months/{monthlyGoalId}", 1L)
+								.headers(authorizationHeader())
+								.queryParam("status", "true"));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"monthly-goal-change-achieve-status",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								requestHeaders(authorizationDesc()),
+								pathParameters(
+										parameterWithName("monthlyGoalId")
+												.description("달성 상태를 변경할 월 목표 id")),
+								queryParameters(
+										parameterWithName("status")
+												.description("달성 상태(false, true)"))));
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 월 목표의 달성 상태를 변경할 경우 NOT FOUND 응답을 반환한다.")
+	void monthlyGoalChangeAchieveStatusNotFoundTest() throws Exception {
+
+		willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND))
+				.given(monthlyGoalUpdateService)
+				.changeAchieveStatus(anyLong(), anyBoolean(), any());
+
+		ResultActions perform =
+				mockMvc.perform(
+						patch("/api/v1/goals/months/{monthlyGoalId}", 1L)
+								.headers(authorizationHeader())
+								.queryParam("status", "true"));
+
+		perform.andExpect(status().isNotFound());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"monthly-goal-change-achieve-status-not-found",
 								getDocumentResponse()));
 	}
 }

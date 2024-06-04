@@ -80,6 +80,10 @@ public class MonthlyGoal extends BaseTime {
 		this.colorHex = new GoalColorHex(newColorHex);
 	}
 
+	public void changeAchieveStatus(final Boolean status) {
+		this.achieved = status;
+	}
+
 	public String getTitle() {
 		return title.getTitle();
 	}

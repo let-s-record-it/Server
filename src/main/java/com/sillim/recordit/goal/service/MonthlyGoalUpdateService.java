@@ -18,7 +18,6 @@ public class MonthlyGoalUpdateService {
 	private final MemberQueryService memberQueryService;
 	private final MonthlyGoalRepository monthlyGoalRepository;
 
-	// TODO final 붙이기
 	public void add(final MonthlyGoalUpdateRequest request, final Long memberId) {
 		Member member = memberQueryService.findByMemberId(memberId);
 		monthlyGoalRepository.save(request.toEntity(member));
@@ -34,5 +33,12 @@ public class MonthlyGoalUpdateService {
 				request.startDate(),
 				request.endDate(),
 				request.colorHex());
+	}
+
+	public void changeAchieveStatus(
+			final Long monthlyGoalId, final Boolean status, final Long memberId) {
+
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
+		monthlyGoal.changeAchieveStatus(status);
 	}
 }

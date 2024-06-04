@@ -26,7 +26,7 @@ public class GoalDescription {
 		this.description = description;
 	}
 
-	private static void validate(final String description) {
+	private void validate(final String description) {
 
 		if (Objects.isNull(description)) {
 			throw new InvalidDescriptionException(ErrorCode.NULL_GOAL_DESCRIPTION);
