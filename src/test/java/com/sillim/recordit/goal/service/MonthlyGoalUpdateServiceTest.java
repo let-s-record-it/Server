@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.goal.domain.MonthlyGoal;
@@ -100,16 +99,13 @@ public class MonthlyGoalUpdateServiceTest {
 	void removeTest() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		willDoNothing()
-				.given(monthlyGoalRepository)
-				.deleteByIdAndMember(eq(monthlyGoalId), eq(member));
+		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		given(monthlyGoalQueryService.search(eq(monthlyGoalId), eq(memberId)))
+				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.remove(monthlyGoalId, memberId);
 
-		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
-		then(monthlyGoalRepository)
-				.should(times(1))
-				.deleteByIdAndMember(eq(monthlyGoalId), eq(member));
+		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
+		then(monthlyGoalRepository).should(times(1)).delete(eq(monthlyGoal));
 	}
 }
