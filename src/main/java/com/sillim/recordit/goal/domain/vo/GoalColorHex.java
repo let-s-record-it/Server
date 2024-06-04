@@ -27,7 +27,7 @@ public class GoalColorHex {
 		this.colorHex = colorHex;
 	}
 
-	private static void validate(final String colorHex) {
+	private void validate(final String colorHex) {
 		if (Objects.isNull(colorHex)) {
 			throw new InvalidColorHexException(ErrorCode.NULL_GOAL_COLOR_HEX);
 		}
