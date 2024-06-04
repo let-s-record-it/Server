@@ -30,7 +30,7 @@ public class GoalPeriod {
 		this.endDate = endDate;
 	}
 
-	private void validate(final LocalDate startDate, final LocalDate endDate) {
+	private static void validate(final LocalDate startDate, final LocalDate endDate) {
 
 		if (Objects.isNull(startDate) || Objects.isNull(endDate)) {
 			throw new InvalidPeriodException(ErrorCode.NULL_GOAL_PERIOD);
@@ -41,21 +41,22 @@ public class GoalPeriod {
 	}
 
 	/* 시작일과 종료일의 년, 월은 같아야 한다. */
-	private void checkIfHasSameYearMonth(final LocalDate startDate, final LocalDate endDate) {
+	private static void checkIfHasSameYearMonth(
+			final LocalDate startDate, final LocalDate endDate) {
 
 		if (!hasSameYearMonth(startDate, endDate)) {
 			throw new InvalidPeriodException(ErrorCode.DIFFERENT_YEAR_MONTH);
 		}
 	}
 
-	private boolean hasSameYearMonth(final LocalDate startDate, final LocalDate endDate) {
+	private static boolean hasSameYearMonth(final LocalDate startDate, final LocalDate endDate) {
 
 		return (startDate.getYear() == endDate.getYear())
 				&& (startDate.getMonth() == endDate.getMonth());
 	}
 
 	/* 월 목표의 시작일은 1일이어야 한다. */
-	private void checkIfFirstDayOfMonth(final LocalDate startDate) {
+	private static void checkIfFirstDayOfMonth(final LocalDate startDate) {
 
 		if (startDate.getDayOfMonth() != 1) {
 			throw new InvalidPeriodException(ErrorCode.INVALID_START_DAY_OF_MONTH);
@@ -63,7 +64,7 @@ public class GoalPeriod {
 	}
 
 	// * 월 목표의 종료일은 해당 월의 말일이어야 한다. */
-	private void checkIfLastDayOfMonth(final LocalDate endDate) {
+	private static void checkIfLastDayOfMonth(final LocalDate endDate) {
 
 		int lastDayOfMonth = YearMonth.from(endDate).lengthOfMonth();
 		if (endDate.getDayOfMonth() != lastDayOfMonth) {

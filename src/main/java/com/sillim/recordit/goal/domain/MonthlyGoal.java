@@ -69,11 +69,11 @@ public class MonthlyGoal extends BaseTime {
 	}
 
 	public void modify(
-			String newTitle,
-			String newDescription,
-			LocalDate newStartDate,
-			LocalDate newEndDate,
-			String newColorHex) {
+			final String newTitle,
+			final String newDescription,
+			final LocalDate newStartDate,
+			final LocalDate newEndDate,
+			final String newColorHex) {
 		this.title = new GoalTitle(newTitle);
 		this.description = new GoalDescription(newDescription);
 		this.period = new GoalPeriod(newStartDate, newEndDate);

@@ -12,11 +12,10 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
-import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
+import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.LongStream;
@@ -32,7 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class MonthlyGoalQueryServiceTest {
 
 	@Mock MemberQueryService memberQueryService;
-	@Mock MonthlyGoalJpaRepository monthlyGoalJpaRepository;
+	@Mock MonthlyGoalRepository monthlyGoalRepository;
 	@InjectMocks MonthlyGoalQueryService monthlyGoalQueryService;
 	private Member member;
 
@@ -46,15 +45,14 @@ public class MonthlyGoalQueryServiceTest {
 	void searchTest() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		MonthlyGoal expected = MonthlyGoalFixture.DEFAULT.getWithMember(member);
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		given(monthlyGoalJpaRepository.findByIdAndMember(eq(monthlyGoalId), any(Member.class)))
-				.willReturn(Optional.of(monthlyGoal));
+		given(monthlyGoalRepository.findByIdAndMember(eq(monthlyGoalId), any(Member.class)))
+				.willReturn(Optional.of(expected));
 
-		monthlyGoalQueryService.search(monthlyGoalId, memberId);
-
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
 		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
-		then(monthlyGoalJpaRepository)
+		then(monthlyGoalRepository)
 				.should(times(1))
 				.findByIdAndMember(eq(monthlyGoalId), any(Member.class));
 	}
@@ -65,14 +63,14 @@ public class MonthlyGoalQueryServiceTest {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		given(monthlyGoalJpaRepository.findByIdAndMember(eq(monthlyGoalId), any(Member.class)))
+		given(monthlyGoalRepository.findByIdAndMember(eq(monthlyGoalId), any(Member.class)))
 				.willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 
 		assertThatThrownBy(() -> monthlyGoalQueryService.search(monthlyGoalId, memberId))
 				.isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.MONTHLY_GOAL_NOT_FOUND.getDescription());
 		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
-		then(monthlyGoalJpaRepository)
+		then(monthlyGoalRepository)
 				.should(times(1))
 				.findByIdAndMember(eq(monthlyGoalId), any(Member.class));
 	}
@@ -81,24 +79,21 @@ public class MonthlyGoalQueryServiceTest {
 	@DisplayName("startDate와 endDate를 기반으로 해당 월 목표들을 조회한다.")
 	void searchAllByDateTest() {
 		Long memberId = 1L;
-		LocalDate startDate = LocalDate.of(2024, 4, 1);
-		LocalDate endDate = LocalDate.of(2024, 4, 30);
+		Integer year = 2024;
+		Integer month = 4;
 		List<MonthlyGoal> monthlyGoals =
 				LongStream.rangeClosed(1, 3)
 						.mapToObj((id) -> MonthlyGoalFixture.DEFAULT.getWithMember(member))
 						.toList();
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		given(
-						monthlyGoalJpaRepository.findByPeriod_StartDateAndPeriod_EndDateAndMember(
-								eq(startDate), eq(endDate), any(Member.class)))
+		given(monthlyGoalRepository.findMonthlyGoalInMonth(eq(year), eq(month), any(Member.class)))
 				.willReturn(monthlyGoals);
 
-		monthlyGoalQueryService.searchAllByDate(startDate, endDate, 1L);
+		monthlyGoalQueryService.searchAllByDate(year, month, memberId);
 
 		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
-		then(monthlyGoalJpaRepository)
+		then(monthlyGoalRepository)
 				.should(times(1))
-				.findByPeriod_StartDateAndPeriod_EndDateAndMember(
-						eq(startDate), eq(endDate), any(Member.class));
+				.findMonthlyGoalInMonth(eq(year), eq(month), any(Member.class));
 	}
 }

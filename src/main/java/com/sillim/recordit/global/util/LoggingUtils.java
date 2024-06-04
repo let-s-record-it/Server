@@ -4,12 +4,14 @@ import com.sillim.recordit.global.domain.MethodSignature;
 import com.sillim.recordit.global.exception.common.ApplicationException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
@@ -151,6 +153,12 @@ public class LoggingUtils {
 		errors.append("] 은 null일 수 없습니다.");
 
 		return errors.toString();
+	}
+
+	public static String handlerMethodValidationMessage(
+			HandlerMethodValidationException exception) {
+
+		return (String) Objects.requireNonNull(exception.getDetailMessageArguments())[0];
 	}
 
 	private static String setTextColor(String color, String message) {
