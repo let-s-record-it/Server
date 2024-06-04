@@ -93,4 +93,19 @@ public class MonthlyGoalUpdateServiceTest {
 		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
 		assertThat(monthlyGoal.isAchieved()).isTrue();
 	}
+
+	@Test
+	@DisplayName("해당 월 목표를 삭제한다.")
+	void removeTest() {
+		Long memberId = 1L;
+		Long monthlyGoalId = 2L;
+		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		given(monthlyGoalQueryService.search(eq(monthlyGoalId), eq(memberId)))
+				.willReturn(monthlyGoal);
+
+		monthlyGoalUpdateService.remove(monthlyGoalId, memberId);
+
+		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
+		then(monthlyGoalRepository).should(times(1)).delete(eq(monthlyGoal));
+	}
 }

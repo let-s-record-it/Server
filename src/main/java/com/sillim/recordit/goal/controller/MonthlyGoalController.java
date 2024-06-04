@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,7 +46,7 @@ public class MonthlyGoalController {
 	public ResponseEntity<Void> monthlyGoalModify(
 			@Validated @RequestBody final MonthlyGoalUpdateRequest request,
 			@PathVariable final Long monthlyGoalId,
-			@CurrentMember Member member) {
+			@CurrentMember final Member member) {
 
 		monthlyGoalUpdateService.modify(request, monthlyGoalId, member.getId());
 		return ResponseEntity.noContent().build();
@@ -78,6 +79,14 @@ public class MonthlyGoalController {
 			@CurrentMember final Member member) {
 
 		monthlyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/months/{monthlyGoalId}")
+	public ResponseEntity<Void> monthlyGoalRemove(
+			@PathVariable final Long monthlyGoalId, @CurrentMember final Member member) {
+
+		monthlyGoalUpdateService.remove(monthlyGoalId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 }
