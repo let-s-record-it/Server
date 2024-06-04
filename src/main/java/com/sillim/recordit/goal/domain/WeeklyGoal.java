@@ -5,7 +5,7 @@ import com.sillim.recordit.goal.domain.vo.GoalColorHex;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalPeriod;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
-import com.sillim.recordit.goal.domain.vo.MonthlyGoalPeriod;
+import com.sillim.recordit.goal.domain.vo.WeeklyGoalPeriod;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -28,11 +28,11 @@ import org.hibernate.annotations.SoftDelete;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SoftDelete
-public class MonthlyGoal extends BaseTime {
+public class WeeklyGoal extends BaseTime {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "monthly_goal_id")
+	@Column(name = "weekly_goal_id")
 	private Long id;
 
 	@Embedded private GoalTitle title;
@@ -52,7 +52,7 @@ public class MonthlyGoal extends BaseTime {
 	private Member member;
 
 	@Builder
-	public MonthlyGoal(
+	public WeeklyGoal(
 			final String title,
 			final String description,
 			final LocalDate startDate,
@@ -61,7 +61,7 @@ public class MonthlyGoal extends BaseTime {
 			final Member member) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
-		this.period = new MonthlyGoalPeriod(startDate, endDate);
+		this.period = new WeeklyGoalPeriod(startDate, endDate);
 		this.colorHex = new GoalColorHex(colorHex);
 		this.achieved = false;
 		this.member = member;
@@ -75,7 +75,7 @@ public class MonthlyGoal extends BaseTime {
 			final String newColorHex) {
 		this.title = new GoalTitle(newTitle);
 		this.description = new GoalDescription(newDescription);
-		this.period = new MonthlyGoalPeriod(newStartDate, newEndDate);
+		this.period = new WeeklyGoalPeriod(newStartDate, newEndDate);
 		this.colorHex = new GoalColorHex(newColorHex);
 	}
 

@@ -59,6 +59,11 @@ public enum ErrorCode {
 	INVALID_START_DAY_OF_MONTH("ERR_MONTHLY_GOAL_003", "월 목표 기간의 시작일은 1일이어야 합니다."),
 	INVALID_END_DAY_OF_MONTH("ERR_MONTHLY_GOAL_004", "월 목표 기간의 종료일은 %d일이어야 합니다."),
 
+	// weekly-goal
+	WEEKLY_GOAL_NOT_FOUND("ERR_WEEKLYGOAL_001", "존재하지 않는 주 목표입니다."),
+	INVALID_START_DAY_OF_WEEK("ERR_WEEKLY_GOAL_002", "주 목표 기간의 시작일은 일요일이어야 합니다."),
+	INVALID_DIFFERENCE_OF_DATE("ERR_WEEKLY_GOAL_003", "주 목표 기간의 시작일과 종료일은 6일 차이여야 합니다."),
+
 	// goal
 	NULL_GOAL_TITLE("ERR_GOAL_001", "목표 제목은 null일 수 없습니다."),
 	BLANK_GOAL_TITLE("ERR_GOAL_002", "목표 제목은 빈 값일 수 없습니다."),
