@@ -9,6 +9,7 @@ import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,9 +86,8 @@ public class MonthlyGoalRepositoryTest {
 	@DisplayName("해당 년, 월에 해당하는 월 목표 목록을 조회한다.")
 	void findByGoalYearAndGoalMonthAndMember() {
 		// given
-		final MonthlyGoal expected =
-				MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
-						LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31), member);
+		final Integer expectedYear = 2024;
+		final Integer expectedMonth = 5;
 		monthlyGoalRepository.saveAll(
 				List.of(
 						MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
@@ -98,17 +98,17 @@ public class MonthlyGoalRepositoryTest {
 								LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30), member)));
 		// when
 		List<MonthlyGoal> foundList =
-				monthlyGoalRepository.findMonthlyGoalInMonth(
-						expected.getStartDate().getYear(),
-						expected.getStartDate().getMonthValue(),
-						member);
+				monthlyGoalRepository.findMonthlyGoalInMonth(expectedYear, expectedMonth, member);
 		// then
 		assertThat(foundList).hasSize(2);
 		for (MonthlyGoal found : foundList) {
-			assertThat(found)
-					.usingRecursiveComparison()
-					.comparingOnlyFields("goalYear", "goalMonth")
-					.isEqualTo(expected);
+			Assertions.assertAll(
+					() -> {
+						assertThat(found.getStartDate().getYear()).isEqualTo(expectedYear);
+						assertThat(found.getStartDate().getMonthValue()).isEqualTo(expectedMonth);
+						assertThat(found.getEndDate().getYear()).isEqualTo(expectedYear);
+						assertThat(found.getEndDate().getMonthValue()).isEqualTo(expectedMonth);
+					});
 		}
 	}
 }
