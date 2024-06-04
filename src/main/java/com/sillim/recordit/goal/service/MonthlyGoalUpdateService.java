@@ -41,4 +41,10 @@ public class MonthlyGoalUpdateService {
 		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
 		monthlyGoal.changeAchieveStatus(status);
 	}
+
+	public void remove(final Long monthlyGoalId, final Long memberId) {
+
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
+		monthlyGoalRepository.delete(monthlyGoal);
+	}
 }
