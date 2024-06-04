@@ -16,7 +16,7 @@ import org.hibernate.validator.constraints.Length;
 @Documented
 @Constraint(validatedBy = {})
 public @interface ValidDescription {
-	String message() default "";
+	String message() default "유효하지 않은 월 목표 [description] 입니다.";
 
 	Class<?>[] groups() default {};
 
