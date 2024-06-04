@@ -1,4 +1,4 @@
-package com.sillim.recordit.goal.controller.dto.response;
+package com.sillim.recordit.goal.dto.response;
 
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ public record MonthlyGoalDetailsResponse(
 		LocalDate endDate,
 		String colorHex) {
 
-	public static MonthlyGoalDetailsResponse from(MonthlyGoal monthlyGoal) {
+	public static MonthlyGoalDetailsResponse from(final MonthlyGoal monthlyGoal) {
 
 		return new MonthlyGoalDetailsResponse(
 				monthlyGoal.getId(),

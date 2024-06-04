@@ -1,8 +1,8 @@
 package com.sillim.recordit.goal.service;
 
-import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
-import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
+import com.sillim.recordit.goal.dto.request.MonthlyGoalUpdateRequest;
+import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +16,11 @@ public class MonthlyGoalUpdateService {
 
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
 	private final MemberQueryService memberQueryService;
-	private final MonthlyGoalJpaRepository monthlyGoalJpaRepository;
+	private final MonthlyGoalRepository monthlyGoalRepository;
 
 	public void add(final MonthlyGoalUpdateRequest request, final Long memberId) {
 		Member member = memberQueryService.findByMemberId(memberId);
-		monthlyGoalJpaRepository.save(request.toEntity(member));
+		monthlyGoalRepository.save(request.toEntity(member));
 	}
 
 	public void modify(
@@ -33,5 +33,18 @@ public class MonthlyGoalUpdateService {
 				request.startDate(),
 				request.endDate(),
 				request.colorHex());
+	}
+
+	public void changeAchieveStatus(
+			final Long monthlyGoalId, final Boolean status, final Long memberId) {
+
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
+		monthlyGoal.changeAchieveStatus(status);
+	}
+
+	public void remove(final Long monthlyGoalId, final Long memberId) {
+
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
+		monthlyGoalRepository.delete(monthlyGoal);
 	}
 }

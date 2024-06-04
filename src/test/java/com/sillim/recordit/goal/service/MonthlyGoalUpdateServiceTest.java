@@ -1,15 +1,16 @@
 package com.sillim.recordit.goal.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
-import com.sillim.recordit.goal.controller.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
+import com.sillim.recordit.goal.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
-import com.sillim.recordit.goal.repository.MonthlyGoalJpaRepository;
+import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
@@ -27,7 +28,7 @@ public class MonthlyGoalUpdateServiceTest {
 
 	@Mock MonthlyGoalQueryService monthlyGoalQueryService;
 	@Mock MemberQueryService memberQueryService;
-	@Mock MonthlyGoalJpaRepository monthlyGoalJpaRepository;
+	@Mock MonthlyGoalRepository monthlyGoalRepository;
 	@InjectMocks MonthlyGoalUpdateService monthlyGoalUpdateService;
 	private Member member;
 
@@ -53,7 +54,7 @@ public class MonthlyGoalUpdateServiceTest {
 		monthlyGoalUpdateService.add(request, memberId);
 
 		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
-		then(monthlyGoalJpaRepository).should(times(1)).save(any(MonthlyGoal.class));
+		then(monthlyGoalRepository).should(times(1)).save(any(MonthlyGoal.class));
 	}
 
 	@Test
@@ -75,5 +76,36 @@ public class MonthlyGoalUpdateServiceTest {
 		monthlyGoalUpdateService.modify(request, monthlyGoalId, memberId);
 
 		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
+	}
+
+	@Test
+	@DisplayName("월 목표의 달성 상태를 변경한다.")
+	void changeAchieveStatusTest() {
+		Long memberId = 1L;
+		Long monthlyGoalId = 2L;
+		Boolean status = true;
+		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		given(monthlyGoalQueryService.search(eq(monthlyGoalId), eq(memberId)))
+				.willReturn(monthlyGoal);
+
+		monthlyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
+
+		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
+		assertThat(monthlyGoal.isAchieved()).isTrue();
+	}
+
+	@Test
+	@DisplayName("해당 월 목표를 삭제한다.")
+	void removeTest() {
+		Long memberId = 1L;
+		Long monthlyGoalId = 2L;
+		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		given(monthlyGoalQueryService.search(eq(monthlyGoalId), eq(memberId)))
+				.willReturn(monthlyGoal);
+
+		monthlyGoalUpdateService.remove(monthlyGoalId, memberId);
+
+		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
+		then(monthlyGoalRepository).should(times(1)).delete(eq(monthlyGoal));
 	}
 }

@@ -1,4 +1,4 @@
-package com.sillim.recordit.goal.controller.dto.request;
+package com.sillim.recordit.goal.dto.request;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;

@@ -22,13 +22,9 @@ include::{snippets}/monthly-goal-add/http-request.adoc[]
 
 === Response
 
-==== 200 OK
+==== 201 CREATED
 
 include::{snippets}/monthly-goal-add/http-response.adoc[]
-
-=== 404 NOT FOUND
-
-include::{snippets}/monthly-goal-add-member-not-found/http-response.adoc[]
 
 == 월 목표 수정 API
 
@@ -93,3 +89,55 @@ include::{snippets}/monthly-goal-details/http-response.adoc[]
 ==== 404 NOT FOUND
 
 include::{snippets}/monthly-goal-details-monthly-goal-not-found/http-response.adoc[]
+
+== 월 목표 달성 API
+
+=== Header
+
+include::{snippets}/monthly-goal-change-achieve-status/request-headers.adoc[]
+
+=== Path Parameter
+
+include::{snippets}/monthly-goal-change-achieve-status/path-parameters.adoc[]
+
+=== Query Parameter
+
+include::{snippets}/monthly-goal-change-achieve-status/query-parameters.adoc[]
+
+=== Body
+
+include::{snippets}/monthly-goal-change-achieve-status/http-request.adoc[]
+
+=== Response
+
+==== 204 NO CONTENT
+
+include::{snippets}/monthly-goal-change-achieve-status/http-response.adoc[]
+
+==== 404 NOT FOUND
+
+include::{snippets}/monthly-goal-change-achieve-status-not-found/http-response.adoc[]
+
+== 월 목표 삭제 API
+
+=== Header
+
+include::{snippets}/monthly-goal-remove/request-headers.adoc[]
+
+=== Path Parameter
+
+include::{snippets}/monthly-goal-remove/path-parameters.adoc[]
+
+=== Body
+
+include::{snippets}/monthly-goal-remove/http-request.adoc[]
+
+=== Response
+
+==== 204 NO CONTENT
+
+include::{snippets}/monthly-goal-remove/http-response.adoc[]
+
+==== 404 NOT FOUND
+
+include::{snippets}/monthly-goal-change-achieve-status-not-found/http-response.adoc[]
