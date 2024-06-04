@@ -56,4 +56,11 @@ class YearValidatorTest {
 		Integer year = LocalDate.now().getYear() + 26;
 		assertThat(validator.isValid(year, context)).isFalse();
 	}
+
+	@Test
+	@DisplayName("연도 값이 null일 경우 false를 반환한다.")
+	void yearValidatorNullTest() {
+		Integer year = null;
+		assertThat(validator.isValid(year, context)).isFalse();
+	}
 }
