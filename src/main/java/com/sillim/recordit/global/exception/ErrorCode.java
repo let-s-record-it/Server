@@ -74,6 +74,12 @@ public enum ErrorCode {
 	NULL_GOAL_COLOR_HEX("ERR_GOAL_007", "일정 색상 값은 null일 수 없습니다."),
 	INVALID_GOAL_COLOR_HEX("ERR_GOAL_008", "유효하지 않은 일정 색상 값입니다."),
 	NULL_GOAL_PERIOD("ERR_GOAL_009", "목표 기간 시작일과 종료일은 null일 수 없습니다."),
+
+	// task
+	TASK_NOT_FOUND("ERR_TASK_001", "존재하지 않는 할 일입니다."),
+	TASK_REPETITION_NOT_FOUND("ERR_TASK_002", "존재하지 않는 할 일 반복 패턴입니다."),
+	TASK_GROUP_NOT_FOUND("ERR_TASK_003", "존재하지 않는 할 일 그룹입니다."),
+	NULL_TASK_REPETITION_REQUIRED_VALUE("ERR_TASK_004", "%s은(는) null일 수 없습니다."),
 	;
 
 	private final String code;
