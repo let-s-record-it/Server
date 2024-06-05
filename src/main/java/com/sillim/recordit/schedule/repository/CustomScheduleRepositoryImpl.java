@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.schedule.domain.QSchedule;
 import com.sillim.recordit.schedule.domain.Schedule;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 
@@ -22,7 +23,17 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.where(startLtYear(year).or(startEqYear(year).and(StartLoeMonth(month))))
 				.where(endGtYear(year).or(endEqYear(year).and(endGoeMonth(month))))
 				.orderBy(QSchedule.schedule.scheduleDuration.startDatetime.asc())
-				.orderBy(QSchedule.schedule.scheduleDuration.endDatetime.desc())
+				.fetch();
+	}
+
+	@Override
+	public List<Schedule> findScheduleInDay(Long calendarId, LocalDate date) {
+		return selectFrom(QSchedule.schedule)
+				.where(QSchedule.schedule.calendar.id.eq(calendarId))
+				.where(QSchedule.schedule.scheduleDuration.startDatetime.loe(date.atStartOfDay()))
+				.where(QSchedule.schedule.scheduleDuration.endDatetime.goe(date.atStartOfDay()))
+				.leftJoin(QSchedule.schedule.scheduleGroup).fetchJoin()
+				.leftJoin(QSchedule.schedule.scheduleGroup.repetitionPattern).fetchJoin()
 				.fetch();
 	}
 

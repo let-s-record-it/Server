@@ -18,7 +18,6 @@ public class MonthOfYear {
 	private static final int MIN_MONTH_OF_YEAR = 1;
 	private static final int MAX_MONTH_OF_YEAR = 12;
 
-	@Column(nullable = false)
 	private Integer monthOfYear;
 
 	public MonthOfYear(Integer monthOfYear) {

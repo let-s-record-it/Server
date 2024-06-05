@@ -4,6 +4,7 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.repository.ScheduleRepository;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,9 @@ public class ScheduleQueryService {
 
 	public List<Schedule> searchSchedulesInMonth(Long calendarId, Integer year, Integer month) {
 		return scheduleRepository.findScheduleInMonth(calendarId, year, month);
+	}
+
+	public List<Schedule> searchSchedulesInDay(Long calendarId, LocalDate date) {
+		return scheduleRepository.findScheduleInDay(calendarId, date);
 	}
 }
