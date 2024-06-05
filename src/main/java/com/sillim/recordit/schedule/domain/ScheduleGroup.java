@@ -18,7 +18,14 @@ public class ScheduleGroup {
 	@Column(nullable = false)
 	private Boolean isRepeated;
 
+	@OneToOne(mappedBy = "scheduleGroup")
+	private RepetitionPattern repetitionPattern;
+
 	public ScheduleGroup(Boolean isRepeated) {
 		this.isRepeated = isRepeated;
+	}
+
+	public void setRepetitionPattern(RepetitionPattern repetitionPattern) {
+		this.repetitionPattern = repetitionPattern;
 	}
 }
