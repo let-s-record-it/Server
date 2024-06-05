@@ -77,9 +77,10 @@ public class ScheduleController {
 										DayScheduleResponse.of(
 												schedule,
 												schedule.getScheduleGroup().getIsRepeated(),
-												RepetitionPatternResponse.from(
-														schedule.getScheduleGroup()
-																.getRepetitionPattern())))
+												schedule.getScheduleGroup()
+														.getRepetitionPattern()
+														.map(RepetitionPatternResponse::from)
+														.orElse(null)))
 						.toList());
 	}
 }

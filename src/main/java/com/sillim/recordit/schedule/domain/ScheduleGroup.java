@@ -1,6 +1,7 @@
 package com.sillim.recordit.schedule.domain;
 
 import jakarta.persistence.*;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,5 +28,9 @@ public class ScheduleGroup {
 
 	public void setRepetitionPattern(RepetitionPattern repetitionPattern) {
 		this.repetitionPattern = repetitionPattern;
+	}
+
+	public Optional<RepetitionPattern> getRepetitionPattern() {
+		return Optional.ofNullable(repetitionPattern);
 	}
 }
