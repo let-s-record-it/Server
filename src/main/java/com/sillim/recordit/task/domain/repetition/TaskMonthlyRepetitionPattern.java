@@ -1,12 +1,13 @@
 package com.sillim.recordit.task.domain.repetition;
 
+import com.sillim.recordit.enums.date.WeekNumber;
+import com.sillim.recordit.enums.date.Weekday;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
-import com.sillim.recordit.schedule.domain.RepetitionType;
-import com.sillim.recordit.schedule.domain.WeekNumber;
-import com.sillim.recordit.schedule.domain.Weekday;
-import com.sillim.recordit.schedule.domain.vo.DayOfMonth;
 import com.sillim.recordit.task.domain.TaskGroup;
+import com.sillim.recordit.task.domain.TaskRepetitionType;
+import com.sillim.recordit.task.domain.vo.TaskDayOfMonth;
+import jakarta.persistence.Entity;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
@@ -16,16 +17,19 @@ import java.time.temporal.TemporalAmount;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
 	private TaskMonthlyRepetitionPattern(
-			RepetitionType repetitionType,
+			TaskRepetitionType repetitionType,
 			Integer repetitionPeriod,
 			LocalDate repetitionStartDate,
 			LocalDate repetitionEndDate,
-			DayOfMonth dayOfMonth,
+			TaskDayOfMonth dayOfMonth,
 			WeekNumber weekNumber,
 			Weekday weekday,
 			TaskGroup taskGroup) {
@@ -47,11 +51,11 @@ class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 			TaskGroup taskGroup) {
 		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
 		return TaskMonthlyRepetitionPattern.builder()
-				.repetitionType(RepetitionType.MONTHLY_WITH_DATE)
+				.repetitionType(TaskRepetitionType.MONTHLY_WITH_DATE)
 				.repetitionPeriod(repetitionPeriod)
 				.repetitionStartDate(repetitionStartDate)
 				.repetitionEndDate(repetitionEndDate)
-				.dayOfMonth(DayOfMonth.createMonthly(dayOfMonth))
+				.dayOfMonth(TaskDayOfMonth.createMonthly(dayOfMonth))
 				.taskGroup(taskGroup)
 				.build();
 	}
@@ -64,7 +68,7 @@ class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 			Weekday weekday,
 			TaskGroup taskGroup) {
 		return TaskMonthlyRepetitionPattern.builder()
-				.repetitionType(RepetitionType.MONTHLY_WITH_WEEKDAY)
+				.repetitionType(TaskRepetitionType.MONTHLY_WITH_WEEKDAY)
 				.repetitionPeriod(repetitionPeriod)
 				.repetitionStartDate(repetitionStartDate)
 				.repetitionEndDate(repetitionEndDate)
@@ -80,7 +84,7 @@ class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 			LocalDate repetitionEndDate,
 			TaskGroup taskGroup) {
 		return TaskMonthlyRepetitionPattern.builder()
-				.repetitionType(RepetitionType.MONTHLY_WITH_LAST_DAY)
+				.repetitionType(TaskRepetitionType.MONTHLY_WITH_LAST_DAY)
 				.repetitionPeriod(repetitionPeriod)
 				.repetitionStartDate(repetitionStartDate)
 				.repetitionEndDate(repetitionEndDate)

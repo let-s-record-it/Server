@@ -1,13 +1,14 @@
 package com.sillim.recordit.task.domain.repetition;
 
+import com.sillim.recordit.enums.date.WeekNumber;
+import com.sillim.recordit.enums.date.Weekday;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
-import com.sillim.recordit.schedule.domain.RepetitionType;
-import com.sillim.recordit.schedule.domain.WeekNumber;
-import com.sillim.recordit.schedule.domain.Weekday;
-import com.sillim.recordit.schedule.domain.vo.DayOfMonth;
-import com.sillim.recordit.schedule.domain.vo.MonthOfYear;
 import com.sillim.recordit.task.domain.TaskGroup;
+import com.sillim.recordit.task.domain.TaskRepetitionType;
+import com.sillim.recordit.task.domain.vo.TaskDayOfMonth;
+import com.sillim.recordit.task.domain.vo.TaskMonthOfYear;
+import jakarta.persistence.Entity;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
@@ -17,17 +18,20 @@ import java.time.temporal.TemporalAmount;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
 	private TaskYearlyRepetitionPattern(
-			RepetitionType repetitionType,
+			TaskRepetitionType repetitionType,
 			Integer repetitionPeriod,
 			LocalDate repetitionStartDate,
 			LocalDate repetitionEndDate,
-			MonthOfYear monthOfYear,
-			DayOfMonth dayOfMonth,
+			TaskMonthOfYear monthOfYear,
+			TaskDayOfMonth dayOfMonth,
 			WeekNumber weekNumber,
 			Weekday weekday,
 			TaskGroup taskGroup) {
@@ -52,12 +56,12 @@ class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
 		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
 		return TaskYearlyRepetitionPattern.builder()
-				.repetitionType(RepetitionType.YEARLY_WITH_DATE)
+				.repetitionType(TaskRepetitionType.YEARLY_WITH_DATE)
 				.repetitionPeriod(repetitionPeriod)
 				.repetitionStartDate(repetitionStartDate)
 				.repetitionEndDate(repetitionEndDate)
-				.monthOfYear(new MonthOfYear(monthOfYear))
-				.dayOfMonth(DayOfMonth.createYearly(monthOfYear, dayOfMonth))
+				.monthOfYear(new TaskMonthOfYear(monthOfYear))
+				.dayOfMonth(TaskDayOfMonth.createYearly(monthOfYear, dayOfMonth))
 				.taskGroup(taskGroup)
 				.build();
 	}
@@ -72,11 +76,11 @@ class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 			TaskGroup taskGroup) {
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
 		return TaskYearlyRepetitionPattern.builder()
-				.repetitionType(RepetitionType.YEARLY_WITH_WEEKDAY)
+				.repetitionType(TaskRepetitionType.YEARLY_WITH_WEEKDAY)
 				.repetitionPeriod(repetitionPeriod)
 				.repetitionStartDate(repetitionStartDate)
 				.repetitionEndDate(repetitionEndDate)
-				.monthOfYear(new MonthOfYear(monthOfYear))
+				.monthOfYear(new TaskMonthOfYear(monthOfYear))
 				.weekNumber(weekNumber)
 				.weekday(weekday)
 				.taskGroup(taskGroup)
@@ -91,11 +95,11 @@ class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 			TaskGroup taskGroup) {
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
 		return TaskYearlyRepetitionPattern.builder()
-				.repetitionType(RepetitionType.YEARLY_WITH_LAST_DAY)
+				.repetitionType(TaskRepetitionType.YEARLY_WITH_LAST_DAY)
 				.repetitionPeriod(repetitionPeriod)
 				.repetitionStartDate(repetitionStartDate)
 				.repetitionEndDate(repetitionEndDate)
-				.monthOfYear(new MonthOfYear(monthOfYear))
+				.monthOfYear(new TaskMonthOfYear(monthOfYear))
 				.taskGroup(taskGroup)
 				.build();
 	}

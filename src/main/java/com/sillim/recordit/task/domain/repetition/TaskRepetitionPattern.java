@@ -1,15 +1,16 @@
 package com.sillim.recordit.task.domain.repetition;
 
+import com.sillim.recordit.enums.date.WeekNumber;
+import com.sillim.recordit.enums.date.Weekday;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
 import com.sillim.recordit.schedule.domain.RepetitionType;
-import com.sillim.recordit.schedule.domain.WeekNumber;
-import com.sillim.recordit.schedule.domain.Weekday;
-import com.sillim.recordit.schedule.domain.vo.DayOfMonth;
-import com.sillim.recordit.schedule.domain.vo.MonthOfYear;
-import com.sillim.recordit.schedule.domain.vo.WeekdayBit;
 import com.sillim.recordit.task.domain.TaskGroup;
+import com.sillim.recordit.task.domain.TaskRepetitionType;
+import com.sillim.recordit.task.domain.vo.TaskDayOfMonth;
+import com.sillim.recordit.task.domain.vo.TaskMonthOfYear;
+import com.sillim.recordit.task.domain.vo.TaskWeekdayBit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -19,8 +20,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAmount;
 import java.util.Objects;
@@ -28,10 +31,14 @@ import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@SQLRestriction("deleted = false")
 public abstract class TaskRepetitionPattern extends BaseTime {
 
 	private static final int MAX_PERIOD = 999;
@@ -44,7 +51,7 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	protected RepetitionType repetitionType;
+	protected TaskRepetitionType repetitionType;
 
 	@Column(nullable = false)
 	protected Integer repetitionPeriod;
@@ -55,19 +62,23 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 	@Column(nullable = false)
 	protected LocalDate repetitionEndDate;
 
-	@Embedded protected MonthOfYear monthOfYear;
+	@Embedded protected TaskMonthOfYear monthOfYear;
 
-	@Embedded protected DayOfMonth dayOfMonth;
+	@Embedded protected TaskDayOfMonth dayOfMonth;
 
 	@Column protected WeekNumber weekNumber;
 
 	@Column protected Weekday weekday;
 
-	@Embedded protected WeekdayBit weekdayBit;
+	@Embedded protected TaskWeekdayBit weekdayBit;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "task_group_id", unique = true)
 	protected TaskGroup taskGroup;
+
+	@Column(nullable = false)
+	@ColumnDefault("false")
+	private boolean deleted = false;
 
 	public static TaskRepetitionPattern create(
 			RepetitionType repetitionType,

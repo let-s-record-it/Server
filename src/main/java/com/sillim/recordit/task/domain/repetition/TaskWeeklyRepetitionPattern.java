@@ -1,8 +1,9 @@
 package com.sillim.recordit.task.domain.repetition;
 
-import com.sillim.recordit.schedule.domain.RepetitionType;
-import com.sillim.recordit.schedule.domain.vo.WeekdayBit;
 import com.sillim.recordit.task.domain.TaskGroup;
+import com.sillim.recordit.task.domain.TaskRepetitionType;
+import com.sillim.recordit.task.domain.vo.TaskWeekdayBit;
+import jakarta.persistence.Entity;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
@@ -12,16 +13,19 @@ import java.time.temporal.TemporalAmount;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
 	private TaskWeeklyRepetitionPattern(
-			RepetitionType repetitionType,
+			TaskRepetitionType repetitionType,
 			Integer repetitionPeriod,
 			LocalDate repetitionStartDate,
 			LocalDate repetitionEndDate,
-			WeekdayBit weekdayBit,
+			TaskWeekdayBit weekdayBit,
 			TaskGroup taskGroup) {
 		this.repetitionType = repetitionType;
 		this.repetitionPeriod = repetitionPeriod;
@@ -38,11 +42,11 @@ class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 			Integer weekdayBit,
 			TaskGroup taskGroup) {
 		return TaskWeeklyRepetitionPattern.builder()
-				.repetitionType(RepetitionType.WEEKLY)
+				.repetitionType(TaskRepetitionType.WEEKLY)
 				.repetitionPeriod(repetitionPeriod)
 				.repetitionStartDate(repetitionStartDate)
 				.repetitionEndDate(repetitionEndDate)
-				.weekdayBit(new WeekdayBit(weekdayBit))
+				.weekdayBit(new TaskWeekdayBit(weekdayBit))
 				.taskGroup(taskGroup)
 				.build();
 	}
