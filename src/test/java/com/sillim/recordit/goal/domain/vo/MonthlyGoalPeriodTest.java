@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 class MonthlyGoalPeriodTest {
 
 	@Test
-	@DisplayName("GoalPeriod를 생성한다.")
-	void newGoalColorHexTest() {
+	@DisplayName("MonthlyGoalPeriod를 생성한다.")
+	void newMonthlyGoalPeriodTest() {
 
 		assertThatCode(
 						() ->
