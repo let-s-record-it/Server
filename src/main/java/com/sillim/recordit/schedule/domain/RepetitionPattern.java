@@ -1,5 +1,7 @@
 package com.sillim.recordit.schedule.domain;
 
+import com.sillim.recordit.enums.date.WeekNumber;
+import com.sillim.recordit.enums.date.Weekday;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;

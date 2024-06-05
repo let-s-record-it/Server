@@ -1,4 +1,4 @@
-package com.sillim.recordit.schedule.domain;
+package com.sillim.recordit.enums.date;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

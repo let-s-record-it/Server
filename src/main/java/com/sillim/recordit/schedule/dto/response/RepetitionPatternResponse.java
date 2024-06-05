@@ -1,9 +1,9 @@
 package com.sillim.recordit.schedule.dto.response;
 
+import com.sillim.recordit.enums.date.WeekNumber;
+import com.sillim.recordit.enums.date.Weekday;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.RepetitionType;
-import com.sillim.recordit.schedule.domain.WeekNumber;
-import com.sillim.recordit.schedule.domain.Weekday;
 import com.sillim.recordit.schedule.domain.vo.DayOfMonth;
 import com.sillim.recordit.schedule.domain.vo.MonthOfYear;
 import java.time.LocalDateTime;

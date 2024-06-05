@@ -1,10 +1,10 @@
 package com.sillim.recordit.schedule.fixture;
 
+import com.sillim.recordit.enums.date.WeekNumber;
+import com.sillim.recordit.enums.date.Weekday;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.RepetitionType;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
-import com.sillim.recordit.schedule.domain.WeekNumber;
-import com.sillim.recordit.schedule.domain.Weekday;
 import java.time.LocalDateTime;
 
 public enum RepetitionPatternFixture {
