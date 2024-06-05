@@ -3,7 +3,6 @@ package com.sillim.recordit.goal.domain;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.goal.domain.vo.GoalColorHex;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
-import com.sillim.recordit.goal.domain.vo.GoalPeriod;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
 import com.sillim.recordit.goal.domain.vo.MonthlyGoalPeriod;
 import com.sillim.recordit.member.domain.Member;
@@ -22,12 +21,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SoftDelete
+@SQLDelete(sql = "UPDATE monthly_goal SET deleted = true WHERE monthly_goal_id = ?")
+@SQLRestriction("deleted = false")
 public class MonthlyGoal extends BaseTime {
 
 	@Id
@@ -39,7 +40,7 @@ public class MonthlyGoal extends BaseTime {
 
 	@Embedded private GoalDescription description;
 
-	@Embedded private GoalPeriod period;
+	@Embedded private MonthlyGoalPeriod period;
 
 	@Embedded private GoalColorHex colorHex;
 
@@ -50,6 +51,10 @@ public class MonthlyGoal extends BaseTime {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
+
+	@Column(nullable = false)
+	@ColumnDefault("false")
+	private boolean deleted;
 
 	@Builder
 	public MonthlyGoal(
@@ -65,6 +70,7 @@ public class MonthlyGoal extends BaseTime {
 		this.colorHex = new GoalColorHex(colorHex);
 		this.achieved = false;
 		this.member = member;
+		this.deleted = false;
 	}
 
 	public void modify(
