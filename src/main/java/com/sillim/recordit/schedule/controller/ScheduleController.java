@@ -8,6 +8,7 @@ import com.sillim.recordit.schedule.dto.response.RepetitionPatternResponse;
 import com.sillim.recordit.schedule.service.RepetitionPatternService;
 import com.sillim.recordit.schedule.service.ScheduleCommandService;
 import com.sillim.recordit.schedule.service.ScheduleQueryService;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -55,14 +56,31 @@ public class ScheduleController {
 		return ResponseEntity.ok(DayScheduleResponse.of(schedule, false, null));
 	}
 
-	@GetMapping
-	public ResponseEntity<List<MonthScheduleResponse>> scheduleList(
+	@GetMapping("/month")
+	public ResponseEntity<List<MonthScheduleResponse>> scheduleListInMonth(
 			@PathVariable Long calendarId,
 			@RequestParam Integer year,
 			@RequestParam Integer month) {
 		return ResponseEntity.ok(
 				scheduleQueryService.searchSchedulesInMonth(calendarId, year, month).stream()
 						.map(MonthScheduleResponse::from)
+						.toList());
+	}
+
+	@GetMapping("/day")
+	public ResponseEntity<List<DayScheduleResponse>> scheduleListInDay(
+			@PathVariable Long calendarId, @RequestParam LocalDate date) {
+		return ResponseEntity.ok(
+				scheduleQueryService.searchSchedulesInDay(calendarId, date).stream()
+						.map(
+								schedule ->
+										DayScheduleResponse.of(
+												schedule,
+												schedule.getScheduleGroup().getIsRepeated(),
+												schedule.getScheduleGroup()
+														.getRepetitionPattern()
+														.map(RepetitionPatternResponse::from)
+														.orElse(null)))
 						.toList());
 	}
 }

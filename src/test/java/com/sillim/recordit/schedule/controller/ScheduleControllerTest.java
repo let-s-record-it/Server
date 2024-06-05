@@ -22,10 +22,12 @@ import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
 import com.sillim.recordit.schedule.fixture.RepetitionPatternFixture;
+import com.sillim.recordit.schedule.fixture.ScheduleFixture;
 import com.sillim.recordit.schedule.service.RepetitionPatternService;
 import com.sillim.recordit.schedule.service.ScheduleCommandService;
 import com.sillim.recordit.schedule.service.ScheduleQueryService;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,21 +83,11 @@ class ScheduleControllerTest extends RestDocsTest {
 						LocalDateTime.of(2024, 1, 1, 0, 0));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule =
-				Schedule.builder()
-						.title("title")
-						.description("description")
-						.isAllDay(false)
-						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
-						.colorHex("aaffbb")
-						.setLocation(true)
-						.place("서울역")
-						.latitude(36.0)
-						.longitude(127.0)
-						.setAlarm(true)
-						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.scheduleGroup(scheduleGroup)
-						.build();
+				ScheduleFixture.DEFAULT.getSchedule(
+						scheduleGroup,
+						calendar,
+						LocalDateTime.of(2024, 1, 1, 0, 0),
+						LocalDateTime.of(2024, 2, 1, 0, 0));
 		given(scheduleCommandService.addSchedules(scheduleAddRequest, calendarId))
 				.willReturn(List.of(schedule));
 
@@ -195,34 +187,52 @@ class ScheduleControllerTest extends RestDocsTest {
 
 	@Test
 	@DisplayName("특정 달의 일정을 조회한다.")
-	void scheduleList() throws Exception {
+	void scheduleListInMonth() throws Exception {
 		long calendarId = 1L;
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-		Schedule schedule =
-				Schedule.builder()
-						.title("title")
-						.description("description")
-						.isAllDay(false)
-						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
-						.colorHex("aaffbb")
-						.setLocation(true)
-						.place("서울역")
-						.latitude(36.0)
-						.longitude(127.0)
-						.setAlarm(true)
-						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.scheduleGroup(scheduleGroup)
-						.build();
+		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar);
 		given(scheduleQueryService.searchSchedulesInMonth(calendarId, 2024, 1))
 				.willReturn(List.of(schedule));
 
 		ResultActions perform =
 				mockMvc.perform(
-						get("/api/v1/calendars/{calendarId}/schedules", calendarId)
+						get("/api/v1/calendars/{calendarId}/schedules/month", calendarId)
 								.contentType(MediaType.APPLICATION_JSON)
 								.queryParam("year", "2024")
 								.queryParam("month", "1"));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(document("schedule-list", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("특정 일의 일정을 조회한다.")
+	void scheduleListInDay() throws Exception {
+		long calendarId = 1L;
+		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		RepetitionPattern repetitionPattern =
+				RepetitionPattern.createDaily(
+						1,
+						LocalDateTime.of(2024, 1, 1, 0, 0),
+						LocalDateTime.of(2024, 2, 1, 0, 0),
+						scheduleGroup);
+		scheduleGroup.setRepetitionPattern(repetitionPattern);
+		Schedule schedule =
+				ScheduleFixture.DEFAULT.getSchedule(
+						scheduleGroup,
+						calendar,
+						LocalDateTime.of(2024, 1, 1, 0, 0),
+						LocalDateTime.of(2024, 2, 1, 0, 0));
+		given(scheduleQueryService.searchSchedulesInDay(calendarId, LocalDate.of(2024, 1, 15)))
+				.willReturn(List.of(schedule));
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/calendars/{calendarId}/schedules/day", calendarId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.queryParam("date", "2024-01-15"));
 
 		perform.andExpect(status().isOk());
 
