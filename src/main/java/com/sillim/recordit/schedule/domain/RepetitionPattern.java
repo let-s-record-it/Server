@@ -16,7 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -66,7 +66,7 @@ public class RepetitionPattern extends BaseTime {
 
 	@Embedded private WeekdayBit weekdayBit;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_group_id", unique = true)
 	private ScheduleGroup scheduleGroup;
 
@@ -93,7 +93,12 @@ public class RepetitionPattern extends BaseTime {
 		this.weekNumber = weekNumber;
 		this.weekday = weekday;
 		this.weekdayBit = weekdayBit;
+		setScheduleGroup(scheduleGroup);
+	}
+
+	private void setScheduleGroup(ScheduleGroup scheduleGroup) {
 		this.scheduleGroup = scheduleGroup;
+		this.scheduleGroup.setRepetitionPattern(this);
 	}
 
 	public Optional<MonthOfYear> getMonthOfYear() {
