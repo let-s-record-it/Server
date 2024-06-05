@@ -26,57 +26,60 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ScheduleController {
 
-    private final ScheduleCommandService scheduleCommandService;
-    private final ScheduleQueryService scheduleQueryService;
-    private final RepetitionPatternService repetitionPatternService;
+	private final ScheduleCommandService scheduleCommandService;
+	private final ScheduleQueryService scheduleQueryService;
+	private final RepetitionPatternService repetitionPatternService;
 
-    @PostMapping
-    public ResponseEntity<List<MonthScheduleResponse>> addSchedules(
-            @Validated @RequestBody ScheduleAddRequest request, @PathVariable Long calendarId) {
-        return ResponseEntity.ok(
-                scheduleCommandService.addSchedules(request, calendarId).stream()
-                        .map(MonthScheduleResponse::from)
-                        .toList());
-    }
+	@PostMapping
+	public ResponseEntity<List<MonthScheduleResponse>> addSchedules(
+			@Validated @RequestBody ScheduleAddRequest request, @PathVariable Long calendarId) {
+		return ResponseEntity.ok(
+				scheduleCommandService.addSchedules(request, calendarId).stream()
+						.map(MonthScheduleResponse::from)
+						.toList());
+	}
 
-    @GetMapping("/{scheduleId}")
-    public ResponseEntity<DayScheduleResponse> scheduleDetails(@PathVariable Long scheduleId) {
-        Schedule schedule = scheduleQueryService.searchSchedule(scheduleId);
+	@GetMapping("/{scheduleId}")
+	public ResponseEntity<DayScheduleResponse> scheduleDetails(@PathVariable Long scheduleId) {
+		Schedule schedule = scheduleQueryService.searchSchedule(scheduleId);
 
-        if (schedule.getScheduleGroup().getIsRepeated()) {
-            return ResponseEntity.ok(
-                    DayScheduleResponse.of(
-                            schedule,
-                            true,
-                            RepetitionPatternResponse.from(
-                                    repetitionPatternService.searchByScheduleGroupId(
-                                            schedule.getScheduleGroup().getId()))));
-        }
+		if (schedule.getScheduleGroup().getIsRepeated()) {
+			return ResponseEntity.ok(
+					DayScheduleResponse.of(
+							schedule,
+							true,
+							RepetitionPatternResponse.from(
+									repetitionPatternService.searchByScheduleGroupId(
+											schedule.getScheduleGroup().getId()))));
+		}
 
-        return ResponseEntity.ok(DayScheduleResponse.of(schedule, false, null));
-    }
+		return ResponseEntity.ok(DayScheduleResponse.of(schedule, false, null));
+	}
 
-    @GetMapping("/month")
-    public ResponseEntity<List<MonthScheduleResponse>> scheduleListInMonth(
-            @PathVariable Long calendarId,
-            @RequestParam Integer year,
-            @RequestParam Integer month) {
-        return ResponseEntity.ok(
-                scheduleQueryService.searchSchedulesInMonth(calendarId, year, month).stream()
-                        .map(MonthScheduleResponse::from)
-                        .toList());
-    }
+	@GetMapping("/month")
+	public ResponseEntity<List<MonthScheduleResponse>> scheduleListInMonth(
+			@PathVariable Long calendarId,
+			@RequestParam Integer year,
+			@RequestParam Integer month) {
+		return ResponseEntity.ok(
+				scheduleQueryService.searchSchedulesInMonth(calendarId, year, month).stream()
+						.map(MonthScheduleResponse::from)
+						.toList());
+	}
 
-    @GetMapping("/day")
-    public ResponseEntity<List<DayScheduleResponse>> scheduleListInDay(
-            @PathVariable Long calendarId,
-            @RequestParam LocalDate date) {
-        return ResponseEntity.ok(
-                scheduleQueryService.searchSchedulesInDay(calendarId, date).stream()
-                        .map(schedule -> DayScheduleResponse.of(schedule,
-                                schedule.getScheduleGroup().getIsRepeated(),
-                                RepetitionPatternResponse.from(
-                                        schedule.getScheduleGroup().getRepetitionPattern())))
-                        .toList());
-    }
+	@GetMapping("/day")
+	public ResponseEntity<List<DayScheduleResponse>> scheduleListInDay(
+			@PathVariable Long calendarId, @RequestParam LocalDate date) {
+		return ResponseEntity.ok(
+				scheduleQueryService.searchSchedulesInDay(calendarId, date).stream()
+						.map(
+								schedule ->
+										DayScheduleResponse.of(
+												schedule,
+												schedule.getScheduleGroup().getIsRepeated(),
+												RepetitionPatternResponse.from(
+														schedule.getScheduleGroup()
+																.getRepetitionPattern())))
+						.toList());
+	}
 }

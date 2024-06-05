@@ -32,8 +32,10 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.where(QSchedule.schedule.calendar.id.eq(calendarId))
 				.where(QSchedule.schedule.scheduleDuration.startDatetime.loe(date.atStartOfDay()))
 				.where(QSchedule.schedule.scheduleDuration.endDatetime.goe(date.atStartOfDay()))
-				.leftJoin(QSchedule.schedule.scheduleGroup).fetchJoin()
-				.leftJoin(QSchedule.schedule.scheduleGroup.repetitionPattern).fetchJoin()
+				.leftJoin(QSchedule.schedule.scheduleGroup)
+				.fetchJoin()
+				.leftJoin(QSchedule.schedule.scheduleGroup.repetitionPattern)
+				.fetchJoin()
 				.fetch();
 	}
 
