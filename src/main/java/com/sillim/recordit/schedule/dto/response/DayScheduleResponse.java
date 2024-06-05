@@ -33,6 +33,7 @@ public record DayScheduleResponse(
 				.endDatetime(schedule.getEndDatetime())
 				.colorHex(schedule.getColorHex())
 				.place(schedule.getPlace())
+				.setLocation(schedule.getSetLocation())
 				.latitude(schedule.getLatitude())
 				.longitude(schedule.getLongitude())
 				.setAlarm(schedule.getSetAlarm())
