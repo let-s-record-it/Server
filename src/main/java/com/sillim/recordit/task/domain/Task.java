@@ -20,12 +20,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SoftDelete;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SoftDelete
 public class Task extends BaseTime {
 
 	@Id
@@ -53,6 +51,10 @@ public class Task extends BaseTime {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "task_group_id")
 	private TaskGroup taskGroup;
+
+	@Column(nullable = false)
+	@ColumnDefault("false")
+	private boolean deleted = false;
 
 	public Task(
 			TaskTitle title,

@@ -12,14 +12,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SoftDelete
 public class TaskGroup extends BaseTime {
 
 	@Id
@@ -38,7 +38,14 @@ public class TaskGroup extends BaseTime {
 	@JoinColumn(name = "weekly_goal_id")
 	private WeeklyGoal weeklyGoal;
 
-	public TaskGroup(Boolean isRepeated) {
+	@Column(nullable = false)
+	@ColumnDefault("false")
+	private boolean deleted = false;
+
+	@Builder
+	public TaskGroup(Boolean isRepeated, MonthlyGoal monthlyGoal, WeeklyGoal weeklyGoal) {
 		this.isRepeated = isRepeated;
+		this.monthlyGoal = monthlyGoal;
+		this.weeklyGoal = weeklyGoal;
 	}
 }
