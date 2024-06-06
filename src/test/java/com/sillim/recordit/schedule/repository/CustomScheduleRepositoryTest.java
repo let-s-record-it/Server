@@ -154,5 +154,6 @@ class CustomScheduleRepositoryTest {
 		assertThat(scheduleInDay).hasSize(3);
 		assertThat(scheduleInDay.get(0).getScheduleGroup()).isNotNull();
 		assertThat(scheduleInDay.get(0).getScheduleGroup().getRepetitionPattern()).isNotNull();
+		assertThat(scheduleInDay.get(0).getCalendar()).isNotNull();
 	}
 }
