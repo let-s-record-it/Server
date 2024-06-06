@@ -21,12 +21,12 @@ class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
 	private TaskWeeklyRepetitionPattern(
-			TaskRepetitionType repetitionType,
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate,
-			TaskWeekdayBit weekdayBit,
-			TaskGroup taskGroup) {
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskWeekdayBit weekdayBit,
+			final TaskGroup taskGroup) {
 		this.repetitionType = repetitionType;
 		this.repetitionPeriod = repetitionPeriod;
 		this.repetitionStartDate = repetitionStartDate;
@@ -36,11 +36,11 @@ class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 	}
 
 	protected static TaskWeeklyRepetitionPattern createWeekly(
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate,
-			Integer weekdayBit,
-			TaskGroup taskGroup) {
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final Integer weekdayBit,
+			final TaskGroup taskGroup) {
 		return TaskWeeklyRepetitionPattern.builder()
 				.repetitionType(TaskRepetitionType.WEEKLY)
 				.repetitionPeriod(repetitionPeriod)

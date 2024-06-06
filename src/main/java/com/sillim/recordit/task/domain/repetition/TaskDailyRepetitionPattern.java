@@ -17,11 +17,11 @@ class TaskDailyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
 	private TaskDailyRepetitionPattern(
-			TaskRepetitionType repetitionType,
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate,
-			TaskGroup taskGroup) {
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskGroup taskGroup) {
 		this.repetitionType = repetitionType;
 		this.repetitionPeriod = repetitionPeriod;
 		this.repetitionStartDate = repetitionStartDate;
@@ -30,10 +30,10 @@ class TaskDailyRepetitionPattern extends TaskRepetitionPattern {
 	}
 
 	protected static TaskDailyRepetitionPattern createDaily(
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate,
-			TaskGroup taskGroup) {
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskGroup taskGroup) {
 		return TaskDailyRepetitionPattern.builder()
 				.repetitionType(TaskRepetitionType.DAILY)
 				.repetitionPeriod(repetitionPeriod)

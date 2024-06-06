@@ -20,10 +20,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("deleted = false")
 public class Task extends BaseTime {
 
 	@Id
@@ -42,14 +44,14 @@ public class Task extends BaseTime {
 
 	@Column(nullable = false)
 	@ColumnDefault("false")
-	private boolean achieved;
+	private boolean achieved = false;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "calendar_id")
+	@JoinColumn(name = "calendar_id", nullable = false)
 	private Calendar calendar;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "task_group_id")
+	@JoinColumn(name = "task_group_id", nullable = false)
 	private TaskGroup taskGroup;
 
 	@Column(nullable = false)

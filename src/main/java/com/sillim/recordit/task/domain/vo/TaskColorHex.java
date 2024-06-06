@@ -2,6 +2,7 @@ package com.sillim.recordit.task.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidColorHexException;
+import com.sillim.recordit.global.exception.common.InvalidTitleException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
@@ -14,13 +15,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 @EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TaskColorHex {
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+public final class TaskColorHex {
 
 	private static final String COLOR_HEX_REGEX = "[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3}";
 
 	@Column(nullable = false)
-	private String colorHex;
+	private final String colorHex;
 
 	public TaskColorHex(final String colorHex) {
 		validate(colorHex);
@@ -29,11 +30,10 @@ public class TaskColorHex {
 
 	private void validate(final String colorHex) {
 		if (Objects.isNull(colorHex)) {
-			throw new InvalidColorHexException(ErrorCode.NULL_SCHEDULE_COLOR_HEX);
+			throw new InvalidTitleException(ErrorCode.NULL_TASK_TITLE);
 		}
-
 		if (!Pattern.matches(COLOR_HEX_REGEX, colorHex)) {
-			throw new InvalidColorHexException(ErrorCode.INVALID_SCHEDULE_COLOR_HEX);
+			throw new InvalidColorHexException(ErrorCode.INVALID_TASK_COLOR_HEX);
 		}
 	}
 }

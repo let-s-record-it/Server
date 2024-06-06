@@ -5,7 +5,6 @@ import com.sillim.recordit.enums.date.Weekday;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
-import com.sillim.recordit.schedule.domain.RepetitionType;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.vo.TaskDayOfMonth;
@@ -81,17 +80,17 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 	private boolean deleted = false;
 
 	public static TaskRepetitionPattern create(
-			RepetitionType repetitionType,
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate,
-			Integer monthOfYear,
-			Integer dayOfMonth,
-			WeekNumber weekNumber,
-			Weekday weekday,
-			Integer weekdayBit,
-			TaskGroup taskGroup) {
-		validateNotNull(repetitionType, repetitionPeriod, repetitionStartDate, repetitionEndDate);
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final Integer monthOfYear,
+			final Integer dayOfMonth,
+			final WeekNumber weekNumber,
+			final Weekday weekday,
+			final Integer weekdayBit,
+			final TaskGroup taskGroup) {
+		validateRepetitionType(repetitionType);
 		validatePeriod(repetitionPeriod);
 		validateDuration(repetitionStartDate, repetitionEndDate);
 		return switch (repetitionType) {
@@ -150,41 +149,28 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 		};
 	}
 
-	private static void validateNotNull(
-			RepetitionType repetitionType,
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate) {
+	private static void validateRepetitionType(final TaskRepetitionType repetitionType) {
 		if (Objects.isNull(repetitionType)) {
-			throwIfRequiredValueIsNull("repetitionType");
+			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_TYPE);
 		}
+	}
+
+	private static void validatePeriod(final Integer repetitionPeriod) {
 		if (Objects.isNull(repetitionPeriod)) {
-			throwIfRequiredValueIsNull("repetitionPeriod");
+			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_PERIOD);
 		}
-		if (Objects.isNull(repetitionStartDate)) {
-			throwIfRequiredValueIsNull("repetitionStartDate");
-		}
-		if (Objects.isNull(repetitionEndDate)) {
-			throwIfRequiredValueIsNull("repetitionEndDate");
-		}
-	}
-
-	private static void throwIfRequiredValueIsNull(String value) {
-		throw new InvalidRepetitionException(
-				ErrorCode.NULL_TASK_REPETITION_REQUIRED_VALUE,
-				ErrorCode.NULL_TASK_REPETITION_REQUIRED_VALUE.getFormattedDescription(value));
-	}
-
-	private static void validatePeriod(Integer repetitionPeriod) {
 		if (repetitionPeriod < MIN_PERIOD || repetitionPeriod > MAX_PERIOD) {
 			throw new InvalidRepetitionException(ErrorCode.INVALID_REPETITION_PERIOD);
 		}
 	}
 
 	private static void validateDuration(
-			LocalDate repetitionStartDate, LocalDate repetitionEndDate) {
+			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate) {
+		if (Objects.isNull(repetitionStartDate) || Objects.isNull(repetitionEndDate)) {
+			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_PERIOD);
+		}
 		if (repetitionStartDate.isAfter(repetitionEndDate)) {
-			throw new InvalidRepetitionException(ErrorCode.INVALID_DURATION);
+			throw new InvalidRepetitionException(ErrorCode.TASK_REPETITION_INVALID_DURATION);
 		}
 	}
 

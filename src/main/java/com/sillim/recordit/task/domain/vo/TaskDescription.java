@@ -13,24 +13,26 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 @EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TaskDescription {
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+public final class TaskDescription {
 
 	private static final int MAX_DESCRIPTION_LENGTH = 500;
 
 	@Column(nullable = false, length = MAX_DESCRIPTION_LENGTH)
-	private String description;
+	private final String description;
 
-	public TaskDescription(String description) {
+	public TaskDescription(final String description) {
 		validate(description);
 		this.description = description;
 	}
 
-	private void validate(String description) {
+	private void validate(final String description) {
 		if (Objects.isNull(description)) {
-			throw new InvalidDescriptionException(ErrorCode.NULL_SCHEDULE_DESCRIPTION);
+			throw new InvalidDescriptionException(ErrorCode.NULL_TASK_DESCRIPTION);
 		}
-
+		if (description.isBlank()) {
+			throw new InvalidDescriptionException(ErrorCode.BLANK_TASK_DESCRIPTION);
+		}
 		if (description.length() > MAX_DESCRIPTION_LENGTH) {
 			throw new InvalidDescriptionException(ErrorCode.INVALID_SCHEDULE_DESCRIPTION_LENGTH);
 		}

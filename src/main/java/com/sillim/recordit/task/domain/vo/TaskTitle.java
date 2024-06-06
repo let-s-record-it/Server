@@ -13,30 +13,28 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 @EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TaskTitle {
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+public final class TaskTitle {
 
 	private static final int MAX_TITLE_LENGTH = 30;
 
 	@Column(nullable = false, length = MAX_TITLE_LENGTH)
-	private String title;
+	private final String title;
 
-	public TaskTitle(String title) {
+	public TaskTitle(final String title) {
 		validate(title);
 		this.title = title;
 	}
 
-	private void validate(String title) {
+	private void validate(final String title) {
 		if (Objects.isNull(title)) {
-			throw new InvalidTitleException(ErrorCode.NULL_SCHEDULE_TITLE);
+			throw new InvalidTitleException(ErrorCode.NULL_TASK_TITLE);
 		}
-
 		if (title.isBlank()) {
-			throw new InvalidTitleException(ErrorCode.BLANK_SCHEDULE_TITLE);
+			throw new InvalidTitleException(ErrorCode.BLANK_TASK_TITLE);
 		}
-
 		if (title.length() > MAX_TITLE_LENGTH) {
-			throw new InvalidTitleException(ErrorCode.INVALID_SCHEDULE_TITLE_LENGTH);
+			throw new InvalidTitleException(ErrorCode.INVALID_TASK_TITLE_LENGTH);
 		}
 	}
 }

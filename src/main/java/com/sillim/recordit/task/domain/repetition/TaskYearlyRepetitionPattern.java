@@ -15,6 +15,7 @@ import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.TemporalAmount;
+import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,15 +27,15 @@ class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
 	private TaskYearlyRepetitionPattern(
-			TaskRepetitionType repetitionType,
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate,
-			TaskMonthOfYear monthOfYear,
-			TaskDayOfMonth dayOfMonth,
-			WeekNumber weekNumber,
-			Weekday weekday,
-			TaskGroup taskGroup) {
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskMonthOfYear monthOfYear,
+			final TaskDayOfMonth dayOfMonth,
+			final WeekNumber weekNumber,
+			final Weekday weekday,
+			final TaskGroup taskGroup) {
 		this.repetitionType = repetitionType;
 		this.repetitionPeriod = repetitionPeriod;
 		this.repetitionStartDate = repetitionStartDate;
@@ -47,12 +48,12 @@ class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 	}
 
 	public static TaskYearlyRepetitionPattern createYearlyWithDate(
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate,
-			Integer monthOfYear,
-			Integer dayOfMonth,
-			TaskGroup taskGroup) {
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final Integer monthOfYear,
+			final Integer dayOfMonth,
+			final TaskGroup taskGroup) {
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
 		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
 		return TaskYearlyRepetitionPattern.builder()
@@ -67,13 +68,19 @@ class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 	}
 
 	public static TaskYearlyRepetitionPattern createYearlyWithWeekday(
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate,
-			Integer monthOfYear,
-			WeekNumber weekNumber,
-			Weekday weekday,
-			TaskGroup taskGroup) {
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final Integer monthOfYear,
+			final WeekNumber weekNumber,
+			final Weekday weekday,
+			final TaskGroup taskGroup) {
+		if (Objects.isNull(weekNumber)) {
+			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_WEEK_NUMBER);
+		}
+		if (Objects.isNull(weekday)) {
+			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_WEEKDAY);
+		}
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
 		return TaskYearlyRepetitionPattern.builder()
 				.repetitionType(TaskRepetitionType.YEARLY_WITH_WEEKDAY)
@@ -88,11 +95,11 @@ class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 	}
 
 	public static TaskYearlyRepetitionPattern createYearlyWithLastDay(
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate,
-			Integer monthOfYear,
-			TaskGroup taskGroup) {
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final Integer monthOfYear,
+			final TaskGroup taskGroup) {
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
 		return TaskYearlyRepetitionPattern.builder()
 				.repetitionType(TaskRepetitionType.YEARLY_WITH_LAST_DAY)
@@ -104,14 +111,15 @@ class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 				.build();
 	}
 
-	private static void validateDayOfMonthEqualsStartDate(LocalDate startDate, Integer dayOfMonth) {
+	private static void validateDayOfMonthEqualsStartDate(
+			final LocalDate startDate, final Integer dayOfMonth) {
 		if (startDate.getDayOfMonth() != dayOfMonth) {
 			throw new InvalidRepetitionException(ErrorCode.NOT_EQUAL_DAY_OF_MONTH);
 		}
 	}
 
 	private static void validateMonthOfYearEqualsStartDateMonth(
-			LocalDate startDate, Integer monthOfYear) {
+			final LocalDate startDate, final Integer monthOfYear) {
 		if (startDate.getMonth().getValue() != monthOfYear) {
 			throw new InvalidRepetitionException(ErrorCode.NOT_EQUAL_MONTH_OF_YEAR);
 		}
