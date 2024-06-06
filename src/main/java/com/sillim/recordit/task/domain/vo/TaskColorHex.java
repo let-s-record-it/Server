@@ -2,7 +2,6 @@ package com.sillim.recordit.task.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidColorHexException;
-import com.sillim.recordit.global.exception.common.InvalidTitleException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
@@ -30,7 +29,7 @@ public final class TaskColorHex {
 
 	private void validate(final String colorHex) {
 		if (Objects.isNull(colorHex)) {
-			throw new InvalidTitleException(ErrorCode.NULL_TASK_TITLE);
+			throw new InvalidColorHexException(ErrorCode.NULL_TASK_COLOR_HEX);
 		}
 		if (!Pattern.matches(COLOR_HEX_REGEX, colorHex)) {
 			throw new InvalidColorHexException(ErrorCode.INVALID_TASK_COLOR_HEX);

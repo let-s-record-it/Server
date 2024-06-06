@@ -34,7 +34,7 @@ public final class TaskDescription {
 			throw new InvalidDescriptionException(ErrorCode.BLANK_TASK_DESCRIPTION);
 		}
 		if (description.length() > MAX_DESCRIPTION_LENGTH) {
-			throw new InvalidDescriptionException(ErrorCode.INVALID_SCHEDULE_DESCRIPTION_LENGTH);
+			throw new InvalidDescriptionException(ErrorCode.INVALID_TASK_DESCRIPTION_LENGTH);
 		}
 	}
 }

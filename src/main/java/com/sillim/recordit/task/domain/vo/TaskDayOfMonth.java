@@ -44,13 +44,13 @@ public final class TaskDayOfMonth {
 
 	private static void validateDateRange(final Integer date) {
 		if (date < 1 || date > 31) {
-			throw new InvalidDayOfMonthException(ErrorCode.INVALID_DAY_OF_MONTH);
+			throw new InvalidDayOfMonthException(ErrorCode.TASK_DAY_OF_MONTH_OUT_OF_RANGE);
 		}
 	}
 
 	private static void validateDateOfMonth(final Integer monthOfYear, final Integer dayOfMonth) {
 		if (isOutOfBounds(monthOfYear, dayOfMonth)) {
-			throw new InvalidDayOfMonthException(ErrorCode.INVALID_DAY_OF_MONTH);
+			throw new InvalidDayOfMonthException(ErrorCode.TASK_DAY_OF_MONTH_OUT_OF_RANGE);
 		}
 	}
 
