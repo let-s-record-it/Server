@@ -122,6 +122,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						.setAlarm(true)
 						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.scheduleGroup(scheduleGroup)
+						.calendar(calendar)
 						.build();
 		given(scheduleQueryService.searchSchedule(anyLong())).willReturn(schedule);
 		long calendarId = 1L;
@@ -159,6 +160,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						.setAlarm(true)
 						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.scheduleGroup(scheduleGroup)
+						.calendar(calendar)
 						.build();
 		RepetitionPattern repetitionPattern =
 				RepetitionPatternFixture.WEEKLY.getRepetitionPattern(scheduleGroup);
@@ -204,7 +206,11 @@ class ScheduleControllerTest extends RestDocsTest {
 		perform.andExpect(status().isOk());
 
 		perform.andDo(print())
-				.andDo(document("schedule-list", getDocumentRequest(), getDocumentResponse()));
+				.andDo(
+						document(
+								"schedule-list-in-month",
+								getDocumentRequest(),
+								getDocumentResponse()));
 	}
 
 	@Test
@@ -237,6 +243,10 @@ class ScheduleControllerTest extends RestDocsTest {
 		perform.andExpect(status().isOk());
 
 		perform.andDo(print())
-				.andDo(document("schedule-list", getDocumentRequest(), getDocumentResponse()));
+				.andDo(
+						document(
+								"schedule-list-in-day",
+								getDocumentRequest(),
+								getDocumentResponse()));
 	}
 }
