@@ -33,6 +33,8 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.where(schedule.calendar.id.eq(calendarId))
 				.where(schedule.scheduleDuration.startDatetime.loe(date.atStartOfDay()))
 				.where(schedule.scheduleDuration.endDatetime.goe(date.atStartOfDay()))
+				.leftJoin(schedule.calendar)
+				.fetchJoin()
 				.leftJoin(schedule.scheduleGroup)
 				.fetchJoin()
 				.leftJoin(schedule.scheduleGroup.repetitionPattern)
