@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
+public class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
 	private TaskWeeklyRepetitionPattern(

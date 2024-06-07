@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-class TaskDailyRepetitionPattern extends TaskRepetitionPattern {
+public class TaskDailyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
 	private TaskDailyRepetitionPattern(
