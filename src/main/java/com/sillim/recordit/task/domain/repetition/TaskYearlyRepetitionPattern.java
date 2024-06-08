@@ -80,9 +80,6 @@ public class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 			final WeekNumber weekNumber,
 			final Weekday weekday,
 			final TaskGroup taskGroup) {
-		validateWeekNumberAndWeekdayIsNotNull(weekNumber, weekday);
-		validateWeekNumberEqualsStartDate(repetitionStartDate, weekNumber);
-		validateWeekdayEqualsStartDate(repetitionStartDate, weekday);
 		TaskRepetitionPattern repetitionPattern =
 				TaskYearlyRepetitionPattern.builder()
 						.repetitionType(TaskRepetitionType.YEARLY_WITH_WEEKDAY)
@@ -95,6 +92,9 @@ public class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 						.taskGroup(taskGroup)
 						.build();
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
+		validateWeekNumberAndWeekdayIsNotNull(weekNumber, weekday);
+		validateWeekNumberEqualsStartDate(repetitionStartDate, weekNumber);
+		validateWeekdayEqualsStartDate(repetitionStartDate, weekday);
 		return repetitionPattern;
 	}
 

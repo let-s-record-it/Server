@@ -74,18 +74,20 @@ public class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 			final WeekNumber weekNumber,
 			final Weekday weekday,
 			final TaskGroup taskGroup) {
+		TaskRepetitionPattern repetitionPattern =
+				TaskMonthlyRepetitionPattern.builder()
+						.repetitionType(TaskRepetitionType.MONTHLY_WITH_WEEKDAY)
+						.repetitionPeriod(repetitionPeriod)
+						.repetitionStartDate(repetitionStartDate)
+						.repetitionEndDate(repetitionEndDate)
+						.weekNumber(weekNumber)
+						.weekday(weekday)
+						.taskGroup(taskGroup)
+						.build();
 		validateWeekNumberAndWeekdayIsNotNull(weekNumber, weekday);
 		validateWeekNumberEqualsStartDate(repetitionStartDate, weekNumber);
 		validateWeekdayEqualsStartDate(repetitionStartDate, weekday);
-		return TaskMonthlyRepetitionPattern.builder()
-				.repetitionType(TaskRepetitionType.MONTHLY_WITH_WEEKDAY)
-				.repetitionPeriod(repetitionPeriod)
-				.repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate)
-				.weekNumber(weekNumber)
-				.weekday(weekday)
-				.taskGroup(taskGroup)
-				.build();
+		return repetitionPattern;
 	}
 
 	public static TaskRepetitionPattern createMonthlyWithLastDay(
