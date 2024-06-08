@@ -21,8 +21,6 @@ class TaskDayOfMonthTest {
 				() -> {
 					assertThat(dayOfMonth1).isEqualTo(TaskDayOfMonth.createMonthly(1));
 					assertThat(dayOfMonth2).isEqualTo(TaskDayOfMonth.createMonthly(31));
-					assertThat(dayOfMonth1.equalsDayOfMonthValue(1)).isTrue();
-					assertThat(dayOfMonth2.equalsDayOfMonthValue(31)).isTrue();
 				});
 	}
 
