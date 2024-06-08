@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record DayScheduleResponse(
+		Long id,
 		String title,
 		String description,
 		Boolean isAllDay,
@@ -19,6 +20,7 @@ public record DayScheduleResponse(
 		Boolean setAlarm,
 		LocalDateTime alarmTime,
 		Boolean isRepeated,
+		String calendarTitle,
 		RepetitionPatternResponse repetitionPattern) {
 
 	public static DayScheduleResponse of(
@@ -26,6 +28,7 @@ public record DayScheduleResponse(
 			Boolean isRepeated,
 			RepetitionPatternResponse repetitionPatternResponse) {
 		return DayScheduleResponse.builder()
+				.id(schedule.getId())
 				.title(schedule.getTitle())
 				.description(schedule.getDescription())
 				.isAllDay(schedule.getIsAllDay())
@@ -33,11 +36,13 @@ public record DayScheduleResponse(
 				.endDatetime(schedule.getEndDatetime())
 				.colorHex(schedule.getColorHex())
 				.place(schedule.getPlace())
+				.setLocation(schedule.getSetLocation())
 				.latitude(schedule.getLatitude())
 				.longitude(schedule.getLongitude())
 				.setAlarm(schedule.getSetAlarm())
 				.alarmTime(schedule.getAlarmTime())
 				.isRepeated(isRepeated)
+				.calendarTitle(schedule.getCalendar().getTitle())
 				.repetitionPattern(repetitionPatternResponse)
 				.build();
 	}
