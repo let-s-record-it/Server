@@ -62,8 +62,4 @@ public final class TaskDayOfMonth {
 			default -> false;
 		};
 	}
-
-	public boolean equalsDayOfMonthValue(final Integer dayOfMonth) {
-		return Objects.equals(this.dayOfMonth, dayOfMonth);
-	}
 }

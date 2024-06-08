@@ -39,8 +39,8 @@ public enum ErrorCode {
 	INVALID_DAY_OF_MONTH("ERR_SCHEDULE_013", "유효하지 않은 일입니다."),
 	INVALID_REPETITION_TYPE("ERR_SCHEDULE_014", "유효하지 않은 반복 타입입니다."),
 	WEEKDAY_BIT_OUT_OF_RANGE("ERR_SCHEDULE_015", "요일 비트는 1 이상 127 이하여야 합니다."),
-	NOT_EQUAL_DAY_OF_MONTH("ERR_SCHEDULE_016", "dayOfMonth와 startDate의 월이 일치하지 않습니다."),
-	NOT_EQUAL_MONTH_OF_YEAR("ERR_SCHEDULE_017", "monthOfYear과 startDate의 년이 일치하지 않습니다."),
+	NOT_EQUAL_DAY_OF_MONTH("ERR_SCHEDULE_016", "dayOfMonth와 startDate의 일이 일치하지 않습니다."),
+	NOT_EQUAL_MONTH_OF_YEAR("ERR_SCHEDULE_017", "monthOfYear와 startDate의 월이 일치하지 않습니다."),
 	SCHEDULE_NOT_FOUND("ERR_SCHEDULE_018", "요청한 일정을 찾을 수 없습니다."),
 	SCHEDULE_GROUP_NOT_FOUND("ERR_SCHEDULE_019", "요청한 일정 그룹을 찾을 수 없습니다."),
 	REPETITION_PATTERN_NOT_FOUND("ERR_SCHEDULE_020", "요청한 반복 패턴을 찾을 수 없습니다."),
@@ -102,6 +102,11 @@ public enum ErrorCode {
 	TASK_WEEKDAY_BIT_OUT_OF_RANGE("ERR_TASK_REPETITION_012", "요일 비트는 1 이상 127 이하여야 합니다."),
 	NULL_TASK_REPETITION_WEEK_NUMBER("ERR_TASK_REPETITION_013", "반복 주차는 null일 수 없습니다."),
 	NULL_TASK_REPETITION_WEEKDAY("ERR_TASK_REPETITION_014", "반복 요일은 null일 수 없습니다."),
+	NOT_EQUAL_TASK_DAY_OF_MONTH("ERR_TASK_REPETITION_015", "dayOfMonth와 startDate의 일이 일치하지 않습니다."),
+	NOT_EQUAL_TASK_MONTH_OF_YEAR(
+			"ERR_TASK_REPETITION_016", "monthOfYear과 startDate의 월이 일치하지 않습니다."),
+	NOT_EQUAL_TASK_WEEK_NUMBER("ERR_TASK_REPETITION_017", "weekNumber와 startDate의 주차가 일치하지 않습니다."),
+	NOT_EQUAL_TASK_WEEKDAY("ERR_TASK_REPETITION_017", "weekNumber와 startDate의 요일이 일치하지 않습니다."),
 
 	// task-group
 	TASK_GROUP_NOT_FOUND("ERR_TASK_GROUP_001", "존재하지 않는 할 일 그룹입니다."),

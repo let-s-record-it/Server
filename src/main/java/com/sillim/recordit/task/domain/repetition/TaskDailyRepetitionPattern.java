@@ -22,14 +22,20 @@ public class TaskDailyRepetitionPattern extends TaskRepetitionPattern {
 			final LocalDate repetitionStartDate,
 			final LocalDate repetitionEndDate,
 			final TaskGroup taskGroup) {
-		this.repetitionType = repetitionType;
-		this.repetitionPeriod = repetitionPeriod;
-		this.repetitionStartDate = repetitionStartDate;
-		this.repetitionEndDate = repetitionEndDate;
-		this.taskGroup = taskGroup;
+		super(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				null,
+				null,
+				null,
+				null,
+				null,
+				taskGroup);
 	}
 
-	protected static TaskDailyRepetitionPattern createDaily(
+	public static TaskRepetitionPattern createDaily(
 			final Integer repetitionPeriod,
 			final LocalDate repetitionStartDate,
 			final LocalDate repetitionEndDate,
@@ -48,10 +54,10 @@ public class TaskDailyRepetitionPattern extends TaskRepetitionPattern {
 		return Stream.iterate(
 						0,
 						day ->
-								repetitionStartDate
+								getRepetitionStartDate()
 										.plusDays(day)
-										.isBefore(repetitionEndDate.plusDays(1L)),
-						day -> day + repetitionPeriod)
+										.isBefore(getRepetitionEndDate().plusDays(1L)),
+						day -> day + getRepetitionPeriod())
 				.map(Period::ofDays);
 	}
 }

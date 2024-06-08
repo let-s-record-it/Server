@@ -4,6 +4,7 @@ import com.sillim.recordit.enums.date.WeekNumber;
 import com.sillim.recordit.enums.date.Weekday;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
+import com.sillim.recordit.global.util.DateTimeUtils;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.vo.TaskDayOfMonth;
@@ -34,46 +35,48 @@ public class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 			final WeekNumber weekNumber,
 			final Weekday weekday,
 			final TaskGroup taskGroup) {
-		this.repetitionType = repetitionType;
-		this.repetitionPeriod = repetitionPeriod;
-		this.repetitionStartDate = repetitionStartDate;
-		this.repetitionEndDate = repetitionEndDate;
-		this.dayOfMonth = dayOfMonth;
-		this.weekNumber = weekNumber;
-		this.weekday = weekday;
-		this.taskGroup = taskGroup;
+		super(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				null,
+				dayOfMonth,
+				weekNumber,
+				weekday,
+				null,
+				taskGroup);
 	}
 
-	public static TaskMonthlyRepetitionPattern createMonthlyWithDate(
+	public static TaskRepetitionPattern createMonthlyWithDate(
 			final Integer repetitionPeriod,
 			final LocalDate repetitionStartDate,
 			final LocalDate repetitionEndDate,
 			final Integer dayOfMonth,
 			final TaskGroup taskGroup) {
+		TaskRepetitionPattern repetitionPattern =
+				TaskMonthlyRepetitionPattern.builder()
+						.repetitionType(TaskRepetitionType.MONTHLY_WITH_DATE)
+						.repetitionPeriod(repetitionPeriod)
+						.repetitionStartDate(repetitionStartDate)
+						.repetitionEndDate(repetitionEndDate)
+						.dayOfMonth(TaskDayOfMonth.createMonthly(dayOfMonth))
+						.taskGroup(taskGroup)
+						.build();
 		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
-		return TaskMonthlyRepetitionPattern.builder()
-				.repetitionType(TaskRepetitionType.MONTHLY_WITH_DATE)
-				.repetitionPeriod(repetitionPeriod)
-				.repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate)
-				.dayOfMonth(TaskDayOfMonth.createMonthly(dayOfMonth))
-				.taskGroup(taskGroup)
-				.build();
+		return repetitionPattern;
 	}
 
-	public static TaskMonthlyRepetitionPattern createMonthlyWithWeekday(
+	public static TaskRepetitionPattern createMonthlyWithWeekday(
 			final Integer repetitionPeriod,
 			final LocalDate repetitionStartDate,
 			final LocalDate repetitionEndDate,
 			final WeekNumber weekNumber,
 			final Weekday weekday,
 			final TaskGroup taskGroup) {
-		if (Objects.isNull(weekNumber)) {
-			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_WEEK_NUMBER);
-		}
-		if (Objects.isNull(weekday)) {
-			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_WEEKDAY);
-		}
+		validateWeekNumberAndWeekdayIsNotNull(weekNumber, weekday);
+		validateWeekNumberEqualsStartDate(repetitionStartDate, weekNumber);
+		validateWeekdayEqualsStartDate(repetitionStartDate, weekday);
 		return TaskMonthlyRepetitionPattern.builder()
 				.repetitionType(TaskRepetitionType.MONTHLY_WITH_WEEKDAY)
 				.repetitionPeriod(repetitionPeriod)
@@ -85,7 +88,7 @@ public class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 				.build();
 	}
 
-	public static TaskMonthlyRepetitionPattern createMonthlyWithLastDay(
+	public static TaskRepetitionPattern createMonthlyWithLastDay(
 			final Integer repetitionPeriod,
 			final LocalDate repetitionStartDate,
 			final LocalDate repetitionEndDate,
@@ -102,13 +105,37 @@ public class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 	private static void validateDayOfMonthEqualsStartDate(
 			final LocalDate startDate, final Integer dayOfMonth) {
 		if (startDate.getDayOfMonth() != dayOfMonth) {
-			throw new InvalidRepetitionException(ErrorCode.NOT_EQUAL_DAY_OF_MONTH);
+			throw new InvalidRepetitionException(ErrorCode.NOT_EQUAL_TASK_DAY_OF_MONTH);
+		}
+	}
+
+	private static void validateWeekNumberAndWeekdayIsNotNull(
+			WeekNumber weekNumber, Weekday weekday) {
+		if (Objects.isNull(weekNumber)) {
+			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_WEEK_NUMBER);
+		}
+		if (Objects.isNull(weekday)) {
+			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_WEEKDAY);
+		}
+	}
+
+	private static void validateWeekNumberEqualsStartDate(
+			final LocalDate startDate, final WeekNumber weekNumber) {
+		if (!weekNumber.contains(startDate)) {
+			throw new InvalidRepetitionException(ErrorCode.NOT_EQUAL_TASK_WEEK_NUMBER);
+		}
+	}
+
+	private static void validateWeekdayEqualsStartDate(
+			final LocalDate startDate, final Weekday weekday) {
+		if (!weekday.hasSameWeekday(startDate)) {
+			throw new InvalidRepetitionException(ErrorCode.NOT_EQUAL_TASK_WEEKDAY);
 		}
 	}
 
 	@Override
 	public Stream<TemporalAmount> repeatingStream() {
-		return switch (repetitionType) {
+		return switch (getRepetitionType()) {
 			case MONTHLY_WITH_DATE -> monthlyWithDateRepeatingStream();
 			case MONTHLY_WITH_WEEKDAY -> monthlyWithWeekdayRepeatingStream();
 			case MONTHLY_WITH_LAST_DAY -> monthlyWithLastDayRepeatingStream();
@@ -118,58 +145,72 @@ public class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 
 	private Stream<TemporalAmount> monthlyWithDateRepeatingStream() {
 		return Stream.iterate(
-						repetitionStartDate,
-						date -> date.isBefore(repetitionEndDate.plusDays(1L)),
-						date -> date.plusMonths(repetitionPeriod))
-				.map(
+						getRepetitionStartDate(),
+						date -> date.isBefore(getRepetitionEndDate().plusDays(1L)),
 						date ->
-								Period.ofDays(
-										(int) ChronoUnit.DAYS.between(repetitionStartDate, date)));
-	}
-
-	private Stream<TemporalAmount> monthlyWithWeekdayRepeatingStream() {
-		return Stream.iterate(
-						repetitionStartDate,
-						date ->
-								date.isBefore(
-										repetitionEndDate
-												.with(TemporalAdjusters.lastDayOfMonth())
-												.plusDays(1L)),
-						date -> date.plusMonths(repetitionPeriod))
-				.filter(date -> findDateByWeekday(date).isBefore(repetitionEndDate))
+								DateTimeUtils.correctDayOfMonth(
+										date.plusMonths(getRepetitionPeriod()), getDayOfMonth()))
+				.filter(date -> date.getDayOfMonth() == getDayOfMonth())
 				.map(
 						date ->
 								Period.ofDays(
 										(int)
 												ChronoUnit.DAYS.between(
-														repetitionStartDate,
+														getRepetitionStartDate(), date)));
+	}
+
+	private Stream<TemporalAmount> monthlyWithWeekdayRepeatingStream() {
+		return Stream.iterate(
+						getRepetitionStartDate(),
+						date ->
+								date.isBefore(
+										getRepetitionEndDate()
+												.with(TemporalAdjusters.lastDayOfMonth())
+												.plusDays(1L)),
+						date -> date.plusMonths(getRepetitionPeriod()))
+				.filter(this::hasWeekNumber)
+				.map(
+						date ->
+								Period.ofDays(
+										(int)
+												ChronoUnit.DAYS.between(
+														getRepetitionStartDate(),
 														findDateByWeekday(date))));
 	}
 
 	private Stream<TemporalAmount> monthlyWithLastDayRepeatingStream() {
 		return Stream.iterate(
-						repetitionStartDate,
-						date -> date.isBefore(repetitionEndDate.plusDays(1L)),
-						date -> date.plusMonths(repetitionPeriod))
+						getRepetitionStartDate(),
+						date -> date.isBefore(getRepetitionEndDate().plusDays(1L)),
+						date -> date.plusMonths(getRepetitionPeriod()))
 				.map(
 						date ->
 								Period.ofDays(
 										(int)
 												ChronoUnit.DAYS.between(
-														repetitionStartDate,
+														getRepetitionStartDate(),
 														date.with(
 																TemporalAdjusters
 																		.lastDayOfMonth()))));
 	}
 
-	private LocalDate findDateByWeekday(final LocalDate date) {
-		final LocalDate firstDayOfMonth = date.withDayOfMonth(1);
-		final DayOfWeek firstDayOfWeek = firstDayOfMonth.getDayOfWeek();
-
-		int daysUntilWeekday = weekday.getValue() - firstDayOfWeek.getValue();
-		if (daysUntilWeekday < 0) {
-			daysUntilWeekday += 7;
+	private boolean hasWeekNumber(final LocalDate date) {
+		LocalDate firstDayOfMonth = date.withDayOfMonth(1);
+		LocalDate firstWeekday = firstDayOfMonth.with(DayOfWeek.of(getWeekday()));
+		if (firstWeekday.isBefore(firstDayOfMonth)) {
+			firstWeekday = firstWeekday.plusWeeks(1);
 		}
-		return firstDayOfMonth.plusDays(daysUntilWeekday + ((weekNumber.getValue() - 1) * 7L));
+		LocalDate targetWeekday = firstWeekday.plusWeeks(getWeekNumber() - 1);
+		// targetWeekday가 당월을 넘지 않는다면 true 반환 (n번째 m요일이 존재한다.)
+		return targetWeekday.isBefore(date.with(TemporalAdjusters.lastDayOfMonth()).plusDays(1L));
+	}
+
+	private LocalDate findDateByWeekday(final LocalDate date) {
+		LocalDate firstDayOfMonth = date.withDayOfMonth(1);
+		LocalDate firstWeekday = firstDayOfMonth.with(DayOfWeek.of(getWeekday()));
+		if (firstWeekday.isBefore(firstDayOfMonth)) {
+			firstWeekday = firstWeekday.plusWeeks(1);
+		}
+		return firstWeekday.plusWeeks(getWeekNumber() - 1);
 	}
 }

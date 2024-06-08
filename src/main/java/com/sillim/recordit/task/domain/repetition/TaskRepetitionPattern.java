@@ -26,6 +26,7 @@ import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAmount;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,8 +36,8 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted = false")
 public abstract class TaskRepetitionPattern extends BaseTime {
 
@@ -46,128 +47,98 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "task_repetition_pattern_id", nullable = false)
-	protected Long id;
+	private Long id;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	protected TaskRepetitionType repetitionType;
+	private TaskRepetitionType repetitionType;
 
 	@Column(nullable = false)
-	protected Integer repetitionPeriod;
+	private Integer repetitionPeriod;
 
 	@Column(nullable = false)
-	protected LocalDate repetitionStartDate;
+	private LocalDate repetitionStartDate;
 
 	@Column(nullable = false)
-	protected LocalDate repetitionEndDate;
+	private LocalDate repetitionEndDate;
 
-	@Embedded protected TaskMonthOfYear monthOfYear;
+	@Embedded private TaskMonthOfYear monthOfYear;
 
-	@Embedded protected TaskDayOfMonth dayOfMonth;
+	@Embedded private TaskDayOfMonth dayOfMonth;
 
-	@Column protected WeekNumber weekNumber;
+	@Column private WeekNumber weekNumber;
 
-	@Column protected Weekday weekday;
+	@Column private Weekday weekday;
 
-	@Embedded protected TaskWeekdayBit weekdayBit;
-
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "task_group_id", unique = true)
-	protected TaskGroup taskGroup;
+	@Embedded private TaskWeekdayBit weekdayBit;
 
 	@Column(nullable = false)
 	@ColumnDefault("false")
 	private boolean deleted = false;
 
-	public static TaskRepetitionPattern create(
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "task_group_id", unique = true)
+	private TaskGroup taskGroup;
+
+	protected TaskRepetitionPattern(
 			final TaskRepetitionType repetitionType,
 			final Integer repetitionPeriod,
 			final LocalDate repetitionStartDate,
 			final LocalDate repetitionEndDate,
-			final Integer monthOfYear,
-			final Integer dayOfMonth,
+			final TaskMonthOfYear monthOfYear,
+			final TaskDayOfMonth dayOfMonth,
 			final WeekNumber weekNumber,
 			final Weekday weekday,
-			final Integer weekdayBit,
+			final TaskWeekdayBit weekdayBit,
 			final TaskGroup taskGroup) {
-		validateRepetitionType(repetitionType);
 		validatePeriod(repetitionPeriod);
 		validateDuration(repetitionStartDate, repetitionEndDate);
-		return switch (repetitionType) {
-			case DAILY ->
-					TaskDailyRepetitionPattern.createDaily(
-							repetitionPeriod, repetitionStartDate, repetitionEndDate, taskGroup);
-			case WEEKLY ->
-					TaskWeeklyRepetitionPattern.createWeekly(
-							repetitionPeriod,
-							repetitionStartDate,
-							repetitionEndDate,
-							weekdayBit,
-							taskGroup);
-			case MONTHLY_WITH_DATE ->
-					TaskMonthlyRepetitionPattern.createMonthlyWithDate(
-							repetitionPeriod,
-							repetitionStartDate,
-							repetitionEndDate,
-							dayOfMonth,
-							taskGroup);
-			case MONTHLY_WITH_WEEKDAY ->
-					TaskMonthlyRepetitionPattern.createMonthlyWithWeekday(
-							repetitionPeriod,
-							repetitionStartDate,
-							repetitionEndDate,
-							weekNumber,
-							weekday,
-							taskGroup);
-			case MONTHLY_WITH_LAST_DAY ->
-					TaskMonthlyRepetitionPattern.createMonthlyWithLastDay(
-							repetitionPeriod, repetitionStartDate, repetitionEndDate, taskGroup);
-			case YEARLY_WITH_DATE ->
-					TaskYearlyRepetitionPattern.createYearlyWithDate(
-							repetitionPeriod,
-							repetitionStartDate,
-							repetitionEndDate,
-							monthOfYear,
-							dayOfMonth,
-							taskGroup);
-			case YEARLY_WITH_WEEKDAY ->
-					TaskYearlyRepetitionPattern.createYearlyWithWeekday(
-							repetitionPeriod,
-							repetitionStartDate,
-							repetitionEndDate,
-							monthOfYear,
-							weekNumber,
-							weekday,
-							taskGroup);
-			case YEARLY_WITH_LAST_DAY ->
-					TaskYearlyRepetitionPattern.createYearlyWithLastDay(
-							repetitionPeriod,
-							repetitionStartDate,
-							repetitionEndDate,
-							monthOfYear,
-							taskGroup);
-		};
+		this.repetitionType = repetitionType;
+		this.repetitionPeriod = repetitionPeriod;
+		this.repetitionStartDate = repetitionStartDate;
+		this.repetitionEndDate = repetitionEndDate;
+		this.monthOfYear = monthOfYear;
+		this.dayOfMonth = dayOfMonth;
+		this.weekNumber = weekNumber;
+		this.weekday = weekday;
+		this.weekdayBit = weekdayBit;
+		this.taskGroup = taskGroup;
 	}
 
-	private static void validateRepetitionType(final TaskRepetitionType repetitionType) {
-		if (Objects.isNull(repetitionType)) {
-			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_TYPE);
+	public Integer getDayOfMonth() {
+		if (Optional.ofNullable(dayOfMonth).isEmpty()) {
+			return null;
 		}
+		return dayOfMonth.getDayOfMonth();
 	}
 
-	private static void validatePeriod(final Integer repetitionPeriod) {
+	public Integer getWeekNumber() {
+		if (Optional.ofNullable(weekNumber).isEmpty()) {
+			return null;
+		}
+		return weekNumber.getValue();
+	}
+
+	public Integer getWeekday() {
+		if (Optional.ofNullable(weekday).isEmpty()) {
+			return null;
+		}
+		return weekday.getValue();
+	}
+
+	private void validatePeriod(final Integer repetitionPeriod) {
 		if (Objects.isNull(repetitionPeriod)) {
 			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_PERIOD);
 		}
 		if (repetitionPeriod < MIN_PERIOD || repetitionPeriod > MAX_PERIOD) {
-			throw new InvalidRepetitionException(ErrorCode.INVALID_REPETITION_PERIOD);
+			throw new InvalidRepetitionException(ErrorCode.TASK_REPETITION_PERIOD_OUT_OF_RANGE);
 		}
 	}
 
-	private static void validateDuration(
+	private void validateDuration(
 			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate) {
 		if (Objects.isNull(repetitionStartDate) || Objects.isNull(repetitionEndDate)) {
-			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_PERIOD);
+			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_DURATION);
 		}
 		if (repetitionStartDate.isAfter(repetitionEndDate)) {
 			throw new InvalidRepetitionException(ErrorCode.TASK_REPETITION_INVALID_DURATION);

@@ -27,15 +27,20 @@ public class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 			final LocalDate repetitionEndDate,
 			final TaskWeekdayBit weekdayBit,
 			final TaskGroup taskGroup) {
-		this.repetitionType = repetitionType;
-		this.repetitionPeriod = repetitionPeriod;
-		this.repetitionStartDate = repetitionStartDate;
-		this.repetitionEndDate = repetitionEndDate;
-		this.weekdayBit = weekdayBit;
-		this.taskGroup = taskGroup;
+		super(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				null,
+				null,
+				null,
+				null,
+				weekdayBit,
+				taskGroup);
 	}
 
-	protected static TaskWeeklyRepetitionPattern createWeekly(
+	public static TaskRepetitionPattern createWeekly(
 			final Integer repetitionPeriod,
 			final LocalDate repetitionStartDate,
 			final LocalDate repetitionEndDate,
@@ -54,10 +59,10 @@ public class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 	@Override
 	public Stream<TemporalAmount> repeatingStream() {
 		return Stream.iterate(
-						repetitionStartDate,
-						date -> date.isBefore(repetitionEndDate.plusDays(1L)),
+						getRepetitionStartDate(),
+						date -> date.isBefore(getRepetitionEndDate().plusDays(1L)),
 						date ->
-								date.plusWeeks(repetitionPeriod)
+								date.plusWeeks(getRepetitionPeriod())
 										.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)))
 				.flatMap(
 						startDate ->
@@ -65,8 +70,8 @@ public class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 												startDate,
 												date ->
 														date.isBefore(
-																		repetitionEndDate.plusDays(
-																				1L))
+																		getRepetitionEndDate()
+																				.plusDays(1L))
 																&& date.isBefore(
 																		startDate.with(
 																				TemporalAdjusters
@@ -76,11 +81,14 @@ public class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 												date -> date.plusDays(1L))
 										.filter(
 												date ->
-														weekdayBit.isValidWeekday(
-																date.getDayOfWeek())))
+														getWeekdayBit()
+																.isValidWeekday(
+																		date.getDayOfWeek())))
 				.map(
 						date ->
 								Period.ofDays(
-										(int) ChronoUnit.DAYS.between(repetitionStartDate, date)));
+										(int)
+												ChronoUnit.DAYS.between(
+														getRepetitionStartDate(), date)));
 	}
 }
