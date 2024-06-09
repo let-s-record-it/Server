@@ -30,9 +30,6 @@ public final class TaskDescription {
 		if (Objects.isNull(description)) {
 			throw new InvalidDescriptionException(ErrorCode.NULL_TASK_DESCRIPTION);
 		}
-		if (description.isBlank()) {
-			throw new InvalidDescriptionException(ErrorCode.BLANK_TASK_DESCRIPTION);
-		}
 		if (description.length() > MAX_DESCRIPTION_LENGTH) {
 			throw new InvalidDescriptionException(ErrorCode.INVALID_TASK_DESCRIPTION_LENGTH);
 		}
