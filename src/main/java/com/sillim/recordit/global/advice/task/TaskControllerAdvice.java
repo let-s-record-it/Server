@@ -5,7 +5,6 @@ import com.sillim.recordit.global.exception.common.ApplicationException;
 import com.sillim.recordit.global.exception.common.InvalidColorHexException;
 import com.sillim.recordit.global.exception.common.InvalidDescriptionException;
 import com.sillim.recordit.global.exception.common.InvalidTitleException;
-import com.sillim.recordit.global.exception.goal.InvalidPeriodException;
 import com.sillim.recordit.global.exception.schedule.InvalidDayOfMonthException;
 import com.sillim.recordit.global.exception.schedule.InvalidMonthOfYearException;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
@@ -21,7 +20,6 @@ public class TaskControllerAdvice {
 	@ExceptionHandler({
 		InvalidTitleException.class,
 		InvalidDescriptionException.class,
-		InvalidPeriodException.class,
 		InvalidColorHexException.class,
 		InvalidMonthOfYearException.class,
 		InvalidDayOfMonthException.class,
