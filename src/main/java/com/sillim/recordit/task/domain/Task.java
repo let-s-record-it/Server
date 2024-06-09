@@ -80,13 +80,13 @@ public class Task extends BaseTime {
 			LocalDate date,
 			String colorHex,
 			Calendar calendar,
-			TaskGroup scheduleGroup) {
+			TaskGroup taskGroup) {
 		this(
 				new TaskTitle(title),
 				new TaskDescription(description),
 				date,
 				new TaskColorHex(colorHex),
 				calendar,
-				scheduleGroup);
+				taskGroup);
 	}
 }
