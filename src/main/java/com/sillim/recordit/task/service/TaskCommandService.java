@@ -35,6 +35,7 @@ public class TaskCommandService {
 		final Calendar calendar = calendarService.searchByCalendarIdAndMember(calendarId, member);
 		if (request.isRepeated()) {
 			addRepeatingTask(request, taskGroup, calendar);
+			return;
 		}
 		taskRepository.save(request.toTask(calendar, taskGroup));
 	}
@@ -43,10 +44,9 @@ public class TaskCommandService {
 		repetitionPatternService
 				.addRepetitionPattern(request.repetition(), taskGroup)
 				.repeatingStream()
-				.map(
+				.forEach(
 						temporalAmount ->
 								taskRepository.save(
-										request.toTask(temporalAmount, calendar, taskGroup)))
-				.toList();
+										request.toTask(temporalAmount, calendar, taskGroup)));
 	}
 }

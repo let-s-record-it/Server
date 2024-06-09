@@ -45,7 +45,8 @@ public class TaskGroup extends BaseTime {
 	private boolean deleted = false;
 
 	@Builder
-	public TaskGroup(Boolean isRepeated, MonthlyGoal monthlyGoal, WeeklyGoal weeklyGoal) {
+	public TaskGroup(
+			final Boolean isRepeated, final MonthlyGoal monthlyGoal, final WeeklyGoal weeklyGoal) {
 		this.isRepeated = isRepeated;
 		this.monthlyGoal = monthlyGoal;
 		this.weeklyGoal = weeklyGoal;
