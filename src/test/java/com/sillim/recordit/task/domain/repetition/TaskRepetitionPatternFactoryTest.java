@@ -1,9 +1,12 @@
 package com.sillim.recordit.task.domain.repetition;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import com.sillim.recordit.enums.date.WeekNumber;
 import com.sillim.recordit.enums.date.Weekday;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import java.time.LocalDate;
@@ -175,5 +178,26 @@ class TaskRepetitionPatternFactoryTest {
 
 		assertThat(repetitionPattern.getRepetitionType())
 				.isEqualTo(TaskRepetitionType.YEARLY_WITH_LAST_DAY);
+	}
+
+	@Test
+	@DisplayName("반복 타입이 null이라면 InvalidRepetitionException이 발생한다.")
+	void throwInvalidRepetitionExceptionIfRepetitionTypeIsNull() {
+
+		assertThatCode(
+						() ->
+								TaskRepetitionPatternFactory.create(
+										null,
+										1,
+										LocalDate.of(2024, 1, 1),
+										LocalDate.of(2024, 3, 31),
+										null,
+										null,
+										null,
+										null,
+										null,
+										taskGroup))
+				.isInstanceOf(InvalidRepetitionException.class)
+				.hasMessage(ErrorCode.NULL_TASK_REPETITION_TYPE.getDescription());
 	}
 }

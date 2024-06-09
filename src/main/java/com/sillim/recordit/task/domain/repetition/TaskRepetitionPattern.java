@@ -91,8 +91,16 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 			final Weekday weekday,
 			final TaskWeekdayBit weekdayBit,
 			final TaskGroup taskGroup) {
-		validatePeriod(repetitionPeriod);
-		validateDuration(repetitionStartDate, repetitionEndDate);
+		validate(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				monthOfYear,
+				dayOfMonth,
+				weekNumber,
+				weekday,
+				weekdayBit);
 		this.repetitionType = repetitionType;
 		this.repetitionPeriod = repetitionPeriod;
 		this.repetitionStartDate = repetitionStartDate;
@@ -124,6 +132,20 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 			return null;
 		}
 		return weekday.getValue();
+	}
+
+	protected void validate(
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskMonthOfYear monthOfYear,
+			final TaskDayOfMonth dayOfMonth,
+			final WeekNumber weekNumber,
+			final Weekday weekday,
+			final TaskWeekdayBit weekdayBit) {
+		validatePeriod(repetitionPeriod);
+		validateDuration(repetitionStartDate, repetitionEndDate);
 	}
 
 	private void validatePeriod(final Integer repetitionPeriod) {
