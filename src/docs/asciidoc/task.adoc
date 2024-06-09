@@ -1,0 +1,31 @@
+= Task API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+== 할 일 추가 API
+
+=== Header
+
+include::{snippets}/add-tasks/http-request.adoc[]
+
+=== Path Variables
+
+include::{snippets}/add-tasks/path-parameters.adoc[]
+
+=== Body
+
+include::{snippets}/add-tasks/http-request.adoc[]
+
+=== Response
+
+==== 201 CREATED
+
+include::{snippets}/add-tasks/http-response.adoc[]
