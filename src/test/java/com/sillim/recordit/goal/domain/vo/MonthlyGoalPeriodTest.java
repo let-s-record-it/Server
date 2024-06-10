@@ -9,13 +9,16 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class GoalPeriodTest {
+class MonthlyGoalPeriodTest {
 
 	@Test
-	@DisplayName("GoalPeriod를 생성한다.")
-	void newGoalColorHexTest() {
+	@DisplayName("MonthlyGoalPeriod를 생성한다.")
+	void newMonthlyGoalPeriodTest() {
 
-		assertThatCode(() -> new GoalPeriod(LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31)))
+		assertThatCode(
+						() ->
+								new MonthlyGoalPeriod(
+										LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31)))
 				.doesNotThrowAnyException();
 	}
 
@@ -23,15 +26,15 @@ class GoalPeriodTest {
 	@DisplayName("startDate와 endDate는 null이 아니어야 한다.")
 	void validateNullTest() {
 
-		assertThatThrownBy(() -> new GoalPeriod(null, null))
+		assertThatThrownBy(() -> new MonthlyGoalPeriod(null, null))
 				.isInstanceOf(InvalidPeriodException.class)
 				.hasMessage(ErrorCode.NULL_GOAL_PERIOD.getDescription());
 
-		assertThatThrownBy(() -> new GoalPeriod(null, LocalDate.of(2024, 5, 31)))
+		assertThatThrownBy(() -> new MonthlyGoalPeriod(null, LocalDate.of(2024, 5, 31)))
 				.isInstanceOf(InvalidPeriodException.class)
 				.hasMessage(ErrorCode.NULL_GOAL_PERIOD.getDescription());
 
-		assertThatThrownBy(() -> new GoalPeriod(LocalDate.of(2024, 5, 1), null))
+		assertThatThrownBy(() -> new MonthlyGoalPeriod(LocalDate.of(2024, 5, 1), null))
 				.isInstanceOf(InvalidPeriodException.class)
 				.hasMessage(ErrorCode.NULL_GOAL_PERIOD.getDescription());
 	}
@@ -41,17 +44,23 @@ class GoalPeriodTest {
 	void validateDifferentYearMonthTest() {
 
 		assertThatThrownBy(
-						() -> new GoalPeriod(LocalDate.of(2024, 5, 1), LocalDate.of(2025, 6, 30)))
+						() ->
+								new MonthlyGoalPeriod(
+										LocalDate.of(2024, 5, 1), LocalDate.of(2025, 6, 30)))
 				.isInstanceOf(InvalidPeriodException.class)
 				.hasMessage(ErrorCode.DIFFERENT_YEAR_MONTH.getDescription());
 
 		assertThatThrownBy(
-						() -> new GoalPeriod(LocalDate.of(2024, 5, 1), LocalDate.of(2024, 6, 30)))
+						() ->
+								new MonthlyGoalPeriod(
+										LocalDate.of(2024, 5, 1), LocalDate.of(2024, 6, 30)))
 				.isInstanceOf(InvalidPeriodException.class)
 				.hasMessage(ErrorCode.DIFFERENT_YEAR_MONTH.getDescription());
 
 		assertThatThrownBy(
-						() -> new GoalPeriod(LocalDate.of(2024, 5, 1), LocalDate.of(2025, 5, 31)))
+						() ->
+								new MonthlyGoalPeriod(
+										LocalDate.of(2024, 5, 1), LocalDate.of(2025, 5, 31)))
 				.isInstanceOf(InvalidPeriodException.class)
 				.hasMessage(ErrorCode.DIFFERENT_YEAR_MONTH.getDescription());
 	}
@@ -61,7 +70,9 @@ class GoalPeriodTest {
 	void validateInvalidStartDayOfMonthTest() {
 
 		assertThatThrownBy(
-						() -> new GoalPeriod(LocalDate.of(2024, 5, 2), LocalDate.of(2024, 5, 31)))
+						() ->
+								new MonthlyGoalPeriod(
+										LocalDate.of(2024, 5, 2), LocalDate.of(2024, 5, 31)))
 				.isInstanceOf(InvalidPeriodException.class)
 				.hasMessage(ErrorCode.INVALID_START_DAY_OF_MONTH.getDescription());
 	}
@@ -71,7 +82,9 @@ class GoalPeriodTest {
 	void validateInvalidEndDayOfMonthTest() {
 
 		assertThatThrownBy(
-						() -> new GoalPeriod(LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 28)))
+						() ->
+								new MonthlyGoalPeriod(
+										LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 28)))
 				.isInstanceOf(InvalidPeriodException.class)
 				.hasMessage(ErrorCode.INVALID_END_DAY_OF_MONTH.getFormattedDescription(31));
 	}

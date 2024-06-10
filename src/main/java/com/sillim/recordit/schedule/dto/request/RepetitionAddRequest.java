@@ -1,11 +1,11 @@
 package com.sillim.recordit.schedule.dto.request;
 
+import com.sillim.recordit.enums.date.WeekNumber;
+import com.sillim.recordit.enums.date.Weekday;
 import com.sillim.recordit.global.validation.schedule.ValidDayOfMonth;
 import com.sillim.recordit.global.validation.schedule.ValidMonth;
 import com.sillim.recordit.global.validation.schedule.ValidWeekdayBit;
 import com.sillim.recordit.schedule.domain.RepetitionType;
-import com.sillim.recordit.schedule.domain.WeekNumber;
-import com.sillim.recordit.schedule.domain.Weekday;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import org.hibernate.validator.constraints.Range;

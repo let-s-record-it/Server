@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
-public class GoalPeriod {
+public class MonthlyGoalPeriod {
 
 	@Column(nullable = false)
 	private final LocalDate startDate;
@@ -24,24 +24,24 @@ public class GoalPeriod {
 	@Column(nullable = false)
 	private final LocalDate endDate;
 
-	public GoalPeriod(final LocalDate startDate, final LocalDate endDate) {
-		validate(startDate, endDate);
+	public MonthlyGoalPeriod(final LocalDate startDate, final LocalDate endDate) {
+		validateIsNotNull(startDate, endDate);
+		validateHasSameYearMonth(startDate, endDate);
+		validateIsFirstDayOfMonth(startDate);
+		validateIsLastDayOfMonth(endDate);
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
 
-	private void validate(final LocalDate startDate, final LocalDate endDate) {
+	private void validateIsNotNull(final LocalDate startDate, final LocalDate endDate) {
 
 		if (Objects.isNull(startDate) || Objects.isNull(endDate)) {
 			throw new InvalidPeriodException(ErrorCode.NULL_GOAL_PERIOD);
 		}
-		checkIfHasSameYearMonth(startDate, endDate);
-		checkIfFirstDayOfMonth(startDate);
-		checkIfLastDayOfMonth(endDate);
 	}
 
 	/* 시작일과 종료일의 년, 월은 같아야 한다. */
-	private void checkIfHasSameYearMonth(final LocalDate startDate, final LocalDate endDate) {
+	private void validateHasSameYearMonth(final LocalDate startDate, final LocalDate endDate) {
 
 		if (!hasSameYearMonth(startDate, endDate)) {
 			throw new InvalidPeriodException(ErrorCode.DIFFERENT_YEAR_MONTH);
@@ -55,7 +55,7 @@ public class GoalPeriod {
 	}
 
 	/* 월 목표의 시작일은 1일이어야 한다. */
-	private void checkIfFirstDayOfMonth(final LocalDate startDate) {
+	private void validateIsFirstDayOfMonth(final LocalDate startDate) {
 
 		if (startDate.getDayOfMonth() != 1) {
 			throw new InvalidPeriodException(ErrorCode.INVALID_START_DAY_OF_MONTH);
@@ -63,7 +63,7 @@ public class GoalPeriod {
 	}
 
 	// * 월 목표의 종료일은 해당 월의 말일이어야 한다. */
-	private void checkIfLastDayOfMonth(final LocalDate endDate) {
+	private void validateIsLastDayOfMonth(final LocalDate endDate) {
 
 		int lastDayOfMonth = YearMonth.from(endDate).lengthOfMonth();
 		if (endDate.getDayOfMonth() != lastDayOfMonth) {

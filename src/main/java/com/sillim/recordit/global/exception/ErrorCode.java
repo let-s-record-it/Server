@@ -39,8 +39,8 @@ public enum ErrorCode {
 	INVALID_DAY_OF_MONTH("ERR_SCHEDULE_013", "유효하지 않은 일입니다."),
 	INVALID_REPETITION_TYPE("ERR_SCHEDULE_014", "유효하지 않은 반복 타입입니다."),
 	WEEKDAY_BIT_OUT_OF_RANGE("ERR_SCHEDULE_015", "요일 비트는 1 이상 127 이하여야 합니다."),
-	NOT_EQUAL_DAY_OF_MONTH("ERR_SCHEDULE_016", "dayOfMonth와 startDate의 월이 일치하지 않습니다."),
-	NOT_EQUAL_MONTH_OF_YEAR("ERR_SCHEDULE_017", "monthOfYear과 startDate의 년이 일치하지 않습니다."),
+	NOT_EQUAL_DAY_OF_MONTH("ERR_SCHEDULE_016", "dayOfMonth와 startDate의 일이 일치하지 않습니다."),
+	NOT_EQUAL_MONTH_OF_YEAR("ERR_SCHEDULE_017", "monthOfYear와 startDate의 월이 일치하지 않습니다."),
 	SCHEDULE_NOT_FOUND("ERR_SCHEDULE_018", "요청한 일정을 찾을 수 없습니다."),
 	SCHEDULE_GROUP_NOT_FOUND("ERR_SCHEDULE_019", "요청한 일정 그룹을 찾을 수 없습니다."),
 	REPETITION_PATTERN_NOT_FOUND("ERR_SCHEDULE_020", "요청한 반복 패턴을 찾을 수 없습니다."),
@@ -59,6 +59,11 @@ public enum ErrorCode {
 	INVALID_START_DAY_OF_MONTH("ERR_MONTHLY_GOAL_003", "월 목표 기간의 시작일은 1일이어야 합니다."),
 	INVALID_END_DAY_OF_MONTH("ERR_MONTHLY_GOAL_004", "월 목표 기간의 종료일은 %d일이어야 합니다."),
 
+	// weekly-goal
+	WEEKLY_GOAL_NOT_FOUND("ERR_WEEKLY_GOAL_001", "존재하지 않는 주 목표입니다."),
+	INVALID_START_DAY_OF_WEEK("ERR_WEEKLY_GOAL_002", "주 목표 기간의 시작일은 일요일이어야 합니다."),
+	INVALID_DIFFERENCE_OF_DATE("ERR_WEEKLY_GOAL_003", "주 목표 기간의 시작일과 종료일은 6일 차이여야 합니다."),
+
 	// goal
 	NULL_GOAL_TITLE("ERR_GOAL_001", "목표 제목은 null일 수 없습니다."),
 	BLANK_GOAL_TITLE("ERR_GOAL_002", "목표 제목은 빈 값일 수 없습니다."),
@@ -69,6 +74,42 @@ public enum ErrorCode {
 	NULL_GOAL_COLOR_HEX("ERR_GOAL_007", "일정 색상 값은 null일 수 없습니다."),
 	INVALID_GOAL_COLOR_HEX("ERR_GOAL_008", "유효하지 않은 일정 색상 값입니다."),
 	NULL_GOAL_PERIOD("ERR_GOAL_009", "목표 기간 시작일과 종료일은 null일 수 없습니다."),
+
+	// task
+	TASK_NOT_FOUND("ERR_TASK_001", "존재하지 않는 할 일입니다."),
+	NULL_TASK_TITLE("ERR_TASK_002", "할 일 제목은 null일 수 없습니다."),
+	BLANK_TASK_TITLE("ERR_TASK_003", "할 일 제목은 빈 값일 수 없습니다."),
+	INVALID_TASK_TITLE_LENGTH("ERR_TASK_004", "할 일 제목의 길이는 30자를 넘을 수 없습니다."),
+	NULL_TASK_DESCRIPTION("ERR_TASK_005", "할 일 제목은 null일 수 없습니다."),
+	BLANK_TASK_DESCRIPTION("ERR_TASK_006", "할 일 설명은 빈 값일 수 없습니다."),
+	INVALID_TASK_DESCRIPTION_LENGTH("ERR_TASK_007", "할 일 설명의 길이는 500자를 넘을 수 없습니다."),
+	NULL_TASK_COLOR_HEX("ERR_TASK_008", "할 일 생상 값은 null일 수 없습니다."),
+	INVALID_TASK_COLOR_HEX("ERR_TASK_009", "유효하지 않은 할 일 색상 값입니다."),
+	NULL_TASK_DATE("ERR_TASK_010", "할 일 날짜는 null일 수 없습니다."),
+
+	// task-repetition-pattern
+	TASK_REPETITION_NOT_FOUND("ERR_TASK_REPETITION_001", "존재하지 않는 할 일 반복 패턴입니다."),
+	NULL_TASK_REPETITION_PERIOD("ERR_TASK_REPETITION_002", "반복 주기는 null일 수 없습니다."),
+	TASK_REPETITION_PERIOD_OUT_OF_RANGE("ERR_TASK_REPETITION_003", "반복 주기는 1에서 999 사이여야 합니다."),
+	NULL_TASK_REPETITION_DURATION("ERR_TASK_REPETITION_004", "반복 시작/종료일은 null일 수 없습니다."),
+	TASK_REPETITION_INVALID_DURATION("ERR_TASK_REPETITION_005", "반복 시작일은 종료일 이후일 수 없습니다."),
+	NULL_TASK_REPETITION_TYPE("ERR_TASK_REPETITION_006", "반복 타입은 null일 수 없습니다."),
+	NULL_TASK_DAY_OF_MONTH("ERR_TASK_REPETITION_007", "dayOfMonth는 null일 수 업습니다."),
+	NULL_TASK_MONTH_OF_YEAR("ERR_TASK_REPETITION_008", "monthOfYear는 null일 수 업습니다."),
+	TASK_DAY_OF_MONTH_OUT_OF_RANGE("ERR_TASK_REPETITION_009", "dayOfMonth는 1과 31 사이여야 합니다."),
+	TASK_MONTH_OF_YEAR_OUT_OF_RANGE("ERR_TASK_REPETITION_010", "monthOfYear는 1과 12 사이여야 합니다."),
+	NULL_TASK_WEEKDAY_BIT("ERR_TASK_REPETITION_011", "요일 비트는 null일 수 없습니다."),
+	TASK_WEEKDAY_BIT_OUT_OF_RANGE("ERR_TASK_REPETITION_012", "요일 비트는 1 이상 127 이하여야 합니다."),
+	NULL_TASK_REPETITION_WEEK_NUMBER("ERR_TASK_REPETITION_013", "반복 주차는 null일 수 없습니다."),
+	NULL_TASK_REPETITION_WEEKDAY("ERR_TASK_REPETITION_014", "반복 요일은 null일 수 없습니다."),
+	NOT_EQUAL_TASK_DAY_OF_MONTH("ERR_TASK_REPETITION_015", "dayOfMonth와 startDate의 일이 일치하지 않습니다."),
+	NOT_EQUAL_TASK_MONTH_OF_YEAR(
+			"ERR_TASK_REPETITION_016", "monthOfYear과 startDate의 월이 일치하지 않습니다."),
+	NOT_EQUAL_TASK_WEEK_NUMBER("ERR_TASK_REPETITION_017", "weekNumber와 startDate의 주차가 일치하지 않습니다."),
+	NOT_EQUAL_TASK_WEEKDAY("ERR_TASK_REPETITION_017", "weekNumber와 startDate의 요일이 일치하지 않습니다."),
+
+	// task-group
+	TASK_GROUP_NOT_FOUND("ERR_TASK_GROUP_001", "존재하지 않는 할 일 그룹입니다."),
 	;
 
 	private final String code;
