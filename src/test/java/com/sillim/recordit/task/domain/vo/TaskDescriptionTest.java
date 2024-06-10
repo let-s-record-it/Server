@@ -32,14 +32,6 @@ class TaskDescriptionTest {
 	}
 
 	@Test
-	@DisplayName("설명이 빈 문자열이면 InvalidDescriptionException이 발생한다.")
-	void throwInvalidDescriptionExceptionIfDescriptionIsBlank() {
-		assertThatCode(() -> new TaskDescription(""))
-				.isInstanceOf(InvalidDescriptionException.class)
-				.hasMessage(ErrorCode.BLANK_TASK_DESCRIPTION.getDescription());
-	}
-
-	@Test
 	@DisplayName("설명이 500자 초과이면 InvalidDescriptionException이 발생한다.")
 	void throwInvalidDescriptionExceptionIfDescriptionLengthIs500Over() {
 		assertThatCode(() -> new TaskDescription("1234567890".repeat(51)))

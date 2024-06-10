@@ -40,7 +40,7 @@ class MonthlyGoalPeriodTest {
 	}
 
 	@Test
-	@DisplayName("startDate와 endDate의 년, 월은 서로 같아야 한다.")
+	@DisplayName("startDate와 endDate의 년, 월이 서로 같지 않다면 InvalidPeriodException이 발생한다.")
 	void validateDifferentYearMonthTest() {
 
 		assertThatThrownBy(
@@ -66,7 +66,7 @@ class MonthlyGoalPeriodTest {
 	}
 
 	@Test
-	@DisplayName("startDate는 1이어야 한다.")
+	@DisplayName("startDate가 1이 아니라면 InvalidPeriodException이 발생한다.")
 	void validateInvalidStartDayOfMonthTest() {
 
 		assertThatThrownBy(
@@ -78,7 +78,7 @@ class MonthlyGoalPeriodTest {
 	}
 
 	@Test
-	@DisplayName("endDate는 해당 월의 말일이어야 한다.")
+	@DisplayName("endDate가 해당 월의 말일이 아니라면 InvalidPeriodException이 발생한다.")
 	void validateInvalidEndDayOfMonthTest() {
 
 		assertThatThrownBy(

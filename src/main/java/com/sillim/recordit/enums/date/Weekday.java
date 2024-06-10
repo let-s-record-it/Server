@@ -24,7 +24,7 @@ public enum Weekday {
 		return value;
 	}
 
-	public boolean hasSameWeekday(LocalDate date) {
+	public boolean hasSameWeekday(final LocalDate date) {
 		return value.equals(date.getDayOfWeek().getValue());
 	}
 }

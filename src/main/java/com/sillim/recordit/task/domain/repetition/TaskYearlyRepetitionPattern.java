@@ -238,14 +238,19 @@ public class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 																		.lastDayOfMonth()))));
 	}
 
+	/**
+	 * @return targetWeekday가 당월을 넘지 않는다면 true 반환 (n번째 m요일이 존재한다.)
+	 */
 	private boolean hasWeekNumber(final LocalDate date) {
+
 		LocalDate firstDayOfMonth = date.withDayOfMonth(1);
 		LocalDate firstWeekday = firstDayOfMonth.with(DayOfWeek.of(getWeekday()));
+
 		if (firstWeekday.isBefore(firstDayOfMonth)) {
 			firstWeekday = firstWeekday.plusWeeks(1);
 		}
 		LocalDate targetWeekday = firstWeekday.plusWeeks(getWeekNumber() - 1);
-		// targetWeekday가 당월을 넘지 않는다면 true 반환 (n번째 m요일이 존재한다.)
+
 		return targetWeekday.isBefore(date.with(TemporalAdjusters.lastDayOfMonth()).plusDays(1L));
 	}
 

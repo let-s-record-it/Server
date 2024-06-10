@@ -6,6 +6,7 @@ import com.sillim.recordit.calendar.repository.CalendarRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.calendar.InvalidCalendarException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
+import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +45,11 @@ public class CalendarService {
 			throw new InvalidCalendarException(ErrorCode.INVALID_CALENDAR_DELETE_REQUEST);
 		}
 		calendarRepository.delete(calendar);
+	}
+
+	public Calendar searchByCalendarIdAndMember(final Long calendarId, final Member member) {
+		return calendarRepository
+				.findByIdAndMember(calendarId, member)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.CALENDAR_NOT_FOUND));
 	}
 }
