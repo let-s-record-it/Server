@@ -1,6 +1,7 @@
-package com.sillim.recordit.schedule.domain;
+package com.sillim.recordit.enums.date;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.time.LocalDate;
 
 public enum Weekday {
 	MON(1),
@@ -21,5 +22,9 @@ public enum Weekday {
 	@JsonValue
 	public Integer getValue() {
 		return value;
+	}
+
+	public boolean hasSameWeekday(final LocalDate date) {
+		return value.equals(date.getDayOfWeek().getValue());
 	}
 }

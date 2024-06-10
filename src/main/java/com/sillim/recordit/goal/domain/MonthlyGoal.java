@@ -3,8 +3,8 @@ package com.sillim.recordit.goal.domain;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.goal.domain.vo.GoalColorHex;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
-import com.sillim.recordit.goal.domain.vo.GoalPeriod;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
+import com.sillim.recordit.goal.domain.vo.MonthlyGoalPeriod;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -21,14 +21,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SoftDelete
+@SQLDelete(sql = "UPDATE monthly_goal SET deleted = true WHERE monthly_goal_id = ?")
+@SQLRestriction("deleted = false")
 public class MonthlyGoal extends BaseTime {
 
-	@Getter
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "monthly_goal_id")
@@ -38,19 +40,21 @@ public class MonthlyGoal extends BaseTime {
 
 	@Embedded private GoalDescription description;
 
-	@Embedded private GoalPeriod period;
+	@Embedded private MonthlyGoalPeriod period;
 
 	@Embedded private GoalColorHex colorHex;
 
-	@Getter
 	@Column(nullable = false)
 	@ColumnDefault("false")
 	private boolean achieved;
 
-	@Getter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
+
+	@Column(nullable = false)
+	@ColumnDefault("false")
+	private boolean deleted;
 
 	@Builder
 	public MonthlyGoal(
@@ -62,10 +66,11 @@ public class MonthlyGoal extends BaseTime {
 			final Member member) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
-		this.period = new GoalPeriod(startDate, endDate);
+		this.period = new MonthlyGoalPeriod(startDate, endDate);
 		this.colorHex = new GoalColorHex(colorHex);
 		this.achieved = false;
 		this.member = member;
+		this.deleted = false;
 	}
 
 	public void modify(
@@ -76,7 +81,7 @@ public class MonthlyGoal extends BaseTime {
 			final String newColorHex) {
 		this.title = new GoalTitle(newTitle);
 		this.description = new GoalDescription(newDescription);
-		this.period = new GoalPeriod(newStartDate, newEndDate);
+		this.period = new MonthlyGoalPeriod(newStartDate, newEndDate);
 		this.colorHex = new GoalColorHex(newColorHex);
 	}
 

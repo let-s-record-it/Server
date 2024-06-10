@@ -31,9 +31,6 @@ public class GoalDescription {
 		if (Objects.isNull(description)) {
 			throw new InvalidDescriptionException(ErrorCode.NULL_GOAL_DESCRIPTION);
 		}
-		if (description.isBlank()) {
-			throw new InvalidDescriptionException(ErrorCode.BLANK_GOAL_DESCRIPTION);
-		}
 		if (description.length() > DESCRIPTION_MAX_LENGTH) {
 			throw new InvalidDescriptionException(ErrorCode.INVALID_GOAL_DESCRIPTION_LENGTH);
 		}

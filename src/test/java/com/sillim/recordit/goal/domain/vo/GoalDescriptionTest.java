@@ -27,18 +27,6 @@ class GoalDescriptionTest {
 	}
 
 	@Test
-	@DisplayName("description은 비어있을 수 없다.")
-	void validateBlankTest() {
-
-		assertThatThrownBy(() -> new GoalDescription(""))
-				.isInstanceOf(InvalidDescriptionException.class)
-				.hasMessage(ErrorCode.BLANK_GOAL_DESCRIPTION.getDescription());
-		assertThatThrownBy(() -> new GoalDescription(" "))
-				.isInstanceOf(InvalidDescriptionException.class)
-				.hasMessage(ErrorCode.BLANK_GOAL_DESCRIPTION.getDescription());
-	}
-
-	@Test
 	@DisplayName("description은 500자를 넘을 수 없다.")
 	void validateInvalidLengthTest() {
 
