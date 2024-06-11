@@ -36,7 +36,8 @@ public class TaskCommandService {
 		taskRepository.save(request.toTask(calendar, taskGroup));
 	}
 
-	private void addRepeatingTask(TaskAddRequest request, TaskGroup taskGroup, Calendar calendar) {
+	private void addRepeatingTask(
+			final TaskAddRequest request, final TaskGroup taskGroup, final Calendar calendar) {
 		repetitionPatternService
 				.addRepetitionPattern(request.repetition(), taskGroup)
 				.repeatingStream()

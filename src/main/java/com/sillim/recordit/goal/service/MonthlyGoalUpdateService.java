@@ -3,7 +3,6 @@ package com.sillim.recordit.goal.service;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
-import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,8 @@ public class MonthlyGoalUpdateService {
 	private final MonthlyGoalRepository monthlyGoalRepository;
 
 	public void add(final MonthlyGoalUpdateRequest request, final Long memberId) {
-		final Member member = memberQueryService.findByMemberId(memberId);
-		monthlyGoalRepository.save(request.toEntity(member));
+
+		monthlyGoalRepository.save(request.toEntity(memberQueryService.findByMemberId(memberId)));
 	}
 
 	public void modify(
