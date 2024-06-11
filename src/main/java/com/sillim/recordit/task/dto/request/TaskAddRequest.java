@@ -1,4 +1,4 @@
-package com.sillim.recordit.task.dto;
+package com.sillim.recordit.task.dto.request;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.global.validation.common.ColorHexValid;

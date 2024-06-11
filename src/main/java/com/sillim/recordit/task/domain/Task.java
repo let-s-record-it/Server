@@ -89,4 +89,8 @@ public class Task extends BaseTime {
 				calendar,
 				taskGroup);
 	}
+
+	public String getTitle() {
+		return title.getTitle();
+	}
 }

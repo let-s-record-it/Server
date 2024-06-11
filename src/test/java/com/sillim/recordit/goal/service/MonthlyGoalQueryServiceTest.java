@@ -1,21 +1,22 @@
 package com.sillim.recordit.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
+import com.sillim.recordit.global.exception.goal.InvalidMonthlyGoalException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
-import com.sillim.recordit.member.service.MemberQueryService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.LongStream;
@@ -30,14 +31,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class MonthlyGoalQueryServiceTest {
 
-	@Mock MemberQueryService memberQueryService;
 	@Mock MonthlyGoalRepository monthlyGoalRepository;
 	@InjectMocks MonthlyGoalQueryService monthlyGoalQueryService;
+
 	private Member member;
 
 	@BeforeEach
 	void beforeEach() {
-		member = spy(MemberFixture.DEFAULT.getMember());
+		member = MemberFixture.DEFAULT.getMember();
 	}
 
 	@Test
@@ -45,16 +46,12 @@ public class MonthlyGoalQueryServiceTest {
 	void searchTest() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		MonthlyGoal expected = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		given(monthlyGoalRepository.findByIdAndMember(eq(monthlyGoalId), any(Member.class)))
-				.willReturn(Optional.of(expected));
+		MonthlyGoal expected = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		given(monthlyGoalRepository.findById(eq(monthlyGoalId))).willReturn(Optional.of(expected));
+		willReturn(true).given(expected).isOwnedBy(eq(memberId));
 
-		MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
-		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
-		then(monthlyGoalRepository)
-				.should(times(1))
-				.findByIdAndMember(eq(monthlyGoalId), any(Member.class));
+		monthlyGoalQueryService.search(monthlyGoalId, memberId);
+		then(monthlyGoalRepository).should(times(1)).findById(eq(monthlyGoalId));
 	}
 
 	@Test
@@ -62,17 +59,28 @@ public class MonthlyGoalQueryServiceTest {
 	void searchTestMonthlyGoalNotFound() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		given(monthlyGoalRepository.findByIdAndMember(eq(monthlyGoalId), any(Member.class)))
+		given(monthlyGoalRepository.findById(eq(monthlyGoalId)))
 				.willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 
 		assertThatThrownBy(() -> monthlyGoalQueryService.search(monthlyGoalId, memberId))
 				.isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.MONTHLY_GOAL_NOT_FOUND.getDescription());
-		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
-		then(monthlyGoalRepository)
-				.should(times(1))
-				.findByIdAndMember(eq(monthlyGoalId), any(Member.class));
+		then(monthlyGoalRepository).should(times(1)).findById(eq(monthlyGoalId));
+	}
+
+	@Test
+	@DisplayName("월 목표가 해당 사용자의 소유가 아니라면 InvalidMonthlyGoalException을 발생시킨다.")
+	void throwInvalidMonthlyGoalExceptionIfMonthlyGoalIsNotOwnedByMember() {
+		Long memberId = 1L;
+		Long monthlyGoalId = 2L;
+		MonthlyGoal expected = mock(MonthlyGoal.class);
+		given(monthlyGoalRepository.findById(eq(monthlyGoalId))).willReturn(Optional.of(expected));
+		willReturn(false).given(expected).isOwnedBy(eq(memberId));
+
+		assertThatThrownBy(() -> monthlyGoalQueryService.search(monthlyGoalId, memberId))
+				.isInstanceOf(InvalidMonthlyGoalException.class)
+				.hasMessage(ErrorCode.MONTHLY_GOAL_ACCESS_DENIED.getDescription());
+		then(monthlyGoalRepository).should(times(1)).findById(eq(monthlyGoalId));
 	}
 
 	@Test
@@ -85,15 +93,13 @@ public class MonthlyGoalQueryServiceTest {
 				LongStream.rangeClosed(1, 3)
 						.mapToObj((id) -> MonthlyGoalFixture.DEFAULT.getWithMember(member))
 						.toList();
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		given(monthlyGoalRepository.findMonthlyGoalInMonth(eq(year), eq(month), any(Member.class)))
+		given(monthlyGoalRepository.findMonthlyGoalInMonth(eq(year), eq(month), eq(memberId)))
 				.willReturn(monthlyGoals);
 
 		monthlyGoalQueryService.searchAllByDate(year, month, memberId);
 
-		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
 		then(monthlyGoalRepository)
 				.should(times(1))
-				.findMonthlyGoalInMonth(eq(year), eq(month), any(Member.class));
+				.findMonthlyGoalInMonth(eq(year), eq(month), eq(memberId));
 	}
 }

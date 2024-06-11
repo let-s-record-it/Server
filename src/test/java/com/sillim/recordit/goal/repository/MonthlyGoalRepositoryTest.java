@@ -98,7 +98,8 @@ public class MonthlyGoalRepositoryTest {
 								LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30), member)));
 		// when
 		List<MonthlyGoal> foundList =
-				monthlyGoalRepository.findMonthlyGoalInMonth(expectedYear, expectedMonth, member);
+				monthlyGoalRepository.findMonthlyGoalInMonth(
+						expectedYear, expectedMonth, member.getId());
 		// then
 		assertThat(foundList).hasSize(2);
 		for (MonthlyGoal found : foundList) {

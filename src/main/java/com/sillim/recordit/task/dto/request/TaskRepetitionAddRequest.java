@@ -1,4 +1,4 @@
-package com.sillim.recordit.task.dto;
+package com.sillim.recordit.task.dto.request;
 
 import com.sillim.recordit.enums.date.WeekNumber;
 import com.sillim.recordit.enums.date.Weekday;

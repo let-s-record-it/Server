@@ -22,7 +22,17 @@ public enum TaskFixture {
 	}
 
 	public Task get(Calendar calendar, TaskGroup taskGroup) {
+		return Task.builder()
+				.title(title)
+				.description(description)
+				.date(date)
+				.colorHex(colorHex)
+				.calendar(calendar)
+				.taskGroup(taskGroup)
+				.build();
+	}
 
+	public Task getWithDate(LocalDate date, Calendar calendar, TaskGroup taskGroup) {
 		return Task.builder()
 				.title(title)
 				.description(description)
