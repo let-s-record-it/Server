@@ -46,11 +46,5 @@ public class TaskGroupService {
 						throw new InvalidMonthlyGoalException(ErrorCode.MONTHLY_GOAL_ACCESS_DENIED);
 					}
 				});
-		weeklyGoal.ifPresent(
-				goal -> {
-					if (!goal.isOwnedBy(memberId)) {
-						throw new InvalidMonthlyGoalException(ErrorCode.WEEKLY_GOAL_ACCESS_DENIED);
-					}
-				});
 	}
 }

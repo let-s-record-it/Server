@@ -45,7 +45,7 @@ public class TaskController {
 			@CurrentMember Member member) {
 
 		return ResponseEntity.ok(
-				taskQueryService.searchAll(calendarId, date, member.getId()).stream()
+				taskQueryService.searchAllByDate(calendarId, date, member.getId()).stream()
 						.map(TaskResponse::from)
 						.toList());
 	}

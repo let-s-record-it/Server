@@ -5,11 +5,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
+import com.sillim.recordit.global.exception.goal.InvalidMonthlyGoalException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
@@ -63,6 +65,21 @@ public class MonthlyGoalQueryServiceTest {
 		assertThatThrownBy(() -> monthlyGoalQueryService.search(monthlyGoalId, memberId))
 				.isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.MONTHLY_GOAL_NOT_FOUND.getDescription());
+		then(monthlyGoalRepository).should(times(1)).findById(eq(monthlyGoalId));
+	}
+
+	@Test
+	@DisplayName("월 목표가 해당 사용자의 소유가 아니라면 InvalidMonthlyGoalException을 발생시킨다.")
+	void throwInvalidMonthlyGoalExceptionIfMonthlyGoalIsNotOwnedByMember() {
+		Long memberId = 1L;
+		Long monthlyGoalId = 2L;
+		MonthlyGoal expected = mock(MonthlyGoal.class);
+		given(monthlyGoalRepository.findById(eq(monthlyGoalId))).willReturn(Optional.of(expected));
+		willReturn(false).given(expected).isOwnedBy(eq(memberId));
+
+		assertThatThrownBy(() -> monthlyGoalQueryService.search(monthlyGoalId, memberId))
+				.isInstanceOf(InvalidMonthlyGoalException.class)
+				.hasMessage(ErrorCode.MONTHLY_GOAL_ACCESS_DENIED.getDescription());
 		then(monthlyGoalRepository).should(times(1)).findById(eq(monthlyGoalId));
 	}
 
