@@ -9,7 +9,7 @@ import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.repetition.TaskDailyRepetitionPattern;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
-import com.sillim.recordit.task.dto.TaskRepetitionAddRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionAddRequest;
 import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
 import com.sillim.recordit.task.repository.TaskRepetitionPatternRepository;
 import java.time.LocalDate;

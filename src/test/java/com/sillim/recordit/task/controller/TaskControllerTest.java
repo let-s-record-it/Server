@@ -11,8 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.sillim.recordit.support.restdocs.RestDocsTest;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
-import com.sillim.recordit.task.dto.TaskAddRequest;
-import com.sillim.recordit.task.dto.TaskRepetitionAddRequest;
+import com.sillim.recordit.task.dto.request.TaskAddRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionAddRequest;
 import com.sillim.recordit.task.service.TaskCommandService;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
