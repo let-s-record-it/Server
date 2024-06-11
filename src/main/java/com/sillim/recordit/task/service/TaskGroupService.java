@@ -1,11 +1,13 @@
 package com.sillim.recordit.task.service;
 
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.goal.InvalidMonthlyGoalException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
-import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.repository.TaskGroupRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +27,30 @@ public class TaskGroupService {
 			final Boolean isRepeated,
 			final Long relatedMonthlyGoalId,
 			final Long relatedWeeklyGoalId,
-			final Member member) {
-		final MonthlyGoal monthlyGoal =
-				monthlyGoalRepository.findByIdAndMember(relatedMonthlyGoalId, member).orElse(null);
-		final WeeklyGoal weeklyGoal = null;
-		return taskGroupRepository.save(new TaskGroup(isRepeated, monthlyGoal, weeklyGoal));
+			final Long memberId) {
+		final Optional<MonthlyGoal> monthlyGoal =
+				monthlyGoalRepository.findById(relatedMonthlyGoalId);
+		final Optional<WeeklyGoal> weeklyGoal = Optional.empty();
+		checkGoalOwner(monthlyGoal, weeklyGoal, memberId);
+		return taskGroupRepository.save(
+				new TaskGroup(isRepeated, monthlyGoal.orElse(null), weeklyGoal.orElse(null)));
+	}
+
+	private void checkGoalOwner(
+			final Optional<MonthlyGoal> monthlyGoal,
+			final Optional<WeeklyGoal> weeklyGoal,
+			final Long memberId) {
+		monthlyGoal.ifPresent(
+				goal -> {
+					if (!goal.isOwnedBy(memberId)) {
+						throw new InvalidMonthlyGoalException(ErrorCode.MONTHLY_GOAL_ACCESS_DENIED);
+					}
+				});
+		weeklyGoal.ifPresent(
+				goal -> {
+					if (!goal.isOwnedBy(memberId)) {
+						throw new InvalidMonthlyGoalException(ErrorCode.WEEKLY_GOAL_ACCESS_DENIED);
+					}
+				});
 	}
 }

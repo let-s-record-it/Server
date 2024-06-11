@@ -2,7 +2,7 @@ package com.sillim.recordit.task.controller;
 
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.task.dto.TaskAddRequest;
+import com.sillim.recordit.task.dto.request.TaskAddRequest;
 import com.sillim.recordit.task.service.TaskCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

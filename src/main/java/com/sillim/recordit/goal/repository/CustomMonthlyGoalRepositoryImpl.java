@@ -4,7 +4,6 @@ import static com.sillim.recordit.goal.domain.QMonthlyGoal.monthlyGoal;
 
 import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
-import com.sillim.recordit.member.domain.Member;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 
@@ -17,16 +16,15 @@ public class CustomMonthlyGoalRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public List<MonthlyGoal> findMonthlyGoalInMonth(Integer year, Integer month, Member member) {
+	public List<MonthlyGoal> findMonthlyGoalInMonth(Integer year, Integer month, Long memberId) {
 		return selectFrom(monthlyGoal)
 				.where(
 						monthlyGoal
-								.period
-								.startDate
-								.year()
-								.eq(year)
-								.and(monthlyGoal.period.startDate.month().eq(month))
-								.and(monthlyGoal.member.eq(member)))
+								.member
+								.id
+								.eq(memberId)
+								.and(monthlyGoal.period.startDate.year().eq(year))
+								.and(monthlyGoal.period.startDate.month().eq(month)))
 				.fetch();
 	}
 }
