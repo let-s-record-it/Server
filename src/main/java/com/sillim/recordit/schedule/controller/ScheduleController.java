@@ -2,12 +2,9 @@ package com.sillim.recordit.schedule.controller;
 
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
 import com.sillim.recordit.schedule.dto.response.DayScheduleResponse;
 import com.sillim.recordit.schedule.dto.response.MonthScheduleResponse;
-import com.sillim.recordit.schedule.dto.response.RepetitionPatternResponse;
-import com.sillim.recordit.schedule.service.RepetitionPatternService;
 import com.sillim.recordit.schedule.service.ScheduleCommandService;
 import com.sillim.recordit.schedule.service.ScheduleQueryService;
 import java.time.LocalDate;
@@ -28,40 +25,41 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ScheduleController {
 
-    private final ScheduleCommandService scheduleCommandService;
-    private final ScheduleQueryService scheduleQueryService;
+	private final ScheduleCommandService scheduleCommandService;
+	private final ScheduleQueryService scheduleQueryService;
 
-    @PostMapping
-    public ResponseEntity<List<MonthScheduleResponse>> addSchedules(
-            @Validated @RequestBody ScheduleAddRequest request, @PathVariable Long calendarId) {
-        return ResponseEntity.ok(
-                scheduleCommandService.addSchedules(request, calendarId).stream()
-                        .map(MonthScheduleResponse::from)
-                        .toList());
-    }
+	@PostMapping
+	public ResponseEntity<List<MonthScheduleResponse>> addSchedules(
+			@Validated @RequestBody ScheduleAddRequest request, @PathVariable Long calendarId) {
+		return ResponseEntity.ok(
+				scheduleCommandService.addSchedules(request, calendarId).stream()
+						.map(MonthScheduleResponse::from)
+						.toList());
+	}
 
-    @GetMapping("/{scheduleId}")
-    public ResponseEntity<DayScheduleResponse> scheduleDetails(@PathVariable Long scheduleId,
-            @CurrentMember Member member) {
-        return ResponseEntity.ok(scheduleQueryService.searchSchedule(scheduleId, member.getId()));
-    }
+	@GetMapping("/{scheduleId}")
+	public ResponseEntity<DayScheduleResponse> scheduleDetails(
+			@PathVariable Long scheduleId, @CurrentMember Member member) {
+		return ResponseEntity.ok(scheduleQueryService.searchSchedule(scheduleId, member.getId()));
+	}
 
-    @GetMapping("/month")
-    public ResponseEntity<List<MonthScheduleResponse>> scheduleListInMonth(
-            @PathVariable Long calendarId,
-            @RequestParam Integer year,
-            @RequestParam Integer month,
-            @CurrentMember Member member) {
-        return ResponseEntity.ok(
-                scheduleQueryService.searchSchedulesInMonth(calendarId, year, month,
-                        member.getId()));
-    }
+	@GetMapping("/month")
+	public ResponseEntity<List<MonthScheduleResponse>> scheduleListInMonth(
+			@PathVariable Long calendarId,
+			@RequestParam Integer year,
+			@RequestParam Integer month,
+			@CurrentMember Member member) {
+		return ResponseEntity.ok(
+				scheduleQueryService.searchSchedulesInMonth(
+						calendarId, year, month, member.getId()));
+	}
 
-    @GetMapping("/day")
-    public ResponseEntity<List<DayScheduleResponse>> scheduleListInDay(
-            @PathVariable Long calendarId, @RequestParam LocalDate date,
-            @CurrentMember Member member) {
-        return ResponseEntity.ok(
-                scheduleQueryService.searchSchedulesInDay(calendarId, date, member.getId()));
-    }
+	@GetMapping("/day")
+	public ResponseEntity<List<DayScheduleResponse>> scheduleListInDay(
+			@PathVariable Long calendarId,
+			@RequestParam LocalDate date,
+			@CurrentMember Member member) {
+		return ResponseEntity.ok(
+				scheduleQueryService.searchSchedulesInDay(calendarId, date, member.getId()));
+	}
 }

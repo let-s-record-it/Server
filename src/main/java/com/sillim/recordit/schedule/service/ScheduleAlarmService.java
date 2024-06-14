@@ -15,16 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleAlarmService {
 
-    private final ScheduleAlarmRepository scheduleAlarmRepository;
+	private final ScheduleAlarmRepository scheduleAlarmRepository;
 
-    @Transactional(readOnly = true)
-    public List<ScheduleAlarm> searchByScheduleId(Long scheduleId) {
-        return scheduleAlarmRepository.findByScheduleId(scheduleId);
-    }
+	@Transactional(readOnly = true)
+	public List<ScheduleAlarm> searchByScheduleId(Long scheduleId) {
+		return scheduleAlarmRepository.findByScheduleId(scheduleId);
+	}
 
-    public void addScheduleAlarms(List<LocalDateTime> alarmTimes,
-            Schedule schedule) {
-        alarmTimes.forEach(alarmTime -> scheduleAlarmRepository.save(
-                        new ScheduleAlarm(AlarmTime.create(alarmTime), schedule)));
-    }
+	public void addScheduleAlarms(List<LocalDateTime> alarmTimes, Schedule schedule) {
+		alarmTimes.forEach(
+				alarmTime ->
+						scheduleAlarmRepository.save(
+								new ScheduleAlarm(AlarmTime.create(alarmTime), schedule)));
+	}
 }

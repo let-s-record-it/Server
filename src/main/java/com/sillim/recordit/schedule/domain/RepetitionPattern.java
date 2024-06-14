@@ -384,14 +384,14 @@ public class RepetitionPattern extends BaseTime {
 												startDate,
 												date ->
 														date.isBefore(
-																repetitionEndDate.plusDays(
-																		1L))
+																		repetitionEndDate.plusDays(
+																				1L))
 																&& date.isBefore(
-																startDate.with(
-																		TemporalAdjusters
-																				.next(
-																						DayOfWeek
-																								.SUNDAY))),
+																		startDate.with(
+																				TemporalAdjusters
+																						.next(
+																								DayOfWeek
+																										.SUNDAY))),
 												date -> date.plusDays(1L))
 										.filter(
 												date ->
