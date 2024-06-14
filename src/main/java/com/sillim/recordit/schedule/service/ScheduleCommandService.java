@@ -15,35 +15,41 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleCommandService {
 
-	private final ScheduleRepository scheduleRepository;
-	private final CalendarService calendarService;
-	private final ScheduleGroupService scheduleGroupService;
-	private final RepetitionPatternService repetitionPatternService;
+    private final ScheduleRepository scheduleRepository;
+    private final CalendarService calendarService;
+    private final ScheduleGroupService scheduleGroupService;
+    private final RepetitionPatternService repetitionPatternService;
+    private final ScheduleAlarmService scheduleAlarmService;
 
-	public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId) {
-		ScheduleGroup scheduleGroup = scheduleGroupService.addScheduleGroup(request.isRepeated());
+    public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId) {
+        ScheduleGroup scheduleGroup = scheduleGroupService.addScheduleGroup(request.isRepeated());
 
-		if (request.isRepeated()) {
-			return addRepeatingSchedule(request, scheduleGroup, calendarId);
-		}
-		return List.of(
-				scheduleRepository.save(
-						request.toSchedule(
-								calendarService.searchByCalendarId(calendarId), scheduleGroup)));
-	}
+        if (request.isRepeated()) {
+            return addRepeatingSchedule(request, scheduleGroup, calendarId);
+        }
 
-	private List<Schedule> addRepeatingSchedule(
-			ScheduleAddRequest request, ScheduleGroup scheduleGroup, Long calendarId) {
-		return repetitionPatternService
-				.addRepetitionPattern(request.repetition(), scheduleGroup)
-				.repeatingStream()
-				.map(
-						temporalAmount ->
-								scheduleRepository.save(
-										request.toSchedule(
-												temporalAmount,
-												calendarService.searchByCalendarId(calendarId),
-												scheduleGroup)))
-				.toList();
-	}
+        Schedule schedule = request.toSchedule(
+                calendarService.searchByCalendarId(calendarId), scheduleGroup);
+        scheduleAlarmService.addScheduleAlarms(request.alarmTimes(), schedule);
+        return List.of(
+                scheduleRepository.save(
+                        schedule));
+    }
+
+    private List<Schedule> addRepeatingSchedule(
+            ScheduleAddRequest request, ScheduleGroup scheduleGroup, Long calendarId) {
+        return repetitionPatternService
+                .addRepetitionPattern(request.repetition(), scheduleGroup)
+                .repeatingStream()
+                .map(
+                        temporalAmount ->
+                                scheduleRepository.save(
+                                        request.toSchedule(
+                                                temporalAmount,
+                                                calendarService.searchByCalendarId(calendarId),
+                                                scheduleGroup)))
+                .peek(schedule -> scheduleAlarmService.addScheduleAlarms(request.alarmTimes(),
+                        schedule))
+                .toList();
+    }
 }

@@ -7,62 +7,72 @@ import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.schedule.domain.Schedule;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
-		implements CustomScheduleRepository {
+        implements CustomScheduleRepository {
 
-	public CustomScheduleRepositoryImpl() {
-		super(Schedule.class);
-	}
+    public CustomScheduleRepositoryImpl() {
+        super(Schedule.class);
+    }
 
-	@Override
-	public List<Schedule> findScheduleInMonth(Long calendarId, Integer year, Integer month) {
-		return selectFrom(schedule)
-				.where(schedule.calendar.id.eq(calendarId))
-				.where(startLtYear(year).or(startEqYear(year).and(StartLoeMonth(month))))
-				.where(endGtYear(year).or(endEqYear(year).and(endGoeMonth(month))))
-				.orderBy(schedule.scheduleDuration.startDatetime.asc())
-				.fetch();
-	}
+    @Override
+    public Optional<Schedule> findByScheduleId(Long scheduleId) {
+        return Optional.ofNullable(selectFrom(schedule)
+                .leftJoin(schedule.calendar).fetchJoin()
+                .leftJoin(schedule.calendar.member).fetchJoin()
+                .where(schedule.id.eq(scheduleId))
+                .fetchOne());
+    }
 
-	@Override
-	public List<Schedule> findScheduleInDay(Long calendarId, LocalDate date) {
-		return selectFrom(schedule)
-				.where(schedule.calendar.id.eq(calendarId))
-				.where(schedule.scheduleDuration.startDatetime.loe(date.atStartOfDay()))
-				.where(schedule.scheduleDuration.endDatetime.goe(date.atStartOfDay()))
-				.leftJoin(schedule.calendar)
-				.fetchJoin()
-				.leftJoin(schedule.scheduleGroup)
-				.fetchJoin()
-				.leftJoin(schedule.scheduleGroup.repetitionPattern)
-				.fetchJoin()
-				.fetch();
-	}
+    @Override
+    public List<Schedule> findScheduleInMonth(Long calendarId, Integer year, Integer month) {
+        return selectFrom(schedule)
+                .where(schedule.calendar.id.eq(calendarId))
+                .where(startLtYear(year).or(startEqYear(year).and(StartLoeMonth(month))))
+                .where(endGtYear(year).or(endEqYear(year).and(endGoeMonth(month))))
+                .orderBy(schedule.scheduleDuration.startDatetime.asc())
+                .fetch();
+    }
 
-	private static BooleanExpression endGoeMonth(Integer month) {
-		return schedule.scheduleDuration.endDatetime.month().goe(month);
-	}
+    @Override
+    public List<Schedule> findScheduleInDay(Long calendarId, LocalDate date) {
+        return selectFrom(schedule)
+                .leftJoin(schedule.calendar)
+                .fetchJoin()
+                .leftJoin(schedule.scheduleGroup)
+                .fetchJoin()
+                .leftJoin(schedule.scheduleGroup.repetitionPattern)
+                .fetchJoin()
+                .where(schedule.calendar.id.eq(calendarId))
+                .where(schedule.scheduleDuration.startDatetime.loe(date.atStartOfDay()))
+                .where(schedule.scheduleDuration.endDatetime.goe(date.atStartOfDay()))
+                .fetch();
+    }
 
-	private static BooleanExpression endGtYear(Integer year) {
-		return schedule.scheduleDuration.endDatetime.year().gt(year);
-	}
+    private static BooleanExpression endGoeMonth(Integer month) {
+        return schedule.scheduleDuration.endDatetime.month().goe(month);
+    }
 
-	private static BooleanExpression StartLoeMonth(Integer month) {
-		return schedule.scheduleDuration.startDatetime.month().loe(month);
-	}
+    private static BooleanExpression endGtYear(Integer year) {
+        return schedule.scheduleDuration.endDatetime.year().gt(year);
+    }
 
-	private static BooleanExpression startEqYear(Integer year) {
-		return schedule.scheduleDuration.startDatetime.year().eq(year);
-	}
+    private static BooleanExpression StartLoeMonth(Integer month) {
+        return schedule.scheduleDuration.startDatetime.month().loe(month);
+    }
 
-	private static BooleanExpression endEqYear(Integer year) {
-		return schedule.scheduleDuration.endDatetime.year().eq(year);
-	}
+    private static BooleanExpression startEqYear(Integer year) {
+        return schedule.scheduleDuration.startDatetime.year().eq(year);
+    }
 
-	private static BooleanExpression startLtYear(Integer year) {
-		return schedule.scheduleDuration.startDatetime.year().lt(year);
-	}
+    private static BooleanExpression endEqYear(Integer year) {
+        return schedule.scheduleDuration.endDatetime.year().eq(year);
+    }
+
+    private static BooleanExpression startLtYear(Integer year) {
+        return schedule.scheduleDuration.startDatetime.year().lt(year);
+    }
 }

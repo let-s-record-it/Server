@@ -2,6 +2,7 @@ package com.sillim.recordit.schedule.dto.response;
 
 import com.sillim.recordit.schedule.domain.Schedule;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 
 @Builder
@@ -18,7 +19,7 @@ public record DayScheduleResponse(
 		Double latitude,
 		Double longitude,
 		Boolean setAlarm,
-		LocalDateTime alarmTime,
+		List<LocalDateTime> alarmTimes,
 		Boolean isRepeated,
 		String calendarTitle,
 		RepetitionPatternResponse repetitionPattern) {
@@ -26,6 +27,7 @@ public record DayScheduleResponse(
 	public static DayScheduleResponse of(
 			Schedule schedule,
 			Boolean isRepeated,
+			List<LocalDateTime> alarmTimes,
 			RepetitionPatternResponse repetitionPatternResponse) {
 		return DayScheduleResponse.builder()
 				.id(schedule.getId())
@@ -40,7 +42,6 @@ public record DayScheduleResponse(
 				.latitude(schedule.getLatitude())
 				.longitude(schedule.getLongitude())
 				.setAlarm(schedule.getSetAlarm())
-				.alarmTime(schedule.getAlarmTime())
 				.isRepeated(isRepeated)
 				.calendarTitle(schedule.getCalendar().getTitle())
 				.repetitionPattern(repetitionPatternResponse)

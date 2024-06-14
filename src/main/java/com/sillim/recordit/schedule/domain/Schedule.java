@@ -1,7 +1,6 @@
 package com.sillim.recordit.schedule.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.schedule.domain.vo.AlarmTime;
 import com.sillim.recordit.schedule.domain.vo.Location;
 import com.sillim.recordit.schedule.domain.vo.ScheduleColorHex;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDescription;
@@ -16,7 +15,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -52,8 +54,6 @@ public class Schedule {
 	@Column(nullable = false)
 	private Boolean setAlarm;
 
-	@Embedded private AlarmTime alarmTime;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "calendar_id")
 	private Calendar calendar;
@@ -61,6 +61,9 @@ public class Schedule {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_group_id")
 	private ScheduleGroup scheduleGroup;
+
+	@OneToMany(mappedBy = "schedule")
+	private List<ScheduleAlarm> scheduleAlarms = new ArrayList<>();
 
 	public Schedule(
 			ScheduleTitle title,
@@ -71,7 +74,6 @@ public class Schedule {
 			Boolean setLocation,
 			Location location,
 			Boolean setAlarm,
-			AlarmTime alarmTime,
 			Calendar calendar,
 			ScheduleGroup scheduleGroup) {
 		this.title = title;
@@ -82,7 +84,6 @@ public class Schedule {
 		this.setLocation = setLocation;
 		this.location = location;
 		this.setAlarm = setAlarm;
-		this.alarmTime = alarmTime;
 		this.calendar = calendar;
 		this.scheduleGroup = scheduleGroup;
 	}
@@ -100,7 +101,6 @@ public class Schedule {
 			Double latitude,
 			Double longitude,
 			Boolean setAlarm,
-			LocalDateTime alarmTime,
 			Calendar calendar,
 			ScheduleGroup scheduleGroup) {
 		this(
@@ -114,7 +114,6 @@ public class Schedule {
 				setLocation,
 				setLocation ? new Location(latitude, longitude) : null,
 				setAlarm,
-				setAlarm ? AlarmTime.create(alarmTime) : null,
 				calendar,
 				scheduleGroup);
 	}
@@ -149,9 +148,5 @@ public class Schedule {
 
 	public Double getLongitude() {
 		return Optional.ofNullable(location).map(Location::getLongitude).orElse(null);
-	}
-
-	public LocalDateTime getAlarmTime() {
-		return Optional.ofNullable(this.alarmTime).map(AlarmTime::getAlarmTime).orElse(null);
 	}
 }

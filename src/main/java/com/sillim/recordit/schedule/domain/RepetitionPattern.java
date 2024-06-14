@@ -348,31 +348,16 @@ public class RepetitionPattern extends BaseTime {
 	}
 
 	public Stream<TemporalAmount> repeatingStream() {
-		if (repetitionType.equals(RepetitionType.DAILY)) {
-			return dailyRepeatingStream();
-		}
-		if (repetitionType.equals(RepetitionType.WEEKLY)) {
-			return weeklyRepeatingStream();
-		}
-		if (repetitionType.equals(RepetitionType.MONTHLY_WITH_DATE)) {
-			return monthlyWithDateRepeatingStream();
-		}
-		if (repetitionType.equals(RepetitionType.MONTHLY_WITH_WEEKDAY)) {
-			return monthlyWithWeekdayRepeatingStream();
-		}
-		if (repetitionType.equals(RepetitionType.MONTHLY_WITH_LAST_DAY)) {
-			return monthlyWithLastDayRepeatingStream();
-		}
-		if (repetitionType.equals(RepetitionType.YEARLY_WITH_DATE)) {
-			return yearlyWithDateRepeatingStream();
-		}
-		if (repetitionType.equals(RepetitionType.YEARLY_WITH_WEEKDAY)) {
-			return yearlyWithWeekdayRepeatingStream();
-		}
-		if (repetitionType.equals(RepetitionType.YEARLY_WITH_LAST_DAY)) {
-			return yearlyWithLastDayRepeatingStream();
-		}
-		throw new InvalidRepetitionException(ErrorCode.INVALID_REPETITION_TYPE);
+		return switch (repetitionType) {
+			case DAILY -> dailyRepeatingStream();
+			case WEEKLY -> weeklyRepeatingStream();
+			case MONTHLY_WITH_DATE -> monthlyWithDateRepeatingStream();
+			case MONTHLY_WITH_WEEKDAY -> monthlyWithWeekdayRepeatingStream();
+			case MONTHLY_WITH_LAST_DAY -> monthlyWithLastDayRepeatingStream();
+			case YEARLY_WITH_DATE -> yearlyWithDateRepeatingStream();
+			case YEARLY_WITH_WEEKDAY -> yearlyWithWeekdayRepeatingStream();
+			case YEARLY_WITH_LAST_DAY -> yearlyWithLastDayRepeatingStream();
+		};
 	}
 
 	private Stream<TemporalAmount> dailyRepeatingStream() {
@@ -399,14 +384,14 @@ public class RepetitionPattern extends BaseTime {
 												startDate,
 												date ->
 														date.isBefore(
-																		repetitionEndDate.plusDays(
-																				1L))
+																repetitionEndDate.plusDays(
+																		1L))
 																&& date.isBefore(
-																		startDate.with(
-																				TemporalAdjusters
-																						.next(
-																								DayOfWeek
-																										.SUNDAY))),
+																startDate.with(
+																		TemporalAdjusters
+																				.next(
+																						DayOfWeek
+																								.SUNDAY))),
 												date -> date.plusDays(1L))
 										.filter(
 												date ->
