@@ -37,6 +37,7 @@ class ScheduleCommandServiceTest {
 	@Mock CalendarService calendarService;
 	@Mock ScheduleGroupService scheduleGroupService;
 	@Mock RepetitionPatternService repetitionPatternService;
+	@Mock ScheduleAlarmService scheduleAlarmService;
 	@InjectMocks ScheduleCommandService scheduleCommandService;
 
 	Member member;
@@ -74,7 +75,7 @@ class ScheduleCommandServiceTest {
 						36.0,
 						127.0,
 						true,
-						LocalDateTime.of(2024, 1, 1, 0, 0));
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule =
 				Schedule.builder()
@@ -89,7 +90,6 @@ class ScheduleCommandServiceTest {
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
-						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.calendar(calendar)
 						.scheduleGroup(scheduleGroup)
 						.build();
@@ -145,7 +145,7 @@ class ScheduleCommandServiceTest {
 						36.0,
 						127.0,
 						true,
-						LocalDateTime.of(2024, 1, 1, 0, 0));
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
 		RepetitionPattern repetitionPattern =
 				RepetitionPattern.createDaily(
@@ -163,7 +163,6 @@ class ScheduleCommandServiceTest {
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
-						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.calendar(calendar)
 						.scheduleGroup(scheduleGroup)
 						.build();

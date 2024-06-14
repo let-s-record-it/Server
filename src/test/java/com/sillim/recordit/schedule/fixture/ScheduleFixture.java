@@ -17,8 +17,7 @@ public enum ScheduleFixture {
 			true,
 			36.0,
 			127.0,
-			true,
-			LocalDateTime.of(2024, 1, 1, 0, 0)),
+			true),
 	NOT_SET_LOCATION(
 			"title",
 			"description",
@@ -30,8 +29,7 @@ public enum ScheduleFixture {
 			false,
 			36.0,
 			127.0,
-			true,
-			LocalDateTime.of(2024, 1, 1, 0, 0)),
+			true),
 	NOT_SET_ALARM(
 			"title",
 			"description",
@@ -43,8 +41,7 @@ public enum ScheduleFixture {
 			true,
 			36.0,
 			127.0,
-			false,
-			LocalDateTime.of(2024, 1, 1, 0, 0)),
+			false),
 	;
 
 	private final String title;
@@ -58,7 +55,6 @@ public enum ScheduleFixture {
 	private final Double latitude;
 	private final Double longitude;
 	private final Boolean setAlarm;
-	private final LocalDateTime alarmTime;
 
 	ScheduleFixture(
 			String title,
@@ -71,8 +67,7 @@ public enum ScheduleFixture {
 			Boolean setLocation,
 			Double latitude,
 			Double longitude,
-			Boolean setAlarm,
-			LocalDateTime alarmTime) {
+			Boolean setAlarm) {
 		this.title = title;
 		this.description = description;
 		this.isAllDay = isAllDay;
@@ -84,7 +79,6 @@ public enum ScheduleFixture {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.setAlarm = setAlarm;
-		this.alarmTime = alarmTime;
 	}
 
 	public Schedule getSchedule(ScheduleGroup scheduleGroup, Calendar calendar) {
@@ -100,7 +94,6 @@ public enum ScheduleFixture {
 				.latitude(latitude)
 				.longitude(longitude)
 				.setAlarm(setAlarm)
-				.alarmTime(alarmTime)
 				.scheduleGroup(scheduleGroup)
 				.calendar(calendar)
 				.build();
@@ -123,7 +116,6 @@ public enum ScheduleFixture {
 				.latitude(latitude)
 				.longitude(longitude)
 				.setAlarm(setAlarm)
-				.alarmTime(alarmTime)
 				.scheduleGroup(scheduleGroup)
 				.calendar(calendar)
 				.build();
@@ -171,9 +163,5 @@ public enum ScheduleFixture {
 
 	public Boolean getSetAlarm() {
 		return setAlarm;
-	}
-
-	public LocalDateTime getAlarmTime() {
-		return alarmTime;
 	}
 }
