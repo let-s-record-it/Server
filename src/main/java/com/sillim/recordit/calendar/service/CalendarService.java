@@ -46,11 +46,12 @@ public class CalendarService {
 		calendarRepository.delete(calendar);
 	}
 
-	public Calendar searchByCalendarId(final Long calendarId, final Long memberId) {
-		Calendar calendar = searchByCalendarId(calendarId);
+	public void validateOwnerOfCalendar(final Long calendarId, final Long memberId) {
+
+		final Calendar calendar = searchByCalendarId(calendarId);
+
 		if (!calendar.equalsMemberId(memberId)) {
 			throw new InvalidCalendarException(ErrorCode.CALENDAR_ACCESS_DENIED);
 		}
-		return calendar;
 	}
 }

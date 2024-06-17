@@ -3,7 +3,7 @@ package com.sillim.recordit.task.service;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPatternFactory;
-import com.sillim.recordit.task.dto.request.TaskRepetitionAddRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
 import com.sillim.recordit.task.repository.TaskRepetitionPatternRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,8 +17,7 @@ public class TaskRepetitionPatternService {
 	private final TaskRepetitionPatternRepository repetitionPatternRepository;
 
 	@Transactional
-	public TaskRepetitionPattern addRepetitionPattern(
-			TaskRepetitionAddRequest request, TaskGroup taskGroup) {
+	public TaskRepetitionPattern add(TaskRepetitionUpdateRequest request, TaskGroup taskGroup) {
 		return repetitionPatternRepository.save(
 				TaskRepetitionPatternFactory.create(
 						request.repetitionType(),
@@ -31,5 +30,10 @@ public class TaskRepetitionPatternService {
 						request.weekday(),
 						request.weekdayBit(),
 						taskGroup));
+	}
+
+	@Transactional
+	public void removeByTaskGroup(TaskGroup taskGroup) {
+		repetitionPatternRepository.deleteByTaskGroup(taskGroup);
 	}
 }

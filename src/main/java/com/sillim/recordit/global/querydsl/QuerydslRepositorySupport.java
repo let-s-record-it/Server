@@ -2,6 +2,7 @@ package com.sillim.recordit.global.querydsl;
 
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -47,6 +48,10 @@ public abstract class QuerydslRepositorySupport {
 
 	protected <T> JPAQuery<T> selectFrom(EntityPath<T> from) {
 		return this.jpaQueryFactory.selectFrom(from);
+	}
+
+	protected <T> JPADeleteClause delete(EntityPath<T> from) {
+		return this.jpaQueryFactory.delete(from);
 	}
 
 	protected <T> Page<T> applyPagination(

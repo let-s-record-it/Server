@@ -30,6 +30,7 @@ public class TaskGroup extends BaseTime {
 	private Long id;
 
 	@Column(nullable = false)
+	@ColumnDefault("false")
 	private Boolean isRepeated;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -46,6 +47,13 @@ public class TaskGroup extends BaseTime {
 
 	@Builder
 	public TaskGroup(
+			final Boolean isRepeated, final MonthlyGoal monthlyGoal, final WeeklyGoal weeklyGoal) {
+		this.isRepeated = isRepeated;
+		this.monthlyGoal = monthlyGoal;
+		this.weeklyGoal = weeklyGoal;
+	}
+
+	public void modify(
 			final Boolean isRepeated, final MonthlyGoal monthlyGoal, final WeeklyGoal weeklyGoal) {
 		this.isRepeated = isRepeated;
 		this.monthlyGoal = monthlyGoal;

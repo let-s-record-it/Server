@@ -11,11 +11,14 @@ import java.time.temporal.TemporalAmount;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 
-public record TaskAddRequest(
+public record TaskUpdateRequest(
 		@NotBlank @Length(max = 30) String title,
 		@Length(max = 500) String description,
 		@NotNull LocalDate date,
 		@ColorHexValid String colorHex,
+		@NotNull Long calendarId,
+		@NotNull TaskRepetitionUpdateStatus repetitionUpdateStatus,
+		@NotNull RemoveStrategy removeStrategy,
 		@NotNull Boolean isRepeated,
 		@Validated TaskRepetitionUpdateRequest repetition,
 		Long relatedMonthlyGoalId,

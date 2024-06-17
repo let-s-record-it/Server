@@ -89,6 +89,7 @@ public enum ErrorCode {
 	NULL_TASK_COLOR_HEX("ERR_TASK_008", "할 일 생상 값은 null일 수 없습니다."),
 	INVALID_TASK_COLOR_HEX("ERR_TASK_009", "유효하지 않은 할 일 색상 값입니다."),
 	NULL_TASK_DATE("ERR_TASK_010", "할 일 날짜는 null일 수 없습니다."),
+	TASK_ACCESS_DENIED("ERR_TASK_011", "해당 사용자는 접근할 수 없는 할 일입니다."),
 
 	// task-repetition-pattern
 	TASK_REPETITION_NOT_FOUND("ERR_TASK_REPETITION_001", "존재하지 않는 할 일 반복 패턴입니다."),

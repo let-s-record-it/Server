@@ -18,9 +18,10 @@ public class TaskQueryService {
 	private final TaskRepository taskRepository;
 
 	public List<Task> searchAllByDate(
-			final Long calendarId, final LocalDate date, final Long memberId) {
+			final LocalDate date, final Long calendarId, final Long memberId) {
 
-		return taskRepository.findAllByCalendarAndDate(
-				calendarService.searchByCalendarId(calendarId, memberId), date);
+		calendarService.validateOwnerOfCalendar(calendarId, memberId);
+
+		return taskRepository.findAllByCalendarIdAndDate(calendarId, date);
 	}
 }
