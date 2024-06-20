@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -92,5 +93,31 @@ public class Task extends BaseTime {
 
 	public String getTitle() {
 		return title.getTitle();
+	}
+
+	public String getDescription() {
+		return description.getDescription();
+	}
+
+	public String getColorHex() {
+		return colorHex.getColorHex();
+	}
+
+	public boolean isRepeated() {
+		return taskGroup.getIsRepeated();
+	}
+
+	public Long getMonthlyGoalId() {
+		if (Optional.ofNullable(taskGroup.getMonthlyGoal()).isEmpty()) {
+			return null;
+		}
+		return taskGroup.getMonthlyGoal().getId();
+	}
+
+	public Long getWeeklyGoalId() {
+		if (Optional.ofNullable(taskGroup.getWeeklyGoal()).isEmpty()) {
+			return null;
+		}
+		return taskGroup.getWeeklyGoal().getId();
 	}
 }

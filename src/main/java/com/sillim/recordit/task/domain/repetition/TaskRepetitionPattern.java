@@ -113,6 +113,13 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 		this.taskGroup = taskGroup;
 	}
 
+	public Integer getMonthOfYear() {
+		if (Optional.ofNullable(monthOfYear).isEmpty()) {
+			return null;
+		}
+		return monthOfYear.getMonthOfYear();
+	}
+
 	public Integer getDayOfMonth() {
 		if (Optional.ofNullable(dayOfMonth).isEmpty()) {
 			return null;
@@ -132,6 +139,13 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 			return null;
 		}
 		return weekday.getValue();
+	}
+
+	public Integer getWeekdayBit() {
+		if (Optional.ofNullable(weekdayBit).isEmpty()) {
+			return null;
+		}
+		return weekdayBit.getWeekdayBit();
 	}
 
 	protected void validate(
