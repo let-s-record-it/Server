@@ -136,7 +136,7 @@ class CalendarServiceTest {
 		given(calendarRepository.findById(eq(1L))).willReturn(Optional.of(calendar));
 		willReturn(false).given(calendar).equalsMemberId(eq(memberId));
 
-		assertThatCode(() -> calendarService.validateOwnerOfCalendar(calendarId, memberId))
+		assertThatCode(() -> calendarService.searchByCalendarId(calendarId, memberId))
 				.isInstanceOf(InvalidCalendarException.class)
 				.hasMessage(ErrorCode.CALENDAR_ACCESS_DENIED.getDescription());
 	}

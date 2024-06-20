@@ -3,7 +3,6 @@ package com.sillim.recordit.task.service;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 
@@ -41,6 +40,7 @@ class TaskQueryServiceTest {
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
 		calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		given(calendar.getId()).willReturn(1L);
 		taskGroup = new TaskGroup(false, null, null);
 	}
 
@@ -56,12 +56,13 @@ class TaskQueryServiceTest {
 								LocalDate.of(2024, 6, 12), calendar, taskGroup),
 						TaskFixture.DEFAULT.getWithDate(
 								LocalDate.of(2024, 6, 12), calendar, taskGroup));
-		willReturn(calendar).given(calendarService).searchByCalendarId(eq(calendarId));
-		given(taskRepository.findAllByCalendarAndDate(calendar, date)).willReturn(tasks);
+		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
+				.willReturn(calendar);
+		given(taskRepository.findAllByCalendarIdAndDate(calendarId, date)).willReturn(tasks);
 
 		taskQueryService.searchAllByDate(calendarId, date, memberId);
 
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId));
-		then(taskRepository).should(times(1)).findAllByCalendarAndDate(eq(calendar), eq(date));
+		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
+		then(taskRepository).should(times(1)).findAllByCalendarIdAndDate(eq(calendarId), eq(date));
 	}
 }

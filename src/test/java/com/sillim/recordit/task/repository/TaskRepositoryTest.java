@@ -68,7 +68,8 @@ class TaskRepositoryTest {
 		taskRepository.saveAll(saved);
 
 		List<Task> found =
-				taskRepository.findAllByCalendarAndDate(calendar, LocalDate.of(2024, 6, 12));
+				taskRepository.findAllByCalendarIdAndDate(
+						calendar.getId(), LocalDate.of(2024, 6, 12));
 
 		assertThat(found).hasSize(2);
 		found.forEach(task -> assertThat(task.getDate()).isEqualTo(LocalDate.of(2024, 6, 12)));
