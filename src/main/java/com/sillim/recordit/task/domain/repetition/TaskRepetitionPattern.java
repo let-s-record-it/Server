@@ -23,6 +23,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAmount;
 import java.util.Objects;
@@ -146,6 +147,10 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 			return null;
 		}
 		return weekdayBit.getWeekdayBit();
+	}
+
+	public boolean isValidWeekday(final DayOfWeek dayOfWeek) {
+		return (weekdayBit.getWeekdayBit() & (1 << (dayOfWeek.getValue() - 1))) > 0;
 	}
 
 	protected void validate(

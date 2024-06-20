@@ -4,7 +4,6 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidWeekdayBitException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import java.time.DayOfWeek;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -34,9 +33,5 @@ public final class TaskWeekdayBit {
 		if (weekdayBit < MIN_WEEKDAY_BIT || weekdayBit > MAX_WEEKDAY_BIT) {
 			throw new InvalidWeekdayBitException(ErrorCode.TASK_WEEKDAY_BIT_OUT_OF_RANGE);
 		}
-	}
-
-	public boolean isValidWeekday(final DayOfWeek dayOfWeek) {
-		return (weekdayBit & (1 << (dayOfWeek.getValue() - 1))) > 0;
 	}
 }
