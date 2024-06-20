@@ -65,13 +65,12 @@ class TaskCommandServiceTest {
 
 		given(taskGroupService.addTaskGroup(eq(false), any(), any(), eq(memberId)))
 				.willReturn(taskGroup);
-		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
-				.willReturn(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
 		taskCommandService.addTasks(request, calendarId, memberId);
 
 		then(taskGroupService).should(times(1)).addTaskGroup(eq(false), any(), any(), eq(memberId));
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
+		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId));
 		then(taskRepository).should(times(1)).save(any(Task.class));
 	}
 
@@ -106,8 +105,7 @@ class TaskCommandServiceTest {
 
 		given(taskGroupService.addTaskGroup(eq(true), any(), any(), eq(memberId)))
 				.willReturn(taskGroup);
-		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
-				.willReturn(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(
 						repetitionPatternService.addRepetitionPattern(
 								eq(request.repetition()), eq(taskGroup)))
@@ -116,7 +114,7 @@ class TaskCommandServiceTest {
 		taskCommandService.addTasks(request, calendarId, memberId);
 
 		then(taskGroupService).should(times(1)).addTaskGroup(eq(true), any(), any(), eq(memberId));
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
+		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId));
 		then(repetitionPatternService)
 				.should(times(1))
 				.addRepetitionPattern(eq(request.repetition()), eq(taskGroup));

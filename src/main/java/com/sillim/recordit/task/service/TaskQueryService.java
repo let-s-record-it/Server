@@ -20,7 +20,9 @@ public class TaskQueryService {
 	public List<Task> searchAllByDate(
 			final Long calendarId, final LocalDate date, final Long memberId) {
 
+		calendarService.validateOwnerOfCalendar(calendarId, memberId);
+
 		return taskRepository.findAllByCalendarAndDate(
-				calendarService.searchByCalendarId(calendarId, memberId), date);
+				calendarService.searchByCalendarId(calendarId), date);
 	}
 }

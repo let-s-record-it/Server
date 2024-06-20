@@ -56,14 +56,12 @@ class TaskQueryServiceTest {
 								LocalDate.of(2024, 6, 12), calendar, taskGroup),
 						TaskFixture.DEFAULT.getWithDate(
 								LocalDate.of(2024, 6, 12), calendar, taskGroup));
-		willReturn(calendar)
-				.given(calendarService)
-				.searchByCalendarId(eq(calendarId), eq(memberId));
+		willReturn(calendar).given(calendarService).searchByCalendarId(eq(calendarId));
 		given(taskRepository.findAllByCalendarAndDate(calendar, date)).willReturn(tasks);
 
 		taskQueryService.searchAllByDate(calendarId, date, memberId);
 
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
+		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId));
 		then(taskRepository).should(times(1)).findAllByCalendarAndDate(eq(calendar), eq(date));
 	}
 }

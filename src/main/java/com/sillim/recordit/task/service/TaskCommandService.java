@@ -22,13 +22,15 @@ public class TaskCommandService {
 
 	public void addTasks(final TaskAddRequest request, final Long calendarId, final Long memberId) {
 
+		calendarService.validateOwnerOfCalendar(calendarId, memberId);
+
 		final TaskGroup taskGroup =
 				taskGroupService.addTaskGroup(
 						request.isRepeated(),
 						request.relatedMonthlyGoalId(),
 						request.relatedWeeklyGoalId(),
 						memberId);
-		final Calendar calendar = calendarService.searchByCalendarId(calendarId, memberId);
+		final Calendar calendar = calendarService.searchByCalendarId(calendarId);
 		if (request.isRepeated()) {
 			addRepeatingTask(request, taskGroup, calendar);
 			return;
