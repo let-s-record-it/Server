@@ -3,7 +3,9 @@ package com.sillim.recordit.task.dto.response;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import java.time.LocalDate;
+import lombok.Builder;
 
+@Builder
 public record TaskRepetitionDetailsResponse(
 		TaskRepetitionType repetitionType,
 		Integer repetitionPeriod,
@@ -17,15 +19,16 @@ public record TaskRepetitionDetailsResponse(
 
 	public static TaskRepetitionDetailsResponse from(TaskRepetitionPattern repetitionPattern) {
 
-		return new TaskRepetitionDetailsResponse(
-				repetitionPattern.getRepetitionType(),
-				repetitionPattern.getRepetitionPeriod(),
-				repetitionPattern.getRepetitionStartDate(),
-				repetitionPattern.getRepetitionEndDate(),
-				repetitionPattern.getMonthOfYear(),
-				repetitionPattern.getDayOfMonth(),
-				repetitionPattern.getWeekNumber(),
-				repetitionPattern.getWeekday(),
-				repetitionPattern.getWeekdayBit());
+		return TaskRepetitionDetailsResponse.builder()
+				.repetitionType(repetitionPattern.getRepetitionType())
+				.repetitionPeriod(repetitionPattern.getRepetitionPeriod())
+				.repetitionStartDate(repetitionPattern.getRepetitionStartDate())
+				.repetitionEndDate(repetitionPattern.getRepetitionEndDate())
+				.monthOfYear(repetitionPattern.getMonthOfYear())
+				.dayOfMonth(repetitionPattern.getDayOfMonth())
+				.weekNumber(repetitionPattern.getWeekNumber())
+				.weekday(repetitionPattern.getWeekday())
+				.weekdayBit(repetitionPattern.getWeekdayBit())
+				.build();
 	}
 }

@@ -15,7 +15,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	List<Task> findAllByCalendarIdAndDate(Long calendarId, LocalDate date);
 
 	@Query(
-			"select t from Task t join fetch t.taskGroup where t.id = :taskId and t.calendar.id ="
-					+ " :calendarId")
+			"select t from Task t join fetch t.taskGroup left join fetch t.taskGroup.monthlyGoal"
+				+ " left join fetch t.taskGroup.weeklyGoal where t.id = :taskId and t.calendar.id ="
+				+ " :calendarId")
 	Optional<Task> findByIdAndCalendarId(Long taskId, Long calendarId);
 }

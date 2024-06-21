@@ -58,6 +58,6 @@ public class TaskController {
 			@CurrentMember Member member) {
 
 		return ResponseEntity.ok(
-				taskQueryService.searchByIdAndCalendarId(calendarId, taskId, member.getId()));
+				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, member.getId()));
 	}
 }
