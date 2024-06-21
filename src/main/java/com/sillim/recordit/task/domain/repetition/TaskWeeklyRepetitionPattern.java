@@ -79,11 +79,7 @@ public class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 																								DayOfWeek
 																										.SUNDAY))),
 												date -> date.plusDays(1L))
-										.filter(
-												date ->
-														getWeekdayBit()
-																.isValidWeekday(
-																		date.getDayOfWeek())))
+										.filter(date -> isValidWeekday(date.getDayOfWeek())))
 				.map(
 						date ->
 								Period.ofDays(

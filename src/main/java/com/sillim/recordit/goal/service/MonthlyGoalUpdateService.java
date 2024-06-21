@@ -25,7 +25,7 @@ public class MonthlyGoalUpdateService {
 	public void modify(
 			final MonthlyGoalUpdateRequest request, final Long monthlyGoalId, final Long memberId) {
 
-		final MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
+		final MonthlyGoal monthlyGoal = monthlyGoalQueryService.searchById(monthlyGoalId, memberId);
 		monthlyGoal.modify(
 				request.title(),
 				request.description(),
@@ -37,13 +37,13 @@ public class MonthlyGoalUpdateService {
 	public void changeAchieveStatus(
 			final Long monthlyGoalId, final Boolean status, final Long memberId) {
 
-		final MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
+		final MonthlyGoal monthlyGoal = monthlyGoalQueryService.searchById(monthlyGoalId, memberId);
 		monthlyGoal.changeAchieveStatus(status);
 	}
 
 	public void remove(final Long monthlyGoalId, final Long memberId) {
 
-		final MonthlyGoal monthlyGoal = monthlyGoalQueryService.search(monthlyGoalId, memberId);
+		final MonthlyGoal monthlyGoal = monthlyGoalQueryService.searchById(monthlyGoalId, memberId);
 		monthlyGoalRepository.delete(monthlyGoal);
 	}
 }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAmount;
 import java.util.List;
@@ -90,6 +91,30 @@ class TaskWeeklyRepetitionPatternTest {
 											.getRepetitionStartDate()
 											.plus(repeating.get(repeating.size() - 1)))
 							.isEqualTo(LocalDate.of(2024, 1, 31));
+				});
+	}
+
+	@Test
+	@DisplayName("Weekday값을 통해 반복 설정된 비트를 찾을 수 있다.")
+	void findValidBitByWeekday() {
+		// 1월 1일 ~ 1월 31일까지, 수/금/토/일 반복
+		TaskRepetitionPattern repetitionPattern =
+				TaskWeeklyRepetitionPattern.createWeekly(
+						2,
+						LocalDate.of(2024, 1, 1),
+						LocalDate.of(2024, 1, 31),
+						Integer.parseInt("1110100", 2),
+						taskGroup);
+
+		assertAll(
+				() -> {
+					assertThat(repetitionPattern.isValidWeekday(DayOfWeek.MONDAY)).isFalse();
+					assertThat(repetitionPattern.isValidWeekday(DayOfWeek.TUESDAY)).isFalse();
+					assertThat(repetitionPattern.isValidWeekday(DayOfWeek.WEDNESDAY)).isTrue();
+					assertThat(repetitionPattern.isValidWeekday(DayOfWeek.THURSDAY)).isFalse();
+					assertThat(repetitionPattern.isValidWeekday(DayOfWeek.FRIDAY)).isTrue();
+					assertThat(repetitionPattern.isValidWeekday(DayOfWeek.SATURDAY)).isTrue();
+					assertThat(repetitionPattern.isValidWeekday(DayOfWeek.SUNDAY)).isTrue();
 				});
 	}
 }

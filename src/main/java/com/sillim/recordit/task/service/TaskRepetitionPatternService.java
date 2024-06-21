@@ -1,5 +1,7 @@
 package com.sillim.recordit.task.service;
 
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPatternFactory;
@@ -31,5 +33,13 @@ public class TaskRepetitionPatternService {
 						request.weekday(),
 						request.weekdayBit(),
 						taskGroup));
+	}
+
+	public TaskRepetitionPattern searchByTaskGroupId(final Long taskGroupId) {
+
+		return repetitionPatternRepository
+				.findByTaskGroupId(taskGroupId)
+				.orElseThrow(
+						() -> new RecordNotFoundException(ErrorCode.TASK_REPETITION_NOT_FOUND));
 	}
 }

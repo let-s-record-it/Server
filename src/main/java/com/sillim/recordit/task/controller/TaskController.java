@@ -3,6 +3,7 @@ package com.sillim.recordit.task.controller;
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.task.dto.request.TaskAddRequest;
+import com.sillim.recordit.task.dto.response.TaskDetailsResponse;
 import com.sillim.recordit.task.dto.response.TaskResponse;
 import com.sillim.recordit.task.service.TaskCommandService;
 import com.sillim.recordit.task.service.TaskQueryService;
@@ -48,5 +49,15 @@ public class TaskController {
 				taskQueryService.searchAllByDate(calendarId, date, member.getId()).stream()
 						.map(TaskResponse::from)
 						.toList());
+	}
+
+	@GetMapping("/{taskId}")
+	public ResponseEntity<TaskDetailsResponse> getTaskDetails(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		return ResponseEntity.ok(
+				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, member.getId()));
 	}
 }

@@ -93,4 +93,16 @@ public class Task extends BaseTime {
 	public String getTitle() {
 		return title.getTitle();
 	}
+
+	public String getDescription() {
+		return description.getDescription();
+	}
+
+	public String getColorHex() {
+		return colorHex.getColorHex();
+	}
+
+	public boolean isRepeated() {
+		return taskGroup.getIsRepeated();
+	}
 }

@@ -69,7 +69,7 @@ public class MonthlyGoalController {
 
 		return ResponseEntity.ok(
 				MonthlyGoalDetailsResponse.from(
-						monthlyGoalQueryService.search(monthlyGoalId, member.getId())));
+						monthlyGoalQueryService.searchById(monthlyGoalId, member.getId())));
 	}
 
 	@PatchMapping("/months/{monthlyGoalId}")

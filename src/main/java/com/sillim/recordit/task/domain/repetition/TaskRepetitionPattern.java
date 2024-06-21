@@ -23,6 +23,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAmount;
 import java.util.Objects;
@@ -113,6 +114,13 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 		this.taskGroup = taskGroup;
 	}
 
+	public Integer getMonthOfYear() {
+		if (Optional.ofNullable(monthOfYear).isEmpty()) {
+			return null;
+		}
+		return monthOfYear.getMonthOfYear();
+	}
+
 	public Integer getDayOfMonth() {
 		if (Optional.ofNullable(dayOfMonth).isEmpty()) {
 			return null;
@@ -132,6 +140,17 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 			return null;
 		}
 		return weekday.getValue();
+	}
+
+	public Integer getWeekdayBit() {
+		if (Optional.ofNullable(weekdayBit).isEmpty()) {
+			return null;
+		}
+		return weekdayBit.getWeekdayBit();
+	}
+
+	public boolean isValidWeekday(final DayOfWeek dayOfWeek) {
+		return (weekdayBit.getWeekdayBit() & (1 << (dayOfWeek.getValue() - 1))) > 0;
 	}
 
 	protected void validate(
