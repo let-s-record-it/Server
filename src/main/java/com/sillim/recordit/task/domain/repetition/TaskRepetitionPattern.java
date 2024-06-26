@@ -114,39 +114,33 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 		this.taskGroup = taskGroup;
 	}
 
-	public Integer getMonthOfYear() {
-		if (Optional.ofNullable(monthOfYear).isEmpty()) {
-			return null;
+	public Optional<Integer> getMonthOfYear() {
+		if (monthOfYear == null) {
+			return Optional.empty();
 		}
-		return monthOfYear.getMonthOfYear();
+		return Optional.of(monthOfYear.getMonthOfYear());
 	}
 
-	public Integer getDayOfMonth() {
-		if (Optional.ofNullable(dayOfMonth).isEmpty()) {
-			return null;
+	public Optional<Integer> getDayOfMonth() {
+		if (dayOfMonth == null) {
+			return Optional.empty();
 		}
-		return dayOfMonth.getDayOfMonth();
+		return Optional.of(dayOfMonth.getDayOfMonth());
 	}
 
-	public Integer getWeekNumber() {
-		if (Optional.ofNullable(weekNumber).isEmpty()) {
-			return null;
-		}
-		return weekNumber.getValue();
+	public Optional<WeekNumber> getWeekNumber() {
+		return Optional.ofNullable(weekNumber);
 	}
 
-	public Integer getWeekday() {
-		if (Optional.ofNullable(weekday).isEmpty()) {
-			return null;
-		}
-		return weekday.getValue();
+	public Optional<Weekday> getWeekday() {
+		return Optional.ofNullable(weekday);
 	}
 
-	public Integer getWeekdayBit() {
-		if (Optional.ofNullable(weekdayBit).isEmpty()) {
-			return null;
+	public Optional<Integer> getWeekdayBit() {
+		if (weekdayBit == null) {
+			return Optional.empty();
 		}
-		return weekdayBit.getWeekdayBit();
+		return Optional.ofNullable(weekdayBit.getWeekdayBit());
 	}
 
 	public boolean isValidWeekday(final DayOfWeek dayOfWeek) {

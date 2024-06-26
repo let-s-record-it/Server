@@ -13,6 +13,7 @@ import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.repository.TaskGroupRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +35,8 @@ class TaskGroupServiceTest {
 	void addTaskGroupTest() {
 		Long memberId = 1L;
 		TaskGroup expected = new TaskGroup(false, null, null);
-		given(monthlyGoalQueryService.searchByIdOrElseNull(any(), eq(memberId))).willReturn(null);
+		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
+				.willReturn(Optional.empty());
 		given(taskGroupRepository.save(any(TaskGroup.class))).willReturn(expected);
 
 		TaskGroup saved = taskGroupService.addTaskGroup(false, null, null, memberId);
@@ -43,7 +45,6 @@ class TaskGroupServiceTest {
 				.usingRecursiveComparison()
 				.ignoringFields("id", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
-		then(monthlyGoalQueryService).should(times(1)).searchByIdOrElseNull(any(), eq(memberId));
 		then(taskGroupRepository).should(times(1)).save(any(TaskGroup.class));
 	}
 
@@ -56,8 +57,8 @@ class TaskGroupServiceTest {
 				MonthlyGoalFixture.DEFAULT.getWithMember(MemberFixture.DEFAULT.getMember());
 		TaskGroup expected = new TaskGroup(false, monthlyGoal, null);
 
-		given(monthlyGoalQueryService.searchByIdOrElseNull(eq(relatedMonthlyGoalId), eq(memberId)))
-				.willReturn(monthlyGoal);
+		given(monthlyGoalQueryService.searchOptionalById(eq(relatedMonthlyGoalId), eq(memberId)))
+				.willReturn(Optional.of(monthlyGoal));
 		given(taskGroupRepository.save(any(TaskGroup.class))).willReturn(expected);
 
 		TaskGroup saved =
@@ -67,9 +68,6 @@ class TaskGroupServiceTest {
 				.usingRecursiveComparison()
 				.ignoringFields("id", "weeklyGoal", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
-		then(monthlyGoalQueryService)
-				.should(times(1))
-				.searchByIdOrElseNull(eq(relatedMonthlyGoalId), eq(memberId));
 		then(taskGroupRepository).should(times(1)).save(any(TaskGroup.class));
 	}
 }

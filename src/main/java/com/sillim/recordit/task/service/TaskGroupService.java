@@ -25,9 +25,11 @@ public class TaskGroupService {
 			final Long relatedMonthlyGoalId,
 			final Long relatedWeeklyGoalId,
 			final Long memberId) {
-		final MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService.searchByIdOrElseNull(relatedMonthlyGoalId, memberId);
-		final WeeklyGoal weeklyGoal = null;
+		MonthlyGoal monthlyGoal =
+				monthlyGoalQueryService
+						.searchOptionalById(relatedMonthlyGoalId, memberId)
+						.orElse(null);
+		WeeklyGoal weeklyGoal = null;
 		return taskGroupRepository.save(new TaskGroup(isRepeated, monthlyGoal, weeklyGoal));
 	}
 }
