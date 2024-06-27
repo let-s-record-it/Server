@@ -4,6 +4,7 @@ import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public enum ScheduleFixture {
 	DEFAULT(
@@ -17,7 +18,8 @@ public enum ScheduleFixture {
 			true,
 			36.0,
 			127.0,
-			true),
+			true,
+			List.of(LocalDateTime.of(2024, 1, 1, 0, 0))),
 	NOT_SET_LOCATION(
 			"title",
 			"description",
@@ -29,7 +31,8 @@ public enum ScheduleFixture {
 			false,
 			36.0,
 			127.0,
-			true),
+			true,
+			List.of(LocalDateTime.of(2024, 1, 1, 0, 0))),
 	NOT_SET_ALARM(
 			"title",
 			"description",
@@ -41,7 +44,8 @@ public enum ScheduleFixture {
 			true,
 			36.0,
 			127.0,
-			false),
+			false,
+			List.of(LocalDateTime.of(2024, 1, 1, 0, 0))),
 	;
 
 	private final String title;
@@ -55,6 +59,7 @@ public enum ScheduleFixture {
 	private final Double latitude;
 	private final Double longitude;
 	private final Boolean setAlarm;
+	private final List<LocalDateTime> scheduleAlarms;
 
 	ScheduleFixture(
 			String title,
@@ -67,7 +72,8 @@ public enum ScheduleFixture {
 			Boolean setLocation,
 			Double latitude,
 			Double longitude,
-			Boolean setAlarm) {
+			Boolean setAlarm,
+			List<LocalDateTime> scheduleAlarms) {
 		this.title = title;
 		this.description = description;
 		this.isAllDay = isAllDay;
@@ -79,6 +85,7 @@ public enum ScheduleFixture {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.setAlarm = setAlarm;
+		this.scheduleAlarms = scheduleAlarms;
 	}
 
 	public Schedule getSchedule(ScheduleGroup scheduleGroup, Calendar calendar) {
@@ -96,6 +103,7 @@ public enum ScheduleFixture {
 				.setAlarm(setAlarm)
 				.scheduleGroup(scheduleGroup)
 				.calendar(calendar)
+				.scheduleAlarms(scheduleAlarms)
 				.build();
 	}
 
@@ -118,6 +126,7 @@ public enum ScheduleFixture {
 				.setAlarm(setAlarm)
 				.scheduleGroup(scheduleGroup)
 				.calendar(calendar)
+				.scheduleAlarms(scheduleAlarms)
 				.build();
 	}
 

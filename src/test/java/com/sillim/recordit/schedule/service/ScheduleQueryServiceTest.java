@@ -16,9 +16,7 @@ import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.Schedule;
-import com.sillim.recordit.schedule.domain.ScheduleAlarm;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
-import com.sillim.recordit.schedule.domain.vo.AlarmTime;
 import com.sillim.recordit.schedule.dto.response.DayScheduleResponse;
 import com.sillim.recordit.schedule.dto.response.MonthScheduleResponse;
 import com.sillim.recordit.schedule.fixture.RepetitionPatternFixture;
@@ -39,7 +37,6 @@ class ScheduleQueryServiceTest {
 
 	@Mock ScheduleRepository scheduleRepository;
 	@Mock CalendarService calendarService;
-	@Mock ScheduleAlarmService scheduleAlarmService;
 	@Mock RepetitionPatternService repetitionPatternService;
 	@InjectMocks ScheduleQueryService scheduleQueryService;
 
@@ -65,18 +62,11 @@ class ScheduleQueryServiceTest {
 						.setAlarm(true)
 						.scheduleGroup(scheduleGroup)
 						.calendar(calendar)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		RepetitionPattern repetitionPattern =
-				RepetitionPatternFixture.WEEKLY.getRepetitionPattern(scheduleGroup);
 		given(member.getId()).willReturn(memberId);
 		given(scheduleRepository.findByScheduleId(anyLong()))
 				.willReturn(Optional.of(expectedSchedule));
-		given(scheduleAlarmService.searchByScheduleId(anyLong()))
-				.willReturn(
-						List.of(
-								new ScheduleAlarm(
-										AlarmTime.create(LocalDateTime.of(2024, 1, 1, 0, 0)),
-										expectedSchedule)));
 
 		DayScheduleResponse dayScheduleResponse = scheduleQueryService.searchSchedule(1L, memberId);
 
@@ -106,18 +96,13 @@ class ScheduleQueryServiceTest {
 						.setAlarm(true)
 						.scheduleGroup(scheduleGroup)
 						.calendar(calendar)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
 		RepetitionPattern repetitionPattern =
 				RepetitionPatternFixture.WEEKLY.getRepetitionPattern(scheduleGroup);
 		given(member.getId()).willReturn(memberId);
 		given(scheduleRepository.findByScheduleId(anyLong()))
 				.willReturn(Optional.of(expectedSchedule));
-		given(scheduleAlarmService.searchByScheduleId(anyLong()))
-				.willReturn(
-						List.of(
-								new ScheduleAlarm(
-										AlarmTime.create(LocalDateTime.of(2024, 1, 1, 0, 0)),
-										expectedSchedule)));
 		given(repetitionPatternService.searchByScheduleGroupId(any()))
 				.willReturn(repetitionPattern);
 
@@ -149,6 +134,7 @@ class ScheduleQueryServiceTest {
 						.setAlarm(true)
 						.scheduleGroup(scheduleGroup)
 						.calendar(calendar)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
 		given(member.getId()).willReturn(memberId);
 		given(scheduleRepository.findByScheduleId(anyLong()))
@@ -180,6 +166,7 @@ class ScheduleQueryServiceTest {
 						.setAlarm(true)
 						.scheduleGroup(new ScheduleGroup(false))
 						.calendar(calendar)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
 		given(member.getId()).willReturn(memberId);
 		given(calendarService.searchByCalendarId(anyLong())).willReturn(calendar);
@@ -214,17 +201,12 @@ class ScheduleQueryServiceTest {
 						.setAlarm(true)
 						.scheduleGroup(new ScheduleGroup(false))
 						.calendar(calendar)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
 		given(member.getId()).willReturn(memberId);
 		given(calendarService.searchByCalendarId(anyLong())).willReturn(calendar);
 		given(scheduleRepository.findScheduleInDay(anyLong(), eq(LocalDate.of(2024, 1, 15))))
 				.willReturn(List.of(expectedSchedule));
-		given(scheduleAlarmService.searchByScheduleId(any()))
-				.willReturn(
-						List.of(
-								new ScheduleAlarm(
-										AlarmTime.create(LocalDateTime.of(2024, 1, 1, 0, 0)),
-										expectedSchedule)));
 
 		List<DayScheduleResponse> dayScheduleResponses =
 				scheduleQueryService.searchSchedulesInDay(1L, LocalDate.of(2024, 1, 15), memberId);

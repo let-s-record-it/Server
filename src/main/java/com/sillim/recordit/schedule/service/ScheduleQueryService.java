@@ -35,15 +35,13 @@ public class ScheduleQueryService {
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		validateAuthenticatedUser(memberId, schedule.getCalendar().getMember().getId());
 		List<LocalDateTime> alarmTimes =
-				scheduleAlarmService.searchByScheduleId(scheduleId).stream()
-						.map(ScheduleAlarm::getAlarmTime)
-						.toList();
+				schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList();
 
 		if (schedule.getScheduleGroup().getIsRepeated()) {
 			return DayScheduleResponse.of(
 					schedule,
 					true,
-					alarmTimes,
+					schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList(),
 					RepetitionPatternResponse.from(
 							repetitionPatternService.searchByScheduleGroupId(
 									schedule.getScheduleGroup().getId())));
@@ -71,9 +69,7 @@ public class ScheduleQueryService {
 								DayScheduleResponse.of(
 										schedule,
 										schedule.getScheduleGroup().getIsRepeated(),
-										scheduleAlarmService
-												.searchByScheduleId(schedule.getId())
-												.stream()
+										schedule.getScheduleAlarms().stream()
 												.map(ScheduleAlarm::getAlarmTime)
 												.toList(),
 										schedule.getScheduleGroup()

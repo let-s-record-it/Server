@@ -19,7 +19,6 @@ public class ScheduleCommandService {
 	private final CalendarService calendarService;
 	private final ScheduleGroupService scheduleGroupService;
 	private final RepetitionPatternService repetitionPatternService;
-	private final ScheduleAlarmService scheduleAlarmService;
 
 	public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId) {
 		ScheduleGroup scheduleGroup = scheduleGroupService.addScheduleGroup(request.isRepeated());
@@ -30,7 +29,6 @@ public class ScheduleCommandService {
 
 		Schedule schedule =
 				request.toSchedule(calendarService.searchByCalendarId(calendarId), scheduleGroup);
-		scheduleAlarmService.addScheduleAlarms(request.alarmTimes(), schedule);
 		return List.of(scheduleRepository.save(schedule));
 	}
 
@@ -46,10 +44,6 @@ public class ScheduleCommandService {
 												temporalAmount,
 												calendarService.searchByCalendarId(calendarId),
 												scheduleGroup)))
-				.peek(
-						schedule ->
-								scheduleAlarmService.addScheduleAlarms(
-										request.alarmTimes(), schedule))
 				.toList();
 	}
 }

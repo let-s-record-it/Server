@@ -1,11 +1,13 @@
 package com.sillim.recordit.schedule.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.schedule.domain.vo.AlarmTime;
 import com.sillim.recordit.schedule.domain.vo.Location;
 import com.sillim.recordit.schedule.domain.vo.ScheduleColorHex;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDescription;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
 import com.sillim.recordit.schedule.domain.vo.ScheduleTitle;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -62,7 +64,7 @@ public class Schedule {
 	@JoinColumn(name = "schedule_group_id")
 	private ScheduleGroup scheduleGroup;
 
-	@OneToMany(mappedBy = "schedule")
+	@OneToMany(mappedBy = "schedule", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	private List<ScheduleAlarm> scheduleAlarms = new ArrayList<>();
 
 	public Schedule(
@@ -75,7 +77,8 @@ public class Schedule {
 			Location location,
 			Boolean setAlarm,
 			Calendar calendar,
-			ScheduleGroup scheduleGroup) {
+			ScheduleGroup scheduleGroup,
+			List<AlarmTime> scheduleAlarms) {
 		this.title = title;
 		this.description = description;
 		this.scheduleDuration = scheduleDuration;
@@ -86,6 +89,10 @@ public class Schedule {
 		this.setAlarm = setAlarm;
 		this.calendar = calendar;
 		this.scheduleGroup = scheduleGroup;
+		this.scheduleAlarms =
+				scheduleAlarms.stream()
+						.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
+						.toList();
 	}
 
 	@Builder
@@ -102,7 +109,8 @@ public class Schedule {
 			Double longitude,
 			Boolean setAlarm,
 			Calendar calendar,
-			ScheduleGroup scheduleGroup) {
+			ScheduleGroup scheduleGroup,
+			List<LocalDateTime> scheduleAlarms) {
 		this(
 				new ScheduleTitle(title),
 				new ScheduleDescription(description),
@@ -115,7 +123,8 @@ public class Schedule {
 				setLocation ? new Location(latitude, longitude) : null,
 				setAlarm,
 				calendar,
-				scheduleGroup);
+				scheduleGroup,
+				scheduleAlarms.stream().map(AlarmTime::create).toList());
 	}
 
 	public String getTitle() {

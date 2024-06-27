@@ -125,6 +125,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						.setAlarm(true)
 						.scheduleGroup(scheduleGroup)
 						.calendar(calendar)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
 		DayScheduleResponse dayScheduleResponse =
 				DayScheduleResponse.of(
@@ -169,6 +170,7 @@ class ScheduleControllerTest extends RestDocsTest {
 								.setAlarm(true)
 								.scheduleGroup(scheduleGroup)
 								.calendar(calendar)
+								.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 								.build(),
 						true,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),

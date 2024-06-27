@@ -37,7 +37,6 @@ class ScheduleCommandServiceTest {
 	@Mock CalendarService calendarService;
 	@Mock ScheduleGroupService scheduleGroupService;
 	@Mock RepetitionPatternService repetitionPatternService;
-	@Mock ScheduleAlarmService scheduleAlarmService;
 	@InjectMocks ScheduleCommandService scheduleCommandService;
 
 	Member member;
@@ -92,6 +91,7 @@ class ScheduleCommandServiceTest {
 						.setAlarm(true)
 						.calendar(calendar)
 						.scheduleGroup(scheduleGroup)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 
@@ -165,6 +165,7 @@ class ScheduleCommandServiceTest {
 						.setAlarm(true)
 						.calendar(calendar)
 						.scheduleGroup(scheduleGroup)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
 		given(scheduleGroupService.addScheduleGroup(true)).willReturn(scheduleGroup);
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);

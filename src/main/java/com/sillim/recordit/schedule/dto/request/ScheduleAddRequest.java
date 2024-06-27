@@ -45,6 +45,7 @@ public record ScheduleAddRequest(
 				.setAlarm(setAlarm)
 				.calendar(calendar)
 				.scheduleGroup(scheduleGroup)
+				.scheduleAlarms(alarmTimes)
 				.build();
 	}
 
@@ -63,6 +64,7 @@ public record ScheduleAddRequest(
 				.setAlarm(setAlarm)
 				.calendar(calendar)
 				.scheduleGroup(scheduleGroup)
+				.scheduleAlarms(alarmTimes)
 				.build();
 	}
 }
