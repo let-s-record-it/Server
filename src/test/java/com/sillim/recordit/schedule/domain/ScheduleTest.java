@@ -46,7 +46,6 @@ class ScheduleTest {
 					assertThat(schedule.getLatitude()).isEqualTo(fixture.getLatitude());
 					assertThat(schedule.getLongitude()).isEqualTo(fixture.getLongitude());
 					assertThat(schedule.getSetAlarm()).isEqualTo(fixture.getSetAlarm());
-					assertThat(schedule.getAlarmTime()).isEqualTo(fixture.getAlarmTime());
 				});
 	}
 
@@ -56,13 +55,5 @@ class ScheduleTest {
 		Schedule schedule = ScheduleFixture.NOT_SET_LOCATION.getSchedule(scheduleGroup, calendar);
 
 		assertThat(schedule.getLocation()).isNull();
-	}
-
-	@Test
-	@DisplayName("알람 설정 여부가 false이면 알람 값에 null이 저장된다.")
-	void alarmTimeIsNullWhenSetAlarmIsFalse() {
-		Schedule schedule = ScheduleFixture.NOT_SET_ALARM.getSchedule(scheduleGroup, calendar);
-
-		assertThat(schedule.getAlarmTime()).isNull();
 	}
 }

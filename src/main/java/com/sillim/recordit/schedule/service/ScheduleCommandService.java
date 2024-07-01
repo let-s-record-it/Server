@@ -26,10 +26,10 @@ public class ScheduleCommandService {
 		if (request.isRepeated()) {
 			return addRepeatingSchedule(request, scheduleGroup, calendarId);
 		}
-		return List.of(
-				scheduleRepository.save(
-						request.toSchedule(
-								calendarService.searchByCalendarId(calendarId), scheduleGroup)));
+
+		Schedule schedule =
+				request.toSchedule(calendarService.searchByCalendarId(calendarId), scheduleGroup);
+		return List.of(scheduleRepository.save(schedule));
 	}
 
 	private List<Schedule> addRepeatingSchedule(

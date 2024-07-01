@@ -4,6 +4,7 @@ import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public enum ScheduleFixture {
 	DEFAULT(
@@ -18,7 +19,7 @@ public enum ScheduleFixture {
 			36.0,
 			127.0,
 			true,
-			LocalDateTime.of(2024, 1, 1, 0, 0)),
+			List.of(LocalDateTime.of(2024, 1, 1, 0, 0))),
 	NOT_SET_LOCATION(
 			"title",
 			"description",
@@ -31,7 +32,7 @@ public enum ScheduleFixture {
 			36.0,
 			127.0,
 			true,
-			LocalDateTime.of(2024, 1, 1, 0, 0)),
+			List.of(LocalDateTime.of(2024, 1, 1, 0, 0))),
 	NOT_SET_ALARM(
 			"title",
 			"description",
@@ -44,7 +45,7 @@ public enum ScheduleFixture {
 			36.0,
 			127.0,
 			false,
-			LocalDateTime.of(2024, 1, 1, 0, 0)),
+			List.of(LocalDateTime.of(2024, 1, 1, 0, 0))),
 	;
 
 	private final String title;
@@ -58,7 +59,7 @@ public enum ScheduleFixture {
 	private final Double latitude;
 	private final Double longitude;
 	private final Boolean setAlarm;
-	private final LocalDateTime alarmTime;
+	private final List<LocalDateTime> scheduleAlarms;
 
 	ScheduleFixture(
 			String title,
@@ -72,7 +73,7 @@ public enum ScheduleFixture {
 			Double latitude,
 			Double longitude,
 			Boolean setAlarm,
-			LocalDateTime alarmTime) {
+			List<LocalDateTime> scheduleAlarms) {
 		this.title = title;
 		this.description = description;
 		this.isAllDay = isAllDay;
@@ -84,7 +85,7 @@ public enum ScheduleFixture {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.setAlarm = setAlarm;
-		this.alarmTime = alarmTime;
+		this.scheduleAlarms = scheduleAlarms;
 	}
 
 	public Schedule getSchedule(ScheduleGroup scheduleGroup, Calendar calendar) {
@@ -100,9 +101,9 @@ public enum ScheduleFixture {
 				.latitude(latitude)
 				.longitude(longitude)
 				.setAlarm(setAlarm)
-				.alarmTime(alarmTime)
 				.scheduleGroup(scheduleGroup)
 				.calendar(calendar)
+				.scheduleAlarms(scheduleAlarms)
 				.build();
 	}
 
@@ -123,9 +124,9 @@ public enum ScheduleFixture {
 				.latitude(latitude)
 				.longitude(longitude)
 				.setAlarm(setAlarm)
-				.alarmTime(alarmTime)
 				.scheduleGroup(scheduleGroup)
 				.calendar(calendar)
+				.scheduleAlarms(scheduleAlarms)
 				.build();
 	}
 
@@ -171,9 +172,5 @@ public enum ScheduleFixture {
 
 	public Boolean getSetAlarm() {
 		return setAlarm;
-	}
-
-	public LocalDateTime getAlarmTime() {
-		return alarmTime;
 	}
 }
