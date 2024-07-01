@@ -9,6 +9,7 @@ import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAmount;
+import java.util.List;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 
@@ -26,7 +27,7 @@ public record ScheduleAddRequest(
 		@ValidLatitude Double latitude,
 		@ValidLongitude Double longitude,
 		@NotNull Boolean setAlarm,
-		LocalDateTime alarmTime) {
+		List<LocalDateTime> alarmTimes) {
 
 	public Schedule toSchedule(
 			TemporalAmount plusAmount, Calendar calendar, ScheduleGroup scheduleGroup) {
@@ -42,9 +43,9 @@ public record ScheduleAddRequest(
 				.latitude(latitude)
 				.longitude(longitude)
 				.setAlarm(setAlarm)
-				.alarmTime(alarmTime)
 				.calendar(calendar)
 				.scheduleGroup(scheduleGroup)
+				.scheduleAlarms(alarmTimes)
 				.build();
 	}
 
@@ -61,9 +62,9 @@ public record ScheduleAddRequest(
 				.latitude(latitude)
 				.longitude(longitude)
 				.setAlarm(setAlarm)
-				.alarmTime(alarmTime)
 				.calendar(calendar)
 				.scheduleGroup(scheduleGroup)
+				.scheduleAlarms(alarmTimes)
 				.build();
 	}
 }

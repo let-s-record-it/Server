@@ -7,6 +7,7 @@ import com.sillim.recordit.schedule.domain.vo.ScheduleColorHex;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDescription;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
 import com.sillim.recordit.schedule.domain.vo.ScheduleTitle;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -16,7 +17,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -52,8 +56,6 @@ public class Schedule {
 	@Column(nullable = false)
 	private Boolean setAlarm;
 
-	@Embedded private AlarmTime alarmTime;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "calendar_id")
 	private Calendar calendar;
@@ -61,6 +63,9 @@ public class Schedule {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_group_id")
 	private ScheduleGroup scheduleGroup;
+
+	@OneToMany(mappedBy = "schedule", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	private List<ScheduleAlarm> scheduleAlarms = new ArrayList<>();
 
 	public Schedule(
 			ScheduleTitle title,
@@ -71,9 +76,9 @@ public class Schedule {
 			Boolean setLocation,
 			Location location,
 			Boolean setAlarm,
-			AlarmTime alarmTime,
 			Calendar calendar,
-			ScheduleGroup scheduleGroup) {
+			ScheduleGroup scheduleGroup,
+			List<AlarmTime> scheduleAlarms) {
 		this.title = title;
 		this.description = description;
 		this.scheduleDuration = scheduleDuration;
@@ -82,9 +87,12 @@ public class Schedule {
 		this.setLocation = setLocation;
 		this.location = location;
 		this.setAlarm = setAlarm;
-		this.alarmTime = alarmTime;
 		this.calendar = calendar;
 		this.scheduleGroup = scheduleGroup;
+		this.scheduleAlarms =
+				scheduleAlarms.stream()
+						.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
+						.toList();
 	}
 
 	@Builder
@@ -100,9 +108,9 @@ public class Schedule {
 			Double latitude,
 			Double longitude,
 			Boolean setAlarm,
-			LocalDateTime alarmTime,
 			Calendar calendar,
-			ScheduleGroup scheduleGroup) {
+			ScheduleGroup scheduleGroup,
+			List<LocalDateTime> scheduleAlarms) {
 		this(
 				new ScheduleTitle(title),
 				new ScheduleDescription(description),
@@ -114,9 +122,9 @@ public class Schedule {
 				setLocation,
 				setLocation ? new Location(latitude, longitude) : null,
 				setAlarm,
-				setAlarm ? AlarmTime.create(alarmTime) : null,
 				calendar,
-				scheduleGroup);
+				scheduleGroup,
+				scheduleAlarms.stream().map(AlarmTime::create).toList());
 	}
 
 	public String getTitle() {
@@ -149,9 +157,5 @@ public class Schedule {
 
 	public Double getLongitude() {
 		return Optional.ofNullable(location).map(Location::getLongitude).orElse(null);
-	}
-
-	public LocalDateTime getAlarmTime() {
-		return Optional.ofNullable(this.alarmTime).map(AlarmTime::getAlarmTime).orElse(null);
 	}
 }

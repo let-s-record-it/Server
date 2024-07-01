@@ -21,6 +21,9 @@ import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
+import com.sillim.recordit.schedule.dto.response.DayScheduleResponse;
+import com.sillim.recordit.schedule.dto.response.MonthScheduleResponse;
+import com.sillim.recordit.schedule.dto.response.RepetitionPatternResponse;
 import com.sillim.recordit.schedule.fixture.RepetitionPatternFixture;
 import com.sillim.recordit.schedule.fixture.ScheduleFixture;
 import com.sillim.recordit.schedule.service.RepetitionPatternService;
@@ -80,7 +83,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						36.0,
 						127.0,
 						true,
-						LocalDateTime.of(2024, 1, 1, 0, 0));
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(
@@ -120,11 +123,15 @@ class ScheduleControllerTest extends RestDocsTest {
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
-						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.scheduleGroup(scheduleGroup)
 						.calendar(calendar)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(scheduleQueryService.searchSchedule(anyLong())).willReturn(schedule);
+		DayScheduleResponse dayScheduleResponse =
+				DayScheduleResponse.of(
+						schedule, false, List.of(LocalDateTime.of(2024, 1, 1, 0, 0)), null);
+		given(scheduleQueryService.searchSchedule(anyLong(), any()))
+				.willReturn(dayScheduleResponse);
 		long calendarId = 1L;
 		long scheduleId = 1L;
 
@@ -145,28 +152,33 @@ class ScheduleControllerTest extends RestDocsTest {
 	@DisplayName("반복이 있는 상세 일정을 조회한다.")
 	void repeatedScheduleDetails() throws Exception {
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
-		Schedule schedule =
-				Schedule.builder()
-						.title("title")
-						.description("description")
-						.isAllDay(false)
-						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
-						.colorHex("aaffbb")
-						.setLocation(true)
-						.place("서울역")
-						.latitude(36.0)
-						.longitude(127.0)
-						.setAlarm(true)
-						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.scheduleGroup(scheduleGroup)
-						.calendar(calendar)
-						.build();
 		RepetitionPattern repetitionPattern =
 				RepetitionPatternFixture.WEEKLY.getRepetitionPattern(scheduleGroup);
+		DayScheduleResponse dayScheduleResponse =
+				DayScheduleResponse.of(
+						Schedule.builder()
+								.title("title")
+								.description("description")
+								.isAllDay(false)
+								.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
+								.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+								.colorHex("aaffbb")
+								.setLocation(true)
+								.place("서울역")
+								.latitude(36.0)
+								.longitude(127.0)
+								.setAlarm(true)
+								.scheduleGroup(scheduleGroup)
+								.calendar(calendar)
+								.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
+								.build(),
+						true,
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
+						RepetitionPatternResponse.from(repetitionPattern));
 		given(repetitionPatternService.searchByScheduleGroupId(any()))
 				.willReturn(repetitionPattern);
-		given(scheduleQueryService.searchSchedule(anyLong())).willReturn(schedule);
+		given(scheduleQueryService.searchSchedule(anyLong(), any()))
+				.willReturn(dayScheduleResponse);
 		long calendarId = 1L;
 		long scheduleId = 1L;
 
@@ -193,8 +205,9 @@ class ScheduleControllerTest extends RestDocsTest {
 		long calendarId = 1L;
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar);
-		given(scheduleQueryService.searchSchedulesInMonth(calendarId, 2024, 1))
-				.willReturn(List.of(schedule));
+		MonthScheduleResponse monthScheduleResponse = MonthScheduleResponse.from(schedule);
+		given(scheduleQueryService.searchSchedulesInMonth(calendarId, 2024, 1, 1L))
+				.willReturn(List.of(monthScheduleResponse));
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -218,21 +231,23 @@ class ScheduleControllerTest extends RestDocsTest {
 	void scheduleListInDay() throws Exception {
 		long calendarId = 1L;
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-		RepetitionPattern repetitionPattern =
-				RepetitionPattern.createDaily(
-						1,
-						LocalDateTime.of(2024, 1, 1, 0, 0),
-						LocalDateTime.of(2024, 2, 1, 0, 0),
-						scheduleGroup);
-		scheduleGroup.setRepetitionPattern(repetitionPattern);
-		Schedule schedule =
-				ScheduleFixture.DEFAULT.getSchedule(
-						scheduleGroup,
-						calendar,
-						LocalDateTime.of(2024, 1, 1, 0, 0),
-						LocalDateTime.of(2024, 2, 1, 0, 0));
-		given(scheduleQueryService.searchSchedulesInDay(calendarId, LocalDate.of(2024, 1, 15)))
-				.willReturn(List.of(schedule));
+		DayScheduleResponse dayScheduleResponse =
+				DayScheduleResponse.of(
+						ScheduleFixture.DEFAULT.getSchedule(
+								scheduleGroup,
+								calendar,
+								LocalDateTime.of(2024, 1, 1, 0, 0),
+								LocalDateTime.of(2024, 2, 1, 0, 0)),
+						true,
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
+						RepetitionPatternResponse.from(
+								RepetitionPattern.createDaily(
+										1,
+										LocalDateTime.of(2024, 1, 1, 0, 0),
+										LocalDateTime.of(2024, 2, 1, 0, 0),
+										scheduleGroup)));
+		given(scheduleQueryService.searchSchedulesInDay(calendarId, LocalDate.of(2024, 1, 15), 1L))
+				.willReturn(List.of(dayScheduleResponse));
 
 		ResultActions perform =
 				mockMvc.perform(

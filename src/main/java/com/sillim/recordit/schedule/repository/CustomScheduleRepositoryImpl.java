@@ -7,6 +7,7 @@ import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.schedule.domain.Schedule;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -15,6 +16,18 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 
 	public CustomScheduleRepositoryImpl() {
 		super(Schedule.class);
+	}
+
+	@Override
+	public Optional<Schedule> findByScheduleId(Long scheduleId) {
+		return Optional.ofNullable(
+				selectFrom(schedule)
+						.leftJoin(schedule.calendar)
+						.fetchJoin()
+						.leftJoin(schedule.calendar.member)
+						.fetchJoin()
+						.where(schedule.id.eq(scheduleId))
+						.fetchOne());
 	}
 
 	@Override
@@ -30,15 +43,15 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 	@Override
 	public List<Schedule> findScheduleInDay(Long calendarId, LocalDate date) {
 		return selectFrom(schedule)
-				.where(schedule.calendar.id.eq(calendarId))
-				.where(schedule.scheduleDuration.startDatetime.loe(date.atStartOfDay()))
-				.where(schedule.scheduleDuration.endDatetime.goe(date.atStartOfDay()))
 				.leftJoin(schedule.calendar)
 				.fetchJoin()
 				.leftJoin(schedule.scheduleGroup)
 				.fetchJoin()
 				.leftJoin(schedule.scheduleGroup.repetitionPattern)
 				.fetchJoin()
+				.where(schedule.calendar.id.eq(calendarId))
+				.where(schedule.scheduleDuration.startDatetime.loe(date.atStartOfDay()))
+				.where(schedule.scheduleDuration.endDatetime.goe(date.atStartOfDay()))
 				.fetch();
 	}
 

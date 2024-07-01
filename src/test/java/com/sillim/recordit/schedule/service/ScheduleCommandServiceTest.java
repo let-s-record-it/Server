@@ -74,7 +74,7 @@ class ScheduleCommandServiceTest {
 						36.0,
 						127.0,
 						true,
-						LocalDateTime.of(2024, 1, 1, 0, 0));
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule =
 				Schedule.builder()
@@ -89,9 +89,9 @@ class ScheduleCommandServiceTest {
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
-						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.calendar(calendar)
 						.scheduleGroup(scheduleGroup)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 
@@ -145,7 +145,7 @@ class ScheduleCommandServiceTest {
 						36.0,
 						127.0,
 						true,
-						LocalDateTime.of(2024, 1, 1, 0, 0));
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
 		RepetitionPattern repetitionPattern =
 				RepetitionPattern.createDaily(
@@ -163,9 +163,9 @@ class ScheduleCommandServiceTest {
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
-						.alarmTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.calendar(calendar)
 						.scheduleGroup(scheduleGroup)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
 		given(scheduleGroupService.addScheduleGroup(true)).willReturn(scheduleGroup);
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);

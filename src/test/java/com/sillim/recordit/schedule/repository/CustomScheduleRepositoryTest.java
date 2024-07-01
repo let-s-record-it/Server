@@ -9,10 +9,12 @@ import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
+import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
 import com.sillim.recordit.schedule.fixture.ScheduleFixture;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,33 @@ class CustomScheduleRepositoryTest {
 	void setEntities() {
 		member = em.persist(MemberFixture.DEFAULT.getMember());
 		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member));
+	}
+
+	@Test
+	@DisplayName("schedule 저장 시 scheduleAlarm은 연관관계로 인해 같이 persist 된다.")
+	void saveSchedule() {
+		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
+		ScheduleAddRequest scheduleAddRequest =
+				new ScheduleAddRequest(
+						"title",
+						"description",
+						false,
+						LocalDateTime.of(2024, 1, 1, 0, 0),
+						LocalDateTime.of(2024, 2, 1, 0, 0),
+						false,
+						null,
+						"aaffbb",
+						"서울역",
+						true,
+						36.0,
+						127.0,
+						true,
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
+
+		Schedule schedule =
+				scheduleRepository.save(scheduleAddRequest.toSchedule(calendar, scheduleGroup));
+
+		assertThat(schedule.getScheduleAlarms()).hasSize(1);
 	}
 
 	@Test
@@ -155,5 +184,38 @@ class CustomScheduleRepositoryTest {
 		assertThat(scheduleInDay.get(0).getScheduleGroup()).isNotNull();
 		assertThat(scheduleInDay.get(0).getScheduleGroup().getRepetitionPattern()).isNotNull();
 		assertThat(scheduleInDay.get(0).getCalendar()).isNotNull();
+	}
+
+	@Test
+	@DisplayName("schedule에서 scheduleAlarm 조회 시 lazy loading되어 조회된다.")
+	void findScheduleWithFetchLazyScheduleAlarms() {
+		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
+		ScheduleAddRequest scheduleAddRequest =
+				new ScheduleAddRequest(
+						"title",
+						"description",
+						false,
+						LocalDateTime.of(2024, 1, 1, 0, 0),
+						LocalDateTime.of(2024, 2, 1, 0, 0),
+						false,
+						null,
+						"aaffbb",
+						"서울역",
+						true,
+						36.0,
+						127.0,
+						true,
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
+		Schedule savedSchedule =
+				scheduleRepository.save(scheduleAddRequest.toSchedule(calendar, scheduleGroup));
+
+		em.clear();
+		Optional<Schedule> foundSchedule =
+				scheduleRepository.findByScheduleId(savedSchedule.getId());
+
+		assertThat(foundSchedule).isNotEmpty();
+		assertThat(foundSchedule.get().getScheduleAlarms()).hasSize(1);
+		assertThat(foundSchedule.get().getScheduleAlarms().get(0).getAlarmTime())
+				.isEqualTo(LocalDateTime.of(2024, 1, 1, 0, 0));
 	}
 }
