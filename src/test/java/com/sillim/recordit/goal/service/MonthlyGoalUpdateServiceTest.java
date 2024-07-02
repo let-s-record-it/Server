@@ -70,12 +70,12 @@ public class MonthlyGoalUpdateServiceTest {
 						LocalDate.of(2024, 5, 31),
 						"ff123456");
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(monthlyGoalQueryService.search(eq(monthlyGoalId), eq(memberId)))
+		given(monthlyGoalQueryService.searchById(eq(monthlyGoalId), eq(memberId)))
 				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.modify(request, monthlyGoalId, memberId);
 
-		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
+		then(monthlyGoalQueryService).should(times(1)).searchById(eq(monthlyGoalId), eq(memberId));
 	}
 
 	@Test
@@ -85,12 +85,12 @@ public class MonthlyGoalUpdateServiceTest {
 		Long monthlyGoalId = 2L;
 		Boolean status = true;
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(monthlyGoalQueryService.search(eq(monthlyGoalId), eq(memberId)))
+		given(monthlyGoalQueryService.searchById(eq(monthlyGoalId), eq(memberId)))
 				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
 
-		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
+		then(monthlyGoalQueryService).should(times(1)).searchById(eq(monthlyGoalId), eq(memberId));
 		assertThat(monthlyGoal.isAchieved()).isTrue();
 	}
 
@@ -100,12 +100,12 @@ public class MonthlyGoalUpdateServiceTest {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(monthlyGoalQueryService.search(eq(monthlyGoalId), eq(memberId)))
+		given(monthlyGoalQueryService.searchById(eq(monthlyGoalId), eq(memberId)))
 				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.remove(monthlyGoalId, memberId);
 
-		then(monthlyGoalQueryService).should(times(1)).search(eq(monthlyGoalId), eq(memberId));
+		then(monthlyGoalQueryService).should(times(1)).searchById(eq(monthlyGoalId), eq(memberId));
 		then(monthlyGoalRepository).should(times(1)).delete(eq(monthlyGoal));
 	}
 }

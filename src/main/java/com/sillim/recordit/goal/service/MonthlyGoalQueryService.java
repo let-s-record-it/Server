@@ -6,6 +6,7 @@ import com.sillim.recordit.global.exception.goal.InvalidMonthlyGoalException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,7 @@ public class MonthlyGoalQueryService {
 
 	private final MonthlyGoalRepository monthlyGoalRepository;
 
-	public MonthlyGoal search(final Long monthlyGoalId, final Long memberId) {
+	public MonthlyGoal searchById(final Long monthlyGoalId, final Long memberId) {
 
 		final MonthlyGoal monthlyGoal =
 				monthlyGoalRepository
@@ -36,5 +37,14 @@ public class MonthlyGoalQueryService {
 			final Integer year, final Integer month, final Long memberId) {
 
 		return monthlyGoalRepository.findMonthlyGoalInMonth(year, month, memberId);
+	}
+
+	public MonthlyGoal searchByIdOrElseNull(final Long monthlyGoalId, final Long memberId) {
+
+		final MonthlyGoal monthlyGoal = monthlyGoalRepository.findById(monthlyGoalId).orElse(null);
+		if (Objects.nonNull(monthlyGoal) && !monthlyGoal.isOwnedBy(memberId)) {
+			throw new InvalidMonthlyGoalException(ErrorCode.MONTHLY_GOAL_ACCESS_DENIED);
+		}
+		return monthlyGoal;
 	}
 }
