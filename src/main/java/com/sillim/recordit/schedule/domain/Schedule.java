@@ -168,4 +168,8 @@ public class Schedule {
 	public void delete() {
 		this.deleted = true;
 	}
+
+	public boolean isOwnedBy(Long memberId) {
+		return this.calendar.equalsMemberId(memberId);
+	}
 }

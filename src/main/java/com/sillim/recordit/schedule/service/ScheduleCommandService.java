@@ -41,7 +41,7 @@ public class ScheduleCommandService {
 						.findByScheduleId(scheduleId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
-		validateAuthenticatedUser(memberId, schedule.getCalendar().getMember().getId());
+		validateAuthenticatedUser(schedule, memberId);
 
 		schedule.delete();
 	}
@@ -52,7 +52,7 @@ public class ScheduleCommandService {
 						.findByScheduleId(scheduleId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
-		validateAuthenticatedUser(memberId, schedule.getCalendar().getMember().getId());
+		validateAuthenticatedUser(schedule, memberId);
 
 		scheduleRepository
 				.findSchedulesInGroup(schedule.getScheduleGroup().getId())
@@ -65,7 +65,9 @@ public class ScheduleCommandService {
 						.findByScheduleId(scheduleId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
-		validateAuthenticatedUser(memberId, schedule.getCalendar().getMember().getId());
+		if (!schedule.isOwnedBy(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
 
 		scheduleRepository
 				.findSchedulesInGroupAfter(
@@ -88,8 +90,8 @@ public class ScheduleCommandService {
 				.toList();
 	}
 
-	private void validateAuthenticatedUser(Long principalId, Long memberId) {
-		if (!principalId.equals(memberId)) {
+	private void validateAuthenticatedUser(Schedule schedule, Long memberId) {
+		if (!schedule.isOwnedBy(memberId)) {
 			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
 		}
 	}
