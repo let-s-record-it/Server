@@ -2,19 +2,42 @@ package com.sillim.recordit.task.controller;
 
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentRequest;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.goal.domain.MonthlyGoal;
+import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
+import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
+import com.sillim.recordit.task.domain.Task;
+import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
-import com.sillim.recordit.task.dto.TaskAddRequest;
-import com.sillim.recordit.task.dto.TaskRepetitionAddRequest;
+import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
+import com.sillim.recordit.task.dto.request.TaskAddRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionAddRequest;
+import com.sillim.recordit.task.dto.response.TaskDetailsResponse;
+import com.sillim.recordit.task.fixture.TaskFixture;
+import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
 import com.sillim.recordit.task.service.TaskCommandService;
+import com.sillim.recordit.task.service.TaskQueryService;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.LongStream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,11 +49,22 @@ import org.springframework.test.web.servlet.ResultActions;
 public class TaskControllerTest extends RestDocsTest {
 
 	@MockBean TaskCommandService taskCommandService;
+	@MockBean TaskQueryService taskQueryService;
+
+	private Member member;
+	private Calendar calendar;
+
+	@BeforeEach
+	void init() {
+		member = MemberFixture.DEFAULT.getMember();
+		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+	}
 
 	@Test
 	@DisplayName("할 일을 생성한다.")
 	void addNonRepeatingTaskTest() throws Exception {
 
+		TaskGroup taskGroup = new TaskGroup(false, null, null);
 		TaskRepetitionAddRequest repetitionRequest =
 				new TaskRepetitionAddRequest(
 						TaskRepetitionType.DAILY,
@@ -69,5 +103,156 @@ public class TaskControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								pathParameters(
 										parameterWithName("calendarId").description("캘린더 ID"))));
+	}
+
+	@Test
+	@DisplayName("해당 날짜의 할 일 목록을 조회한다.")
+	void getTaskListTest() throws Exception {
+
+		Long calendarId = 1L;
+		TaskGroup taskGroup = new TaskGroup(false, null, null);
+		LocalDate date = LocalDate.of(2024, 6, 12);
+		List<Task> tasks =
+				LongStream.rangeClosed(1, 2)
+						.mapToObj(
+								id -> {
+									Task task =
+											spy(
+													TaskFixture.DEFAULT.getWithDate(
+															date, calendar, taskGroup));
+									given(task.getId()).willReturn(id);
+									return task;
+								})
+						.toList();
+
+		given(taskQueryService.searchAllByDate(eq(calendarId), eq(date), any())).willReturn(tasks);
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/calendars/{calendarId}/tasks", calendarId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.queryParam("date", date.toString()));
+
+		perform.andExpect(status().isOk())
+				.andExpect(jsonPath("$.size()").value(2))
+				.andExpect(jsonPath("$[0].id").value(tasks.get(0).getId()))
+				.andExpect(jsonPath("$[0].title").value(tasks.get(0).getTitle()))
+				.andExpect(jsonPath("$[0].achieved").value(tasks.get(0).isAchieved()))
+				.andExpect(jsonPath("$[1].id").value(tasks.get(1).getId()))
+				.andExpect(jsonPath("$[1].title").value(tasks.get(1).getTitle()))
+				.andExpect(jsonPath("$[1].achieved").value(tasks.get(1).isAchieved()));
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"get-task-list",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								pathParameters(
+										parameterWithName("calendarId").description("캘린더 ID")),
+								queryParameters(parameterWithName("date").description("조회할 날짜"))));
+	}
+
+	@Test
+	@DisplayName("해당 id의 할 일을 상세조회한다. (반복 없음)")
+	void getTaskDetailsWithNoRepeat() throws Exception {
+		Long calendarId = 1L;
+		calendar = spy(calendar);
+		given(calendar.getId()).willReturn(calendarId);
+		TaskGroup taskGroup = new TaskGroup(false, null, null);
+		Long taskId = 2L;
+		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
+		given(task.getId()).willReturn(taskId);
+
+		TaskDetailsResponse response = TaskDetailsResponse.from(task);
+		given(taskQueryService.searchByIdAndCalendarId(eq(taskId), eq(calendarId), any()))
+				.willReturn(response);
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/calendars/{calendarId}/tasks/{taskId}", calendarId, taskId)
+								.contentType(MediaType.APPLICATION_JSON));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"get-task-details-with-no-repeat",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								pathParameters(
+										parameterWithName("calendarId").description("캘린더 ID"),
+										parameterWithName("taskId").description("할 일 ID"))));
+	}
+
+	@Test
+	@DisplayName("해당 id의 할 일을 상세조회한다. (반복 있음)")
+	void getTaskDetailsWithRepeat() throws Exception {
+		Long calendarId = 1L;
+		calendar = spy(calendar);
+		given(calendar.getId()).willReturn(calendarId);
+		TaskGroup taskGroup = new TaskGroup(true, null, null);
+		Long taskId = 2L;
+		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
+		given(task.getId()).willReturn(taskId);
+		TaskRepetitionPattern repetition = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
+
+		TaskDetailsResponse response = TaskDetailsResponse.of(task, repetition);
+		given(taskQueryService.searchByIdAndCalendarId(eq(taskId), eq(calendarId), any()))
+				.willReturn(response);
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/calendars/{calendarId}/tasks/{taskId}", calendarId, taskId)
+								.contentType(MediaType.APPLICATION_JSON));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"get-task-details-with-repeat",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								pathParameters(
+										parameterWithName("calendarId").description("캘린더 ID"),
+										parameterWithName("taskId").description("할 일 ID"))));
+	}
+
+	@Test
+	@DisplayName("해당 id의 할 일을 상세조회한다. (연관 목표 있음)")
+	void getTaskDetailsWithRelatedGoal() throws Exception {
+		Long calendarId = 1L;
+		calendar = spy(calendar);
+		given(calendar.getId()).willReturn(calendarId);
+		Long monthlyGoalId = 2L;
+		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		given(monthlyGoal.getId()).willReturn(monthlyGoalId);
+		TaskGroup taskGroup = new TaskGroup(false, monthlyGoal, null);
+		Long taskId = 3L;
+		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
+		given(task.getId()).willReturn(taskId);
+
+		TaskDetailsResponse response = TaskDetailsResponse.from(task);
+		given(taskQueryService.searchByIdAndCalendarId(eq(taskId), eq(calendarId), any()))
+				.willReturn(response);
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/calendars/{calendarId}/tasks/{taskId}", calendarId, taskId)
+								.contentType(MediaType.APPLICATION_JSON));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"get-task-details-with-related-goals",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								pathParameters(
+										parameterWithName("calendarId").description("캘린더 ID"),
+										parameterWithName("taskId").description("할 일 ID"))));
 	}
 }

@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,5 +51,13 @@ public class TaskGroup extends BaseTime {
 		this.isRepeated = isRepeated;
 		this.monthlyGoal = monthlyGoal;
 		this.weeklyGoal = weeklyGoal;
+	}
+
+	public Optional<MonthlyGoal> getMonthlyGoal() {
+		return Optional.ofNullable(monthlyGoal);
+	}
+
+	public Optional<WeeklyGoal> getWeeklyGoal() {
+		return Optional.ofNullable(weeklyGoal);
 	}
 }
