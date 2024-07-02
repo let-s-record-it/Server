@@ -89,6 +89,10 @@ public class MonthlyGoal extends BaseTime {
 		this.achieved = status;
 	}
 
+	public boolean isOwnedBy(Long memberId) {
+		return member.equalsId(memberId);
+	}
+
 	public String getTitle() {
 		return title.getTitle();
 	}

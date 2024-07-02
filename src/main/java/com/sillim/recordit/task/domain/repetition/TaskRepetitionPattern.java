@@ -23,6 +23,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAmount;
 import java.util.Objects;
@@ -113,25 +114,37 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 		this.taskGroup = taskGroup;
 	}
 
-	public Integer getDayOfMonth() {
-		if (Optional.ofNullable(dayOfMonth).isEmpty()) {
-			return null;
+	public Optional<Integer> getMonthOfYear() {
+		if (monthOfYear == null) {
+			return Optional.empty();
 		}
-		return dayOfMonth.getDayOfMonth();
+		return Optional.of(monthOfYear.getMonthOfYear());
 	}
 
-	public Integer getWeekNumber() {
-		if (Optional.ofNullable(weekNumber).isEmpty()) {
-			return null;
+	public Optional<Integer> getDayOfMonth() {
+		if (dayOfMonth == null) {
+			return Optional.empty();
 		}
-		return weekNumber.getValue();
+		return Optional.of(dayOfMonth.getDayOfMonth());
 	}
 
-	public Integer getWeekday() {
-		if (Optional.ofNullable(weekday).isEmpty()) {
-			return null;
+	public Optional<WeekNumber> getWeekNumber() {
+		return Optional.ofNullable(weekNumber);
+	}
+
+	public Optional<Weekday> getWeekday() {
+		return Optional.ofNullable(weekday);
+	}
+
+	public Optional<Integer> getWeekdayBit() {
+		if (weekdayBit == null) {
+			return Optional.empty();
 		}
-		return weekday.getValue();
+		return Optional.ofNullable(weekdayBit.getWeekdayBit());
+	}
+
+	public boolean isValidWeekday(final DayOfWeek dayOfWeek) {
+		return (weekdayBit.getWeekdayBit() & (1 << (dayOfWeek.getValue() - 1))) > 0;
 	}
 
 	protected void validate(

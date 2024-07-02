@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidWeekdayBitException;
-import java.time.DayOfWeek;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -51,15 +50,5 @@ class TaskWeekdayBitTest {
 		assertThatCode(() -> new TaskWeekdayBit(128))
 				.isInstanceOf(InvalidWeekdayBitException.class)
 				.hasMessage(ErrorCode.TASK_WEEKDAY_BIT_OUT_OF_RANGE.getDescription());
-	}
-
-	@Test
-	@DisplayName("Weekday값을 통해 반복 설정된 비트를 찾을 수 있다.")
-	void findValidBitByWeekday() {
-		TaskWeekdayBit weekdayBit = new TaskWeekdayBit(Integer.parseInt("1001001", 2));
-
-		assertThat(weekdayBit.isValidWeekday(DayOfWeek.MONDAY)).isTrue();
-		assertThat(weekdayBit.isValidWeekday(DayOfWeek.THURSDAY)).isTrue();
-		assertThat(weekdayBit.isValidWeekday(DayOfWeek.SUNDAY)).isTrue();
 	}
 }

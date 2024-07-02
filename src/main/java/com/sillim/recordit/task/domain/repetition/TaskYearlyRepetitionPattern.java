@@ -193,8 +193,8 @@ public class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 						date -> date.isBefore(getRepetitionEndDate().plusDays(1L)),
 						date ->
 								DateTimeUtils.correctDayOfMonth(
-										date.plusYears(getRepetitionPeriod()), getDayOfMonth()))
-				.filter(date -> date.getDayOfMonth() == getDayOfMonth())
+										date.plusYears(getRepetitionPeriod()), dayOfMonth()))
+				.filter(date -> date.getDayOfMonth() == dayOfMonth())
 				.map(
 						date ->
 								Period.ofDays(
@@ -244,22 +244,46 @@ public class TaskYearlyRepetitionPattern extends TaskRepetitionPattern {
 	private boolean hasWeekNumber(final LocalDate date) {
 
 		LocalDate firstDayOfMonth = date.withDayOfMonth(1);
-		LocalDate firstWeekday = firstDayOfMonth.with(DayOfWeek.of(getWeekday()));
+		LocalDate firstWeekday = firstDayOfMonth.with(DayOfWeek.of(weekday()));
 
 		if (firstWeekday.isBefore(firstDayOfMonth)) {
 			firstWeekday = firstWeekday.plusWeeks(1);
 		}
-		LocalDate targetWeekday = firstWeekday.plusWeeks(getWeekNumber() - 1);
+		LocalDate targetWeekday = firstWeekday.plusWeeks(weekNumber() - 1);
 
 		return targetWeekday.isBefore(date.with(TemporalAdjusters.lastDayOfMonth()).plusDays(1L));
 	}
 
 	private LocalDate findDateByWeekday(final LocalDate date) {
 		LocalDate firstDayOfMonth = date.withDayOfMonth(1);
-		LocalDate firstWeekday = firstDayOfMonth.with(DayOfWeek.of(getWeekday()));
+		LocalDate firstWeekday = firstDayOfMonth.with(DayOfWeek.of(weekday()));
 		if (firstWeekday.isBefore(firstDayOfMonth)) {
 			firstWeekday = firstWeekday.plusWeeks(1);
 		}
-		return firstWeekday.plusWeeks(getWeekNumber() - 1);
+		return firstWeekday.plusWeeks(weekNumber() - 1);
+	}
+
+	private Integer dayOfMonth() {
+		return getDayOfMonth()
+				.orElseThrow(
+						() -> new InvalidRepetitionException(ErrorCode.NULL_TASK_DAY_OF_MONTH));
+	}
+
+	private Integer weekday() {
+		return getWeekday()
+				.map(Weekday::getValue)
+				.orElseThrow(
+						() ->
+								new InvalidRepetitionException(
+										ErrorCode.NULL_TASK_REPETITION_WEEKDAY));
+	}
+
+	private Integer weekNumber() {
+		return getWeekNumber()
+				.map(WeekNumber::getValue)
+				.orElseThrow(
+						() ->
+								new InvalidRepetitionException(
+										ErrorCode.NULL_TASK_REPETITION_WEEKDAY));
 	}
 }

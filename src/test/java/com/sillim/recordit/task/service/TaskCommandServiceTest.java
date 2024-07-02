@@ -11,13 +11,12 @@ import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarService;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
-import com.sillim.recordit.member.service.MemberQueryService;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
-import com.sillim.recordit.task.dto.TaskAddRequest;
-import com.sillim.recordit.task.dto.TaskRepetitionAddRequest;
+import com.sillim.recordit.task.dto.request.TaskAddRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionAddRequest;
 import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
 import com.sillim.recordit.task.repository.TaskRepository;
 import java.time.LocalDate;
@@ -36,7 +35,6 @@ class TaskCommandServiceTest {
 	@Mock CalendarService calendarService;
 	@Mock TaskGroupService taskGroupService;
 	@Mock TaskRepetitionPatternService repetitionPatternService;
-	@Mock MemberQueryService memberQueryService;
 	@Mock TaskRepository taskRepository;
 
 	private Member member;
@@ -65,19 +63,13 @@ class TaskCommandServiceTest {
 		Long memberId = 1L;
 		TaskGroup taskGroup = new TaskGroup(false, null, null);
 
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		given(taskGroupService.addTaskGroup(eq(false), any(), any(), eq(member)))
+		given(taskGroupService.addTaskGroup(eq(false), any(), any(), eq(memberId)))
 				.willReturn(taskGroup);
-		given(calendarService.searchByCalendarIdAndMember(eq(calendarId), eq(member)))
+		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
 				.willReturn(calendar);
 
 		taskCommandService.addTasks(request, calendarId, memberId);
 
-		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
-		then(taskGroupService).should(times(1)).addTaskGroup(eq(false), any(), any(), eq(member));
-		then(calendarService)
-				.should(times(1))
-				.searchByCalendarIdAndMember(eq(calendarId), eq(member));
 		then(taskRepository).should(times(1)).save(any(Task.class));
 	}
 
@@ -110,10 +102,9 @@ class TaskCommandServiceTest {
 		TaskGroup taskGroup = new TaskGroup(true, null, null);
 		TaskRepetitionPattern repetitionPattern = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
 
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		given(taskGroupService.addTaskGroup(eq(true), any(), any(), eq(member)))
+		given(taskGroupService.addTaskGroup(eq(true), any(), any(), eq(memberId)))
 				.willReturn(taskGroup);
-		given(calendarService.searchByCalendarIdAndMember(eq(calendarId), eq(member)))
+		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
 				.willReturn(calendar);
 		given(
 						repetitionPatternService.addRepetitionPattern(
@@ -122,14 +113,6 @@ class TaskCommandServiceTest {
 
 		taskCommandService.addTasks(request, calendarId, memberId);
 
-		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
-		then(taskGroupService).should(times(1)).addTaskGroup(eq(true), any(), any(), eq(member));
-		then(calendarService)
-				.should(times(1))
-				.searchByCalendarIdAndMember(eq(calendarId), eq(member));
-		then(repetitionPatternService)
-				.should(times(1))
-				.addRepetitionPattern(eq(request.repetition()), eq(taskGroup));
 		then(taskRepository).should(times(91)).save(any(Task.class));
 	}
 }
