@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -263,5 +264,19 @@ class ScheduleControllerTest extends RestDocsTest {
 								"schedule-list-in-day",
 								getDocumentRequest(),
 								getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("일정을 삭제한다.")
+	void scheduleRemove() throws Exception {
+		ResultActions perform =
+				mockMvc.perform(
+						delete("/api/v1/calendars/{calendarId}/schedules/{scheduleId}", 1L, 1L)
+								.contentType(MediaType.APPLICATION_JSON));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("schedule-remove", getDocumentRequest(), getDocumentResponse()));
 	}
 }

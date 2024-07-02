@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
@@ -22,6 +25,7 @@ import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
 import com.sillim.recordit.schedule.repository.ScheduleRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -186,5 +190,21 @@ class ScheduleCommandServiceTest {
 											LocalDateTime.of(2024, 1, 1, 0, 0),
 											LocalDateTime.of(2024, 2, 1, 0, 0)));
 				});
+	}
+
+	@Test
+	@DisplayName("일정을 삭제할 수 있다.")
+	void removeSchedule() {
+		Member member = mock(Member.class);
+		Calendar calendar = mock(Calendar.class);
+		Schedule schedule = mock(Schedule.class);
+		given(schedule.getCalendar()).willReturn(calendar);
+		given(calendar.getMember()).willReturn(member);
+		given(member.getId()).willReturn(1L);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+
+		scheduleCommandService.removeSchedule(schedule.getId(), 1L);
+
+		verify(schedule, times(1)).delete();
 	}
 }
