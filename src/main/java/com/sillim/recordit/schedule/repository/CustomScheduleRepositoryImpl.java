@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.schedule.domain.Schedule;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
@@ -63,6 +64,17 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 								.id
 								.eq(scheduleGroupId)
 								.and(schedule.deleted.eq(false)))
+				.fetch();
+	}
+
+	public List<Schedule> findSchedulesInGroupAfter(Long scheduleGroupId, LocalDateTime dateTime) {
+		return selectFrom(schedule)
+				.where(
+						schedule.scheduleGroup
+								.id
+								.eq(scheduleGroupId)
+								.and(schedule.deleted.eq(false)))
+				.where(schedule.scheduleDuration.startDatetime.goe(dateTime))
 				.fetch();
 	}
 

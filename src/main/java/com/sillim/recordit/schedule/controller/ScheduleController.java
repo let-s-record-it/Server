@@ -77,4 +77,11 @@ public class ScheduleController {
 		scheduleCommandService.removeSchedulesInGroup(scheduleId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
+
+	@DeleteMapping("/{scheduleId}/after")
+	public ResponseEntity<Void> schedulesRemoveInGroupAfter(
+			@PathVariable Long scheduleId, @CurrentMember Member member) {
+		scheduleCommandService.removeSchedulesInGroupAfter(scheduleId, member.getId());
+		return ResponseEntity.noContent().build();
+	}
 }
