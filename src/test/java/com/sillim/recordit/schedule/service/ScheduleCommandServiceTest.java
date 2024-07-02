@@ -3,6 +3,7 @@ package com.sillim.recordit.schedule.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -206,5 +207,26 @@ class ScheduleCommandServiceTest {
 		scheduleCommandService.removeSchedule(schedule.getId(), 1L);
 
 		verify(schedule, times(1)).delete();
+	}
+
+	@Test
+	@DisplayName("그룹 내 일정을 삭제할 수 있다.")
+	void removeSchedulesInGroup() {
+		Member member = mock(Member.class);
+		Calendar calendar = mock(Calendar.class);
+		Schedule schedule = mock(Schedule.class);
+		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
+		given(schedule.getCalendar()).willReturn(calendar);
+		given(calendar.getMember()).willReturn(member);
+		given(member.getId()).willReturn(1L);
+		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
+		given(scheduleGroup.getId()).willReturn(1L);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+		given(scheduleRepository.findSchedulesInGroup(eq(1L)))
+				.willReturn(List.of(schedule, schedule, schedule));
+
+		scheduleCommandService.removeSchedulesInGroup(schedule.getId(), 1L);
+
+		verify(schedule, times(3)).delete();
 	}
 }

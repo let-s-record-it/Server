@@ -223,24 +223,8 @@ class CustomScheduleRepositoryTest {
 	@DisplayName("일정을 삭제하면 조회되지 않는다.")
 	void notSelectedWhenScheduleDeleted() {
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
-		ScheduleAddRequest scheduleAddRequest =
-				new ScheduleAddRequest(
-						"title",
-						"description",
-						false,
-						LocalDateTime.of(2024, 1, 1, 0, 0),
-						LocalDateTime.of(2024, 2, 1, 0, 0),
-						false,
-						null,
-						"aaffbb",
-						"서울역",
-						true,
-						36.0,
-						127.0,
-						true,
-						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		Schedule savedSchedule =
-				scheduleRepository.save(scheduleAddRequest.toSchedule(calendar, scheduleGroup));
+				em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
 
 		savedSchedule.delete();
 
@@ -250,5 +234,22 @@ class CustomScheduleRepositoryTest {
 				scheduleRepository.findByScheduleId(savedSchedule.getId());
 
 		assertThat(foundSchedule).isEmpty();
+	}
+
+	@Test
+	@DisplayName("그룹 내 일정을 삭제하면 모두 조회되지 않는다.")
+	void notSelectedWhenSchedulesDeletedInGroup() {
+		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
+		em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
+		em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
+		em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
+		scheduleRepository.findSchedulesInGroup(scheduleGroup.getId()).forEach(Schedule::delete);
+
+		em.flush();
+		em.clear();
+		List<Schedule> foundSchedule =
+				scheduleRepository.findSchedulesInGroup(scheduleGroup.getId());
+
+		assertThat(foundSchedule).hasSize(0);
 	}
 }
