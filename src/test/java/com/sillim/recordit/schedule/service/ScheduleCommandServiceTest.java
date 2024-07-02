@@ -42,236 +42,232 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ScheduleCommandServiceTest {
 
-    @Mock
-    ScheduleRepository scheduleRepository;
-    @Mock
-    CalendarService calendarService;
-    @Mock
-    ScheduleGroupService scheduleGroupService;
-    @Mock
-    RepetitionPatternService repetitionPatternService;
-    @InjectMocks
-    ScheduleCommandService scheduleCommandService;
+	@Mock ScheduleRepository scheduleRepository;
+	@Mock CalendarService calendarService;
+	@Mock ScheduleGroupService scheduleGroupService;
+	@Mock RepetitionPatternService repetitionPatternService;
+	@InjectMocks ScheduleCommandService scheduleCommandService;
 
-    Member member;
-    Calendar calendar;
-    long calendarId = 1L;
+	Member member;
+	Calendar calendar;
+	long calendarId = 1L;
 
-    @BeforeEach
-    void initObjects() {
-        member =
-                Member.builder()
-                        .auth(new Auth("1234567", OAuthProvider.KAKAO))
-                        .name("name")
-                        .job("job")
-                        .deleted(false)
-                        .memberRole(List.of(MemberRole.ROLE_USER))
-                        .build();
-        calendar = CalendarFixture.DEFAULT.getCalendar(member);
-    }
+	@BeforeEach
+	void initObjects() {
+		member =
+				Member.builder()
+						.auth(new Auth("1234567", OAuthProvider.KAKAO))
+						.name("name")
+						.job("job")
+						.deleted(false)
+						.memberRole(List.of(MemberRole.ROLE_USER))
+						.build();
+		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+	}
 
-    @Test
-    @DisplayName("반복 없는 schedule을 추가할 수 있다.")
-    void addSchedule() {
-        ScheduleAddRequest scheduleAddRequest =
-                new ScheduleAddRequest(
-                        "title",
-                        "description",
-                        false,
-                        LocalDateTime.of(2024, 1, 1, 0, 0),
-                        LocalDateTime.of(2024, 2, 1, 0, 0),
-                        false,
-                        null,
-                        "aaffbb",
-                        "서울역",
-                        true,
-                        36.0,
-                        127.0,
-                        true,
-                        List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
-        ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-        Schedule schedule =
-                Schedule.builder()
-                        .title("title")
-                        .description("description")
-                        .isAllDay(false)
-                        .startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-                        .endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
-                        .colorHex("aaffbb")
-                        .setLocation(true)
-                        .place("서울역")
-                        .latitude(36.0)
-                        .longitude(127.0)
-                        .setAlarm(true)
-                        .calendar(calendar)
-                        .scheduleGroup(scheduleGroup)
-                        .scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
-                        .build();
-        given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
+	@Test
+	@DisplayName("반복 없는 schedule을 추가할 수 있다.")
+	void addSchedule() {
+		ScheduleAddRequest scheduleAddRequest =
+				new ScheduleAddRequest(
+						"title",
+						"description",
+						false,
+						LocalDateTime.of(2024, 1, 1, 0, 0),
+						LocalDateTime.of(2024, 2, 1, 0, 0),
+						false,
+						null,
+						"aaffbb",
+						"서울역",
+						true,
+						36.0,
+						127.0,
+						true,
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
+		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		Schedule schedule =
+				Schedule.builder()
+						.title("title")
+						.description("description")
+						.isAllDay(false)
+						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+						.colorHex("aaffbb")
+						.setLocation(true)
+						.place("서울역")
+						.latitude(36.0)
+						.longitude(127.0)
+						.setAlarm(true)
+						.calendar(calendar)
+						.scheduleGroup(scheduleGroup)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
+						.build();
+		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 
-        List<Schedule> schedules =
-                scheduleCommandService.addSchedules(scheduleAddRequest, calendarId);
+		List<Schedule> schedules =
+				scheduleCommandService.addSchedules(scheduleAddRequest, calendarId);
 
-        assertAll(
-                () -> {
-                    assertThat(schedules).hasSize(1);
-                    assertThat(schedules.get(0).getTitle()).isEqualTo("title");
-                    assertThat(schedules.get(0).getDescription()).isEqualTo("description");
-                    assertThat(schedules.get(0).getScheduleDuration())
-                            .isEqualTo(
-                                    ScheduleDuration.createNotAllDay(
-                                            LocalDateTime.of(2024, 1, 1, 0, 0),
-                                            LocalDateTime.of(2024, 2, 1, 0, 0)));
-                    assertThat(schedules.get(0).getScheduleGroup()).isEqualTo(scheduleGroup);
-                });
-    }
+		assertAll(
+				() -> {
+					assertThat(schedules).hasSize(1);
+					assertThat(schedules.get(0).getTitle()).isEqualTo("title");
+					assertThat(schedules.get(0).getDescription()).isEqualTo("description");
+					assertThat(schedules.get(0).getScheduleDuration())
+							.isEqualTo(
+									ScheduleDuration.createNotAllDay(
+											LocalDateTime.of(2024, 1, 1, 0, 0),
+											LocalDateTime.of(2024, 2, 1, 0, 0)));
+					assertThat(schedules.get(0).getScheduleGroup()).isEqualTo(scheduleGroup);
+				});
+	}
 
-    @Test
-    @DisplayName("반복되는 schedule들을 추가할 수 있다.")
-    void addRepeatingSchedules() {
-        LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
-        LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
-        LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
-        LocalDateTime endDate = LocalDateTime.of(2024, 2, 1, 0, 0);
-        RepetitionAddRequest repetitionAddRequest =
-                new RepetitionAddRequest(
-                        RepetitionType.DAILY,
-                        1,
-                        repetitionStartDate,
-                        repetitionEndDate,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null);
-        ScheduleAddRequest scheduleAddRequest =
-                new ScheduleAddRequest(
-                        "title",
-                        "description",
-                        false,
-                        startDate,
-                        endDate,
-                        true,
-                        repetitionAddRequest,
-                        "aaffbb",
-                        "서울역",
-                        true,
-                        36.0,
-                        127.0,
-                        true,
-                        List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
-        ScheduleGroup scheduleGroup = new ScheduleGroup(true);
-        RepetitionPattern repetitionPattern =
-                RepetitionPattern.createDaily(
-                        1, repetitionStartDate, repetitionEndDate, scheduleGroup);
-        Schedule schedule =
-                Schedule.builder()
-                        .title("title")
-                        .description("description")
-                        .isAllDay(false)
-                        .startDatetime(startDate)
-                        .endDatetime(endDate)
-                        .colorHex("aaffbb")
-                        .setLocation(true)
-                        .place("서울역")
-                        .latitude(36.0)
-                        .longitude(127.0)
-                        .setAlarm(true)
-                        .calendar(calendar)
-                        .scheduleGroup(scheduleGroup)
-                        .scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
-                        .build();
-        given(scheduleGroupService.addScheduleGroup(true)).willReturn(scheduleGroup);
-        given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
-        given(repetitionPatternService.addRepetitionPattern(repetitionAddRequest, scheduleGroup))
-                .willReturn(repetitionPattern);
+	@Test
+	@DisplayName("반복되는 schedule들을 추가할 수 있다.")
+	void addRepeatingSchedules() {
+		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2024, 2, 1, 0, 0);
+		RepetitionAddRequest repetitionAddRequest =
+				new RepetitionAddRequest(
+						RepetitionType.DAILY,
+						1,
+						repetitionStartDate,
+						repetitionEndDate,
+						null,
+						null,
+						null,
+						null,
+						null);
+		ScheduleAddRequest scheduleAddRequest =
+				new ScheduleAddRequest(
+						"title",
+						"description",
+						false,
+						startDate,
+						endDate,
+						true,
+						repetitionAddRequest,
+						"aaffbb",
+						"서울역",
+						true,
+						36.0,
+						127.0,
+						true,
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
+		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
+		RepetitionPattern repetitionPattern =
+				RepetitionPattern.createDaily(
+						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
+		Schedule schedule =
+				Schedule.builder()
+						.title("title")
+						.description("description")
+						.isAllDay(false)
+						.startDatetime(startDate)
+						.endDatetime(endDate)
+						.colorHex("aaffbb")
+						.setLocation(true)
+						.place("서울역")
+						.latitude(36.0)
+						.longitude(127.0)
+						.setAlarm(true)
+						.calendar(calendar)
+						.scheduleGroup(scheduleGroup)
+						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
+						.build();
+		given(scheduleGroupService.addScheduleGroup(true)).willReturn(scheduleGroup);
+		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
+		given(repetitionPatternService.addRepetitionPattern(repetitionAddRequest, scheduleGroup))
+				.willReturn(repetitionPattern);
 
-        List<Schedule> schedules =
-                scheduleCommandService.addSchedules(scheduleAddRequest, calendarId);
+		List<Schedule> schedules =
+				scheduleCommandService.addSchedules(scheduleAddRequest, calendarId);
 
-        assertAll(
-                () -> {
-                    assertThat(schedules).hasSize(32);
-                    assertThat(schedules.get(0).getTitle()).isEqualTo("title");
-                    assertThat(schedules.get(0).getDescription()).isEqualTo("description");
-                    assertThat(schedules.get(0).getScheduleDuration())
-                            .isEqualTo(
-                                    ScheduleDuration.createNotAllDay(
-                                            LocalDateTime.of(2024, 1, 1, 0, 0),
-                                            LocalDateTime.of(2024, 2, 1, 0, 0)));
-                });
-    }
+		assertAll(
+				() -> {
+					assertThat(schedules).hasSize(32);
+					assertThat(schedules.get(0).getTitle()).isEqualTo("title");
+					assertThat(schedules.get(0).getDescription()).isEqualTo("description");
+					assertThat(schedules.get(0).getScheduleDuration())
+							.isEqualTo(
+									ScheduleDuration.createNotAllDay(
+											LocalDateTime.of(2024, 1, 1, 0, 0),
+											LocalDateTime.of(2024, 2, 1, 0, 0)));
+				});
+	}
 
-    @Test
-    @DisplayName("일정을 삭제할 수 있다.")
-    void removeSchedule() {
-        Schedule schedule = mock(Schedule.class);
-        given(schedule.isOwnedBy(eq(1L))).willReturn(true);
-        given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+	@Test
+	@DisplayName("일정을 삭제할 수 있다.")
+	void removeSchedule() {
+		Schedule schedule = mock(Schedule.class);
+		given(schedule.isOwnedBy(eq(1L))).willReturn(true);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
-        scheduleCommandService.removeSchedule(schedule.getId(), 1L);
+		scheduleCommandService.removeSchedule(schedule.getId(), 1L);
 
-        verify(schedule, times(1)).delete();
-    }
+		verify(schedule, times(1)).delete();
+	}
 
-    @Test
-    @DisplayName("그룹 내 일정을 삭제할 수 있다.")
-    void removeSchedulesInGroup() {
-        Schedule schedule = mock(Schedule.class);
-        ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
-        given(schedule.isOwnedBy(eq(1L))).willReturn(true);
-        given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
-        given(scheduleGroup.getId()).willReturn(1L);
-        given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
-        given(scheduleRepository.findSchedulesInGroup(eq(1L)))
-                .willReturn(List.of(schedule, schedule, schedule));
+	@Test
+	@DisplayName("그룹 내 일정을 삭제할 수 있다.")
+	void removeSchedulesInGroup() {
+		Schedule schedule = mock(Schedule.class);
+		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
+		given(schedule.isOwnedBy(eq(1L))).willReturn(true);
+		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
+		given(scheduleGroup.getId()).willReturn(1L);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+		given(scheduleRepository.findSchedulesInGroup(eq(1L)))
+				.willReturn(List.of(schedule, schedule, schedule));
 
-        scheduleCommandService.removeSchedulesInGroup(schedule.getId(), 1L);
+		scheduleCommandService.removeSchedulesInGroup(schedule.getId(), 1L);
 
-        then(schedule).should(times(3)).delete();
-    }
+		then(schedule).should(times(3)).delete();
+	}
 
-    @Test
-    @DisplayName("그룹 내 특정 일 이후 일정을 삭제할 수 있다.")
-    void removeSchedulesInGroupAfter() {
-        Schedule schedule = mock(Schedule.class);
-        ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
-        given(schedule.isOwnedBy(eq(1L))).willReturn(true);
-        given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
-        given(schedule.getStartDatetime()).willReturn(LocalDateTime.of(2024, 1, 1, 0, 0));
-        given(scheduleGroup.getId()).willReturn(1L);
-        given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
-        given(scheduleRepository.findSchedulesInGroupAfter(eq(1L), any(LocalDateTime.class)))
-                .willReturn(List.of(schedule, schedule, schedule));
+	@Test
+	@DisplayName("그룹 내 특정 일 이후 일정을 삭제할 수 있다.")
+	void removeSchedulesInGroupAfter() {
+		Schedule schedule = mock(Schedule.class);
+		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
+		given(schedule.isOwnedBy(eq(1L))).willReturn(true);
+		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
+		given(schedule.getStartDatetime()).willReturn(LocalDateTime.of(2024, 1, 1, 0, 0));
+		given(scheduleGroup.getId()).willReturn(1L);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+		given(scheduleRepository.findSchedulesInGroupAfter(eq(1L), any(LocalDateTime.class)))
+				.willReturn(List.of(schedule, schedule, schedule));
 
-        scheduleCommandService.removeSchedulesInGroupAfter(schedule.getId(), 1L);
+		scheduleCommandService.removeSchedulesInGroupAfter(schedule.getId(), 1L);
 
-        then(schedule).should(times(3)).delete();
-    }
+		then(schedule).should(times(3)).delete();
+	}
 
-    @Test
-    @DisplayName("그룹 내 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
-    void throwInvalidRequestExceptionIfNotOwnerWhenRemoveSchedulesInGroup() {
-        Schedule schedule = mock(Schedule.class);
-        given(schedule.isOwnedBy(eq(1L))).willReturn(false);
-        given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+	@Test
+	@DisplayName("그룹 내 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
+	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveSchedulesInGroup() {
+		Schedule schedule = mock(Schedule.class);
+		given(schedule.isOwnedBy(eq(1L))).willReturn(false);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
-        assertThatCode(
-                () -> scheduleCommandService.removeSchedulesInGroup(schedule.getId(), 1L))
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
-    }
+		assertThatCode(() -> scheduleCommandService.removeSchedulesInGroup(schedule.getId(), 1L))
+				.isInstanceOf(InvalidRequestException.class)
+				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
+	}
 
-    @Test
-    @DisplayName("그룹 내 특정 일 이후 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
-    void throwInvalidRequestExceptionIfNotOwnerWhenRemoveSchedulesInGroupAfter() {
-        Schedule schedule = mock(Schedule.class);
-        given(schedule.isOwnedBy(eq(1L))).willReturn(false);
-        given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+	@Test
+	@DisplayName("그룹 내 특정 일 이후 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
+	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveSchedulesInGroupAfter() {
+		Schedule schedule = mock(Schedule.class);
+		given(schedule.isOwnedBy(eq(1L))).willReturn(false);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
-        assertThatCode(
-                () -> scheduleCommandService.removeSchedulesInGroupAfter(schedule.getId(), 1L))
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
-    }
+		assertThatCode(
+						() ->
+								scheduleCommandService.removeSchedulesInGroupAfter(
+										schedule.getId(), 1L))
+				.isInstanceOf(InvalidRequestException.class)
+				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
+	}
 }
