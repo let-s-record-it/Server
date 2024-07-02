@@ -1,6 +1,9 @@
 package com.sillim.recordit.schedule.service;
 
 import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
@@ -32,6 +35,17 @@ public class ScheduleCommandService {
 		return List.of(scheduleRepository.save(schedule));
 	}
 
+	public void removeSchedule(Long scheduleId, Long memberId) {
+		Schedule schedule =
+				scheduleRepository
+						.findByScheduleId(scheduleId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		validateAuthenticatedUser(memberId, schedule.getCalendar().getMember().getId());
+
+		schedule.delete();
+	}
+
 	private List<Schedule> addRepeatingSchedule(
 			ScheduleAddRequest request, ScheduleGroup scheduleGroup, Long calendarId) {
 		return repetitionPatternService
@@ -45,5 +59,11 @@ public class ScheduleCommandService {
 												calendarService.searchByCalendarId(calendarId),
 												scheduleGroup)))
 				.toList();
+	}
+
+	private void validateAuthenticatedUser(Long principalId, Long memberId) {
+		if (!principalId.equals(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
 	}
 }

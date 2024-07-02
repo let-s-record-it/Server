@@ -26,14 +26,14 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 						.fetchJoin()
 						.leftJoin(schedule.calendar.member)
 						.fetchJoin()
-						.where(schedule.id.eq(scheduleId))
+						.where(schedule.id.eq(scheduleId).and(schedule.deleted.eq(false)))
 						.fetchOne());
 	}
 
 	@Override
 	public List<Schedule> findScheduleInMonth(Long calendarId, Integer year, Integer month) {
 		return selectFrom(schedule)
-				.where(schedule.calendar.id.eq(calendarId))
+				.where(schedule.calendar.id.eq(calendarId).and(schedule.deleted.eq(false)))
 				.where(startLtYear(year).or(startEqYear(year).and(StartLoeMonth(month))))
 				.where(endGtYear(year).or(endEqYear(year).and(endGoeMonth(month))))
 				.orderBy(schedule.scheduleDuration.startDatetime.asc())
@@ -49,7 +49,7 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.fetchJoin()
 				.leftJoin(schedule.scheduleGroup.repetitionPattern)
 				.fetchJoin()
-				.where(schedule.calendar.id.eq(calendarId))
+				.where(schedule.calendar.id.eq(calendarId).and(schedule.deleted.eq(false)))
 				.where(schedule.scheduleDuration.startDatetime.loe(date.atStartOfDay()))
 				.where(schedule.scheduleDuration.endDatetime.goe(date.atStartOfDay()))
 				.fetch();

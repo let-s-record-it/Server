@@ -25,7 +25,6 @@ public class ScheduleQueryService {
 	private final ScheduleRepository scheduleRepository;
 	private final CalendarService calendarService;
 	private final RepetitionPatternService repetitionPatternService;
-	private final ScheduleAlarmService scheduleAlarmService;
 
 	public DayScheduleResponse searchSchedule(Long scheduleId, Long memberId) {
 		Schedule schedule =
