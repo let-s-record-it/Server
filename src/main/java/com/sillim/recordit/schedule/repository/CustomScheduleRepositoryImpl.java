@@ -55,6 +55,17 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.fetch();
 	}
 
+	@Override
+	public List<Schedule> findSchedulesInGroup(Long scheduleGroupId) {
+		return selectFrom(schedule)
+				.where(
+						schedule.scheduleGroup
+								.id
+								.eq(scheduleGroupId)
+								.and(schedule.deleted.eq(false)))
+				.fetch();
+	}
+
 	private static BooleanExpression endGoeMonth(Integer month) {
 		return schedule.scheduleDuration.endDatetime.month().goe(month);
 	}

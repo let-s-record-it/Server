@@ -46,6 +46,19 @@ public class ScheduleCommandService {
 		schedule.delete();
 	}
 
+	public void removeSchedulesInGroup(Long scheduleId, Long memberId) {
+		Schedule schedule =
+				scheduleRepository
+						.findByScheduleId(scheduleId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		validateAuthenticatedUser(memberId, schedule.getCalendar().getMember().getId());
+
+		scheduleRepository
+				.findSchedulesInGroup(schedule.getScheduleGroup().getId())
+				.forEach(Schedule::delete);
+	}
+
 	private List<Schedule> addRepeatingSchedule(
 			ScheduleAddRequest request, ScheduleGroup scheduleGroup, Long calendarId) {
 		return repetitionPatternService

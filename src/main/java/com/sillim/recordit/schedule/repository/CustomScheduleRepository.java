@@ -12,4 +12,6 @@ public interface CustomScheduleRepository {
 	List<Schedule> findScheduleInMonth(Long calendarId, Integer year, Integer month);
 
 	List<Schedule> findScheduleInDay(Long calendarId, LocalDate date);
+
+	List<Schedule> findSchedulesInGroup(Long scheduleGroupId);
 }

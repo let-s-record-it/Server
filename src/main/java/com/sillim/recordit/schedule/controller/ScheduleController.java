@@ -65,9 +65,16 @@ public class ScheduleController {
 	}
 
 	@DeleteMapping("/{scheduleId}")
-	public ResponseEntity<Void> scheduleRemove(
+	public ResponseEntity<Void> scheduleRemoveById(
 			@PathVariable Long scheduleId, @CurrentMember Member member) {
 		scheduleCommandService.removeSchedule(scheduleId, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{scheduleId}/group")
+	public ResponseEntity<Void> schedulesRemoveInGroup(
+			@PathVariable Long scheduleId, @CurrentMember Member member) {
+		scheduleCommandService.removeSchedulesInGroup(scheduleId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 }
