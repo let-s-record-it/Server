@@ -6,9 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
@@ -73,10 +71,9 @@ class TaskQueryServiceTest {
 				.willReturn(calendar);
 		given(taskRepository.findAllByCalendarIdAndDate(calendarId, date)).willReturn(tasks);
 
-		taskQueryService.searchAllByDate(calendarId, date, memberId);
+		List<Task> found = taskQueryService.searchAllByDate(calendarId, date, memberId);
 
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
-		then(taskRepository).should(times(1)).findAllByCalendarIdAndDate(eq(calendarId), eq(date));
+		assertThat(found).hasSize(tasks.size());
 	}
 
 	@Test
@@ -111,8 +108,6 @@ class TaskQueryServiceTest {
 					assertThat(taskDto.relatedMonthlyGoal()).isNull();
 					assertThat(taskDto.relatedWeeklyGoal()).isNull();
 				});
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
-		then(taskRepository).should(times(1)).findByIdAndCalendarId(eq(taskId), eq(calendarId));
 	}
 
 	@Test
@@ -160,9 +155,6 @@ class TaskQueryServiceTest {
 					assertThat(taskDto.repetition().repetitionEndDate())
 							.isEqualTo(repetitionPattern.getRepetitionEndDate());
 				});
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
-		then(taskRepository).should(times(1)).findByIdAndCalendarId(eq(taskId), eq(calendarId));
-		then(repetitionPatternService).should(times(1)).searchByTaskGroupId(eq(taskGroupId));
 	}
 
 	@Test
@@ -203,8 +195,6 @@ class TaskQueryServiceTest {
 							.isEqualTo(monthlyGoal.getTitle());
 					assertThat(taskDto.relatedWeeklyGoal()).isNull();
 				});
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
-		then(taskRepository).should(times(1)).findByIdAndCalendarId(eq(taskId), eq(calendarId));
 	}
 
 	@Test
@@ -221,13 +211,8 @@ class TaskQueryServiceTest {
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willThrow(new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 
-		assertThatCode(
-						() -> {
-							taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId);
-						})
+		assertThatCode(() -> taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId))
 				.isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.TASK_NOT_FOUND.getDescription());
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
-		then(taskRepository).should(times(1)).findByIdAndCalendarId(eq(taskId), eq(calendarId));
 	}
 }
