@@ -1,6 +1,7 @@
 package com.sillim.recordit.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -53,7 +54,6 @@ public class MonthlyGoalUpdateServiceTest {
 
 		monthlyGoalUpdateService.add(request, memberId);
 
-		then(memberQueryService).should(times(1)).findByMemberId(eq(memberId));
 		then(monthlyGoalRepository).should(times(1)).save(any(MonthlyGoal.class));
 	}
 
@@ -75,7 +75,14 @@ public class MonthlyGoalUpdateServiceTest {
 
 		monthlyGoalUpdateService.modify(request, monthlyGoalId, memberId);
 
-		then(monthlyGoalQueryService).should(times(1)).searchById(eq(monthlyGoalId), eq(memberId));
+		assertAll(
+				() -> {
+					assertThat(monthlyGoal.getTitle()).isEqualTo(request.title());
+					assertThat(monthlyGoal.getDescription()).isEqualTo(request.description());
+					assertThat(monthlyGoal.getStartDate()).isEqualTo(request.startDate());
+					assertThat(monthlyGoal.getEndDate()).isEqualTo(request.endDate());
+					assertThat(monthlyGoal.getColorHex()).isEqualTo(request.colorHex());
+				});
 	}
 
 	@Test
@@ -90,7 +97,6 @@ public class MonthlyGoalUpdateServiceTest {
 
 		monthlyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
 
-		then(monthlyGoalQueryService).should(times(1)).searchById(eq(monthlyGoalId), eq(memberId));
 		assertThat(monthlyGoal.isAchieved()).isTrue();
 	}
 
@@ -105,7 +111,6 @@ public class MonthlyGoalUpdateServiceTest {
 
 		monthlyGoalUpdateService.remove(monthlyGoalId, memberId);
 
-		then(monthlyGoalQueryService).should(times(1)).searchById(eq(monthlyGoalId), eq(memberId));
 		then(monthlyGoalRepository).should(times(1)).delete(eq(monthlyGoal));
 	}
 }

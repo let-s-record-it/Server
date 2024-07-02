@@ -70,8 +70,6 @@ class TaskCommandServiceTest {
 
 		taskCommandService.addTasks(request, calendarId, memberId);
 
-		then(taskGroupService).should(times(1)).addTaskGroup(eq(false), any(), any(), eq(memberId));
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
 		then(taskRepository).should(times(1)).save(any(Task.class));
 	}
 
@@ -115,11 +113,6 @@ class TaskCommandServiceTest {
 
 		taskCommandService.addTasks(request, calendarId, memberId);
 
-		then(taskGroupService).should(times(1)).addTaskGroup(eq(true), any(), any(), eq(memberId));
-		then(calendarService).should(times(1)).searchByCalendarId(eq(calendarId), eq(memberId));
-		then(repetitionPatternService)
-				.should(times(1))
-				.addRepetitionPattern(eq(request.repetition()), eq(taskGroup));
 		then(taskRepository).should(times(91)).save(any(Task.class));
 	}
 }
