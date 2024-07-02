@@ -237,7 +237,7 @@ class CustomScheduleRepositoryTest {
 	}
 
 	@Test
-	@DisplayName("그룹 내 일정을 삭제하면 모두 조회되지 않는다.")
+	@DisplayName("그룹 내 일정을 삭제하면 조회되지 않는다.")
 	void notSelectedWhenSchedulesDeletedInGroup() {
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
 		em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
@@ -251,5 +251,40 @@ class CustomScheduleRepositoryTest {
 				scheduleRepository.findSchedulesInGroup(scheduleGroup.getId());
 
 		assertThat(foundSchedule).hasSize(0);
+	}
+
+	@Test
+	@DisplayName("그룹 내 특정 일 이후 일정을 삭제하면 모두 조회되지 않는다.")
+	void notSelectedWhenSchedulesDeletedInGroupAfter() {
+		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
+		em.persist(
+				ScheduleFixture.DEFAULT.getSchedule(
+						scheduleGroup,
+						calendar,
+						LocalDateTime.of(2024, 1, 1, 0, 0),
+						LocalDateTime.of(2024, 1, 4, 0, 0)));
+		Schedule schedule =
+				em.persist(
+						ScheduleFixture.DEFAULT.getSchedule(
+								scheduleGroup,
+								calendar,
+								LocalDateTime.of(2024, 1, 3, 0, 0),
+								LocalDateTime.of(2024, 1, 5, 0, 0)));
+		em.persist(
+				ScheduleFixture.DEFAULT.getSchedule(
+						scheduleGroup,
+						calendar,
+						LocalDateTime.of(2024, 1, 7, 0, 0),
+						LocalDateTime.of(2024, 1, 8, 0, 0)));
+		scheduleRepository
+				.findSchedulesInGroupAfter(scheduleGroup.getId(), schedule.getStartDatetime())
+				.forEach(Schedule::delete);
+
+		em.flush();
+		em.clear();
+		List<Schedule> foundSchedule =
+				scheduleRepository.findSchedulesInGroup(scheduleGroup.getId());
+
+		assertThat(foundSchedule).hasSize(1);
 	}
 }

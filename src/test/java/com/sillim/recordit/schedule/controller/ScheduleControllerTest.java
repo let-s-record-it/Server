@@ -305,4 +305,26 @@ class ScheduleControllerTest extends RestDocsTest {
 								getDocumentRequest(),
 								getDocumentResponse()));
 	}
+
+	@Test
+	@DisplayName("그룹 내 특정 시점 이후 모든 일정을 삭제한다.")
+	void scheduleRemoveInGroupAfter() throws Exception {
+		ResultActions perform =
+				mockMvc.perform(
+						delete(
+										"/api/v1/calendars/{calendarId}/schedules/{scheduleId}/after",
+										1L,
+										1L)
+								.contentType(MediaType.APPLICATION_JSON));
+
+		verify(scheduleCommandService, times(1)).removeSchedulesInGroupAfter(eq(1L), any());
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"schedule-remove-in-group-after",
+								getDocumentRequest(),
+								getDocumentResponse()));
+	}
 }

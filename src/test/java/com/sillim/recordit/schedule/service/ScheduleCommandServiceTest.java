@@ -229,4 +229,26 @@ class ScheduleCommandServiceTest {
 
 		verify(schedule, times(3)).delete();
 	}
+
+	@Test
+	@DisplayName("그룹 내 특정 일 이후 일정을 삭제할 수 있다.")
+	void removeSchedulesInGroupAfter() {
+		Member member = mock(Member.class);
+		Calendar calendar = mock(Calendar.class);
+		Schedule schedule = mock(Schedule.class);
+		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
+		given(schedule.getCalendar()).willReturn(calendar);
+		given(calendar.getMember()).willReturn(member);
+		given(member.getId()).willReturn(1L);
+		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
+		given(schedule.getStartDatetime()).willReturn(LocalDateTime.of(2024, 1, 1, 0, 0));
+		given(scheduleGroup.getId()).willReturn(1L);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+		given(scheduleRepository.findSchedulesInGroupAfter(eq(1L), any(LocalDateTime.class)))
+				.willReturn(List.of(schedule, schedule, schedule));
+
+		scheduleCommandService.removeSchedulesInGroupAfter(schedule.getId(), 1L);
+
+		verify(schedule, times(3)).delete();
+	}
 }
