@@ -12,6 +12,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,5 +62,26 @@ public class ScheduleController {
 			@CurrentMember Member member) {
 		return ResponseEntity.ok(
 				scheduleQueryService.searchSchedulesInDay(calendarId, date, member.getId()));
+	}
+
+	@DeleteMapping("/{scheduleId}")
+	public ResponseEntity<Void> scheduleRemoveById(
+			@PathVariable Long scheduleId, @CurrentMember Member member) {
+		scheduleCommandService.removeSchedule(scheduleId, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{scheduleId}/group")
+	public ResponseEntity<Void> schedulesRemoveInGroup(
+			@PathVariable Long scheduleId, @CurrentMember Member member) {
+		scheduleCommandService.removeSchedulesInGroup(scheduleId, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{scheduleId}/after")
+	public ResponseEntity<Void> schedulesRemoveInGroupAfter(
+			@PathVariable Long scheduleId, @CurrentMember Member member) {
+		scheduleCommandService.removeSchedulesInGroupAfter(scheduleId, member.getId());
+		return ResponseEntity.noContent().build();
 	}
 }

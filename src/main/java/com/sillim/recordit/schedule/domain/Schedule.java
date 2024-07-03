@@ -26,6 +26,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
@@ -67,6 +68,10 @@ public class Schedule {
 	@OneToMany(mappedBy = "schedule", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	private List<ScheduleAlarm> scheduleAlarms = new ArrayList<>();
 
+	@Column(nullable = false)
+	@ColumnDefault("false")
+	private Boolean deleted;
+
 	public Schedule(
 			ScheduleTitle title,
 			ScheduleDescription description,
@@ -93,6 +98,7 @@ public class Schedule {
 				scheduleAlarms.stream()
 						.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
 						.toList();
+		this.deleted = false;
 	}
 
 	@Builder
@@ -157,5 +163,13 @@ public class Schedule {
 
 	public Double getLongitude() {
 		return Optional.ofNullable(location).map(Location::getLongitude).orElse(null);
+	}
+
+	public void delete() {
+		this.deleted = true;
+	}
+
+	public boolean isOwnedBy(Long memberId) {
+		return this.calendar.equalsMemberId(memberId);
 	}
 }

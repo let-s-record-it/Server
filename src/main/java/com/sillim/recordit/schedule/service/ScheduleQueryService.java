@@ -1,5 +1,6 @@
 package com.sillim.recordit.schedule.service;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.service.CalendarService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
@@ -11,7 +12,6 @@ import com.sillim.recordit.schedule.dto.response.MonthScheduleResponse;
 import com.sillim.recordit.schedule.dto.response.RepetitionPatternResponse;
 import com.sillim.recordit.schedule.repository.ScheduleRepository;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,6 @@ public class ScheduleQueryService {
 	private final ScheduleRepository scheduleRepository;
 	private final CalendarService calendarService;
 	private final RepetitionPatternService repetitionPatternService;
-	private final ScheduleAlarmService scheduleAlarmService;
 
 	public DayScheduleResponse searchSchedule(Long scheduleId, Long memberId) {
 		Schedule schedule =
@@ -33,9 +32,9 @@ public class ScheduleQueryService {
 						.findByScheduleId(scheduleId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
-		validateAuthenticatedUser(memberId, schedule.getCalendar().getMember().getId());
-		List<LocalDateTime> alarmTimes =
-				schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList();
+		if (!schedule.isOwnedBy(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
 
 		if (schedule.getScheduleGroup().getIsRepeated()) {
 			return DayScheduleResponse.of(
@@ -47,13 +46,16 @@ public class ScheduleQueryService {
 									schedule.getScheduleGroup().getId())));
 		}
 
-		return DayScheduleResponse.of(schedule, false, alarmTimes, null);
+		return DayScheduleResponse.of(
+				schedule,
+				false,
+				schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList(),
+				null);
 	}
 
 	public List<MonthScheduleResponse> searchSchedulesInMonth(
 			Long calendarId, Integer year, Integer month, Long memberId) {
-		validateAuthenticatedUser(
-				memberId, calendarService.searchByCalendarId(calendarId).getMember().getId());
+		validateAuthenticatedUser(calendarService.searchByCalendarId(calendarId), memberId);
 		return scheduleRepository.findScheduleInMonth(calendarId, year, month).stream()
 				.map(MonthScheduleResponse::from)
 				.toList();
@@ -61,8 +63,9 @@ public class ScheduleQueryService {
 
 	public List<DayScheduleResponse> searchSchedulesInDay(
 			Long calendarId, LocalDate date, Long memberId) {
-		validateAuthenticatedUser(
-				memberId, calendarService.searchByCalendarId(calendarId).getMember().getId());
+		if (!calendarService.searchByCalendarId(calendarId).equalsMemberId(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
 		return scheduleRepository.findScheduleInDay(calendarId, date).stream()
 				.map(
 						schedule ->
@@ -79,8 +82,8 @@ public class ScheduleQueryService {
 				.toList();
 	}
 
-	private void validateAuthenticatedUser(Long principalId, Long memberId) {
-		if (!principalId.equals(memberId)) {
+	private void validateAuthenticatedUser(Calendar calendar, Long memberId) {
+		if (!calendar.equalsMemberId(memberId)) {
 			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
 		}
 	}

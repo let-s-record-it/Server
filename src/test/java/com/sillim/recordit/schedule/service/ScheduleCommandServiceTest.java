@@ -1,13 +1,21 @@
 package com.sillim.recordit.schedule.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.MemberRole;
@@ -22,6 +30,7 @@ import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
 import com.sillim.recordit.schedule.repository.ScheduleRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -186,5 +195,79 @@ class ScheduleCommandServiceTest {
 											LocalDateTime.of(2024, 1, 1, 0, 0),
 											LocalDateTime.of(2024, 2, 1, 0, 0)));
 				});
+	}
+
+	@Test
+	@DisplayName("일정을 삭제할 수 있다.")
+	void removeSchedule() {
+		Schedule schedule = mock(Schedule.class);
+		given(schedule.isOwnedBy(eq(1L))).willReturn(true);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+
+		scheduleCommandService.removeSchedule(schedule.getId(), 1L);
+
+		verify(schedule, times(1)).delete();
+	}
+
+	@Test
+	@DisplayName("그룹 내 일정을 삭제할 수 있다.")
+	void removeSchedulesInGroup() {
+		Schedule schedule = mock(Schedule.class);
+		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
+		given(schedule.isOwnedBy(eq(1L))).willReturn(true);
+		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
+		given(scheduleGroup.getId()).willReturn(1L);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+		given(scheduleRepository.findSchedulesInGroup(eq(1L)))
+				.willReturn(List.of(schedule, schedule, schedule));
+
+		scheduleCommandService.removeSchedulesInGroup(schedule.getId(), 1L);
+
+		then(schedule).should(times(3)).delete();
+	}
+
+	@Test
+	@DisplayName("그룹 내 특정 일 이후 일정을 삭제할 수 있다.")
+	void removeSchedulesInGroupAfter() {
+		Schedule schedule = mock(Schedule.class);
+		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
+		given(schedule.isOwnedBy(eq(1L))).willReturn(true);
+		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
+		given(schedule.getStartDatetime()).willReturn(LocalDateTime.of(2024, 1, 1, 0, 0));
+		given(scheduleGroup.getId()).willReturn(1L);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+		given(scheduleRepository.findSchedulesInGroupAfter(eq(1L), any(LocalDateTime.class)))
+				.willReturn(List.of(schedule, schedule, schedule));
+
+		scheduleCommandService.removeSchedulesInGroupAfter(schedule.getId(), 1L);
+
+		then(schedule).should(times(3)).delete();
+	}
+
+	@Test
+	@DisplayName("그룹 내 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
+	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveSchedulesInGroup() {
+		Schedule schedule = mock(Schedule.class);
+		given(schedule.isOwnedBy(eq(1L))).willReturn(false);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+
+		assertThatCode(() -> scheduleCommandService.removeSchedulesInGroup(schedule.getId(), 1L))
+				.isInstanceOf(InvalidRequestException.class)
+				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
+	}
+
+	@Test
+	@DisplayName("그룹 내 특정 일 이후 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
+	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveSchedulesInGroupAfter() {
+		Schedule schedule = mock(Schedule.class);
+		given(schedule.isOwnedBy(eq(1L))).willReturn(false);
+		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+
+		assertThatCode(
+						() ->
+								scheduleCommandService.removeSchedulesInGroupAfter(
+										schedule.getId(), 1L))
+				.isInstanceOf(InvalidRequestException.class)
+				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
 }
