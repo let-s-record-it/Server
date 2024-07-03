@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.schedule.domain.Schedule;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
@@ -26,14 +27,14 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 						.fetchJoin()
 						.leftJoin(schedule.calendar.member)
 						.fetchJoin()
-						.where(schedule.id.eq(scheduleId))
+						.where(schedule.id.eq(scheduleId).and(schedule.deleted.eq(false)))
 						.fetchOne());
 	}
 
 	@Override
 	public List<Schedule> findScheduleInMonth(Long calendarId, Integer year, Integer month) {
 		return selectFrom(schedule)
-				.where(schedule.calendar.id.eq(calendarId))
+				.where(schedule.calendar.id.eq(calendarId).and(schedule.deleted.eq(false)))
 				.where(startLtYear(year).or(startEqYear(year).and(StartLoeMonth(month))))
 				.where(endGtYear(year).or(endEqYear(year).and(endGoeMonth(month))))
 				.orderBy(schedule.scheduleDuration.startDatetime.asc())
@@ -49,9 +50,31 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.fetchJoin()
 				.leftJoin(schedule.scheduleGroup.repetitionPattern)
 				.fetchJoin()
-				.where(schedule.calendar.id.eq(calendarId))
+				.where(schedule.calendar.id.eq(calendarId).and(schedule.deleted.eq(false)))
 				.where(schedule.scheduleDuration.startDatetime.loe(date.atStartOfDay()))
 				.where(schedule.scheduleDuration.endDatetime.goe(date.atStartOfDay()))
+				.fetch();
+	}
+
+	@Override
+	public List<Schedule> findSchedulesInGroup(Long scheduleGroupId) {
+		return selectFrom(schedule)
+				.where(
+						schedule.scheduleGroup
+								.id
+								.eq(scheduleGroupId)
+								.and(schedule.deleted.eq(false)))
+				.fetch();
+	}
+
+	public List<Schedule> findSchedulesInGroupAfter(Long scheduleGroupId, LocalDateTime dateTime) {
+		return selectFrom(schedule)
+				.where(
+						schedule.scheduleGroup
+								.id
+								.eq(scheduleGroupId)
+								.and(schedule.deleted.eq(false)))
+				.where(schedule.scheduleDuration.startDatetime.goe(dateTime))
 				.fetch();
 	}
 

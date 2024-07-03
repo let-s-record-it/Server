@@ -4,8 +4,12 @@ import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentR
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -261,6 +265,65 @@ class ScheduleControllerTest extends RestDocsTest {
 				.andDo(
 						document(
 								"schedule-list-in-day",
+								getDocumentRequest(),
+								getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("일정을 삭제한다.")
+	void scheduleRemove() throws Exception {
+		ResultActions perform =
+				mockMvc.perform(
+						delete("/api/v1/calendars/{calendarId}/schedules/{scheduleId}", 1L, 1L)
+								.contentType(MediaType.APPLICATION_JSON));
+
+		verify(scheduleCommandService, times(1)).removeSchedule(eq(1L), any());
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("schedule-remove", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("그룹 내의 모든 일정을 삭제한다.")
+	void scheduleRemoveInGroup() throws Exception {
+		ResultActions perform =
+				mockMvc.perform(
+						delete(
+										"/api/v1/calendars/{calendarId}/schedules/{scheduleId}/group",
+										1L,
+										1L)
+								.contentType(MediaType.APPLICATION_JSON));
+
+		verify(scheduleCommandService, times(1)).removeSchedulesInGroup(eq(1L), any());
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"schedule-remove-in-group",
+								getDocumentRequest(),
+								getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("그룹 내 특정 시점 이후 모든 일정을 삭제한다.")
+	void scheduleRemoveInGroupAfter() throws Exception {
+		ResultActions perform =
+				mockMvc.perform(
+						delete(
+										"/api/v1/calendars/{calendarId}/schedules/{scheduleId}/after",
+										1L,
+										1L)
+								.contentType(MediaType.APPLICATION_JSON));
+
+		verify(scheduleCommandService, times(1)).removeSchedulesInGroupAfter(eq(1L), any());
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"schedule-remove-in-group-after",
 								getDocumentRequest(),
 								getDocumentResponse()));
 	}

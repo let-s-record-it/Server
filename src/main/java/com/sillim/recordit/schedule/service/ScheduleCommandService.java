@@ -1,6 +1,9 @@
 package com.sillim.recordit.schedule.service;
 
 import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
@@ -32,6 +35,46 @@ public class ScheduleCommandService {
 		return List.of(scheduleRepository.save(schedule));
 	}
 
+	public void removeSchedule(Long scheduleId, Long memberId) {
+		Schedule schedule =
+				scheduleRepository
+						.findByScheduleId(scheduleId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		validateAuthenticatedUser(schedule, memberId);
+
+		schedule.delete();
+	}
+
+	public void removeSchedulesInGroup(Long scheduleId, Long memberId) {
+		Schedule schedule =
+				scheduleRepository
+						.findByScheduleId(scheduleId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		validateAuthenticatedUser(schedule, memberId);
+
+		scheduleRepository
+				.findSchedulesInGroup(schedule.getScheduleGroup().getId())
+				.forEach(Schedule::delete);
+	}
+
+	public void removeSchedulesInGroupAfter(Long scheduleId, Long memberId) {
+		Schedule schedule =
+				scheduleRepository
+						.findByScheduleId(scheduleId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		if (!schedule.isOwnedBy(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
+
+		scheduleRepository
+				.findSchedulesInGroupAfter(
+						schedule.getScheduleGroup().getId(), schedule.getStartDatetime())
+				.forEach(Schedule::delete);
+	}
+
 	private List<Schedule> addRepeatingSchedule(
 			ScheduleAddRequest request, ScheduleGroup scheduleGroup, Long calendarId) {
 		return repetitionPatternService
@@ -45,5 +88,11 @@ public class ScheduleCommandService {
 												calendarService.searchByCalendarId(calendarId),
 												scheduleGroup)))
 				.toList();
+	}
+
+	private void validateAuthenticatedUser(Schedule schedule, Long memberId) {
+		if (!schedule.isOwnedBy(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
 	}
 }
