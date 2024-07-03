@@ -42,6 +42,7 @@ public record DayScheduleResponse(
 				.latitude(schedule.getLatitude())
 				.longitude(schedule.getLongitude())
 				.setAlarm(schedule.getSetAlarm())
+				.alarmTimes(alarmTimes)
 				.isRepeated(isRepeated)
 				.calendarTitle(schedule.getCalendar().getTitle())
 				.repetitionPattern(repetitionPatternResponse)
