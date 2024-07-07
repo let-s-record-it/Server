@@ -17,9 +17,12 @@ public class MonthlyGoalUpdateService {
 	private final MemberQueryService memberQueryService;
 	private final MonthlyGoalRepository monthlyGoalRepository;
 
-	public void add(final MonthlyGoalUpdateRequest request, final Long memberId) {
+	public Long add(final MonthlyGoalUpdateRequest request, final Long memberId) {
 
-		monthlyGoalRepository.save(request.toEntity(memberQueryService.findByMemberId(memberId)));
+		MonthlyGoal monthlyGoal =
+				monthlyGoalRepository.save(
+						request.toEntity(memberQueryService.findByMemberId(memberId)));
+		return monthlyGoal.getId();
 	}
 
 	public void modify(

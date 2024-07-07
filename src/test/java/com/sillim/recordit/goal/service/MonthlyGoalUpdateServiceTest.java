@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.goal.domain.MonthlyGoal;
@@ -42,6 +43,7 @@ public class MonthlyGoalUpdateServiceTest {
 	@DisplayName("새로운 월 목표를 추가한다.")
 	void addTest() {
 		Long memberId = 1L;
+		Long monthlyGoalId = 2L;
 		MonthlyGoalUpdateRequest request =
 				new MonthlyGoalUpdateRequest(
 						"취뽀하기!",
@@ -49,11 +51,14 @@ public class MonthlyGoalUpdateServiceTest {
 						LocalDate.of(2024, 4, 1),
 						LocalDate.of(2024, 4, 30),
 						"ff83c8ef");
-
+		MonthlyGoal saved = mock(MonthlyGoal.class);
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
+		given(monthlyGoalRepository.save(any(MonthlyGoal.class))).willReturn(saved);
+		given(saved.getId()).willReturn(monthlyGoalId);
 
-		monthlyGoalUpdateService.add(request, memberId);
+		Long savedId = monthlyGoalUpdateService.add(request, memberId);
 
+		assertThat(savedId).isEqualTo(monthlyGoalId);
 		then(monthlyGoalRepository).should(times(1)).save(any(MonthlyGoal.class));
 	}
 
