@@ -49,8 +49,8 @@ class ScheduleQueryServiceTest {
 						.title("title")
 						.description("description")
 						.isAllDay(false)
-						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
 						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
@@ -61,7 +61,7 @@ class ScheduleQueryServiceTest {
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(calendar.equalsMemberId(eq(memberId))).willReturn(true);
+		given(calendar.isOwnedBy(eq(memberId))).willReturn(true);
 		given(scheduleRepository.findByScheduleId(anyLong()))
 				.willReturn(Optional.of(expectedSchedule));
 
@@ -82,8 +82,8 @@ class ScheduleQueryServiceTest {
 						.title("title")
 						.description("description")
 						.isAllDay(false)
-						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
 						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
@@ -96,7 +96,7 @@ class ScheduleQueryServiceTest {
 						.build();
 		RepetitionPattern repetitionPattern =
 				RepetitionPatternFixture.WEEKLY.getRepetitionPattern(scheduleGroup);
-		given(calendar.equalsMemberId(eq(memberId))).willReturn(true);
+		given(calendar.isOwnedBy(eq(memberId))).willReturn(true);
 		given(scheduleRepository.findByScheduleId(anyLong()))
 				.willReturn(Optional.of(expectedSchedule));
 		given(repetitionPatternService.searchByScheduleGroupId(any()))
@@ -119,8 +119,8 @@ class ScheduleQueryServiceTest {
 						.title("title")
 						.description("description")
 						.isAllDay(false)
-						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
 						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
@@ -131,7 +131,7 @@ class ScheduleQueryServiceTest {
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(calendar.equalsMemberId(anyLong())).willReturn(false);
+		given(calendar.isOwnedBy(anyLong())).willReturn(false);
 		given(scheduleRepository.findByScheduleId(anyLong()))
 				.willReturn(Optional.of(expectedSchedule));
 
@@ -150,8 +150,8 @@ class ScheduleQueryServiceTest {
 						.title("title")
 						.description("description")
 						.isAllDay(false)
-						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
 						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
@@ -162,7 +162,7 @@ class ScheduleQueryServiceTest {
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(calendar.equalsMemberId(eq(memberId))).willReturn(true);
+		given(calendar.isOwnedBy(eq(memberId))).willReturn(true);
 		given(calendarService.searchByCalendarId(anyLong())).willReturn(calendar);
 		given(scheduleRepository.findScheduleInMonth(anyLong(), eq(2024), eq(1)))
 				.willReturn(List.of(expectedSchedule));
@@ -184,8 +184,8 @@ class ScheduleQueryServiceTest {
 						.title("title")
 						.description("description")
 						.isAllDay(false)
-						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
 						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
@@ -196,7 +196,7 @@ class ScheduleQueryServiceTest {
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(calendar.equalsMemberId(eq(memberId))).willReturn(true);
+		given(calendar.isOwnedBy(eq(memberId))).willReturn(true);
 		given(calendarService.searchByCalendarId(anyLong())).willReturn(calendar);
 		given(scheduleRepository.findScheduleInDay(anyLong(), eq(LocalDate.of(2024, 1, 15))))
 				.willReturn(List.of(expectedSchedule));

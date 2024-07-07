@@ -42,10 +42,10 @@ class ScheduleTest {
 											fixture.getStartDatetime(), fixture.getEndDatetime()));
 					assertThat(schedule.getColorHex()).isEqualTo(fixture.getColorHex());
 					assertThat(schedule.getPlace()).isEqualTo(fixture.getPlace());
-					assertThat(schedule.getSetLocation()).isEqualTo(fixture.getSetLocation());
+					assertThat(schedule.isSetLocation()).isEqualTo(fixture.getSetLocation());
 					assertThat(schedule.getLatitude()).isEqualTo(fixture.getLatitude());
 					assertThat(schedule.getLongitude()).isEqualTo(fixture.getLongitude());
-					assertThat(schedule.getSetAlarm()).isEqualTo(fixture.getSetAlarm());
+					assertThat(schedule.isSetAlarm()).isEqualTo(fixture.getSetAlarm());
 				});
 	}
 
