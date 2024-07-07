@@ -36,7 +36,7 @@ public class ScheduleQueryService {
 			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
 		}
 
-		if (schedule.getScheduleGroup().getIsRepeated()) {
+		if (schedule.getScheduleGroup().isRepeated()) {
 			return DayScheduleResponse.of(
 					schedule,
 					true,
@@ -63,7 +63,7 @@ public class ScheduleQueryService {
 
 	public List<DayScheduleResponse> searchSchedulesInDay(
 			Long calendarId, LocalDate date, Long memberId) {
-		if (!calendarService.searchByCalendarId(calendarId).equalsMemberId(memberId)) {
+		if (!calendarService.searchByCalendarId(calendarId).isOwnedBy(memberId)) {
 			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
 		}
 		return scheduleRepository.findScheduleInDay(calendarId, date).stream()
@@ -71,7 +71,7 @@ public class ScheduleQueryService {
 						schedule ->
 								DayScheduleResponse.of(
 										schedule,
-										schedule.getScheduleGroup().getIsRepeated(),
+										schedule.getScheduleGroup().isRepeated(),
 										schedule.getScheduleAlarms().stream()
 												.map(ScheduleAlarm::getAlarmTime)
 												.toList(),
@@ -83,7 +83,7 @@ public class ScheduleQueryService {
 	}
 
 	private void validateAuthenticatedUser(Calendar calendar, Long memberId) {
-		if (!calendar.equalsMemberId(memberId)) {
+		if (!calendar.isOwnedBy(memberId)) {
 			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
 		}
 	}

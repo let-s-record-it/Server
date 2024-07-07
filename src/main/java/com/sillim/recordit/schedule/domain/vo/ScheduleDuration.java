@@ -18,40 +18,40 @@ import lombok.NoArgsConstructor;
 public class ScheduleDuration {
 
 	@Column(nullable = false)
-	private Boolean isAllDay;
+	private boolean isAllDay;
 
 	@Column(nullable = false)
-	private LocalDateTime startDatetime;
+	private LocalDateTime startDateTime;
 
 	@Column(nullable = false)
-	private LocalDateTime endDatetime;
+	private LocalDateTime endDateTime;
 
 	private ScheduleDuration(
-			Boolean isAllDay, LocalDateTime startDatetime, LocalDateTime endDatetime) {
-		validate(startDatetime, endDatetime);
+			boolean isAllDay, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		validate(startDateTime, endDateTime);
 		this.isAllDay = isAllDay;
-		this.startDatetime = startDatetime;
-		this.endDatetime = endDatetime;
+		this.startDateTime = startDateTime;
+		this.endDateTime = endDateTime;
 	}
 
 	public static ScheduleDuration createAllDay(
-			LocalDateTime startDatetime, LocalDateTime endDatetime) {
+			LocalDateTime startDateTime, LocalDateTime endDateTime) {
 		return new ScheduleDuration(
 				true,
-				LocalDateTime.of(startDatetime.toLocalDate(), LocalTime.MIN),
-				LocalDateTime.of(endDatetime.toLocalDate(), LocalTime.MIN));
+				LocalDateTime.of(startDateTime.toLocalDate(), LocalTime.MIN),
+				LocalDateTime.of(endDateTime.toLocalDate(), LocalTime.MIN));
 	}
 
 	public static ScheduleDuration createNotAllDay(
-			LocalDateTime startDatetime, LocalDateTime endDatetime) {
+			LocalDateTime startDateTime, LocalDateTime endDateTime) {
 		return new ScheduleDuration(
 				false,
-				startDatetime.withSecond(0).withNano(0),
-				endDatetime.withSecond(0).withNano(0));
+				startDateTime.withSecond(0).withNano(0),
+				endDateTime.withSecond(0).withNano(0));
 	}
 
-	private void validate(LocalDateTime startDatetime, LocalDateTime endDatetime) {
-		if (startDatetime.isAfter(endDatetime)) {
+	private void validate(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		if (startDateTime.isAfter(endDateTime)) {
 			throw new InvalidScheduleDurationException(ErrorCode.INVALID_DURATION);
 		}
 	}

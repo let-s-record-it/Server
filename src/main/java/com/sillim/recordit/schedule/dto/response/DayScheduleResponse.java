@@ -10,38 +10,38 @@ public record DayScheduleResponse(
 		Long id,
 		String title,
 		String description,
-		Boolean isAllDay,
-		LocalDateTime startDatetime,
-		LocalDateTime endDatetime,
+		boolean isAllDay,
+		LocalDateTime startDateTime,
+		LocalDateTime endDateTime,
 		String colorHex,
 		String place,
-		Boolean setLocation,
+		boolean setLocation,
 		Double latitude,
 		Double longitude,
-		Boolean setAlarm,
+		boolean setAlarm,
 		List<LocalDateTime> alarmTimes,
-		Boolean isRepeated,
+		boolean isRepeated,
 		String calendarTitle,
 		RepetitionPatternResponse repetitionPattern) {
 
 	public static DayScheduleResponse of(
 			Schedule schedule,
-			Boolean isRepeated,
+			boolean isRepeated,
 			List<LocalDateTime> alarmTimes,
 			RepetitionPatternResponse repetitionPatternResponse) {
 		return DayScheduleResponse.builder()
 				.id(schedule.getId())
 				.title(schedule.getTitle())
 				.description(schedule.getDescription())
-				.isAllDay(schedule.getIsAllDay())
-				.startDatetime(schedule.getStartDatetime())
-				.endDatetime(schedule.getEndDatetime())
+				.isAllDay(schedule.isAllDay())
+				.startDateTime(schedule.getStartDateTime())
+				.endDateTime(schedule.getEndDateTime())
 				.colorHex(schedule.getColorHex())
 				.place(schedule.getPlace())
-				.setLocation(schedule.getSetLocation())
+				.setLocation(schedule.isSetLocation())
 				.latitude(schedule.getLatitude())
 				.longitude(schedule.getLongitude())
-				.setAlarm(schedule.getSetAlarm())
+				.setAlarm(schedule.isSetAlarm())
 				.alarmTimes(alarmTimes)
 				.isRepeated(isRepeated)
 				.calendarTitle(schedule.getCalendar().getTitle())

@@ -17,7 +17,7 @@ public class ScheduleGroup {
 	private Long id;
 
 	@Column(nullable = false)
-	private Boolean isRepeated;
+	private boolean isRepeated;
 
 	@OneToOne(mappedBy = "scheduleGroup")
 	private RepetitionPattern repetitionPattern;

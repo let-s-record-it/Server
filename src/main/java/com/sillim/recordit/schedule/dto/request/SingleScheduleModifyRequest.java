@@ -13,21 +13,22 @@ import java.util.List;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 
-public record ScheduleAddRequest(
+public record SingleScheduleModifyRequest(
 		@Length(min = 1, max = 30) String title,
 		@Length(max = 500) String description,
-		@NotNull Boolean isAllDay,
+		boolean isAllDay,
 		@NotNull LocalDateTime startDateTime,
 		@NotNull LocalDateTime endDateTime,
-		@NotNull Boolean isRepeated,
+		boolean isRepeated,
 		@Validated RepetitionAddRequest repetition,
 		@ColorHexValid String colorHex,
 		@NotNull String place,
-		@NotNull Boolean setLocation,
+		@NotNull boolean setLocation,
 		@ValidLatitude Double latitude,
 		@ValidLongitude Double longitude,
-		@NotNull Boolean setAlarm,
-		List<LocalDateTime> alarmTimes) {
+		boolean setAlarm,
+		List<LocalDateTime> alarmTimes,
+		Long calendarId) {
 
 	public Schedule toSchedule(
 			TemporalAmount plusAmount, Calendar calendar, ScheduleGroup scheduleGroup) {
@@ -37,25 +38,6 @@ public record ScheduleAddRequest(
 				.isAllDay(isAllDay)
 				.startDateTime(startDateTime.plus(plusAmount))
 				.endDateTime(endDateTime.plus(plusAmount))
-				.colorHex(colorHex)
-				.place(place)
-				.setLocation(setLocation)
-				.latitude(latitude)
-				.longitude(longitude)
-				.setAlarm(setAlarm)
-				.calendar(calendar)
-				.scheduleGroup(scheduleGroup)
-				.scheduleAlarms(alarmTimes)
-				.build();
-	}
-
-	public Schedule toSchedule(Calendar calendar, ScheduleGroup scheduleGroup) {
-		return Schedule.builder()
-				.title(title)
-				.description(description)
-				.isAllDay(isAllDay)
-				.startDateTime(startDateTime)
-				.endDateTime(endDateTime)
 				.colorHex(colorHex)
 				.place(place)
 				.setLocation(setLocation)

@@ -37,7 +37,7 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.where(schedule.calendar.id.eq(calendarId).and(schedule.deleted.eq(false)))
 				.where(startLtYear(year).or(startEqYear(year).and(StartLoeMonth(month))))
 				.where(endGtYear(year).or(endEqYear(year).and(endGoeMonth(month))))
-				.orderBy(schedule.scheduleDuration.startDatetime.asc())
+				.orderBy(schedule.scheduleDuration.startDateTime.asc())
 				.fetch();
 	}
 
@@ -51,8 +51,8 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.leftJoin(schedule.scheduleGroup.repetitionPattern)
 				.fetchJoin()
 				.where(schedule.calendar.id.eq(calendarId).and(schedule.deleted.eq(false)))
-				.where(schedule.scheduleDuration.startDatetime.loe(date.atStartOfDay()))
-				.where(schedule.scheduleDuration.endDatetime.goe(date.atStartOfDay()))
+				.where(schedule.scheduleDuration.startDateTime.loe(date.atStartOfDay()))
+				.where(schedule.scheduleDuration.endDateTime.goe(date.atStartOfDay()))
 				.fetch();
 	}
 
@@ -74,31 +74,31 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 								.id
 								.eq(scheduleGroupId)
 								.and(schedule.deleted.eq(false)))
-				.where(schedule.scheduleDuration.startDatetime.goe(dateTime))
+				.where(schedule.scheduleDuration.startDateTime.goe(dateTime))
 				.fetch();
 	}
 
 	private static BooleanExpression endGoeMonth(Integer month) {
-		return schedule.scheduleDuration.endDatetime.month().goe(month);
+		return schedule.scheduleDuration.endDateTime.month().goe(month);
 	}
 
 	private static BooleanExpression endGtYear(Integer year) {
-		return schedule.scheduleDuration.endDatetime.year().gt(year);
+		return schedule.scheduleDuration.endDateTime.year().gt(year);
 	}
 
 	private static BooleanExpression StartLoeMonth(Integer month) {
-		return schedule.scheduleDuration.startDatetime.month().loe(month);
+		return schedule.scheduleDuration.startDateTime.month().loe(month);
 	}
 
 	private static BooleanExpression startEqYear(Integer year) {
-		return schedule.scheduleDuration.startDatetime.year().eq(year);
+		return schedule.scheduleDuration.startDateTime.year().eq(year);
 	}
 
 	private static BooleanExpression endEqYear(Integer year) {
-		return schedule.scheduleDuration.endDatetime.year().eq(year);
+		return schedule.scheduleDuration.endDateTime.year().eq(year);
 	}
 
 	private static BooleanExpression startLtYear(Integer year) {
-		return schedule.scheduleDuration.startDatetime.year().lt(year);
+		return schedule.scheduleDuration.startDateTime.year().lt(year);
 	}
 }
