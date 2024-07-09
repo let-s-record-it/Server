@@ -34,12 +34,12 @@ public class MonthlyGoalController {
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
 
 	@PostMapping("/months")
-	public ResponseEntity<Void> monthlyGoalAdd(
+	public ResponseEntity<Long> monthlyGoalAdd(
 			@Validated @RequestBody final MonthlyGoalUpdateRequest request,
 			@CurrentMember final Member member) {
 
-		monthlyGoalUpdateService.add(request, member.getId());
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(monthlyGoalUpdateService.add(request, member.getId()));
 	}
 
 	@PutMapping("/months/{monthlyGoalId}")
