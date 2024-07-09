@@ -17,25 +17,21 @@ import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
-import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.domain.MemberRole;
-import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.RepetitionType;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
-import com.sillim.recordit.schedule.dto.request.RepetitionAddRequest;
+import com.sillim.recordit.schedule.dto.request.RepetitionUpdateRequest;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
-import com.sillim.recordit.schedule.dto.request.SingleScheduleModifyRequest;
+import com.sillim.recordit.schedule.dto.request.ScheduleModifyRequest;
 import com.sillim.recordit.schedule.fixture.ScheduleFixture;
 import com.sillim.recordit.schedule.repository.ScheduleRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -116,8 +112,8 @@ class ScheduleCommandServiceTest {
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
 		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime endDate = LocalDateTime.of(2024, 2, 1, 0, 0);
-		RepetitionAddRequest repetitionAddRequest =
-				new RepetitionAddRequest(
+		RepetitionUpdateRequest repetitionUpdateRequest =
+				new RepetitionUpdateRequest(
 						RepetitionType.DAILY,
 						1,
 						repetitionStartDate,
@@ -135,7 +131,7 @@ class ScheduleCommandServiceTest {
 						startDate,
 						endDate,
 						true,
-						repetitionAddRequest,
+						repetitionUpdateRequest,
 						"aaffbb",
 						"서울역",
 						true,
@@ -167,7 +163,7 @@ class ScheduleCommandServiceTest {
 						.build();
 		given(scheduleGroupService.addScheduleGroup(true)).willReturn(scheduleGroup);
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
-		given(repetitionPatternService.addRepetitionPattern(repetitionAddRequest, scheduleGroup))
+		given(repetitionPatternService.addRepetitionPattern(repetitionUpdateRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
 
 		List<Schedule> schedules =
@@ -193,8 +189,8 @@ class ScheduleCommandServiceTest {
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
 		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime endDate = LocalDateTime.of(2024, 2, 1, 0, 0);
-		RepetitionAddRequest repetitionAddRequest =
-				new RepetitionAddRequest(
+		RepetitionUpdateRequest repetitionUpdateRequest =
+				new RepetitionUpdateRequest(
 						RepetitionType.DAILY,
 						1,
 						repetitionStartDate,
@@ -207,15 +203,15 @@ class ScheduleCommandServiceTest {
 		long memberId = 1L;
 		long scheduleId = 1L;
 		long calendarId = 1L;
-		SingleScheduleModifyRequest singleScheduleModifyRequest =
-				new SingleScheduleModifyRequest(
+		ScheduleModifyRequest scheduleModifyRequest =
+				new ScheduleModifyRequest(
 						"title2",
 						"description2",
 						true,
 						startDate,
 						endDate,
 						true,
-						repetitionAddRequest,
+						repetitionUpdateRequest,
 						"aaffcc",
 						"용산역",
 						true,
@@ -238,7 +234,7 @@ class ScheduleCommandServiceTest {
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
 		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar2);
 
-		assertThatCode(() -> scheduleCommandService.modifySchedule(singleScheduleModifyRequest, scheduleId, memberId))
+		assertThatCode(() -> scheduleCommandService.modifySchedule(scheduleModifyRequest, scheduleId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
@@ -250,8 +246,8 @@ class ScheduleCommandServiceTest {
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
 		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime endDate = LocalDateTime.of(2024, 2, 1, 0, 0);
-		RepetitionAddRequest repetitionAddRequest =
-				new RepetitionAddRequest(
+		RepetitionUpdateRequest repetitionUpdateRequest =
+				new RepetitionUpdateRequest(
 						RepetitionType.DAILY,
 						1,
 						repetitionStartDate,
@@ -264,15 +260,15 @@ class ScheduleCommandServiceTest {
 		long memberId = 1L;
 		long scheduleId = 1L;
 		long calendarId = 1L;
-		SingleScheduleModifyRequest singleScheduleModifyRequest =
-				new SingleScheduleModifyRequest(
+		ScheduleModifyRequest scheduleModifyRequest =
+				new ScheduleModifyRequest(
 						"title2",
 						"description2",
 						true,
 						startDate,
 						endDate,
 						true,
-						repetitionAddRequest,
+						repetitionUpdateRequest,
 						"aaffcc",
 						"용산역",
 						true,
@@ -292,10 +288,10 @@ class ScheduleCommandServiceTest {
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
 		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar);
 		given(scheduleGroupService.addScheduleGroup(true)).willReturn(scheduleGroup);
-		given(repetitionPatternService.addRepetitionPattern(repetitionAddRequest, scheduleGroup))
+		given(repetitionPatternService.addRepetitionPattern(repetitionUpdateRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
 
-		scheduleCommandService.modifySchedule(singleScheduleModifyRequest, scheduleId, memberId);
+		scheduleCommandService.modifySchedule(scheduleModifyRequest, scheduleId, memberId);
 
 		assertAll(
 				() -> {
@@ -309,6 +305,117 @@ class ScheduleCommandServiceTest {
 					assertThat(schedule.isSetLocation()).isTrue();
 					then(scheduleRepository).should(times(31)).save(any(Schedule.class));
 				});
+	}
+
+	@Test
+	@DisplayName("그룹 일정을 반복이 있는 그룹 일정으로 수정할 수 있다.")
+	void modifySchedulesInGroupToRepeated() {
+		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2024, 2, 1, 0, 0);
+		RepetitionUpdateRequest repetitionUpdateRequest =
+				new RepetitionUpdateRequest(
+						RepetitionType.DAILY,
+						1,
+						repetitionStartDate,
+						repetitionEndDate,
+						null,
+						null,
+						null,
+						null,
+						null);
+		long memberId = 1L;
+		long scheduleId = 1L;
+		long calendarId = 1L;
+		ScheduleModifyRequest scheduleModifyRequest =
+				new ScheduleModifyRequest(
+						"title2",
+						"description2",
+						true,
+						startDate,
+						endDate,
+						true,
+						repetitionUpdateRequest,
+						"aaffcc",
+						"용산역",
+						true,
+						37.0,
+						128.0,
+						true,
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
+						1L);
+		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
+		RepetitionPattern repetitionPattern =
+				RepetitionPattern.createDaily(
+						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
+		Member member = mock(Member.class);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar);
+		given(member.equalsId(anyLong())).willReturn(true);
+		given(scheduleGroup.getId()).willReturn(1L);
+		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
+		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar);
+		given(scheduleRepository.findSchedulesInGroup(eq(1L))).willReturn(List.of(schedule));
+		given(repetitionPatternService.updateRepetitionPattern(repetitionUpdateRequest, scheduleGroup))
+				.willReturn(repetitionPattern);
+
+		scheduleCommandService.modifySchedulesInGroup(scheduleModifyRequest, scheduleId, memberId);
+
+		then(scheduleRepository).should(times(32)).save(any(Schedule.class));
+	}
+
+	@Test
+	@DisplayName("그룹 일정을 반복이 없는 그룹 일정으로 수정할 수 있다.")
+	void modifySchedulesInGroupToNotRepeated() {
+		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2024, 2, 1, 0, 0);
+		RepetitionUpdateRequest repetitionUpdateRequest =
+				new RepetitionUpdateRequest(
+						RepetitionType.DAILY,
+						1,
+						repetitionStartDate,
+						repetitionEndDate,
+						null,
+						null,
+						null,
+						null,
+						null);
+		long memberId = 1L;
+		long scheduleId = 1L;
+		long calendarId = 1L;
+		ScheduleModifyRequest scheduleModifyRequest =
+				new ScheduleModifyRequest(
+						"title2",
+						"description2",
+						true,
+						startDate,
+						endDate,
+						false,
+						repetitionUpdateRequest,
+						"aaffcc",
+						"용산역",
+						true,
+						37.0,
+						128.0,
+						true,
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
+						1L);
+		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
+		Member member = mock(Member.class);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar);
+		given(member.equalsId(anyLong())).willReturn(true);
+		given(scheduleGroup.getId()).willReturn(1L);
+		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
+		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar);
+		given(scheduleRepository.findSchedulesInGroup(eq(1L))).willReturn(List.of(schedule));
+
+		scheduleCommandService.modifySchedulesInGroup(scheduleModifyRequest, scheduleId, memberId);
+
+		then(scheduleGroup).should(times(1)).modifyNotRepeated();
 	}
 
 	@Test
