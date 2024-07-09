@@ -57,8 +57,6 @@ class TaskQueryServiceTest {
 	void searchAllByCalendarIdAndDate() {
 		Long memberId = 1L;
 		Long calendarId = 2L;
-		calendar = spy(calendar);
-		given(calendar.getId()).willReturn(calendarId);
 		TaskGroup taskGroup = new TaskGroup(false, null, null);
 		LocalDate date = LocalDate.of(2024, 6, 12);
 		List<Task> tasks =
@@ -202,8 +200,6 @@ class TaskQueryServiceTest {
 	void throwRecordNotFoundExceptionIfTaskNotExists() {
 		Long memberId = 1L;
 		Long calendarId = 2L;
-		calendar = spy(calendar);
-		given(calendar.getId()).willReturn(calendarId);
 		Long taskId = 3L;
 
 		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))

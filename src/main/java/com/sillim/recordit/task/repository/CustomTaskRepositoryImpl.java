@@ -23,13 +23,13 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 	public Optional<Task> findByIdAndCalendarId(Long taskId, Long calendarId) {
 		return Optional.ofNullable(
 				selectFrom(task)
-						.leftJoin(calendar)
+						.leftJoin(task.calendar, calendar)
 						.fetchJoin()
-						.leftJoin(taskGroup)
+						.leftJoin(task.taskGroup, taskGroup)
 						.fetchJoin()
-						.leftJoin(monthlyGoal)
+						.leftJoin(taskGroup.monthlyGoal, monthlyGoal)
 						.fetchJoin()
-						.leftJoin(weeklyGoal)
+						.leftJoin(taskGroup.weeklyGoal, weeklyGoal)
 						.fetchJoin()
 						.where(task.id.eq(taskId).and(task.calendar.id.eq(calendarId)))
 						.fetchOne());
