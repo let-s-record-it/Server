@@ -32,9 +32,7 @@ public class ScheduleQueryService {
 						.findByScheduleId(scheduleId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
-		if (!schedule.isOwnedBy(memberId)) {
-			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
-		}
+		schedule.validateAuthenticatedMember(memberId);
 
 		if (schedule.getScheduleGroup().isRepeated()) {
 			return DayScheduleResponse.of(

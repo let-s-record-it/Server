@@ -88,8 +88,7 @@ class ScheduleCommandServiceTest {
 						.build();
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 
-		List<Schedule> schedules =
-				scheduleCommandService.addSchedules(scheduleAddRequest, 1L);
+		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest, 1L);
 
 		assertAll(
 				() -> {
@@ -166,8 +165,7 @@ class ScheduleCommandServiceTest {
 		given(repetitionPatternService.addRepetitionPattern(repetitionUpdateRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
 
-		List<Schedule> schedules =
-				scheduleCommandService.addSchedules(scheduleAddRequest, 1L);
+		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest, 1L);
 
 		assertAll(
 				() -> {
@@ -234,7 +232,10 @@ class ScheduleCommandServiceTest {
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
 		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar2);
 
-		assertThatCode(() -> scheduleCommandService.modifySchedule(scheduleModifyRequest, scheduleId, memberId))
+		assertThatCode(
+						() ->
+								scheduleCommandService.modifySchedule(
+										scheduleModifyRequest, scheduleId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
@@ -357,7 +358,9 @@ class ScheduleCommandServiceTest {
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
 		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar);
 		given(scheduleRepository.findSchedulesInGroup(eq(1L))).willReturn(List.of(schedule));
-		given(repetitionPatternService.updateRepetitionPattern(repetitionUpdateRequest, scheduleGroup))
+		given(
+						repetitionPatternService.updateRepetitionPattern(
+								repetitionUpdateRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
 
 		scheduleCommandService.modifySchedulesInGroup(scheduleModifyRequest, scheduleId, memberId);
@@ -488,9 +491,9 @@ class ScheduleCommandServiceTest {
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
 		assertThatCode(
-				() ->
-						scheduleCommandService.removeSchedulesInGroupAfter(
-								schedule.getId(), 1L))
+						() ->
+								scheduleCommandService.removeSchedulesInGroupAfter(
+										schedule.getId(), 1L))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
