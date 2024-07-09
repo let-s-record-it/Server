@@ -3,6 +3,7 @@ package com.sillim.recordit.task.controller;
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.task.dto.request.TaskAddRequest;
+import com.sillim.recordit.task.dto.request.TaskUpdateRequest;
 import com.sillim.recordit.task.dto.response.TaskDetailsResponse;
 import com.sillim.recordit.task.dto.response.TaskResponse;
 import com.sillim.recordit.task.service.TaskCommandService;
@@ -16,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,5 +61,17 @@ public class TaskController {
 
 		return ResponseEntity.ok(
 				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, member.getId()));
+	}
+
+	@PutMapping("/{taskId}/modify-all")
+	public ResponseEntity<Void> modifyAllTasks(
+			@RequestBody @Validated TaskUpdateRequest request,
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		taskCommandService.modifyAllTasks(request, calendarId, taskId, member.getId());
+
+		return ResponseEntity.noContent().build();
 	}
 }

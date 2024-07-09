@@ -16,7 +16,7 @@ import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.dto.request.TaskAddRequest;
-import com.sillim.recordit.task.dto.request.TaskRepetitionAddRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
 import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
 import com.sillim.recordit.task.repository.TaskRepository;
 import java.time.LocalDate;
@@ -76,8 +76,8 @@ class TaskCommandServiceTest {
 	@Test
 	@DisplayName("반복되는 task들을 추가할 수 있다.")
 	void addRepeatingTaskTest() {
-		TaskRepetitionAddRequest repetitionRequest =
-				new TaskRepetitionAddRequest(
+		TaskRepetitionUpdateRequest repetitionRequest =
+				new TaskRepetitionUpdateRequest(
 						TaskRepetitionType.DAILY,
 						1,
 						LocalDate.of(2024, 1, 1),

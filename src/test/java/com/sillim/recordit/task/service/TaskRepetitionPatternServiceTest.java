@@ -9,7 +9,7 @@ import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.repetition.TaskDailyRepetitionPattern;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
-import com.sillim.recordit.task.dto.request.TaskRepetitionAddRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
 import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
 import com.sillim.recordit.task.repository.TaskRepetitionPatternRepository;
 import java.time.LocalDate;
@@ -37,8 +37,8 @@ class TaskRepetitionPatternServiceTest {
 	@Test
 	@DisplayName("할 일 반복 패턴을 추가할 수 있다.")
 	void addRepetitionPatternTest() {
-		TaskRepetitionAddRequest request =
-				new TaskRepetitionAddRequest(
+		TaskRepetitionUpdateRequest request =
+				new TaskRepetitionUpdateRequest(
 						TaskRepetitionType.DAILY,
 						1,
 						LocalDate.of(2024, 1, 1),

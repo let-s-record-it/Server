@@ -5,7 +5,7 @@ import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPatternFactory;
-import com.sillim.recordit.task.dto.request.TaskRepetitionAddRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
 import com.sillim.recordit.task.repository.TaskRepetitionPatternRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class TaskRepetitionPatternService {
 
 	@Transactional
 	public TaskRepetitionPattern addRepetitionPattern(
-			TaskRepetitionAddRequest request, TaskGroup taskGroup) {
+			TaskRepetitionUpdateRequest request, TaskGroup taskGroup) {
 		return repetitionPatternRepository.save(
 				TaskRepetitionPatternFactory.create(
 						request.repetitionType(),
@@ -41,5 +41,24 @@ public class TaskRepetitionPatternService {
 				.findByTaskGroupId(taskGroupId)
 				.orElseThrow(
 						() -> new RecordNotFoundException(ErrorCode.TASK_REPETITION_NOT_FOUND));
+	}
+
+	@Transactional
+	public TaskRepetitionPattern modifyRepetitionPattern(
+			TaskRepetitionUpdateRequest request, TaskGroup taskGroup) {
+
+		repetitionPatternRepository.deleteByTaskGroupId(taskGroup.getId());
+		return repetitionPatternRepository.save(
+				TaskRepetitionPatternFactory.create(
+						request.repetitionType(),
+						request.repetitionPeriod(),
+						request.repetitionStartDate(),
+						request.repetitionEndDate(),
+						request.monthOfYear(),
+						request.dayOfMonth(),
+						request.weekNumber(),
+						request.weekday(),
+						request.weekdayBit(),
+						taskGroup));
 	}
 }

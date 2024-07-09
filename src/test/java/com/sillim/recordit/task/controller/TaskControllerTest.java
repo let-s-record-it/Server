@@ -28,7 +28,7 @@ import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.dto.request.TaskAddRequest;
-import com.sillim.recordit.task.dto.request.TaskRepetitionAddRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
 import com.sillim.recordit.task.dto.response.TaskDetailsResponse;
 import com.sillim.recordit.task.fixture.TaskFixture;
 import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
@@ -64,9 +64,8 @@ public class TaskControllerTest extends RestDocsTest {
 	@DisplayName("할 일을 생성한다.")
 	void addNonRepeatingTaskTest() throws Exception {
 
-		TaskGroup taskGroup = new TaskGroup(false, null, null);
-		TaskRepetitionAddRequest repetitionRequest =
-				new TaskRepetitionAddRequest(
+		TaskRepetitionUpdateRequest repetitionRequest =
+				new TaskRepetitionUpdateRequest(
 						TaskRepetitionType.DAILY,
 						1,
 						LocalDate.of(2024, 1, 1),
