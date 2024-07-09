@@ -3,7 +3,7 @@ package com.sillim.recordit.schedule.controller;
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
-import com.sillim.recordit.schedule.dto.request.SingleScheduleModifyRequest;
+import com.sillim.recordit.schedule.dto.request.ScheduleModifyRequest;
 import com.sillim.recordit.schedule.dto.response.DayScheduleResponse;
 import com.sillim.recordit.schedule.dto.response.MonthScheduleResponse;
 import com.sillim.recordit.schedule.service.ScheduleCommandService;
@@ -28,71 +28,78 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ScheduleController {
 
-	private final ScheduleCommandService scheduleCommandService;
-	private final ScheduleQueryService scheduleQueryService;
+    private final ScheduleCommandService scheduleCommandService;
+    private final ScheduleQueryService scheduleQueryService;
 
-	@PostMapping
-	public ResponseEntity<List<MonthScheduleResponse>> schedulesAdd(
-			@Validated @RequestBody ScheduleAddRequest request, @PathVariable Long calendarId) {
-		return ResponseEntity.ok(
-				scheduleCommandService.addSchedules(request, calendarId).stream()
-						.map(MonthScheduleResponse::from)
-						.toList());
-	}
+    @PostMapping
+    public ResponseEntity<List<MonthScheduleResponse>> schedulesAdd(
+            @Validated @RequestBody ScheduleAddRequest request, @PathVariable Long calendarId) {
+        return ResponseEntity.ok(
+                scheduleCommandService.addSchedules(request, calendarId).stream()
+                        .map(MonthScheduleResponse::from)
+                        .toList());
+    }
 
-	@GetMapping("/{scheduleId}")
-	public ResponseEntity<DayScheduleResponse> scheduleDetails(
-			@PathVariable Long scheduleId, @CurrentMember Member member) {
-		return ResponseEntity.ok(scheduleQueryService.searchSchedule(scheduleId, member.getId()));
-	}
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<DayScheduleResponse> scheduleDetails(
+            @PathVariable Long scheduleId, @CurrentMember Member member) {
+        return ResponseEntity.ok(scheduleQueryService.searchSchedule(scheduleId, member.getId()));
+    }
 
-	@GetMapping("/month")
-	public ResponseEntity<List<MonthScheduleResponse>> schedulesInMonth(
-			@PathVariable Long calendarId,
-			@RequestParam Integer year,
-			@RequestParam Integer month,
-			@CurrentMember Member member) {
-		return ResponseEntity.ok(
-				scheduleQueryService.searchSchedulesInMonth(
-						calendarId, year, month, member.getId()));
-	}
+    @GetMapping("/month")
+    public ResponseEntity<List<MonthScheduleResponse>> schedulesInMonth(
+            @PathVariable Long calendarId,
+            @RequestParam Integer year,
+            @RequestParam Integer month,
+            @CurrentMember Member member) {
+        return ResponseEntity.ok(
+                scheduleQueryService.searchSchedulesInMonth(
+                        calendarId, year, month, member.getId()));
+    }
 
-	@GetMapping("/day")
-	public ResponseEntity<List<DayScheduleResponse>> schedulesInDay(
-			@PathVariable Long calendarId,
-			@RequestParam LocalDate date,
-			@CurrentMember Member member) {
-		return ResponseEntity.ok(
-				scheduleQueryService.searchSchedulesInDay(calendarId, date, member.getId()));
-	}
+    @GetMapping("/day")
+    public ResponseEntity<List<DayScheduleResponse>> schedulesInDay(
+            @PathVariable Long calendarId,
+            @RequestParam LocalDate date,
+            @CurrentMember Member member) {
+        return ResponseEntity.ok(
+                scheduleQueryService.searchSchedulesInDay(calendarId, date, member.getId()));
+    }
 
-	@PutMapping("/{scheduleId}")
-	public ResponseEntity<Void> scheduleModify(
-			@PathVariable Long scheduleId,
-			@RequestBody SingleScheduleModifyRequest request,
-			@CurrentMember Member member) {
-		scheduleCommandService.modifySchedule(request, scheduleId, member.getId());
-		return ResponseEntity.noContent().build();
-	}
+    @PutMapping("/{scheduleId}")
+    public ResponseEntity<Void> scheduleModify(
+            @PathVariable Long scheduleId,
+            @RequestBody ScheduleModifyRequest request,
+            @CurrentMember Member member) {
+        scheduleCommandService.modifySchedule(request, scheduleId, member.getId());
+        return ResponseEntity.noContent().build();
+    }
 
-	@DeleteMapping("/{scheduleId}")
-	public ResponseEntity<Void> scheduleRemoveById(
-			@PathVariable Long scheduleId, @CurrentMember Member member) {
-		scheduleCommandService.removeSchedule(scheduleId, member.getId());
-		return ResponseEntity.noContent().build();
-	}
+    @PutMapping("/{scheduleId}/group")
+    public ResponseEntity<Void> schedulesModify(@PathVariable Long scheduleId,
+            @RequestBody ScheduleModifyRequest request, @CurrentMember Member member) {
+        scheduleCommandService.modifySchedulesInGroup(request, scheduleId, member.getId());
+        return ResponseEntity.noContent().build();
+    }
 
-	@DeleteMapping("/{scheduleId}/group")
-	public ResponseEntity<Void> schedulesRemoveInGroup(
-			@PathVariable Long scheduleId, @CurrentMember Member member) {
-		scheduleCommandService.removeSchedulesInGroup(scheduleId, member.getId());
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping("/{scheduleId}")
+    public ResponseEntity<Void> scheduleRemoveById(
+            @PathVariable Long scheduleId, @CurrentMember Member member) {
+        scheduleCommandService.removeSchedule(scheduleId, member.getId());
+        return ResponseEntity.noContent().build();
+    }
 
-	@DeleteMapping("/{scheduleId}/after")
-	public ResponseEntity<Void> schedulesRemoveInGroupAfter(
-			@PathVariable Long scheduleId, @CurrentMember Member member) {
-		scheduleCommandService.removeSchedulesInGroupAfter(scheduleId, member.getId());
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping("/{scheduleId}/group")
+    public ResponseEntity<Void> schedulesRemoveInGroup(
+            @PathVariable Long scheduleId, @CurrentMember Member member) {
+        scheduleCommandService.removeSchedulesInGroup(scheduleId, member.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{scheduleId}/after")
+    public ResponseEntity<Void> schedulesRemoveInGroupAfter(
+            @PathVariable Long scheduleId, @CurrentMember Member member) {
+        scheduleCommandService.removeSchedulesInGroupAfter(scheduleId, member.getId());
+        return ResponseEntity.noContent().build();
+    }
 }

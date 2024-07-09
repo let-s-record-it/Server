@@ -20,7 +20,7 @@ public record ScheduleAddRequest(
 		@NotNull LocalDateTime startDateTime,
 		@NotNull LocalDateTime endDateTime,
 		@NotNull Boolean isRepeated,
-		@Validated RepetitionAddRequest repetition,
+		@Validated RepetitionUpdateRequest repetition,
 		@ColorHexValid String colorHex,
 		@NotNull String place,
 		@NotNull Boolean setLocation,

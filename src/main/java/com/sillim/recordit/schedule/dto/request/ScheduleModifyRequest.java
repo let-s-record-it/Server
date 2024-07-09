@@ -13,14 +13,14 @@ import java.util.List;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 
-public record SingleScheduleModifyRequest(
+public record ScheduleModifyRequest(
 		@Length(min = 1, max = 30) String title,
 		@Length(max = 500) String description,
 		boolean isAllDay,
 		@NotNull LocalDateTime startDateTime,
 		@NotNull LocalDateTime endDateTime,
 		boolean isRepeated,
-		@Validated RepetitionAddRequest repetition,
+		@Validated RepetitionUpdateRequest repetition,
 		@ColorHexValid String colorHex,
 		@NotNull String place,
 		@NotNull boolean setLocation,
