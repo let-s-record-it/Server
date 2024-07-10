@@ -162,7 +162,6 @@ class ScheduleQueryServiceTest {
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(calendar.isOwnedBy(eq(memberId))).willReturn(true);
 		given(calendarService.searchByCalendarId(anyLong())).willReturn(calendar);
 		given(scheduleRepository.findScheduleInMonth(anyLong(), eq(2024), eq(1)))
 				.willReturn(List.of(expectedSchedule));
@@ -196,7 +195,6 @@ class ScheduleQueryServiceTest {
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(calendar.isOwnedBy(eq(memberId))).willReturn(true);
 		given(calendarService.searchByCalendarId(anyLong())).willReturn(calendar);
 		given(scheduleRepository.findScheduleInDay(anyLong(), eq(LocalDate.of(2024, 1, 15))))
 				.willReturn(List.of(expectedSchedule));
