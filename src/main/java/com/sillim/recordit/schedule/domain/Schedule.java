@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -103,7 +104,7 @@ public class Schedule {
 		this.scheduleAlarms =
 				scheduleAlarms.stream()
 						.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
-						.toList();
+						.collect(Collectors.toList());
 		this.deleted = false;
 	}
 
@@ -197,13 +198,17 @@ public class Schedule {
 		this.setLocation = setLocation;
 		this.location = setLocation ? new Location(latitude, longitude) : null;
 		this.setAlarm = setAlarm;
-		this.scheduleAlarms =
-				scheduleAlarms.stream()
-						.map(AlarmTime::create)
-						.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
-						.toList();
+		updateScheduleAlarms(scheduleAlarms);
 		this.calendar = calendar;
 		this.scheduleGroup = scheduleGroup;
+	}
+
+	private void updateScheduleAlarms(List<LocalDateTime> scheduleAlarms) {
+		this.scheduleAlarms.clear();
+		scheduleAlarms.stream()
+				.map(AlarmTime::create)
+				.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
+				.forEach(scheduleAlarm -> this.scheduleAlarms.add(scheduleAlarm));
 	}
 
 	public void delete() {
