@@ -123,6 +123,29 @@ public class RepetitionPattern extends BaseTime {
 		return Optional.ofNullable(this.weekdayBit);
 	}
 
+	public void modify(
+			RepetitionType repetitionType,
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			Integer dayOfMonth,
+			WeekNumber weekNumber,
+			Weekday weekday,
+			Integer weekdayBit) {
+		validatePeriod(repetitionPeriod);
+		validateDuration(repetitionStartDate, repetitionEndDate);
+		this.repetitionType = repetitionType;
+		this.repetitionPeriod = repetitionPeriod;
+		this.repetitionStartDate = repetitionStartDate;
+		this.repetitionEndDate = repetitionEndDate;
+		this.monthOfYear = new MonthOfYear(monthOfYear);
+		this.dayOfMonth = DayOfMonth.create(repetitionType, monthOfYear, dayOfMonth);
+		this.weekNumber = weekNumber;
+		this.weekday = weekday;
+		this.weekdayBit = new WeekdayBit(weekdayBit);
+	}
+
 	private static void validatePeriod(Integer repetitionPeriod) {
 		if (repetitionPeriod < MIN_PERIOD || repetitionPeriod > MAX_PERIOD) {
 			throw new InvalidRepetitionException(ErrorCode.INVALID_REPETITION_PERIOD);
@@ -284,67 +307,66 @@ public class RepetitionPattern extends BaseTime {
 			Weekday weekday,
 			Integer weekdayBit,
 			ScheduleGroup scheduleGroup) {
-		if (repetitionType.equals(RepetitionType.DAILY)) {
-			return createDaily(
-					repetitionPeriod, repetitionStartDate, repetitionEndDate, scheduleGroup);
-		}
-		if (repetitionType.equals(RepetitionType.WEEKLY)) {
-			return createWeekly(
-					repetitionPeriod,
-					repetitionStartDate,
-					repetitionEndDate,
-					weekdayBit,
-					scheduleGroup);
-		}
-		if (repetitionType.equals(RepetitionType.MONTHLY_WITH_DATE)) {
-			return createMonthlyWithDate(
-					repetitionPeriod,
-					repetitionStartDate,
-					repetitionEndDate,
-					dayOfMonth,
-					scheduleGroup);
-		}
-		if (repetitionType.equals(RepetitionType.MONTHLY_WITH_WEEKDAY)) {
-			return createMonthlyWithWeekday(
-					repetitionPeriod,
-					repetitionStartDate,
-					repetitionEndDate,
-					weekNumber,
-					weekday,
-					scheduleGroup);
-		}
-		if (repetitionType.equals(RepetitionType.MONTHLY_WITH_LAST_DAY)) {
-			return createMonthlyWithLastDay(
-					repetitionPeriod, repetitionStartDate, repetitionEndDate, scheduleGroup);
-		}
-		if (repetitionType.equals(RepetitionType.YEARLY_WITH_DATE)) {
-			return createYearlyWithDate(
-					repetitionPeriod,
-					repetitionStartDate,
-					repetitionEndDate,
-					monthOfYear,
-					dayOfMonth,
-					scheduleGroup);
-		}
-		if (repetitionType.equals(RepetitionType.YEARLY_WITH_WEEKDAY)) {
-			return createYearlyWithWeekday(
-					repetitionPeriod,
-					repetitionStartDate,
-					repetitionEndDate,
-					monthOfYear,
-					weekNumber,
-					weekday,
-					scheduleGroup);
-		}
-		if (repetitionType.equals(RepetitionType.YEARLY_WITH_LAST_DAY)) {
-			return createYearlyWithLastDay(
-					repetitionPeriod,
-					repetitionStartDate,
-					repetitionEndDate,
-					monthOfYear,
-					scheduleGroup);
-		}
-		throw new InvalidRepetitionException(ErrorCode.INVALID_REPETITION_TYPE);
+		return switch (repetitionType) {
+			case DAILY ->
+					createDaily(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							scheduleGroup);
+			case WEEKLY ->
+					createWeekly(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							weekdayBit,
+							scheduleGroup);
+			case MONTHLY_WITH_DATE ->
+					createMonthlyWithDate(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							dayOfMonth,
+							scheduleGroup);
+			case MONTHLY_WITH_WEEKDAY ->
+					createMonthlyWithWeekday(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							weekNumber,
+							weekday,
+							scheduleGroup);
+			case MONTHLY_WITH_LAST_DAY ->
+					createMonthlyWithLastDay(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							scheduleGroup);
+			case YEARLY_WITH_DATE ->
+					createYearlyWithDate(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							dayOfMonth,
+							scheduleGroup);
+			case YEARLY_WITH_WEEKDAY ->
+					createYearlyWithWeekday(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							weekNumber,
+							weekday,
+							scheduleGroup);
+			case YEARLY_WITH_LAST_DAY ->
+					createYearlyWithLastDay(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							scheduleGroup);
+		};
 	}
 
 	public Stream<TemporalAmount> repeatingStream() {

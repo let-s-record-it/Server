@@ -21,6 +21,6 @@ public class AlarmTime {
 	}
 
 	public static AlarmTime create(LocalDateTime alarmTime) {
-		return new AlarmTime(alarmTime);
+		return new AlarmTime(alarmTime.withSecond(0));
 	}
 }

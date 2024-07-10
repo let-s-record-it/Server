@@ -28,6 +28,6 @@ class ScheduleGroupServiceTest {
 
 		ScheduleGroup scheduleGroup = scheduleGroupService.addScheduleGroup(false);
 
-		assertThat(scheduleGroup.getIsRepeated()).isEqualTo(false);
+		assertThat(scheduleGroup.isRepeated()).isEqualTo(false);
 	}
 }
