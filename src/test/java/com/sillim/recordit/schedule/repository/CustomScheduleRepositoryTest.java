@@ -277,7 +277,7 @@ class CustomScheduleRepositoryTest {
 						LocalDateTime.of(2024, 1, 7, 0, 0),
 						LocalDateTime.of(2024, 1, 8, 0, 0)));
 		scheduleRepository
-				.findSchedulesInGroupAfter(scheduleGroup.getId(), schedule.getStartDatetime())
+				.findSchedulesInGroupAfter(scheduleGroup.getId(), schedule.getStartDateTime())
 				.forEach(Schedule::delete);
 
 		em.flush();

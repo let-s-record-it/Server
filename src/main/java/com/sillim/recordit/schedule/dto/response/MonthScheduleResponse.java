@@ -8,18 +8,18 @@ import lombok.Builder;
 public record MonthScheduleResponse(
 		Long id,
 		String title,
-		Boolean isAllDay,
-		LocalDateTime startDatetime,
-		LocalDateTime endDatetime,
+		boolean isAllDay,
+		LocalDateTime startDateTime,
+		LocalDateTime endDateTime,
 		String colorHex) {
 
 	public static MonthScheduleResponse from(Schedule schedule) {
 		return MonthScheduleResponse.builder()
 				.id(schedule.getId())
 				.title(schedule.getTitle())
-				.isAllDay(schedule.getIsAllDay())
-				.startDatetime(schedule.getStartDatetime())
-				.endDatetime(schedule.getEndDatetime())
+				.isAllDay(schedule.isAllDay())
+				.startDateTime(schedule.getStartDateTime())
+				.endDateTime(schedule.getEndDateTime())
 				.colorHex(schedule.getColorHex())
 				.build();
 	}

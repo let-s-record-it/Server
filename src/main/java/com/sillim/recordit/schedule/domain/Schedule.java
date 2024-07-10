@@ -1,6 +1,8 @@
 package com.sillim.recordit.schedule.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.schedule.domain.vo.AlarmTime;
 import com.sillim.recordit.schedule.domain.vo.Location;
 import com.sillim.recordit.schedule.domain.vo.ScheduleColorHex;
@@ -50,12 +52,12 @@ public class Schedule {
 	private String place;
 
 	@Column(nullable = false)
-	private Boolean setLocation;
+	private boolean setLocation;
 
 	@Embedded private Location location;
 
 	@Column(nullable = false)
-	private Boolean setAlarm;
+	private boolean setAlarm;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "calendar_id")
@@ -65,12 +67,16 @@ public class Schedule {
 	@JoinColumn(name = "schedule_group_id")
 	private ScheduleGroup scheduleGroup;
 
-	@OneToMany(mappedBy = "schedule", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	@OneToMany(
+			mappedBy = "schedule",
+			fetch = FetchType.LAZY,
+			cascade = CascadeType.PERSIST,
+			orphanRemoval = true)
 	private List<ScheduleAlarm> scheduleAlarms = new ArrayList<>();
 
 	@Column(nullable = false)
 	@ColumnDefault("false")
-	private Boolean deleted;
+	private boolean deleted;
 
 	public Schedule(
 			ScheduleTitle title,
@@ -78,9 +84,9 @@ public class Schedule {
 			ScheduleDuration scheduleDuration,
 			ScheduleColorHex colorHex,
 			String place,
-			Boolean setLocation,
+			boolean setLocation,
 			Location location,
-			Boolean setAlarm,
+			boolean setAlarm,
 			Calendar calendar,
 			ScheduleGroup scheduleGroup,
 			List<AlarmTime> scheduleAlarms) {
@@ -105,15 +111,15 @@ public class Schedule {
 	public Schedule(
 			String title,
 			String description,
-			Boolean isAllDay,
-			LocalDateTime startDatetime,
-			LocalDateTime endDatetime,
+			boolean isAllDay,
+			LocalDateTime startDateTime,
+			LocalDateTime endDateTime,
 			String colorHex,
 			String place,
-			Boolean setLocation,
+			boolean setLocation,
 			Double latitude,
 			Double longitude,
-			Boolean setAlarm,
+			boolean setAlarm,
 			Calendar calendar,
 			ScheduleGroup scheduleGroup,
 			List<LocalDateTime> scheduleAlarms) {
@@ -121,8 +127,8 @@ public class Schedule {
 				new ScheduleTitle(title),
 				new ScheduleDescription(description),
 				isAllDay
-						? ScheduleDuration.createAllDay(startDatetime, endDatetime)
-						: ScheduleDuration.createNotAllDay(startDatetime, endDatetime),
+						? ScheduleDuration.createAllDay(startDateTime, endDateTime)
+						: ScheduleDuration.createNotAllDay(startDateTime, endDateTime),
 				new ScheduleColorHex(colorHex),
 				place,
 				setLocation,
@@ -141,16 +147,16 @@ public class Schedule {
 		return description.getDescription();
 	}
 
-	public Boolean getIsAllDay() {
-		return scheduleDuration.getIsAllDay();
+	public boolean isAllDay() {
+		return scheduleDuration.isAllDay();
 	}
 
-	public LocalDateTime getStartDatetime() {
-		return scheduleDuration.getStartDatetime();
+	public LocalDateTime getStartDateTime() {
+		return scheduleDuration.getStartDateTime();
 	}
 
-	public LocalDateTime getEndDatetime() {
-		return scheduleDuration.getEndDatetime();
+	public LocalDateTime getEndDateTime() {
+		return scheduleDuration.getEndDateTime();
 	}
 
 	public String getColorHex() {
@@ -165,11 +171,52 @@ public class Schedule {
 		return Optional.ofNullable(location).map(Location::getLongitude).orElse(null);
 	}
 
+	public void modify(
+			String title,
+			String description,
+			boolean isAllDay,
+			LocalDateTime startDateTime,
+			LocalDateTime endDateTime,
+			String colorHex,
+			String place,
+			boolean setLocation,
+			Double latitude,
+			Double longitude,
+			boolean setAlarm,
+			List<LocalDateTime> scheduleAlarms,
+			Calendar calendar,
+			ScheduleGroup scheduleGroup) {
+		this.title = new ScheduleTitle(title);
+		this.description = new ScheduleDescription(description);
+		this.scheduleDuration =
+				isAllDay
+						? ScheduleDuration.createAllDay(startDateTime, endDateTime)
+						: ScheduleDuration.createNotAllDay(startDateTime, endDateTime);
+		this.colorHex = new ScheduleColorHex(colorHex);
+		this.place = place;
+		this.setLocation = setLocation;
+		this.location = setLocation ? new Location(latitude, longitude) : null;
+		this.setAlarm = setAlarm;
+		this.scheduleAlarms =
+				scheduleAlarms.stream()
+						.map(AlarmTime::create)
+						.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
+						.toList();
+		this.calendar = calendar;
+		this.scheduleGroup = scheduleGroup;
+	}
+
 	public void delete() {
 		this.deleted = true;
 	}
 
 	public boolean isOwnedBy(Long memberId) {
-		return this.calendar.equalsMemberId(memberId);
+		return this.calendar.isOwnedBy(memberId);
+	}
+
+	public void validateAuthenticatedMember(Long memberId) {
+		if (!isOwnedBy(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
 	}
 }

@@ -2,6 +2,7 @@ package com.sillim.recordit.schedule.domain.vo;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidDayOfMonthException;
+import com.sillim.recordit.schedule.domain.RepetitionType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -29,6 +30,17 @@ public class DayOfMonth {
 	public static DayOfMonth createYearly(Integer monthOfYear, Integer dayOfMonth) {
 		validateDateOfMonth(monthOfYear, dayOfMonth);
 		return new DayOfMonth(dayOfMonth);
+	}
+
+	public static DayOfMonth create(
+			RepetitionType repetitionType, Integer monthOfYear, Integer dayOfMonth) {
+		return switch (repetitionType) {
+			case MONTHLY_WITH_DATE, MONTHLY_WITH_WEEKDAY, MONTHLY_WITH_LAST_DAY ->
+					createMonthly(dayOfMonth);
+			case YEARLY_WITH_DATE, YEARLY_WITH_WEEKDAY, YEARLY_WITH_LAST_DAY ->
+					createYearly(monthOfYear, dayOfMonth);
+			default -> null;
+		};
 	}
 
 	public boolean equalsDayOfMonthValue(Integer dayOfMonth) {

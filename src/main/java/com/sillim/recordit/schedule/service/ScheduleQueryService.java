@@ -1,9 +1,7 @@
 package com.sillim.recordit.schedule.service;
 
-import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.service.CalendarService;
 import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleAlarm;
@@ -32,11 +30,9 @@ public class ScheduleQueryService {
 						.findByScheduleId(scheduleId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
-		if (!schedule.isOwnedBy(memberId)) {
-			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
-		}
+		schedule.validateAuthenticatedMember(memberId);
 
-		if (schedule.getScheduleGroup().getIsRepeated()) {
+		if (schedule.getScheduleGroup().isRepeated()) {
 			return DayScheduleResponse.of(
 					schedule,
 					true,
@@ -55,7 +51,7 @@ public class ScheduleQueryService {
 
 	public List<MonthScheduleResponse> searchSchedulesInMonth(
 			Long calendarId, Integer year, Integer month, Long memberId) {
-		validateAuthenticatedUser(calendarService.searchByCalendarId(calendarId), memberId);
+		calendarService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
 		return scheduleRepository.findScheduleInMonth(calendarId, year, month).stream()
 				.map(MonthScheduleResponse::from)
 				.toList();
@@ -63,15 +59,13 @@ public class ScheduleQueryService {
 
 	public List<DayScheduleResponse> searchSchedulesInDay(
 			Long calendarId, LocalDate date, Long memberId) {
-		if (!calendarService.searchByCalendarId(calendarId).equalsMemberId(memberId)) {
-			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
-		}
+		calendarService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
 		return scheduleRepository.findScheduleInDay(calendarId, date).stream()
 				.map(
 						schedule ->
 								DayScheduleResponse.of(
 										schedule,
-										schedule.getScheduleGroup().getIsRepeated(),
+										schedule.getScheduleGroup().isRepeated(),
 										schedule.getScheduleAlarms().stream()
 												.map(ScheduleAlarm::getAlarmTime)
 												.toList(),
@@ -80,11 +74,5 @@ public class ScheduleQueryService {
 												.map(RepetitionPatternResponse::from)
 												.orElse(null)))
 				.toList();
-	}
-
-	private void validateAuthenticatedUser(Calendar calendar, Long memberId) {
-		if (!calendar.equalsMemberId(memberId)) {
-			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
-		}
 	}
 }

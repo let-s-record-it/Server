@@ -103,7 +103,7 @@ class CalendarServiceTest {
 
 		Calendar calendar = mock(Calendar.class);
 
-		given(calendar.equalsMemberId(any())).willReturn(true);
+		given(calendar.isOwnedBy(any())).willReturn(true);
 		given(calendarRepository.findById(eq(1L))).willReturn(Optional.of(calendar));
 
 		assertThatCode(() -> calendarService.deleteByCalendarId(calendarId, memberId))
@@ -118,7 +118,7 @@ class CalendarServiceTest {
 
 		Calendar calendar = mock(Calendar.class);
 
-		given(calendar.equalsMemberId(any())).willReturn(false);
+		given(calendar.isOwnedBy(any())).willReturn(false);
 		given(calendarRepository.findById(eq(1L))).willReturn(Optional.of(calendar));
 
 		assertThatCode(() -> calendarService.deleteByCalendarId(calendarId, memberId))
@@ -134,7 +134,7 @@ class CalendarServiceTest {
 
 		Calendar calendar = mock(Calendar.class);
 		given(calendarRepository.findById(eq(1L))).willReturn(Optional.of(calendar));
-		willReturn(false).given(calendar).equalsMemberId(eq(memberId));
+		willReturn(false).given(calendar).isOwnedBy(eq(memberId));
 
 		assertThatCode(() -> calendarService.searchByCalendarId(calendarId, memberId))
 				.isInstanceOf(InvalidCalendarException.class)

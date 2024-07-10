@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidDayOfMonthException;
+import com.sillim.recordit.schedule.domain.RepetitionType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -70,6 +71,21 @@ class DayOfMonthTest {
 					assertThatCode(() -> DayOfMonth.createYearly(5, 32))
 							.isInstanceOf(InvalidDayOfMonthException.class)
 							.hasMessage(ErrorCode.INVALID_DAY_OF_MONTH.getDescription());
+				});
+	}
+
+	@Test
+	@DisplayName("RepetitionType에 따른 DayOfMonth를 생성할 수 있다.")
+	void createDayOfMonthForRepetitionType() {
+		DayOfMonth dayOfMonth1 = DayOfMonth.create(RepetitionType.MONTHLY_WITH_DATE, null, 1);
+		DayOfMonth dayOfMonth2 = DayOfMonth.create(RepetitionType.YEARLY_WITH_LAST_DAY, 1, 1);
+
+		assertAll(
+				() -> {
+					assertThat(dayOfMonth1).isEqualTo(DayOfMonth.createMonthly(1));
+					assertThat(dayOfMonth2).isEqualTo(DayOfMonth.createYearly(1, 1));
+					assertThat(dayOfMonth1.equalsDayOfMonthValue(1)).isTrue();
+					assertThat(dayOfMonth2.equalsDayOfMonthValue(1)).isTrue();
 				});
 	}
 }

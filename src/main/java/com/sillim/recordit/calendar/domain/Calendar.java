@@ -2,6 +2,8 @@ package com.sillim.recordit.calendar.domain;
 
 import com.sillim.recordit.calendar.domain.vo.CalendarColorHex;
 import com.sillim.recordit.calendar.domain.vo.CalendarTitle;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -42,7 +44,13 @@ public class Calendar {
 		return colorHex.getColorHex();
 	}
 
-	public boolean equalsMemberId(Long memberId) {
+	public boolean isOwnedBy(Long memberId) {
 		return this.member.equalsId(memberId);
+	}
+
+	public void validateAuthenticatedMember(Long memberId) {
+		if (!isOwnedBy(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
 	}
 }

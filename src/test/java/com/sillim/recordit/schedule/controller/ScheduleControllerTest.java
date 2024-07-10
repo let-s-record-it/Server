@@ -12,6 +12,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,6 +26,7 @@ import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
+import com.sillim.recordit.schedule.dto.request.ScheduleModifyRequest;
 import com.sillim.recordit.schedule.dto.response.DayScheduleResponse;
 import com.sillim.recordit.schedule.dto.response.MonthScheduleResponse;
 import com.sillim.recordit.schedule.dto.response.RepetitionPatternResponse;
@@ -107,7 +109,7 @@ class ScheduleControllerTest extends RestDocsTest {
 		perform.andExpect(status().isOk());
 
 		perform.andDo(print())
-				.andDo(document("add-schedule", getDocumentRequest(), getDocumentResponse()));
+				.andDo(document("schedule-modify", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -119,8 +121,8 @@ class ScheduleControllerTest extends RestDocsTest {
 						.title("title")
 						.description("description")
 						.isAllDay(false)
-						.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-						.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
 						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
@@ -164,8 +166,8 @@ class ScheduleControllerTest extends RestDocsTest {
 								.title("title")
 								.description("description")
 								.isAllDay(false)
-								.startDatetime(LocalDateTime.of(2024, 1, 1, 0, 0))
-								.endDatetime(LocalDateTime.of(2024, 2, 1, 0, 0))
+								.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
+								.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
 								.colorHex("aaffbb")
 								.setLocation(true)
 								.place("서울역")
@@ -265,6 +267,76 @@ class ScheduleControllerTest extends RestDocsTest {
 				.andDo(
 						document(
 								"schedule-list-in-day",
+								getDocumentRequest(),
+								getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("단일 일정을 수정한다.")
+	void scheduleModify() throws Exception {
+		ScheduleModifyRequest scheduleModifyRequest =
+				new ScheduleModifyRequest(
+						"title",
+						"description",
+						false,
+						LocalDateTime.of(2024, 1, 1, 0, 0),
+						LocalDateTime.of(2024, 2, 1, 0, 0),
+						false,
+						null,
+						"aaffbb",
+						"서울역",
+						true,
+						36.0,
+						127.0,
+						true,
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
+						1L);
+
+		ResultActions perform =
+				mockMvc.perform(
+						put("/api/v1/calendars/{calendarId}/schedules/{scheduleId}", 1L, 1L)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(scheduleModifyRequest)));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("schedule-modify", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("그룹 일정을 수정한다.")
+	void schedulesModifyInGroup() throws Exception {
+		ScheduleModifyRequest scheduleModifyRequest =
+				new ScheduleModifyRequest(
+						"title",
+						"description",
+						false,
+						LocalDateTime.of(2024, 1, 1, 0, 0),
+						LocalDateTime.of(2024, 2, 1, 0, 0),
+						false,
+						null,
+						"aaffbb",
+						"서울역",
+						true,
+						36.0,
+						127.0,
+						true,
+						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
+						1L);
+
+		ResultActions perform =
+				mockMvc.perform(
+						put("/api/v1/calendars/{calendarId}/schedules/{scheduleId}/group", 1L, 1L)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(scheduleModifyRequest)));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"schedules-modify-in-group",
 								getDocumentRequest(),
 								getDocumentResponse()));
 	}

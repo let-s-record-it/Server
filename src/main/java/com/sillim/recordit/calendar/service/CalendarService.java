@@ -40,7 +40,7 @@ public class CalendarService {
 	public void deleteByCalendarId(Long calendarId, Long memberId) {
 		Calendar calendar = searchByCalendarId(calendarId);
 
-		if (!calendar.equalsMemberId(memberId)) {
+		if (!calendar.isOwnedBy(memberId)) {
 			throw new InvalidCalendarException(ErrorCode.INVALID_CALENDAR_DELETE_REQUEST);
 		}
 		calendarRepository.delete(calendar);
@@ -48,7 +48,7 @@ public class CalendarService {
 
 	public Calendar searchByCalendarId(final Long calendarId, final Long memberId) {
 		Calendar calendar = searchByCalendarId(calendarId);
-		if (!calendar.equalsMemberId(memberId)) {
+		if (!calendar.isOwnedBy(memberId)) {
 			throw new InvalidCalendarException(ErrorCode.CALENDAR_ACCESS_DENIED);
 		}
 		return calendar;
