@@ -18,6 +18,8 @@ public interface TaskRepository extends JpaRepository<Task, Long>, CustomTaskRep
 					+ " :taskGroupId")
 	List<Task> findAllByCalendarIdAndTaskGroupId(Long calendarId, Long taskGroupId);
 
-	@Query("select t from Task t where t.taskGroup.id = :taskGroupId and t.date = :date")
+	@Query(
+			"select (count(t) > 0) from Task t where t.taskGroup.id = :taskGroupId and t.date ="
+					+ " :date order by t.id limit 1")
 	boolean existsByTaskGroupIdAndDate(Long taskGroupId, LocalDate date);
 }

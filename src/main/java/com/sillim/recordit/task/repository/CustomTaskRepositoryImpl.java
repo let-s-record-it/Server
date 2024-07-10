@@ -39,7 +39,10 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 	public void deleteAllByTaskGroupIdAndTaskIdNot(Long taskGroupId, Long taskId) {
 
 		getEntityManager().flush();
-		update(task).set(task.deleted, true).where(task.taskGroup.id.eq(taskGroupId));
+		update(task)
+				.set(task.deleted, true)
+				.where(task.taskGroup.id.eq(taskGroupId).and(task.id.ne(taskId)))
+				.execute();
 		getEntityManager().clear();
 	}
 
@@ -53,7 +56,8 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 								.id
 								.eq(taskGroupId)
 								.and(task.achieved.eq(false))
-								.and(task.id.ne(taskId)));
+								.and(task.id.ne(taskId)))
+				.execute();
 		getEntityManager().clear();
 	}
 }

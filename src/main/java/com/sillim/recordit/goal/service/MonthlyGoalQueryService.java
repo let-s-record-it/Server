@@ -44,12 +44,15 @@ public class MonthlyGoalQueryService {
 		if (monthlyGoalId == null) {
 			return Optional.empty();
 		}
-		final Optional<MonthlyGoal> monthlyGoal = monthlyGoalRepository.findById(monthlyGoalId);
-		monthlyGoal.ifPresent(
+		Optional<MonthlyGoal> monthlyGoal = monthlyGoalRepository.findById(monthlyGoalId);
+		monthlyGoal.ifPresentOrElse(
 				mg -> {
 					if (!mg.isOwnedBy(memberId)) {
 						throw new InvalidMonthlyGoalException(ErrorCode.MONTHLY_GOAL_ACCESS_DENIED);
 					}
+				},
+				() -> {
+					throw new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND);
 				});
 		return monthlyGoal;
 	}

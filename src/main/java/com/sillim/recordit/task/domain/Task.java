@@ -90,6 +90,25 @@ public class Task extends BaseTime {
 				taskGroup);
 	}
 
+	public void modify(
+			final String title,
+			final String description,
+			final LocalDate date,
+			final String colorHex,
+			final Calendar calendar,
+			final TaskGroup taskGroup) {
+		this.title = new TaskTitle(title);
+		this.description = new TaskDescription(description);
+		this.date = date;
+		this.colorHex = new TaskColorHex(colorHex);
+		this.calendar = calendar;
+		this.taskGroup = taskGroup;
+	}
+
+	public boolean hasSameDate(final LocalDate date) {
+		return this.date.isEqual(date);
+	}
+
 	public String getTitle() {
 		return title.getTitle();
 	}
@@ -104,20 +123,5 @@ public class Task extends BaseTime {
 
 	public boolean isRepeated() {
 		return taskGroup.getIsRepeated();
-	}
-
-	public void modify(
-			String title,
-			String description,
-			LocalDate date,
-			String colorHex,
-			Calendar calendar,
-			TaskGroup taskGroup) {
-		this.title = new TaskTitle(title);
-		this.description = new TaskDescription(description);
-		this.date = date;
-		this.colorHex = new TaskColorHex(colorHex);
-		this.calendar = calendar;
-		this.taskGroup = taskGroup;
 	}
 }
