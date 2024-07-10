@@ -1,6 +1,7 @@
 package com.sillim.recordit.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.eq;
@@ -112,8 +113,8 @@ public class MonthlyGoalQueryServiceTest {
 	}
 
 	@Test
-	@DisplayName("id에 해당하는 월 목표를 조회한다.")
-	void searchByIdOrElseNull() {
+	@DisplayName("id에 해당하는 월 목표를 조회하여 Optional 형태로 반환한다.")
+	void searchOptionalById() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
 		MonthlyGoal expected = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
@@ -127,15 +128,27 @@ public class MonthlyGoalQueryServiceTest {
 	}
 
 	@Test
-	@DisplayName("id에 해당하는 월 목표가 존재하지 않을 경우 null을 반환한다.")
-	void searchByIdOrElseNullReturnsNull() {
+	@DisplayName("입력으로 들어온 월 목표 id가 null이라면 빈 Optional 객체를 반환한다.")
+	void searchOptionalByIdReturnsEmptyIfMonthlyGoalIdIsNull() {
+		Long memberId = 1L;
+		Long monthlyGoalId = null;
+
+		Optional<MonthlyGoal> found =
+				monthlyGoalQueryService.searchOptionalById(monthlyGoalId, memberId);
+
+		assertThat(found).isEmpty();
+	}
+
+	@Test
+	@DisplayName("id에 해당하는 월 목표가 존재하지 않을 경우 RecordNotFoundException이 발생한다.")
+	void throwsRecordNotFoundExceptionIfMonthlyGoalNotFound() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
 		given(monthlyGoalRepository.findById(eq(monthlyGoalId))).willReturn(Optional.empty());
 
-		Optional<MonthlyGoal> found =
-				monthlyGoalQueryService.searchOptionalById(monthlyGoalId, memberId);
-		assertThat(found).isEmpty();
+		assertThatCode(() -> monthlyGoalQueryService.searchOptionalById(monthlyGoalId, memberId))
+				.isInstanceOf(RecordNotFoundException.class)
+				.hasMessage(ErrorCode.MONTHLY_GOAL_NOT_FOUND.getDescription());
 	}
 
 	@Test

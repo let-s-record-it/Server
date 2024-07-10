@@ -135,4 +135,19 @@ public enum TaskRepetitionPatternFixture {
 				weekdayBit,
 				taskGroup);
 	}
+
+	public TaskRepetitionPattern getWithDate(
+			LocalDate repetitionStartDate, LocalDate repetitionEndDate, TaskGroup taskGroup) {
+		return TaskRepetitionPatternFactory.create(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				monthOfYear,
+				dayOfMonth,
+				weekNumber,
+				weekday,
+				weekdayBit,
+				taskGroup);
+	}
 }

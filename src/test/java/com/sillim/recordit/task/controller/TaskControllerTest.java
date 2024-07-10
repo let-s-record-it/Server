@@ -9,6 +9,7 @@ import static org.mockito.Mockito.spy;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
@@ -25,10 +26,12 @@ import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
+import com.sillim.recordit.task.domain.TaskRemoveStrategy;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.dto.request.TaskAddRequest;
 import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
+import com.sillim.recordit.task.dto.request.TaskUpdateRequest;
 import com.sillim.recordit.task.dto.response.TaskDetailsResponse;
 import com.sillim.recordit.task.fixture.TaskFixture;
 import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
@@ -253,5 +256,58 @@ public class TaskControllerTest extends RestDocsTest {
 								pathParameters(
 										parameterWithName("calendarId").description("캘린더 ID"),
 										parameterWithName("taskId").description("할 일 ID"))));
+	}
+
+	@Test
+	@DisplayName("할 일을 수정한다.")
+	void modifyAllTasks() throws Exception {
+		Long calendarId = 1L;
+		Long newCalendarId = 2L;
+		Long taskId = 3L;
+		TaskRepetitionUpdateRequest repetitionRequest =
+				new TaskRepetitionUpdateRequest(
+						TaskRepetitionType.DAILY,
+						1,
+						LocalDate.of(2024, 1, 1),
+						LocalDate.of(2024, 3, 31),
+						null,
+						null,
+						null,
+						null,
+						null);
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						TaskRemoveStrategy.REMOVE_NOTHING,
+						"회의록 작성",
+						"프로젝트 회의록 작성하기",
+						LocalDate.of(2024, 1, 1),
+						"ff40d974",
+						newCalendarId,
+						true,
+						repetitionRequest,
+						null,
+						null);
+
+		ResultActions perform =
+				mockMvc.perform(
+						put(
+										"/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-all",
+										calendarId,
+										taskId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"modify-all-tasks",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								pathParameters(
+										parameterWithName("calendarId")
+												.description("선택한 할 일이 속한 캘린더 ID"),
+										parameterWithName("taskId").description("선택한 할 일 ID"))));
 	}
 }
