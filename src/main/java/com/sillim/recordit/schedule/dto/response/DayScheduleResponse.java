@@ -21,6 +21,7 @@ public record DayScheduleResponse(
 		boolean setAlarm,
 		List<LocalDateTime> alarmTimes,
 		boolean isRepeated,
+		Long calendarId,
 		String calendarTitle,
 		RepetitionPatternResponse repetitionPattern) {
 
@@ -44,6 +45,7 @@ public record DayScheduleResponse(
 				.setAlarm(schedule.isSetAlarm())
 				.alarmTimes(alarmTimes)
 				.isRepeated(isRepeated)
+				.calendarId(schedule.getCalendar().getId())
 				.calendarTitle(schedule.getCalendar().getTitle())
 				.repetitionPattern(repetitionPatternResponse)
 				.build();
