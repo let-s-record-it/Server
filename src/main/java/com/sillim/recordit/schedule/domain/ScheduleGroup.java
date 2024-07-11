@@ -22,7 +22,7 @@ public class ScheduleGroup {
 	@Column(nullable = false)
 	private boolean isRepeated;
 
-	@OneToOne(mappedBy = "scheduleGroup", orphanRemoval = true)
+	@OneToOne(mappedBy = "scheduleGroup", cascade = CascadeType.PERSIST, orphanRemoval = true)
 	private RepetitionPattern repetitionPattern;
 
 	public ScheduleGroup(Boolean isRepeated) {
