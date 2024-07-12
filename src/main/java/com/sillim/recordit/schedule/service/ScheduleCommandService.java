@@ -10,6 +10,7 @@ import com.sillim.recordit.schedule.dto.request.RepetitionUpdateRequest;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
 import com.sillim.recordit.schedule.dto.request.ScheduleModifyRequest;
 import com.sillim.recordit.schedule.repository.ScheduleRepository;
+import java.time.Period;
 import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.function.Function;
@@ -112,6 +113,7 @@ public class ScheduleCommandService {
 													temporalAmount, calendar, scheduleGroup)));
 		} else {
 			scheduleGroup.modifyNotRepeated();
+			scheduleRepository.save(request.toSchedule(Period.ZERO, calendar, scheduleGroup));
 		}
 	}
 
