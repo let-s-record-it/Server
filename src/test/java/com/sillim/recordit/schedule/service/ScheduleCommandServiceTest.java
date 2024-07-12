@@ -419,6 +419,7 @@ class ScheduleCommandServiceTest {
 		scheduleCommandService.modifySchedulesInGroup(scheduleModifyRequest, scheduleId, memberId);
 
 		then(scheduleGroup).should(times(1)).modifyNotRepeated();
+		then(scheduleRepository).should(times(1)).save(any(Schedule.class));
 	}
 
 	@Test
