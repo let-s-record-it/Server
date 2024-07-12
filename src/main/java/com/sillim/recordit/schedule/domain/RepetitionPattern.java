@@ -135,15 +135,149 @@ public class RepetitionPattern extends BaseTime {
 			Integer weekdayBit) {
 		validatePeriod(repetitionPeriod);
 		validateDuration(repetitionStartDate, repetitionEndDate);
-		this.repetitionType = repetitionType;
+		switch (repetitionType) {
+			case DAILY -> modifyDaily(repetitionPeriod, repetitionStartDate, repetitionEndDate);
+			case WEEKLY ->
+					modifyWeekly(
+							repetitionPeriod, repetitionStartDate, repetitionEndDate, weekdayBit);
+			case MONTHLY_WITH_DATE ->
+					modifyMonthlyWithDate(
+							repetitionPeriod, repetitionStartDate, repetitionEndDate, dayOfMonth);
+			case MONTHLY_WITH_WEEKDAY ->
+					modifyMonthlyWithWeekday(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							weekNumber,
+							weekday);
+			case MONTHLY_WITH_LAST_DAY ->
+					modifyMonthlyWithLastDay(
+							repetitionPeriod, repetitionStartDate, repetitionEndDate);
+			case YEARLY_WITH_DATE ->
+					modifyYearlyWithDate(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							dayOfMonth);
+			case YEARLY_WITH_WEEKDAY ->
+					modifyYearlyWithWeekday(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							weekNumber,
+							weekday);
+			case YEARLY_WITH_LAST_DAY ->
+					modifyYearlyWithLastDay(
+							repetitionPeriod, repetitionStartDate, repetitionEndDate, monthOfYear);
+		}
+		;
+	}
+
+	private void modifyDaily(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate) {
+		this.repetitionType = RepetitionType.DAILY;
+		this.repetitionPeriod = repetitionPeriod;
+		this.repetitionStartDate = repetitionStartDate;
+		this.repetitionEndDate = repetitionEndDate;
+	}
+
+	public void modifyWeekly(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer weekdayBit) {
+		this.repetitionType = RepetitionType.WEEKLY;
+		this.repetitionPeriod = repetitionPeriod;
+		this.repetitionStartDate = repetitionStartDate;
+		this.repetitionEndDate = repetitionEndDate;
+		this.weekdayBit = new WeekdayBit(weekdayBit);
+	}
+
+	public void modifyMonthlyWithDate(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer dayOfMonth) {
+		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
+		this.repetitionType = RepetitionType.MONTHLY_WITH_DATE;
+		this.repetitionPeriod = repetitionPeriod;
+		this.repetitionStartDate = repetitionStartDate;
+		this.repetitionEndDate = repetitionEndDate;
+		this.dayOfMonth = DayOfMonth.createMonthly(dayOfMonth);
+	}
+
+	public void modifyMonthlyWithWeekday(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			WeekNumber weekNumber,
+			Weekday weekday) {
+		this.repetitionType = RepetitionType.MONTHLY_WITH_WEEKDAY;
+		this.repetitionPeriod = repetitionPeriod;
+		this.repetitionStartDate = repetitionStartDate;
+		this.repetitionEndDate = repetitionEndDate;
+		this.weekNumber = weekNumber;
+		this.weekday = weekday;
+	}
+
+	public void modifyMonthlyWithLastDay(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate) {
+		this.repetitionType = RepetitionType.MONTHLY_WITH_LAST_DAY;
+		this.repetitionPeriod = repetitionPeriod;
+		this.repetitionStartDate = repetitionStartDate;
+		this.repetitionEndDate = repetitionEndDate;
+	}
+
+	public void modifyYearlyWithDate(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			Integer dayOfMonth) {
+		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
+		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
+		this.repetitionType = RepetitionType.YEARLY_WITH_DATE;
 		this.repetitionPeriod = repetitionPeriod;
 		this.repetitionStartDate = repetitionStartDate;
 		this.repetitionEndDate = repetitionEndDate;
 		this.monthOfYear = new MonthOfYear(monthOfYear);
-		this.dayOfMonth = DayOfMonth.create(repetitionType, monthOfYear, dayOfMonth);
+		this.dayOfMonth = DayOfMonth.createYearly(monthOfYear, dayOfMonth);
+	}
+
+	public void modifyYearlyWithWeekday(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			WeekNumber weekNumber,
+			Weekday weekday) {
+		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
+		this.repetitionType = RepetitionType.YEARLY_WITH_WEEKDAY;
+		this.repetitionPeriod = repetitionPeriod;
+		this.repetitionStartDate = repetitionStartDate;
+		this.repetitionEndDate = repetitionEndDate;
+		this.monthOfYear = new MonthOfYear(monthOfYear);
 		this.weekNumber = weekNumber;
 		this.weekday = weekday;
-		this.weekdayBit = new WeekdayBit(weekdayBit);
+	}
+
+	public void modifyYearlyWithLastDay(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear) {
+		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
+		this.repetitionType = RepetitionType.YEARLY_WITH_LAST_DAY;
+		this.repetitionPeriod = repetitionPeriod;
+		this.repetitionStartDate = repetitionStartDate;
+		this.repetitionEndDate = repetitionEndDate;
+		this.monthOfYear = new MonthOfYear(monthOfYear);
 	}
 
 	private static void validatePeriod(Integer repetitionPeriod) {

@@ -47,18 +47,16 @@ public class ScheduleGroup {
 			WeekNumber weekNumber,
 			Weekday weekday,
 			Integer weekdayBit) {
-		this.repetitionPattern =
-				RepetitionPattern.create(
-						repetitionType,
-						repetitionPeriod,
-						repetitionStartDate,
-						repetitionEndDate,
-						monthOfYear,
-						dayOfMonth,
-						weekNumber,
-						weekday,
-						weekdayBit,
-						this);
+		this.repetitionPattern.modify(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				monthOfYear,
+				dayOfMonth,
+				weekNumber,
+				weekday,
+				weekdayBit);
 		this.isRepeated = true;
 	}
 
