@@ -816,4 +816,35 @@ class TaskCommandServiceTest {
 				.doesNotThrowAnyException();
 		then(taskRepository).should(times(29)).save(any(Task.class));
 	}
+
+	@Test
+	@DisplayName("선택한 할 일이 존재하지 않는다면 RecordNotFoundException이 발생한다.")
+	void modifyAfterAllTasksThrowsRecordNotFoundExceptionIfSelectedTaskIsNotExists() {
+		Long calendarId = 1L;
+		Long newCalendarId = 2L;
+		Long taskId = 3L;
+		Long memberId = 4L;
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						TaskRemoveStrategy.REMOVE_NOTHING,
+						"(수정) 취뽀하기!",
+						"(수정) 가즈아",
+						LocalDate.of(2024, 7, 10),
+						"ff40d974",
+						newCalendarId,
+						false,
+						null,
+						null,
+						null);
+
+		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
+				.willReturn(Optional.empty());
+
+		assertThatCode(
+						() ->
+								taskCommandService.modifyAfterAllTasks(
+										request, calendarId, taskId, memberId))
+				.isInstanceOf(RecordNotFoundException.class)
+				.hasMessage(ErrorCode.TASK_NOT_FOUND.getDescription());
+	}
 }
