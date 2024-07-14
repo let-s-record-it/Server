@@ -67,7 +67,8 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 		getEntityManager().flush();
 		update(task)
 				.set(task.deleted, true)
-				.where(task.taskGroup.id.eq(taskGroupId).and(task.date.after(date)));
+				.where(task.taskGroup.id.eq(taskGroupId).and(task.date.after(date)))
+				.execute();
 		getEntityManager().clear();
 	}
 
@@ -81,7 +82,8 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 								.id
 								.eq(taskGroupId)
 								.and(task.achieved.eq(false))
-								.and(task.date.after(date)));
+								.and(task.date.after(date)))
+				.execute();
 		getEntityManager().clear();
 	}
 }
