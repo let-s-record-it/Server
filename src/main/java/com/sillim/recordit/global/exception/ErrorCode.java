@@ -114,6 +114,15 @@ public enum ErrorCode {
 
 	// task-group
 	TASK_GROUP_NOT_FOUND("ERR_TASK_GROUP_001", "존재하지 않는 할 일 그룹입니다."),
+
+	NULL_FEED_TITLE("ERR_FEED_001", "피드 제목은 null일 수 없습니다."),
+	BLANK_FEED_TITLE("ERR_FEED_002", "피드 제목은 빈 값일 수 없습니다."),
+	INVALID_FEED_TITLE_LENGTH("ERR_FEED_003", "피드 제목의 길이는 30자를 넘을 수 없습니다."),
+	NULL_FEED_CONTENT("ERR_FEED_004", "피드 내용은 null일 수 없습니다."),
+	INVALID_FEED_CONTENT_LENGTH("ERR_FEED_005", "피드의 길이는 500자를 넘을 수 없습니다."),
+	NULL_FEED_IMAGE_URL("ERR_FEED_006", "피드 이미지 url은 null일 수 없습니다."),
+	BLANK_FEED_IMAGE_URL("ERR_FEED_007", "피드 이미지 url은 빈 값일 수 없습니다."),
+	OVER_FEED_IMAGE_COUNT("ERR_FEED_008", "피드 이미지 개수는 10개를 넘을 수 없습니다."),
 	;
 
 	private final String code;
