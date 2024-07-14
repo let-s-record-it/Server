@@ -1,6 +1,7 @@
 package com.sillim.recordit.task.repository;
 
 import com.sillim.recordit.task.domain.Task;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface CustomTaskRepository {
@@ -10,4 +11,8 @@ public interface CustomTaskRepository {
 	void deleteAllByTaskGroupIdAndTaskIdNot(Long taskGroupId, Long taskId);
 
 	void deleteAllNotAchievedTasksByTaskGroupIdAndTaskIdNot(Long taskGroupId, Long taskId);
+
+	void deleteAllByTaskGroupIdAndAfterDate(Long taskGroupId, LocalDate date);
+
+	void deleteAllNotAchievedByTaskGroupIdAndAfterDate(Long taskGroupId, LocalDate date);
 }
