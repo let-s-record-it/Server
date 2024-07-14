@@ -259,7 +259,7 @@ public class TaskControllerTest extends RestDocsTest {
 	}
 
 	@Test
-	@DisplayName("할 일을 수정한다.")
+	@DisplayName("선택한 할 일이 속한 할 일 그룹 내의 모든 할 일을 수정한다.")
 	void modifyAllTasks() throws Exception {
 		Long calendarId = 1L;
 		Long newCalendarId = 2L;
@@ -303,6 +303,59 @@ public class TaskControllerTest extends RestDocsTest {
 				.andDo(
 						document(
 								"modify-all-tasks",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								pathParameters(
+										parameterWithName("calendarId")
+												.description("선택한 할 일이 속한 캘린더 ID"),
+										parameterWithName("taskId").description("선택한 할 일 ID"))));
+	}
+
+	@Test
+	@DisplayName("선택한 할 일이 속한 할 일 그룹 내의 할 일 중, 선택한 할 일의 날짜와 같거나 이후의 할 일들을 수정한다.")
+	void modifyAfterAllTasks() throws Exception {
+		Long calendarId = 1L;
+		Long newCalendarId = 2L;
+		Long taskId = 3L;
+		TaskRepetitionUpdateRequest repetitionRequest =
+				new TaskRepetitionUpdateRequest(
+						TaskRepetitionType.DAILY,
+						1,
+						LocalDate.of(2024, 1, 1),
+						LocalDate.of(2024, 3, 31),
+						null,
+						null,
+						null,
+						null,
+						null);
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						TaskRemoveStrategy.REMOVE_NOTHING,
+						"회의록 작성",
+						"프로젝트 회의록 작성하기",
+						LocalDate.of(2024, 1, 1),
+						"ff40d974",
+						newCalendarId,
+						true,
+						repetitionRequest,
+						null,
+						null);
+
+		ResultActions perform =
+				mockMvc.perform(
+						put(
+										"/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-after-all",
+										calendarId,
+										taskId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"modify-after-all-tasks",
 								getDocumentRequest(),
 								getDocumentResponse(),
 								pathParameters(
