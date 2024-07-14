@@ -63,7 +63,7 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public void deleteAllByTaskGroupIdAndAfterDate(Long taskGroupId, LocalDate date) {
+	public void deleteAllByTaskGroupIdAndDateAfter(Long taskGroupId, LocalDate date) {
 		getEntityManager().flush();
 		update(task)
 				.set(task.deleted, true)
@@ -72,7 +72,7 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public void deleteAllNotAchievedByTaskGroupIdAndAfterDate(Long taskGroupId, LocalDate date) {
+	public void deleteAllNotAchievedByTaskGroupIdAndDateAfter(Long taskGroupId, LocalDate date) {
 		getEntityManager().flush();
 		update(task)
 				.set(task.deleted, true)

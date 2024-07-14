@@ -12,7 +12,7 @@ public interface CustomTaskRepository {
 
 	void deleteAllNotAchievedTasksByTaskGroupIdAndTaskIdNot(Long taskGroupId, Long taskId);
 
-	void deleteAllByTaskGroupIdAndAfterDate(Long taskGroupId, LocalDate date);
+	void deleteAllByTaskGroupIdAndDateAfter(Long taskGroupId, LocalDate date);
 
-	void deleteAllNotAchievedByTaskGroupIdAndAfterDate(Long taskGroupId, LocalDate date);
+	void deleteAllNotAchievedByTaskGroupIdAndDateAfter(Long taskGroupId, LocalDate date);
 }

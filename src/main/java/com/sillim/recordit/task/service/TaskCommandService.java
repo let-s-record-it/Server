@@ -163,9 +163,9 @@ public class TaskCommandService {
 	private void removeTasksInGroupAfterDate(
 			final TaskRemoveStrategy strategy, final Long taskGroupId, final LocalDate date) {
 		switch (strategy) {
-			case REMOVE_ALL -> taskRepository.deleteAllByTaskGroupIdAndAfterDate(taskGroupId, date);
+			case REMOVE_ALL -> taskRepository.deleteAllByTaskGroupIdAndDateAfter(taskGroupId, date);
 			case REMOVE_NOT_ACHIEVED ->
-					taskRepository.deleteAllNotAchievedByTaskGroupIdAndAfterDate(taskGroupId, date);
+					taskRepository.deleteAllNotAchievedByTaskGroupIdAndDateAfter(taskGroupId, date);
 		}
 	}
 
