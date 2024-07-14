@@ -122,6 +122,7 @@ public enum ErrorCode {
 	INVALID_FEED_CONTENT_LENGTH("ERR_FEED_005", "피드의 길이는 500자를 넘을 수 없습니다."),
 	NULL_FEED_IMAGE_URL("ERR_FEED_006", "피드 이미지 url은 null일 수 없습니다."),
 	BLANK_FEED_IMAGE_URL("ERR_FEED_007", "피드 이미지 url은 빈 값일 수 없습니다."),
+	OVER_FEED_IMAGE_COUNT("ERR_FEED_008", "피드 이미지 개수는 10개를 넘을 수 없습니다."),
 	;
 
 	private final String code;

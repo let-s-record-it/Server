@@ -1,11 +1,11 @@
 package com.sillim.recordit.feed.domain;
 
 import com.sillim.recordit.feed.domain.vo.FeedContent;
+import com.sillim.recordit.feed.domain.vo.FeedImages;
 import com.sillim.recordit.feed.domain.vo.FeedTitle;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
@@ -35,21 +35,17 @@ public class Feed extends BaseTime {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	@OneToMany(
-			mappedBy = "feed",
-			fetch = FetchType.LAZY,
-			cascade = CascadeType.PERSIST,
-			orphanRemoval = true)
-	private List<FeedImage> feedImages = new ArrayList<>();
+	@Embedded private FeedImages feedImages;
 
 	public Feed(String title, String content, Member member, List<String> feedImageUrls) {
 		this.title = new FeedTitle(title);
 		this.content = new FeedContent(content);
 		this.member = member;
 		this.feedImages =
-				feedImageUrls.stream()
-						.map(feedImageUrl -> new FeedImage(feedImageUrl, this))
-						.collect(Collectors.toList());
+				new FeedImages(
+						feedImageUrls.stream()
+								.map(feedImageUrl -> new FeedImage(feedImageUrl, this))
+								.collect(Collectors.toList()));
 		this.deleted = false;
 	}
 
@@ -59,5 +55,13 @@ public class Feed extends BaseTime {
 
 	public String getContent() {
 		return content.getContent();
+	}
+
+	public Integer getFeedImageCount() {
+		return feedImages.getFeedImageCount();
+	}
+
+	public List<FeedImage> getFeedImages() {
+		return feedImages.getFeedImages();
 	}
 }
