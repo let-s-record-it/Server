@@ -50,6 +50,7 @@ public class Feed extends BaseTime {
 				feedImageUrls.stream()
 						.map(feedImageUrl -> new FeedImage(feedImageUrl, this))
 						.collect(Collectors.toList());
+		this.deleted = false;
 	}
 
 	public String getTitle() {

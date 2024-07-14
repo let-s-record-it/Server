@@ -28,13 +28,10 @@ public class FeedImage extends BaseTime {
 	@JoinColumn(name = "feed_id")
 	private Feed feed;
 
-	private FeedImage(FeedImageUrl imageUrl, Feed feed) {
-		this.imageUrl = imageUrl;
-		this.feed = feed;
-	}
-
 	public FeedImage(String imageUrl, Feed feed) {
-		this(new FeedImageUrl(imageUrl), feed);
+		this.imageUrl = new FeedImageUrl(imageUrl);
+		this.feed = feed;
+		this.deleted = false;
 	}
 
 	public String getImageUrl() {
