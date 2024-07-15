@@ -28,7 +28,8 @@ class FeedImagesTest {
 			feedImageList.add(new FeedImage("https://image.url", feed));
 		}
 
-		FeedImages feedImages = new FeedImages(feedImageList);
+		FeedImages feedImages = new FeedImages();
+		feedImages.setFeedImages(feedImageList);
 		assertAll(
 				() -> {
 					assertThat(feedImages.getFeedImageCount()).isEqualTo(10);
@@ -47,7 +48,7 @@ class FeedImagesTest {
 			feedImageList.add(new FeedImage("https://image.url", feed));
 		}
 
-		assertThatCode(() -> new FeedImages(feedImageList))
+		assertThatCode(() -> new FeedImages().setFeedImages(feedImageList))
 				.isInstanceOf(InvalidFeedImageCountException.class)
 				.hasMessage(ErrorCode.OVER_FEED_IMAGE_COUNT.getDescription());
 	}

@@ -1,0 +1,36 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+
+cloud:
+  aws:
+    credentials:
+      access-key: accessKey
+      secret-key: secretKey
+    s3:
+      endpoint: endpoint
+      region: region
+    stack:
+      auto: false
+
+app-key:
+  kakao: 9271001b53c4033a3fda0465978165fb
+  google: 418252766261-ns8p3tb4otr34b000gk29rbbl464qsko.apps.googleusercontent.com
+
+jwt:
+  secret-key: dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0
+
+logging:
+  level:
+    com.sillim.recordit: debug  # ref: https://blog.datalust.co/choosing-the-right-log-levels/

@@ -18,7 +18,7 @@ public enum FeedFixture {
 	}
 
 	public Feed getFeed(Member member) {
-		return new Feed(this.title, this.content, member, this.feedImageUrls);
+		return new Feed(this.title, this.content, member);
 	}
 
 	public String getTitle() {

@@ -36,7 +36,7 @@ class FeedCommandServiceTest {
 		given(memberQueryService.findByMemberId(eq(1L))).willReturn(member);
 
 		FeedAddRequest feedAddRequest =
-				new FeedAddRequest("title", "content", List.of("http://image.url"));
+				new FeedAddRequest("title", "content");
 		Long feedId = feedCommandService.addFeed(feedAddRequest, 1L);
 
 		assertThat(feedId).isEqualTo(1L);
