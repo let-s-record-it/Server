@@ -13,10 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FeedQueryService {
 
-    private final FeedRepository feedRepository;
+	private final FeedRepository feedRepository;
 
-    public Feed searchById(Long feedId) {
-        return feedRepository.findById(feedId)
-                .orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
-    }
+	public Feed searchById(Long feedId) {
+		return feedRepository
+				.findById(feedId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
+	}
 }

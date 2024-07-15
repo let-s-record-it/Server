@@ -26,45 +26,50 @@ import org.springframework.mock.web.MockMultipartFile;
 @ExtendWith(MockitoExtension.class)
 class FeedImageUploadServiceTest {
 
-    FeedQueryService feedQueryService;
-    AmazonS3 amazonS3;
-    FeedImageUploadService feedImageUploadService;
+	FeedQueryService feedQueryService;
+	AmazonS3 amazonS3;
+	FeedImageUploadService feedImageUploadService;
 
-    @BeforeEach
-    void initObjects() {
-        this.feedQueryService = mock(FeedQueryService.class);
-        this.amazonS3 = mock(AmazonS3.class);
-        this.feedImageUploadService = new FeedImageUploadService(feedQueryService, amazonS3,
-                "test");
-    }
+	@BeforeEach
+	void initObjects() {
+		this.feedQueryService = mock(FeedQueryService.class);
+		this.amazonS3 = mock(AmazonS3.class);
+		this.feedImageUploadService =
+				new FeedImageUploadService(feedQueryService, amazonS3, "test");
+	}
 
-    @Test
-    @DisplayName("피드 이미지를 업로드할 수 있다.")
-    void uploadFeedImages() throws IOException {
-        long feedId = 1L;
-        MockMultipartFile multipartFile = new MockMultipartFile("images", "image.jpg",
-                "text/plain", "test1".getBytes(StandardCharsets.UTF_8));
-        Feed feed = mock(Feed.class);
-        given(feedQueryService.searchById(eq(feedId))).willReturn(feed);
-        given(amazonS3.getUrl(eq("test"), eq("image.jpg"))).willReturn(
-                new URL("http", "image.url", "image"));
+	@Test
+	@DisplayName("피드 이미지를 업로드할 수 있다.")
+	void uploadFeedImages() throws IOException {
+		long feedId = 1L;
+		MockMultipartFile multipartFile =
+				new MockMultipartFile(
+						"images",
+						"image.jpg",
+						"text/plain",
+						"test1".getBytes(StandardCharsets.UTF_8));
+		Feed feed = mock(Feed.class);
+		given(feedQueryService.searchById(eq(feedId))).willReturn(feed);
+		given(amazonS3.getUrl(eq("test"), eq("image.jpg")))
+				.willReturn(new URL("http", "image.url", "image"));
 
-        feedImageUploadService.upload(List.of(multipartFile), feedId);
+		feedImageUploadService.upload(List.of(multipartFile), feedId);
 
-        then(feed).should(times(1)).setFeedImages(anyList());
-    }
+		then(feed).should(times(1)).setFeedImages(anyList());
+	}
 
-    @Test
-    @DisplayName("피드 이미지가 비어있으면 FileNotFoundException이 발생한다.")
-    void throwFileNotFoundExceptionIfFeedImageFileNotExists() throws IOException {
-        long feedId = 1L;
-        MockMultipartFile multipartFile = new MockMultipartFile("images", "image.jpg",
-                "text/plain", "".getBytes(StandardCharsets.UTF_8));
-        Feed feed = mock(Feed.class);
-        given(feedQueryService.searchById(eq(feedId))).willReturn(feed);
+	@Test
+	@DisplayName("피드 이미지가 비어있으면 FileNotFoundException이 발생한다.")
+	void throwFileNotFoundExceptionIfFeedImageFileNotExists() throws IOException {
+		long feedId = 1L;
+		MockMultipartFile multipartFile =
+				new MockMultipartFile(
+						"images", "image.jpg", "text/plain", "".getBytes(StandardCharsets.UTF_8));
+		Feed feed = mock(Feed.class);
+		given(feedQueryService.searchById(eq(feedId))).willReturn(feed);
 
-        assertThatCode(() -> feedImageUploadService.upload(List.of(multipartFile), feedId))
-                .isInstanceOf(FileNotFoundException.class)
-                .hasMessage(ErrorCode.FILE_NOT_FOUND.getDescription());
-    }
+		assertThatCode(() -> feedImageUploadService.upload(List.of(multipartFile), feedId))
+				.isInstanceOf(FileNotFoundException.class)
+				.hasMessage(ErrorCode.FILE_NOT_FOUND.getDescription());
+	}
 }

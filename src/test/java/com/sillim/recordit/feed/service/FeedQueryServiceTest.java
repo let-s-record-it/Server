@@ -21,22 +21,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FeedQueryServiceTest {
 
-    @Mock
-    FeedRepository feedRepository;
-    @InjectMocks
-    FeedQueryService feedQueryService;
+	@Mock FeedRepository feedRepository;
+	@InjectMocks FeedQueryService feedQueryService;
 
-    @Test
-    @DisplayName("피드 id를 통해 피드를 조회할 수 있다.")
-    void searchFeedById() {
-        long feedId = 1L;
-        Member member = MemberFixture.DEFAULT.getMember();
-        Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
-        given(feed.getId()).willReturn(feedId);
-        given(feedRepository.findById(eq(feedId))).willReturn(Optional.of(feed));
+	@Test
+	@DisplayName("피드 id를 통해 피드를 조회할 수 있다.")
+	void searchFeedById() {
+		long feedId = 1L;
+		Member member = MemberFixture.DEFAULT.getMember();
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		given(feed.getId()).willReturn(feedId);
+		given(feedRepository.findById(eq(feedId))).willReturn(Optional.of(feed));
 
-        Feed foundFeed = feedQueryService.searchById(feedId);
+		Feed foundFeed = feedQueryService.searchById(feedId);
 
-        assertThat(foundFeed.getId()).isEqualTo(feed.getId());
-    }
+		assertThat(foundFeed.getId()).isEqualTo(feed.getId());
+	}
 }

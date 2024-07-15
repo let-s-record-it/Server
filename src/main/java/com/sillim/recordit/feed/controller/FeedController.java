@@ -27,21 +27,22 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class FeedController {
 
-    private final FeedCommandService feedCommandService;
-    private final FeedImageUploadService feedImageUploadService;
+	private final FeedCommandService feedCommandService;
+	private final FeedImageUploadService feedImageUploadService;
 
-    @PostMapping
-    public ResponseEntity<Void> feedAdd(
-            @Validated @RequestBody FeedAddRequest request, @CurrentMember Member member) {
-        Long feedId = feedCommandService.addFeed(request, member.getId());
-        return ResponseEntity.created(URI.create("/api/v1/feeds/" + feedId)).build();
-    }
+	@PostMapping
+	public ResponseEntity<Void> feedAdd(
+			@Validated @RequestBody FeedAddRequest request, @CurrentMember Member member) {
+		Long feedId = feedCommandService.addFeed(request, member.getId());
+		return ResponseEntity.created(URI.create("/api/v1/feeds/" + feedId)).build();
+	}
 
-    @PostMapping("/{feedId}/images")
-    public ResponseEntity<Void> feedImagesAdd(@PathVariable Long feedId,
-            @RequestPart @Valid @Size(max = 10) List<MultipartFile> images) throws IOException {
-        feedImageUploadService.upload(images, feedId);
-        return ResponseEntity.created(URI.create("/api/v1/feeds/" + feedId + "/images"))
-                .build();
-    }
+	@PostMapping("/{feedId}/images")
+	public ResponseEntity<Void> feedImagesAdd(
+			@PathVariable Long feedId,
+			@RequestPart @Valid @Size(max = 10) List<MultipartFile> images)
+			throws IOException {
+		feedImageUploadService.upload(images, feedId);
+		return ResponseEntity.created(URI.create("/api/v1/feeds/" + feedId + "/images")).build();
+	}
 }

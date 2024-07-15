@@ -11,7 +11,6 @@ import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.repository.FeedRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,8 +34,7 @@ class FeedCommandServiceTest {
 		given(feedRepository.save(any(Feed.class))).willReturn(feed);
 		given(memberQueryService.findByMemberId(eq(1L))).willReturn(member);
 
-		FeedAddRequest feedAddRequest =
-				new FeedAddRequest("title", "content");
+		FeedAddRequest feedAddRequest = new FeedAddRequest("title", "content");
 		Long feedId = feedCommandService.addFeed(feedAddRequest, 1L);
 
 		assertThat(feedId).isEqualTo(1L);

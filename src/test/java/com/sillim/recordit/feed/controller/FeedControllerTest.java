@@ -28,51 +28,56 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(FeedController.class)
 class FeedControllerTest extends RestDocsTest {
 
-    @MockBean
-    FeedImageUploadService feedImageUploadService;
-    @MockBean
-    FeedCommandService feedCommandService;
+	@MockBean FeedImageUploadService feedImageUploadService;
+	@MockBean FeedCommandService feedCommandService;
 
-    @Test
-    @DisplayName("피드를 생성한다.")
-    void feedAdd() throws Exception {
-        FeedAddRequest request =
-                new FeedAddRequest("title", "content");
-        long feedId = 1L;
-        given(feedCommandService.addFeed(eq(request), any())).willReturn(feedId);
+	@Test
+	@DisplayName("피드를 생성한다.")
+	void feedAdd() throws Exception {
+		FeedAddRequest request = new FeedAddRequest("title", "content");
+		long feedId = 1L;
+		given(feedCommandService.addFeed(eq(request), any())).willReturn(feedId);
 
-        ResultActions perform =
-                mockMvc.perform(
-                        post("/api/v1/feeds")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(toJson(request)));
+		ResultActions perform =
+				mockMvc.perform(
+						post("/api/v1/feeds")
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
 
-        perform.andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/v1/feeds/1"));
+		perform.andExpect(status().isCreated())
+				.andExpect(header().string("Location", "/api/v1/feeds/1"));
 
-        perform.andDo(print())
-                .andDo(document("feed-add", getDocumentRequest(), getDocumentResponse()));
-    }
+		perform.andDo(print())
+				.andDo(document("feed-add", getDocumentRequest(), getDocumentResponse()));
+	}
 
-    @Test
-    @DisplayName("피드 이미지를 등록한다.")
-    void feedImagesAdd() throws Exception {
-        MockMultipartFile multipartFile1 = new MockMultipartFile("images", "image1.jpg",
-                "text/plain", "test1".getBytes(StandardCharsets.UTF_8));
-        MockMultipartFile multipartFile2 = new MockMultipartFile("images", "image2.jpg",
-                "text/plain", "test2".getBytes(StandardCharsets.UTF_8));
-        long feedId = 1L;
+	@Test
+	@DisplayName("피드 이미지를 등록한다.")
+	void feedImagesAdd() throws Exception {
+		MockMultipartFile multipartFile1 =
+				new MockMultipartFile(
+						"images",
+						"image1.jpg",
+						"text/plain",
+						"test1".getBytes(StandardCharsets.UTF_8));
+		MockMultipartFile multipartFile2 =
+				new MockMultipartFile(
+						"images",
+						"image2.jpg",
+						"text/plain",
+						"test2".getBytes(StandardCharsets.UTF_8));
+		long feedId = 1L;
 
-        ResultActions perform =
-                mockMvc.perform(
-                        multipart("/api/v1/feeds/{feedId}/images", feedId)
-                                .file(multipartFile1)
-                                .file(multipartFile2));
+		ResultActions perform =
+				mockMvc.perform(
+						multipart("/api/v1/feeds/{feedId}/images", feedId)
+								.file(multipartFile1)
+								.file(multipartFile2));
 
-        perform.andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/v1/feeds/1/images"));
+		perform.andExpect(status().isCreated())
+				.andExpect(header().string("Location", "/api/v1/feeds/1/images"));
 
-        perform.andDo(print())
-                .andDo(document("feed-images-add", getDocumentRequest(), getDocumentResponse()));
-    }
+		perform.andDo(print())
+				.andDo(document("feed-images-add", getDocumentRequest(), getDocumentResponse()));
+	}
 }

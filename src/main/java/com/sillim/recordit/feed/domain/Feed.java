@@ -20,55 +20,52 @@ import org.hibernate.annotations.DynamicInsert;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Feed extends BaseTime {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, name = "feed_id")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(nullable = false, name = "feed_id")
+	private Long id;
 
-    @Embedded
-    private FeedTitle title;
+	@Embedded private FeedTitle title;
 
-    @Embedded
-    private FeedContent content;
+	@Embedded private FeedContent content;
 
-    @Column(nullable = false)
-    @ColumnDefault("false")
-    private Boolean deleted;
+	@Column(nullable = false)
+	@ColumnDefault("false")
+	private Boolean deleted;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id")
+	private Member member;
 
-    @Embedded
-    private FeedImages feedImages;
+	@Embedded private FeedImages feedImages;
 
-    public Feed(String title, String content, Member member) {
-        this.title = new FeedTitle(title);
-        this.content = new FeedContent(content);
-        this.member = member;
-        this.deleted = false;
-    }
+	public Feed(String title, String content, Member member) {
+		this.title = new FeedTitle(title);
+		this.content = new FeedContent(content);
+		this.member = member;
+		this.deleted = false;
+	}
 
-    public void setFeedImages(List<String> feedImageUrls) {
-        this.feedImages.setFeedImages(
-                feedImageUrls.stream()
-                        .map(feedImageUrl -> new FeedImage(feedImageUrl, this))
-                        .collect(Collectors.toList()));
-    }
+	public void setFeedImages(List<String> feedImageUrls) {
+		this.feedImages.setFeedImages(
+				feedImageUrls.stream()
+						.map(feedImageUrl -> new FeedImage(feedImageUrl, this))
+						.collect(Collectors.toList()));
+	}
 
-    public String getTitle() {
-        return title.getTitle();
-    }
+	public String getTitle() {
+		return title.getTitle();
+	}
 
-    public String getContent() {
-        return content.getContent();
-    }
+	public String getContent() {
+		return content.getContent();
+	}
 
-    public Integer getFeedImageCount() {
-        return feedImages.getFeedImageCount();
-    }
+	public Integer getFeedImageCount() {
+		return feedImages.getFeedImageCount();
+	}
 
-    public List<FeedImage> getFeedImages() {
-        return feedImages.getFeedImages();
-    }
+	public List<FeedImage> getFeedImages() {
+		return feedImages.getFeedImages();
+	}
 }
