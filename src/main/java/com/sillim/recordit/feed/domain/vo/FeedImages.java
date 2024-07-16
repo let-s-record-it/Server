@@ -3,7 +3,11 @@ package com.sillim.recordit.feed.domain.vo;
 import com.sillim.recordit.feed.domain.FeedImage;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.feed.InvalidFeedImageCountException;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +40,13 @@ public class FeedImages {
 		validateFeedImageCount(feedImages.size());
 		this.feedImageCount = feedImages.size();
 		this.feedImages = feedImages;
+	}
+
+	public void setFeedImages(List<FeedImage> feedImages) {
+		validateFeedImageCount(feedImages.size());
+		this.feedImageCount = feedImages.size();
+		this.feedImages.clear();
+		this.feedImages.addAll(feedImages);
 	}
 
 	public List<FeedImage> getFeedImages() {
