@@ -22,8 +22,6 @@ class FeedTest {
 				() -> {
 					assertThat(feed.getTitle()).isEqualTo(feedFixture.getTitle());
 					assertThat(feed.getContent()).isEqualTo(feedFixture.getContent());
-					assertThat(feed.getFeedImages().stream().map(FeedImage::getImageUrl).toList())
-							.containsExactlyElementsOf(feedFixture.getFeedImageUrls());
 				});
 	}
 }

@@ -1,7 +1,7 @@
 spring:
   config:
     activate:
-      on-profile: local
+      on-profile: test
   jpa:
     hibernate:
       ddl-auto: create
@@ -16,11 +16,11 @@ spring:
 cloud:
   aws:
     credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
+      access-key: accessKey
+      secret-key: secretKey
     s3:
-      endpoint: ${S3_ENDPOINT}
-      region: ${AWS_REGION}
+      endpoint: endpoint
+      region: region
     stack:
       auto: false
 

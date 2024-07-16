@@ -6,6 +6,17 @@ spring:
     hibernate:
       ddl-auto: create
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    s3:
+      endpoint: ${S3_ENDPOINT}
+      region: ${AWS_REGION}
+    stack:
+      auto: false
+
 app-key:
   kakao: ${KAKAO_APP_KEY}
   google: ${GOOGLE_APP_KEY}

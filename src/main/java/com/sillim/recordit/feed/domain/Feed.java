@@ -12,9 +12,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 @Getter
 @Entity
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Feed extends BaseTime {
 
@@ -41,12 +43,19 @@ public class Feed extends BaseTime {
 		this.title = new FeedTitle(title);
 		this.content = new FeedContent(content);
 		this.member = member;
+		this.deleted = false;
 		this.feedImages =
 				new FeedImages(
 						feedImageUrls.stream()
 								.map(feedImageUrl -> new FeedImage(feedImageUrl, this))
 								.collect(Collectors.toList()));
-		this.deleted = false;
+	}
+
+	public void setFeedImages(List<String> feedImageUrls) {
+		this.feedImages.setFeedImages(
+				feedImageUrls.stream()
+						.map(feedImageUrl -> new FeedImage(feedImageUrl, this))
+						.collect(Collectors.toList()));
 	}
 
 	public String getTitle() {
