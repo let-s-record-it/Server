@@ -77,3 +77,43 @@ include::{snippets}/get-task-details-with-no-repeat/http-response.adoc[]
 include::{snippets}/get-task-details-with-repeat/http-response.adoc[]
 
 include::{snippets}/get-task-details-with-related-goals/http-response.adoc[]
+
+== 할 일 그룹 내 할 일 전체 수정 API
+
+=== Header
+
+include::{snippets}/modify-all-tasks/http-request.adoc[]
+
+=== Path Variables
+
+include::{snippets}/modify-all-tasks/path-parameters.adoc[]
+
+=== Body
+
+include::{snippets}/modify-all-tasks/http-request.adoc[]
+
+=== Response
+
+==== 204 NO CONTENT
+
+include::{snippets}/modify-all-tasks/http-response.adoc[]
+
+== 이후 할 일 전체 수정 API
+
+=== Header
+
+include::{snippets}/modify-after-all-tasks/http-request.adoc[]
+
+=== Path Variables
+
+include::{snippets}/modify-after-all-tasks/path-parameters.adoc[]
+
+=== Body
+
+include::{snippets}/modify-after-all-tasks/http-request.adoc[]
+
+=== Response
+
+==== 204 NO CONTENT
+
+include::{snippets}/modify-after-all-tasks/http-response.adoc[]

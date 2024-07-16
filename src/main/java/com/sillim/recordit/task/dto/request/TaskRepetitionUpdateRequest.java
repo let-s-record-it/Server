@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import org.hibernate.validator.constraints.Range;
 
-public record TaskRepetitionAddRequest(
+public record TaskRepetitionUpdateRequest(
 		@NotNull TaskRepetitionType repetitionType,
 		@Range(min = 1, max = 999) Integer repetitionPeriod,
 		@NotNull LocalDate repetitionStartDate,

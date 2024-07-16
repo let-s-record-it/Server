@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,5 +41,32 @@ class TaskRepetitionPatternRepositoryTest {
 				.usingRecursiveComparison()
 				.ignoringFields("id", "taskGroup", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("할 일 그룹의 id로 반복 패턴을 조회한다.")
+	void findByTaskGroupId() {
+		TaskRepetitionPattern expected = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
+		taskRepetitionPatternRepository.save(TaskRepetitionPatternFixture.DAILY.get(taskGroup));
+
+		Optional<TaskRepetitionPattern> found =
+				taskRepetitionPatternRepository.findByTaskGroupId(taskGroup.getId());
+
+		assertThat(found).isNotEmpty();
+		assertThat(found.get())
+				.usingRecursiveComparison()
+				.ignoringFields("id", "taskGroup", "createdAt", "modifiedAt")
+				.isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("할 일 그룹의 id로 반복 패턴을 삭제한다.")
+	void deleteByTaskGroupId() {
+		TaskRepetitionPattern repetitionPattern = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
+		taskRepetitionPatternRepository.save(repetitionPattern);
+
+		taskRepetitionPatternRepository.deleteByTaskGroupId(taskGroup.getId());
+
+		assertThat(taskRepetitionPatternRepository.findById(repetitionPattern.getId())).isEmpty();
 	}
 }

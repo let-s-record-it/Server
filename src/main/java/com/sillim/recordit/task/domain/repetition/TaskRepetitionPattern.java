@@ -77,8 +77,8 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 	@ColumnDefault("false")
 	private boolean deleted = false;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "task_group_id", unique = true)
+	@OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
+	@JoinColumn(name = "task_group_id")
 	private TaskGroup taskGroup;
 
 	protected TaskRepetitionPattern(

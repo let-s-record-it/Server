@@ -4,6 +4,7 @@ import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.function.Function;
@@ -47,6 +48,10 @@ public abstract class QuerydslRepositorySupport {
 
 	protected <T> JPAQuery<T> selectFrom(EntityPath<T> from) {
 		return this.jpaQueryFactory.selectFrom(from);
+	}
+
+	protected <T> JPAUpdateClause update(EntityPath<T> from) {
+		return this.jpaQueryFactory.update(from);
 	}
 
 	protected <T> Page<T> applyPagination(

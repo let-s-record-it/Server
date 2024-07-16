@@ -1,6 +1,7 @@
 package com.sillim.recordit.task.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
@@ -11,7 +12,6 @@ import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.fixture.TaskFixture;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,16 +77,68 @@ class TaskRepositoryTest {
 	}
 
 	@Test
-	@DisplayName("해당 캘린더에 속하는 특정 id의 할 일을 조회한다.")
-	void findByIdAndCalendarId() {
+	@DisplayName("캘린더 id와 할 일 그룹 id에 해당하는 할 일 목록을 조회한다.")
+	void findAllByCalendarIdAndTaskGroupId() {
+		List<Task> expected =
+				List.of(
+						TaskFixture.DEFAULT.get(calendar, taskGroup),
+						TaskFixture.DEFAULT.get(calendar, taskGroup),
+						TaskFixture.DEFAULT.get(calendar, taskGroup));
+		taskRepository.saveAll(expected);
 
-		Task saved = TaskFixture.DEFAULT.get(calendar, taskGroup);
-		taskRepository.save(saved);
+		List<Task> found =
+				taskRepository.findAllByCalendarIdAndTaskGroupId(
+						calendar.getId(), taskGroup.getId());
 
-		Optional<Task> found =
-				taskRepository.findByIdAndCalendarId(saved.getId(), calendar.getId());
+		assertThat(found).hasSize(3);
+		assertAll(
+				() -> {
+					assertThat(found.get(0))
+							.usingRecursiveComparison()
+							.ignoringFields("createdAt", "modifiedAt")
+							.isEqualTo(expected.get(0));
+					assertThat(found.get(1))
+							.usingRecursiveComparison()
+							.ignoringFields("createdAt", "modifiedAt")
+							.isEqualTo(expected.get(1));
+					assertThat(found.get(2))
+							.usingRecursiveComparison()
+							.ignoringFields("createdAt", "modifiedAt")
+							.isEqualTo(expected.get(2));
+				});
+	}
 
-		assertThat(found).isNotEmpty();
-		assertThat(found.get().getId()).isEqualTo(saved.getId());
+	@Test
+	@DisplayName("캘린더 id와 할 일 그룹 id에 해당하는 할 일 중, 해당 날짜와 같거나 이후에 속하는 할 일 목록을 조회한다.")
+	void findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual() {
+		List<Task> saved =
+				List.of(
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 7, 13), calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 7, 14), calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 7, 15), calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 7, 16), calendar, taskGroup));
+		saved.forEach(em::persist);
+
+		List<Task> found =
+				taskRepository.findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual(
+						calendar.getId(), taskGroup.getId(), LocalDate.of(2024, 7, 14));
+
+		assertThat(found).hasSize(3);
+		assertThat(found.get(0))
+				.usingRecursiveComparison()
+				.ignoringFields("createdAt", "modifiedAt")
+				.isEqualTo(saved.get(1));
+		assertThat(found.get(1))
+				.usingRecursiveComparison()
+				.ignoringFields("createdAt", "modifiedAt")
+				.isEqualTo(saved.get(2));
+		assertThat(found.get(2))
+				.usingRecursiveComparison()
+				.ignoringFields("createdAt", "modifiedAt")
+				.isEqualTo(saved.get(3));
 	}
 }
