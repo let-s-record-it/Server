@@ -10,6 +10,7 @@ import com.sillim.recordit.task.domain.TaskRemoveStrategy;
 import com.sillim.recordit.task.dto.request.TaskAddRequest;
 import com.sillim.recordit.task.dto.request.TaskUpdateRequest;
 import com.sillim.recordit.task.repository.TaskRepository;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class TaskCommandService {
 						memberId);
 		final Calendar calendar = calendarService.searchByCalendarId(calendarId, memberId);
 		if (request.isRepeated()) {
-			addNewRepeatingTask(request, taskGroup, calendar);
+			addRepeatingTasks(request, taskGroup, calendar);
 			return;
 		}
 		taskRepository.save(request.toTask(calendar, taskGroup));
@@ -74,7 +75,43 @@ public class TaskCommandService {
 		}
 	}
 
-	private void addNewRepeatingTask(
+	public void modifyAfterAllTasks(
+			final TaskUpdateRequest request,
+			final Long calendarId,
+			final Long taskId,
+			final Long memberId) {
+
+		validateOwnerOfCalendar(calendarId, memberId);
+		Task selectedTask =
+				taskRepository
+						.findByIdAndCalendarId(taskId, calendarId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		Long taskGroupId = selectedTask.getTaskGroup().getId();
+
+		removeTasksInGroupAfterDate(request.removeStrategy(), taskGroupId, selectedTask.getDate());
+
+		TaskGroup newTaskGroup =
+				taskGroupService.addTaskGroup(
+						request.isRepeated(),
+						request.relatedMonthlyGoalId(),
+						request.relatedWeeklyGoalId(),
+						memberId); // 새로운 TaskGroup 생성
+		Calendar newCalendar = calendarService.searchByCalendarId(request.calendarId(), memberId);
+		List<Task> modifiedTasks =
+				modifyAfterAllTasksInTaskGroup(
+						request,
+						calendarId,
+						taskGroupId,
+						selectedTask.getDate(),
+						newCalendar,
+						newTaskGroup);
+
+		if (request.isRepeated()) {
+			addNewRepeatingTask(modifiedTasks, request, newTaskGroup, newCalendar);
+		}
+	}
+
+	private void addRepeatingTasks(
 			final TaskAddRequest request, final TaskGroup taskGroup, final Calendar calendar) {
 		repetitionPatternService
 				.addRepetitionPattern(request.repetition(), taskGroup)
@@ -123,6 +160,15 @@ public class TaskCommandService {
 		}
 	}
 
+	private void removeTasksInGroupAfterDate(
+			final TaskRemoveStrategy strategy, final Long taskGroupId, final LocalDate date) {
+		switch (strategy) {
+			case REMOVE_ALL -> taskRepository.deleteAllByTaskGroupIdAndDateAfter(taskGroupId, date);
+			case REMOVE_NOT_ACHIEVED ->
+					taskRepository.deleteAllNotAchievedByTaskGroupIdAndDateAfter(taskGroupId, date);
+		}
+	}
+
 	private List<Task> modifyAllTasksInTaskGroup(
 			final TaskUpdateRequest request,
 			final Long calendarId,
@@ -131,6 +177,28 @@ public class TaskCommandService {
 			final TaskGroup newTaskGroup) {
 		List<Task> tasksInGroup =
 				taskRepository.findAllByCalendarIdAndTaskGroupId(calendarId, taskGroupId);
+		tasksInGroup.forEach(
+				task ->
+						task.modify(
+								request.title(),
+								request.description(),
+								request.date(),
+								request.colorHex(),
+								newCalendar,
+								newTaskGroup));
+		return tasksInGroup;
+	}
+
+	private List<Task> modifyAfterAllTasksInTaskGroup(
+			final TaskUpdateRequest request,
+			final Long calendarId,
+			final Long taskGroupId,
+			final LocalDate date,
+			final Calendar newCalendar,
+			final TaskGroup newTaskGroup) {
+		List<Task> tasksInGroup =
+				taskRepository.findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual(
+						calendarId, taskGroupId, date);
 		tasksInGroup.forEach(
 				task ->
 						task.modify(

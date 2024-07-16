@@ -74,4 +74,16 @@ public class TaskController {
 
 		return ResponseEntity.noContent().build();
 	}
+
+	@PutMapping("/{taskId}/modify-after-all")
+	public ResponseEntity<Void> modifyAfterAllTasks(
+			@RequestBody @Validated TaskUpdateRequest request,
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		taskCommandService.modifyAfterAllTasks(request, calendarId, taskId, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
 }

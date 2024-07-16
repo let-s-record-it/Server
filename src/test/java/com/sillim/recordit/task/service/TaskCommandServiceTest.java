@@ -194,10 +194,14 @@ class TaskCommandServiceTest {
 					assertThat(tasksInGroup.get(0).getColorHex()).isEqualTo(request.colorHex());
 					assertThat(tasksInGroup.get(0).getCalendar()).isEqualTo(newCalendar);
 				});
+		then(taskGroupService)
+				.should(times(1))
+				.modifyTaskGroup(
+						eq(taskGroupId), eq(request.isRepeated()), any(), any(), eq(memberId));
 	}
 
 	@Test
-	@DisplayName("선택한 할 일의 할 일 그룹에 속한 모든 할 일을 수정한다. - 기존 할 일을 모두 삭제한다.")
+	@DisplayName("선택한 할 일의 할 일 그룹에 속한 모든 할 일을 수정한다. - 선택한 할 일을 제외한 그룹 내 기존 할 일을 모두 삭제한다.")
 	void modifyAllTasksAndRemoveAll() {
 		Long calendarId = 1L;
 		Long newCalendarId = 2L;
@@ -258,7 +262,7 @@ class TaskCommandServiceTest {
 	}
 
 	@Test
-	@DisplayName("선택한 할 일의 할 일 그룹에 속한 모든 할 일을 수정한다. - 달성하지 않은 기존 할 일을 모두 삭제한다.")
+	@DisplayName("선택한 할 일의 할 일 그룹에 속한 모든 할 일을 수정한다. - 선택한 할 일을 제외한 그룹 내 달성하지 않은 기존 할 일을 모두 삭제한다.")
 	void modifyAllTasksAndRemoveNotAchieved() {
 		Long calendarId = 1L;
 		Long newCalendarId = 2L;
@@ -282,7 +286,7 @@ class TaskCommandServiceTest {
 				.willReturn(calendar);
 
 		TaskGroup taskGroup =
-				spy(new TaskGroup(false, mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
+				spy(new TaskGroup(true, mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
 		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
@@ -319,7 +323,7 @@ class TaskCommandServiceTest {
 	}
 
 	@Test
-	@DisplayName("선택한 할 일의 할 일 그룹에 속한 모든 할 일을 수정한다. - 반복패턴을 수정한다.")
+	@DisplayName("선택한 할 일의 할 일 그룹에 속한 모든 할 일을 수정한다. - 반복패턴을 없앤다.")
 	void modifyAllTasksWithRepetitionAndRemoveNotAchieved() {
 		Long calendarId = 1L;
 		Long newCalendarId = 2L;
@@ -343,7 +347,7 @@ class TaskCommandServiceTest {
 				.willReturn(calendar);
 
 		TaskGroup taskGroup =
-				spy(new TaskGroup(false, mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
+				spy(new TaskGroup(true, mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
 		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
@@ -422,7 +426,7 @@ class TaskCommandServiceTest {
 		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
 				.willReturn(Optional.of(selectedTask));
 
-		TaskGroup newTaskGroup = new TaskGroup(false, null, null);
+		TaskGroup newTaskGroup = new TaskGroup(true, null, null);
 		given(
 						taskGroupService.modifyTaskGroup(
 								eq(taskGroupId), anyBoolean(), any(), any(), eq(memberId)))
@@ -480,6 +484,365 @@ class TaskCommandServiceTest {
 		assertThatCode(
 						() ->
 								taskCommandService.modifyAllTasks(
+										request, calendarId, taskId, memberId))
+				.isInstanceOf(RecordNotFoundException.class)
+				.hasMessage(ErrorCode.TASK_NOT_FOUND.getDescription());
+	}
+
+	@Test
+	@DisplayName("선택한 할 일의 할 일 그룹에 속한 할 일 중, 선택한 할 일 날짜와 같거나 이후에 해당하는 할 일들을 수정한다.")
+	void modifyAfterAllTasksRemoveNothing() {
+		Long calendarId = 1L;
+		Long newCalendarId = 2L;
+		Long taskId = 3L;
+		Long taskGroupId = 4L;
+		Long memberId = 5L;
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						TaskRemoveStrategy.REMOVE_NOTHING,
+						"(수정) 취뽀하기!",
+						"(수정) 가즈아",
+						LocalDate.of(2024, 7, 10),
+						"ff40d974",
+						newCalendarId,
+						false,
+						null,
+						null,
+						null);
+
+		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
+				.willReturn(calendar);
+
+		TaskGroup taskGroup =
+				spy(new TaskGroup(true, mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
+		given(taskGroup.getId()).willReturn(taskGroupId);
+
+		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
+				.willReturn(Optional.of(selectedTask));
+
+		TaskGroup newTaskGroup = new TaskGroup(false, null, null);
+		given(taskGroupService.addTaskGroup(eq(request.isRepeated()), any(), any(), eq(memberId)))
+				.willReturn(newTaskGroup);
+
+		Calendar newCalendar = CalendarFixture.DEFAULT.getCalendar(member);
+		given(calendarService.searchByCalendarId(eq(newCalendarId), eq(memberId)))
+				.willReturn(newCalendar);
+
+		List<Task> tasksInGroup =
+				List.of(
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 12), calendar, taskGroup));
+		given(
+						taskRepository.findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual(
+								eq(calendarId), eq(taskGroupId), eq(selectedTask.getDate())))
+				.willReturn(tasksInGroup);
+
+		assertThatCode(
+						() ->
+								taskCommandService.modifyAfterAllTasks(
+										request, calendarId, taskId, memberId))
+				.doesNotThrowAnyException();
+		assertAll(
+				() -> {
+					assertThat(tasksInGroup.get(0).getTitle()).isEqualTo(request.title());
+					assertThat(tasksInGroup.get(0).getDescription())
+							.isEqualTo(request.description());
+					assertThat(tasksInGroup.get(0).getDate()).isEqualTo(request.date());
+					assertThat(tasksInGroup.get(0).getColorHex()).isEqualTo(request.colorHex());
+					assertThat(tasksInGroup.get(0).getCalendar()).isEqualTo(newCalendar);
+				});
+		then(taskGroupService)
+				.should(times(1))
+				.addTaskGroup(eq(request.isRepeated()), any(), any(), eq(memberId));
+	}
+
+	@Test
+	@DisplayName(
+			"선택한 할 일의 할 일 그룹에 속한 할 일 중, 선택한 할 일 날짜와 같거나 이후에 해당하는 할 일들을 수정한다. "
+					+ "- 선택한 할 일 날짜 이후의 그룹 내 기존 할 일을 모두 삭제한다.")
+	void modifyAfterAllTasksAndRemoveAll() {
+		Long calendarId = 1L;
+		Long newCalendarId = 2L;
+		Long taskId = 3L;
+		Long taskGroupId = 4L;
+		Long memberId = 5L;
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						TaskRemoveStrategy.REMOVE_ALL,
+						"(수정) 취뽀하기!",
+						"(수정) 가즈아",
+						LocalDate.of(2024, 7, 10),
+						"ff40d974",
+						newCalendarId,
+						false,
+						null,
+						null,
+						null);
+
+		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
+				.willReturn(calendar);
+
+		TaskGroup taskGroup =
+				spy(new TaskGroup(true, mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
+		given(taskGroup.getId()).willReturn(taskGroupId);
+
+		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
+				.willReturn(Optional.of(selectedTask));
+
+		TaskGroup newTaskGroup = new TaskGroup(false, null, null);
+		given(taskGroupService.addTaskGroup(eq(request.isRepeated()), any(), any(), eq(memberId)))
+				.willReturn(newTaskGroup);
+
+		Calendar newCalendar = CalendarFixture.DEFAULT.getCalendar(member);
+		given(calendarService.searchByCalendarId(eq(newCalendarId), eq(memberId)))
+				.willReturn(newCalendar);
+
+		List<Task> tasksInGroup =
+				List.of(
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 12), calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 13), calendar, taskGroup));
+		given(
+						taskRepository.findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual(
+								eq(calendarId), eq(taskGroupId), eq(selectedTask.getDate())))
+				.willReturn(tasksInGroup);
+
+		assertThatCode(
+						() ->
+								taskCommandService.modifyAfterAllTasks(
+										request, calendarId, taskId, memberId))
+				.doesNotThrowAnyException();
+		then(taskRepository)
+				.should(times(1))
+				.deleteAllByTaskGroupIdAndDateAfter(eq(taskGroupId), eq(selectedTask.getDate()));
+	}
+
+	@Test
+	@DisplayName(
+			"선택한 할 일의 할 일 그룹에 속한 할 일 중, 선택한 할 일 날짜와 같거나 이후에 해당하는 할 일들을 수정한다. "
+					+ "- 선택한 할 일 날짜 이후의 그룹 내 달성하지 않은 기존 할 일을 모두 삭제한다.")
+	void modifyAfterAllTasksAndRemoveNotAchieved() {
+		Long calendarId = 1L;
+		Long newCalendarId = 2L;
+		Long taskId = 3L;
+		Long taskGroupId = 4L;
+		Long memberId = 5L;
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						TaskRemoveStrategy.REMOVE_NOT_ACHIEVED,
+						"(수정) 취뽀하기!",
+						"(수정) 가즈아",
+						LocalDate.of(2024, 7, 10),
+						"ff40d974",
+						newCalendarId,
+						false,
+						null,
+						null,
+						null);
+
+		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
+				.willReturn(calendar);
+
+		TaskGroup taskGroup =
+				spy(new TaskGroup(false, mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
+		given(taskGroup.getId()).willReturn(taskGroupId);
+
+		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
+				.willReturn(Optional.of(selectedTask));
+
+		TaskGroup newTaskGroup = new TaskGroup(false, null, null);
+		given(taskGroupService.addTaskGroup(eq(request.isRepeated()), any(), any(), eq(memberId)))
+				.willReturn(newTaskGroup);
+
+		Calendar newCalendar = CalendarFixture.DEFAULT.getCalendar(member);
+		given(calendarService.searchByCalendarId(eq(newCalendarId), eq(memberId)))
+				.willReturn(newCalendar);
+
+		List<Task> tasksInGroup =
+				List.of(
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 12), calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 13), calendar, taskGroup));
+		given(
+						taskRepository.findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual(
+								eq(calendarId), eq(taskGroupId), eq(selectedTask.getDate())))
+				.willReturn(tasksInGroup);
+		assertThatCode(
+						() ->
+								taskCommandService.modifyAfterAllTasks(
+										request, calendarId, taskId, memberId))
+				.doesNotThrowAnyException();
+		then(taskRepository)
+				.should(times(1))
+				.deleteAllNotAchievedByTaskGroupIdAndDateAfter(
+						eq(taskGroupId), eq(selectedTask.getDate()));
+	}
+
+	@Test
+	@DisplayName(
+			"선택한 할 일의 할 일 그룹에 속한 할 일 중, 선택한 할 일 날짜와 같거나 이후에 해당하는 할 일들을 수정한다. " + "- 반복패턴을 수정한다.")
+	void modifyAfterAllTasksWithRepetitionAndRemoveNotAchieved() {
+		Long calendarId = 1L;
+		Long newCalendarId = 2L;
+		Long taskId = 3L;
+		Long taskGroupId = 4L;
+		Long memberId = 5L;
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						TaskRemoveStrategy.REMOVE_NOTHING,
+						"(수정) 취뽀하기!",
+						"(수정) 가즈아",
+						LocalDate.of(2024, 7, 10),
+						"ff40d974",
+						newCalendarId,
+						false,
+						null,
+						null,
+						null);
+
+		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
+				.willReturn(calendar);
+
+		TaskGroup taskGroup =
+				spy(new TaskGroup(false, mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
+		given(taskGroup.getId()).willReturn(taskGroupId);
+
+		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
+				.willReturn(Optional.of(selectedTask));
+
+		TaskGroup newTaskGroup = new TaskGroup(false, null, null);
+		given(taskGroupService.addTaskGroup(eq(request.isRepeated()), any(), any(), eq(memberId)))
+				.willReturn(newTaskGroup);
+
+		Calendar newCalendar = CalendarFixture.DEFAULT.getCalendar(member);
+		given(calendarService.searchByCalendarId(eq(newCalendarId), eq(memberId)))
+				.willReturn(newCalendar);
+
+		List<Task> tasksInGroup =
+				List.of(
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 12), calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 13), calendar, taskGroup));
+		given(
+						taskRepository.findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual(
+								eq(calendarId), eq(taskGroupId), eq(selectedTask.getDate())))
+				.willReturn(tasksInGroup);
+		assertThatCode(
+						() ->
+								taskCommandService.modifyAfterAllTasks(
+										request, calendarId, taskId, memberId))
+				.doesNotThrowAnyException();
+	}
+
+	@Test
+	@DisplayName(
+			"선택한 할 일의 할 일 그룹에 속한 할 일 중, 선택한 할 일 날짜와 같거나 이후에 해당하는 할 일들을 수정한다." + " - 반복 패턴을 변경한다.")
+	void modifyAfterAllTasksAndModifyRepetitionPattern() {
+		Long calendarId = 1L;
+		Long newCalendarId = 2L;
+		Long taskId = 3L;
+		Long taskGroupId = 4L;
+		Long memberId = 5L;
+		TaskRepetitionUpdateRequest repetitionRequest =
+				new TaskRepetitionUpdateRequest(
+						TaskRepetitionType.DAILY,
+						1,
+						LocalDate.of(2024, 6, 1),
+						LocalDate.of(2024, 6, 30),
+						null,
+						null,
+						null,
+						null,
+						null);
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						TaskRemoveStrategy.REMOVE_NOTHING,
+						"(수정) 취뽀하기!",
+						"(수정) 가즈아",
+						LocalDate.of(2024, 6, 10),
+						"ff40d974",
+						newCalendarId,
+						true,
+						repetitionRequest,
+						null,
+						null);
+
+		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
+				.willReturn(calendar);
+
+		TaskGroup taskGroup =
+				spy(new TaskGroup(true, mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
+		given(taskGroup.getId()).willReturn(taskGroupId);
+
+		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
+				.willReturn(Optional.of(selectedTask));
+
+		TaskGroup newTaskGroup = new TaskGroup(false, null, null);
+		given(taskGroupService.addTaskGroup(eq(request.isRepeated()), any(), any(), eq(memberId)))
+				.willReturn(newTaskGroup);
+
+		Calendar newCalendar = CalendarFixture.DEFAULT.getCalendar(member);
+		given(calendarService.searchByCalendarId(eq(newCalendarId), eq(memberId)))
+				.willReturn(newCalendar);
+
+		List<Task> tasksInGroup =
+				List.of(
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 12), calendar, taskGroup));
+		given(
+						taskRepository.findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual(
+								eq(calendarId), eq(taskGroupId), eq(selectedTask.getDate())))
+				.willReturn(tasksInGroup);
+
+		given(
+						repetitionPatternService.modifyRepetitionPattern(
+								any(TaskRepetitionUpdateRequest.class), any(TaskGroup.class)))
+				.willReturn(
+						TaskRepetitionPatternFixture.DAILY.getWithDate(
+								LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30), taskGroup));
+
+		assertThatCode(
+						() ->
+								taskCommandService.modifyAfterAllTasks(
+										request, calendarId, taskId, memberId))
+				.doesNotThrowAnyException();
+		then(taskRepository).should(times(29)).save(any(Task.class));
+	}
+
+	@Test
+	@DisplayName("선택한 할 일이 존재하지 않는다면 RecordNotFoundException이 발생한다.")
+	void modifyAfterAllTasksThrowsRecordNotFoundExceptionIfSelectedTaskIsNotExists() {
+		Long calendarId = 1L;
+		Long newCalendarId = 2L;
+		Long taskId = 3L;
+		Long memberId = 4L;
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						TaskRemoveStrategy.REMOVE_NOTHING,
+						"(수정) 취뽀하기!",
+						"(수정) 가즈아",
+						LocalDate.of(2024, 7, 10),
+						"ff40d974",
+						newCalendarId,
+						false,
+						null,
+						null,
+						null);
+
+		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
+				.willReturn(Optional.empty());
+
+		assertThatCode(
+						() ->
+								taskCommandService.modifyAfterAllTasks(
 										request, calendarId, taskId, memberId))
 				.isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.TASK_NOT_FOUND.getDescription());

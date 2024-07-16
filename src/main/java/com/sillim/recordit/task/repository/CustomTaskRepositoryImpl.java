@@ -8,6 +8,7 @@ import static com.sillim.recordit.task.domain.QTaskGroup.taskGroup;
 
 import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.task.domain.Task;
+import java.time.LocalDate;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
@@ -57,6 +58,31 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 								.eq(taskGroupId)
 								.and(task.achieved.eq(false))
 								.and(task.id.ne(taskId)))
+				.execute();
+		getEntityManager().clear();
+	}
+
+	@Override
+	public void deleteAllByTaskGroupIdAndDateAfter(Long taskGroupId, LocalDate date) {
+		getEntityManager().flush();
+		update(task)
+				.set(task.deleted, true)
+				.where(task.taskGroup.id.eq(taskGroupId).and(task.date.after(date)))
+				.execute();
+		getEntityManager().clear();
+	}
+
+	@Override
+	public void deleteAllNotAchievedByTaskGroupIdAndDateAfter(Long taskGroupId, LocalDate date) {
+		getEntityManager().flush();
+		update(task)
+				.set(task.deleted, true)
+				.where(
+						task.taskGroup
+								.id
+								.eq(taskGroupId)
+								.and(task.achieved.eq(false))
+								.and(task.date.after(date)))
 				.execute();
 		getEntityManager().clear();
 	}
