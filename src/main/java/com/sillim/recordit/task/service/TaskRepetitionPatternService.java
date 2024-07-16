@@ -42,23 +42,4 @@ public class TaskRepetitionPatternService {
 				.orElseThrow(
 						() -> new RecordNotFoundException(ErrorCode.TASK_REPETITION_NOT_FOUND));
 	}
-
-	@Transactional
-	public TaskRepetitionPattern modifyRepetitionPattern(
-			TaskRepetitionUpdateRequest request, TaskGroup taskGroup) {
-
-		repetitionPatternRepository.deleteByTaskGroupId(taskGroup.getId());
-		return repetitionPatternRepository.save(
-				TaskRepetitionPatternFactory.create(
-						request.repetitionType(),
-						request.repetitionPeriod(),
-						request.repetitionStartDate(),
-						request.repetitionEndDate(),
-						request.monthOfYear(),
-						request.dayOfMonth(),
-						request.weekNumber(),
-						request.weekday(),
-						request.weekdayBit(),
-						taskGroup));
-	}
 }

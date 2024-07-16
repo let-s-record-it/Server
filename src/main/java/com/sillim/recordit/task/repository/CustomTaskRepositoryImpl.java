@@ -6,6 +6,7 @@ import static com.sillim.recordit.goal.domain.QWeeklyGoal.weeklyGoal;
 import static com.sillim.recordit.task.domain.QTask.task;
 import static com.sillim.recordit.task.domain.QTaskGroup.taskGroup;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.task.domain.Task;
 import java.time.LocalDate;
@@ -37,52 +38,23 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public void deleteAllByTaskGroupIdAndTaskIdNot(Long taskGroupId, Long taskId) {
+	public void updateAllByCalendarIdAndTaskGroupId(
+			Long calendarId,
+			Long taskGroupId,
+			String newTitle,
+			String newDescription,
+			LocalDate newDate,
+			String newColorHex,
+			Calendar newCalendar) {
 
 		getEntityManager().flush();
 		update(task)
-				.set(task.deleted, true)
-				.where(task.taskGroup.id.eq(taskGroupId).and(task.id.ne(taskId)))
-				.execute();
-		getEntityManager().clear();
-	}
-
-	@Override
-	public void deleteAllNotAchievedTasksByTaskGroupIdAndTaskIdNot(Long taskGroupId, Long taskId) {
-		getEntityManager().flush();
-		update(task)
-				.set(task.deleted, true)
-				.where(
-						task.taskGroup
-								.id
-								.eq(taskGroupId)
-								.and(task.achieved.eq(false))
-								.and(task.id.ne(taskId)))
-				.execute();
-		getEntityManager().clear();
-	}
-
-	@Override
-	public void deleteAllByTaskGroupIdAndDateAfter(Long taskGroupId, LocalDate date) {
-		getEntityManager().flush();
-		update(task)
-				.set(task.deleted, true)
-				.where(task.taskGroup.id.eq(taskGroupId).and(task.date.after(date)))
-				.execute();
-		getEntityManager().clear();
-	}
-
-	@Override
-	public void deleteAllNotAchievedByTaskGroupIdAndDateAfter(Long taskGroupId, LocalDate date) {
-		getEntityManager().flush();
-		update(task)
-				.set(task.deleted, true)
-				.where(
-						task.taskGroup
-								.id
-								.eq(taskGroupId)
-								.and(task.achieved.eq(false))
-								.and(task.date.after(date)))
+				.set(task.title.title, newTitle)
+				.set(task.description.description, newDescription)
+				.set(task.date, newDate)
+				.set(task.colorHex.colorHex, newColorHex)
+				.set(task.calendar, newCalendar)
+				.where(task.calendar.id.eq(calendarId).and(task.taskGroup.id.eq(taskGroupId)))
 				.execute();
 		getEntityManager().clear();
 	}

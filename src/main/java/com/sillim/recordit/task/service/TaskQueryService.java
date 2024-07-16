@@ -1,5 +1,6 @@
 package com.sillim.recordit.task.service;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.service.CalendarService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
@@ -24,7 +25,8 @@ public class TaskQueryService {
 	public List<Task> searchAllByDate(
 			final Long calendarId, final LocalDate date, final Long memberId) {
 
-		validateOwnerOfCalendar(calendarId, memberId);
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
 
 		return taskRepository.findAllByCalendarIdAndDate(calendarId, date);
 	}
@@ -32,7 +34,8 @@ public class TaskQueryService {
 	public TaskDetailsResponse searchByIdAndCalendarId(
 			final Long taskId, final Long calendarId, final Long memberId) {
 
-		validateOwnerOfCalendar(calendarId, memberId);
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
 		Task task =
 				taskRepository
 						.findByIdAndCalendarId(taskId, calendarId)
@@ -43,9 +46,5 @@ public class TaskQueryService {
 					task, repetitionPatternService.searchByTaskGroupId(taskGroupId));
 		}
 		return TaskDetailsResponse.from(task);
-	}
-
-	private void validateOwnerOfCalendar(Long calendarId, Long memberId) {
-		calendarService.searchByCalendarId(calendarId, memberId);
 	}
 }

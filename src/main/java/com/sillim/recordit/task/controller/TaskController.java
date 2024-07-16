@@ -63,26 +63,15 @@ public class TaskController {
 				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, member.getId()));
 	}
 
-	@PutMapping("/{taskId}/modify-all")
-	public ResponseEntity<Void> modifyAllTasks(
-			@RequestBody @Validated TaskUpdateRequest request,
+	@PutMapping("/{taskId}/modify-exclude-repetition")
+	public ResponseEntity<Void> modifyExcludeRepetition(
+			@Validated @RequestBody TaskUpdateRequest request,
 			@PathVariable Long calendarId,
 			@PathVariable Long taskId,
 			@CurrentMember Member member) {
 
-		taskCommandService.modifyAllTasks(request, calendarId, taskId, member.getId());
-
-		return ResponseEntity.noContent().build();
-	}
-
-	@PutMapping("/{taskId}/modify-after-all")
-	public ResponseEntity<Void> modifyAfterAllTasks(
-			@RequestBody @Validated TaskUpdateRequest request,
-			@PathVariable Long calendarId,
-			@PathVariable Long taskId,
-			@CurrentMember Member member) {
-
-		taskCommandService.modifyAfterAllTasks(request, calendarId, taskId, member.getId());
+		taskCommandService.modifyAllTasksInGroupExcludeRepetition(
+				request, calendarId, taskId, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}

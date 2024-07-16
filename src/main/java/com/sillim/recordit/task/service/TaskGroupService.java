@@ -1,7 +1,5 @@
 package com.sillim.recordit.task.service;
 
-import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
@@ -33,26 +31,5 @@ public class TaskGroupService {
 						.orElse(null);
 		WeeklyGoal weeklyGoal = null;
 		return taskGroupRepository.save(new TaskGroup(isRepeated, monthlyGoal, weeklyGoal));
-	}
-
-	@Transactional
-	public TaskGroup modifyTaskGroup(
-			final Long taskGroupId,
-			final Boolean isRepeated,
-			final Long relatedMonthlyGoalId,
-			final Long relatedWeeklyGoalId,
-			final Long memberId) {
-		TaskGroup taskGroup =
-				taskGroupRepository
-						.findById(taskGroupId)
-						.orElseThrow(
-								() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService
-						.searchOptionalById(relatedMonthlyGoalId, memberId)
-						.orElse(null);
-		WeeklyGoal weeklyGoal = null;
-		taskGroup.modify(isRepeated, monthlyGoal, weeklyGoal);
-		return taskGroup;
 	}
 }
