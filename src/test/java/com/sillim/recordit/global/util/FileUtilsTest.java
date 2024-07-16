@@ -44,9 +44,9 @@ class FileUtilsTest {
 						"text/plain",
 						"test1".getBytes(StandardCharsets.UTF_8));
 
-		File file = FileUtils.convert(multipartFile);
+		File file = FileUtils.convert(multipartFile, "image.jpg");
 
-		assertThat(file.getName()).isEqualTo(multipartFile.getOriginalFilename());
+		assertThat(file.getName()).endsWith(multipartFile.getOriginalFilename());
 		file.delete();
 	}
 
@@ -60,8 +60,8 @@ class FileUtilsTest {
 						"text/plain",
 						"test1".getBytes(StandardCharsets.UTF_8));
 
-		File file = FileUtils.convert(multipartFile);
-		assertThatCode(() -> FileUtils.convert(multipartFile))
+		File file = FileUtils.convert(multipartFile, "image");
+		assertThatCode(() -> FileUtils.convert(multipartFile, "image"))
 				.isInstanceOf(FileGenerateException.class)
 				.hasMessage(ErrorCode.FILE_GENERATE_FAIL.getDescription());
 
