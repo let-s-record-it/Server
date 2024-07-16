@@ -3,7 +3,6 @@ package com.sillim.recordit.feed.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.FileNotFoundException;
 import com.sillim.recordit.global.util.FileUtils;
@@ -22,26 +21,21 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class FeedImageUploadService {
 
-	private final FeedQueryService feedQueryService;
 	private final AmazonS3 amazonS3;
 	private final String endpoint;
 
 	public FeedImageUploadService(
-			FeedQueryService feedQueryService,
-			AmazonS3 amazonS3,
-			@Value("${cloud.aws.s3.endpoint}") String endpoint) {
-		this.feedQueryService = feedQueryService;
+			AmazonS3 amazonS3, @Value("${cloud.aws.s3.endpoint}") String endpoint) {
 		this.amazonS3 = amazonS3;
 		this.endpoint = endpoint;
 	}
 
-	public void upload(List<MultipartFile> images, Long feedId) throws IOException {
-		Feed feed = feedQueryService.searchById(feedId);
+	public List<String> upload(List<MultipartFile> images) throws IOException {
 		List<String> feedImageUrls = new ArrayList<>();
 		for (MultipartFile image : images) {
 			feedImageUrls.add(upload(image));
 		}
-		feed.setFeedImages(feedImageUrls);
+		return feedImageUrls;
 	}
 
 	public String upload(MultipartFile image) throws IOException {

@@ -39,11 +39,16 @@ public class Feed extends BaseTime {
 
 	@Embedded private FeedImages feedImages;
 
-	public Feed(String title, String content, Member member) {
+	public Feed(String title, String content, Member member, List<String> feedImageUrls) {
 		this.title = new FeedTitle(title);
 		this.content = new FeedContent(content);
 		this.member = member;
 		this.deleted = false;
+		this.feedImages =
+				new FeedImages(
+						feedImageUrls.stream()
+								.map(feedImageUrl -> new FeedImage(feedImageUrl, this))
+								.collect(Collectors.toList()));
 	}
 
 	public void setFeedImages(List<String> feedImageUrls) {

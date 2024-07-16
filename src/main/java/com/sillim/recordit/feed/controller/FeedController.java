@@ -13,9 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,17 +30,11 @@ public class FeedController {
 
 	@PostMapping
 	public ResponseEntity<Void> feedAdd(
-			@Validated @RequestBody FeedAddRequest request, @CurrentMember Member member) {
-		Long feedId = feedCommandService.addFeed(request, member.getId());
-		return ResponseEntity.created(URI.create("/api/v1/feeds/" + feedId)).build();
-	}
-
-	@PostMapping("/{feedId}/images")
-	public ResponseEntity<Void> feedImagesAdd(
-			@PathVariable Long feedId,
-			@RequestPart @Valid @Size(max = 10) List<MultipartFile> images)
+			@Validated @RequestPart FeedAddRequest feedAddRequest,
+			@RequestPart @Valid @Size(max = 10) List<MultipartFile> images,
+			@CurrentMember Member member)
 			throws IOException {
-		feedImageUploadService.upload(images, feedId);
-		return ResponseEntity.created(URI.create("/api/v1/feeds/" + feedId + "/images")).build();
+		Long feedId = feedCommandService.addFeed(feedAddRequest, images, member.getId());
+		return ResponseEntity.created(URI.create("/api/v1/feeds/" + feedId)).build();
 	}
 }

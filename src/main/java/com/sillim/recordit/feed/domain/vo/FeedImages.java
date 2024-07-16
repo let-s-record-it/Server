@@ -36,6 +36,12 @@ public class FeedImages {
 			orphanRemoval = true)
 	private List<FeedImage> feedImages = new ArrayList<>();
 
+	public FeedImages(List<FeedImage> feedImages) {
+		validateFeedImageCount(feedImages.size());
+		this.feedImageCount = feedImages.size();
+		this.feedImages = feedImages;
+	}
+
 	public void setFeedImages(List<FeedImage> feedImages) {
 		validateFeedImageCount(feedImages.size());
 		this.feedImageCount = feedImages.size();
