@@ -51,13 +51,6 @@ public class Feed extends BaseTime {
 								.collect(Collectors.toList()));
 	}
 
-	public void setFeedImages(List<String> feedImageUrls) {
-		this.feedImages.setFeedImages(
-				feedImageUrls.stream()
-						.map(feedImageUrl -> new FeedImage(feedImageUrl, this))
-						.collect(Collectors.toList()));
-	}
-
 	public String getTitle() {
 		return title.getTitle();
 	}
@@ -70,7 +63,11 @@ public class Feed extends BaseTime {
 		return feedImages.getFeedImageCount();
 	}
 
-	public List<FeedImage> getFeedImages() {
-		return feedImages.getFeedImages();
+	public List<String> getFeedImageUrls() {
+		return feedImages.getFeedImages().stream().map(FeedImage::getImageUrl).toList();
+	}
+
+	public boolean isOwner(Long memberId) {
+		return this.member.equalsId(memberId);
 	}
 }

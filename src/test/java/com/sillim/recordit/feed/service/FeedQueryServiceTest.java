@@ -31,7 +31,7 @@ class FeedQueryServiceTest {
 		Member member = MemberFixture.DEFAULT.getMember();
 		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
 		given(feed.getId()).willReturn(feedId);
-		given(feedRepository.findById(eq(feedId))).willReturn(Optional.of(feed));
+		given(feedRepository.findByIdWithFetchJoin(eq(feedId))).willReturn(Optional.of(feed));
 
 		Feed foundFeed = feedQueryService.searchById(feedId);
 

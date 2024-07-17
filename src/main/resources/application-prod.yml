@@ -17,6 +17,9 @@ cloud:
     stack:
       auto: false
 
+aws:
+  cloudfront-url: ${CLOUDFRONT_URL}
+
 app-key:
   kakao: ${KAKAO_APP_KEY}
   google: ${GOOGLE_APP_KEY}

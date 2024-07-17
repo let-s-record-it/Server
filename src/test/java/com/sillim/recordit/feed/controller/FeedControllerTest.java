@@ -6,15 +6,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
+import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.feed.service.FeedCommandService;
 import com.sillim.recordit.feed.service.FeedImageUploadService;
+import com.sillim.recordit.feed.service.FeedQueryService;
+import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +35,7 @@ class FeedControllerTest extends RestDocsTest {
 
 	@MockBean FeedImageUploadService feedImageUploadService;
 	@MockBean FeedCommandService feedCommandService;
+	@MockBean FeedQueryService feedQueryService;
 
 	@Test
 	@DisplayName("피드를 생성한다.")
@@ -64,5 +71,22 @@ class FeedControllerTest extends RestDocsTest {
 
 		perform.andDo(print())
 				.andDo(document("feed-add", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("상세 피드를 조회한다.")
+	void feedDetails() throws Exception {
+		long feedId = 1L;
+		Member member = mock(Member.class);
+		Feed feed = FeedFixture.DEFAULT.getFeed(member);
+		given(member.equalsId(any())).willReturn(true);
+		given(feedQueryService.searchById(any())).willReturn(feed);
+
+		ResultActions perform = mockMvc.perform(get("/api/v1/feeds/{feedId}", feedId));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(document("feed-details", getDocumentRequest(), getDocumentResponse()));
 	}
 }
