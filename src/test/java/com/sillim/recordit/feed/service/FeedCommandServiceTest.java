@@ -50,4 +50,19 @@ class FeedCommandServiceTest {
 
 		assertThat(feedId).isEqualTo(1L);
 	}
+
+	@Test
+	@DisplayName("이미지가 null이면 업로드를 수행하지 않는다.")
+	void notUploadIfImageIsNull() throws IOException {
+		Member member = mock(Member.class);
+		Feed feed = mock(Feed.class);
+		given(feed.getId()).willReturn(1L);
+		given(feedRepository.save(any(Feed.class))).willReturn(feed);
+		given(memberQueryService.findByMemberId(eq(1L))).willReturn(member);
+
+		FeedAddRequest feedAddRequest = new FeedAddRequest("title", "content");
+		Long feedId = feedCommandService.addFeed(feedAddRequest, null, 1L);
+
+		assertThat(feedId).isEqualTo(1L);
+	}
 }
