@@ -16,17 +16,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
+import com.sillim.recordit.feed.dto.response.FeedInListResponse;
 import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.feed.service.FeedCommandService;
 import com.sillim.recordit.feed.service.FeedImageUploadService;
 import com.sillim.recordit.feed.service.FeedQueryService;
+import com.sillim.recordit.global.dto.response.SliceResponse;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -88,5 +93,29 @@ class FeedControllerTest extends RestDocsTest {
 
 		perform.andDo(print())
 				.andDo(document("feed-details", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("피드 목록을 조회한다.")
+	void feedList() throws Exception {
+		Member member = mock(Member.class);
+		Feed feed = FeedFixture.DEFAULT.getFeed(member);
+		SliceResponse<FeedInListResponse> response =
+				SliceResponse.of(
+						new SliceImpl<>(
+								List.of(FeedInListResponse.from(feed)),
+								PageRequest.of(0, 10),
+								false));
+		given(member.equalsId(any())).willReturn(true);
+		given(feedQueryService.searchPaginatedRecentCreated(any())).willReturn(response);
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/feeds").queryParam("page", "0").queryParam("size", "10"));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(document("feed-list", getDocumentRequest(), getDocumentResponse()));
 	}
 }

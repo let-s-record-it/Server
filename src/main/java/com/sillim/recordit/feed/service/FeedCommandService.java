@@ -1,11 +1,11 @@
 package com.sillim.recordit.feed.service;
 
-import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.repository.FeedRepository;
 import com.sillim.recordit.member.service.MemberQueryService;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,11 +22,12 @@ public class FeedCommandService {
 
 	public Long addFeed(FeedAddRequest request, List<MultipartFile> images, Long memberId)
 			throws IOException {
-		Feed feed =
-				feedRepository.save(
-						request.toFeed(
-								memberQueryService.findByMemberId(memberId),
-								feedImageUploadService.upload(images)));
-		return feed.getId();
+		List<String> imageUrls = new ArrayList<>();
+		if (images != null) {
+			imageUrls = feedImageUploadService.upload(images);
+		}
+		return feedRepository
+				.save(request.toFeed(memberQueryService.findByMemberId(memberId), imageUrls))
+				.getId();
 	}
 }
