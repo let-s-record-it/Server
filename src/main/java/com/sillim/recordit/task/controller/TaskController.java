@@ -63,7 +63,7 @@ public class TaskController {
 				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, member.getId()));
 	}
 
-	@PutMapping("/{taskId}/modify-exclude-repetition")
+	@PutMapping("/{taskId}/modify-all")
 	public ResponseEntity<Void> modifyExcludeRepetition(
 			@Validated @RequestBody TaskUpdateRequest request,
 			@PathVariable Long calendarId,
