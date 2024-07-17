@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 
 @Getter
@@ -29,6 +30,7 @@ public class FeedImages {
 	@ColumnDefault("0")
 	private Integer feedImageCount;
 
+	@BatchSize(size = 10)
 	@OneToMany(
 			mappedBy = "feed",
 			fetch = FetchType.LAZY,
