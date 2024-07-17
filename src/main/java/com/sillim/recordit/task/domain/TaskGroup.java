@@ -53,6 +53,13 @@ public class TaskGroup extends BaseTime {
 		this.weeklyGoal = weeklyGoal;
 	}
 
+	public void modify(
+			final Boolean isRepeated, final MonthlyGoal monthlyGoal, final WeeklyGoal weeklyGoal) {
+		this.isRepeated = isRepeated;
+		this.monthlyGoal = monthlyGoal;
+		this.weeklyGoal = weeklyGoal;
+	}
+
 	public Optional<MonthlyGoal> getMonthlyGoal() {
 		return Optional.ofNullable(monthlyGoal);
 	}

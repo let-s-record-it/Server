@@ -64,14 +64,13 @@ public class TaskController {
 	}
 
 	@PutMapping("/{taskId}/modify-all")
-	public ResponseEntity<Void> modifyExcludeRepetition(
+	public ResponseEntity<Void> modifyAll(
 			@Validated @RequestBody TaskUpdateRequest request,
 			@PathVariable Long calendarId,
 			@PathVariable Long taskId,
 			@CurrentMember Member member) {
 
-		taskCommandService.modifyAllTasksInGroupExcludeRepetition(
-				request, calendarId, taskId, member.getId());
+		taskCommandService.modifyAllTasksInGroup(request, calendarId, taskId, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}

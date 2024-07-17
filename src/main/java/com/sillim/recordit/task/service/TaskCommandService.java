@@ -41,7 +41,10 @@ public class TaskCommandService {
 		taskRepository.save(request.toTask(calendar, taskGroup));
 	}
 
-	public void modifyAllTasksInGroupExcludeRepetition(
+	/**
+	 * 반복 패턴을 제외한 외의 필드들을 수정하는 경우, 선택한 할 일이 속한 그룹 내의 할 일 모두를 수정한다.
+	 */
+	public void modifyAllTasksInGroup(
 			final TaskUpdateRequest request,
 			final Long calendarId,
 			final Long selectedTaskId,
@@ -55,6 +58,9 @@ public class TaskCommandService {
 						.findByIdAndCalendarId(selectedTaskId, calendarId)
 						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		selectedTask.validateAuthenticatedMember(memberId);
+
+		taskGroupService.modifyTaskGroup(
+				selectedTask.getTaskGroup(), request.taskGroup(), memberId);
 
 		modifyTasksInTaskGroup(request, calendarId, selectedTask.getTaskGroup().getId(), memberId);
 	}

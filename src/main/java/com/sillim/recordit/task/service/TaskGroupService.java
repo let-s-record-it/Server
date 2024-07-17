@@ -4,6 +4,7 @@ import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.task.domain.TaskGroup;
+import com.sillim.recordit.task.dto.request.TaskGroupUpdateRequest;
 import com.sillim.recordit.task.repository.TaskGroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,5 +32,16 @@ public class TaskGroupService {
 						.orElse(null);
 		WeeklyGoal weeklyGoal = null;
 		return taskGroupRepository.save(new TaskGroup(isRepeated, monthlyGoal, weeklyGoal));
+	}
+
+	@Transactional
+	public void modifyTaskGroup(
+			final TaskGroup taskGroup, final TaskGroupUpdateRequest request, final Long memberId) {
+		MonthlyGoal monthlyGoal =
+				monthlyGoalQueryService
+						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
+						.orElse(null);
+		WeeklyGoal weeklyGoal = null;
+		taskGroup.modify(request.isRepeated(), monthlyGoal, weeklyGoal);
 	}
 }

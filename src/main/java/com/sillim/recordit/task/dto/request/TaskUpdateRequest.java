@@ -13,5 +13,4 @@ public record TaskUpdateRequest(
 		@NotNull LocalDate date,
 		@ColorHexValid String colorHex,
 		@NotNull Long calendarId,
-		@Validated TaskGroupUpdateRequest taskGroup,
-		@Validated TaskRepetitionUpdateRequest repetition) {}
+		@Validated TaskGroupUpdateRequest taskGroup) {}
