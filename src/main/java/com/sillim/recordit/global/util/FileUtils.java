@@ -23,9 +23,7 @@ public final class FileUtils {
 		return IMAGE_BASE_URL + fileName;
 	}
 
-	public static File convert(MultipartFile file) throws IOException {
-		String fileName = file.getOriginalFilename();
-
+	public static File convert(MultipartFile file, String fileName) throws IOException {
 		File convertFile = new File(Objects.requireNonNull(fileName));
 		if (convertFile.createNewFile()) {
 			try (FileOutputStream fos = new FileOutputStream(convertFile)) {

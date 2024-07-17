@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,15 @@ public class FeedImageUploadService {
 
 	private final AmazonS3 amazonS3;
 	private final String endpoint;
+	private final String cloudFrontUrl;
 
 	public FeedImageUploadService(
-			AmazonS3 amazonS3, @Value("${cloud.aws.s3.endpoint}") String endpoint) {
+			AmazonS3 amazonS3,
+			@Value("${cloud.aws.s3.endpoint}") String endpoint,
+			@Value("${aws.cloudfront-url}") String cloudFrontUrl) {
 		this.amazonS3 = amazonS3;
 		this.endpoint = endpoint;
+		this.cloudFrontUrl = cloudFrontUrl;
 	}
 
 	public List<String> upload(List<MultipartFile> images) throws IOException {
@@ -40,15 +45,19 @@ public class FeedImageUploadService {
 
 	public String upload(MultipartFile image) throws IOException {
 		validateImageIsEmpty(image);
-		String imagePath = FileUtils.toImagePath(image.getOriginalFilename());
-		File convertImageFile = FileUtils.convert(image);
+		File convertImageFile =
+				FileUtils.convert(
+						image,
+						FileUtils.generateUUIDFileName(
+								Objects.requireNonNull(image.getOriginalFilename())));
+		String imagePath = FileUtils.toImagePath(convertImageFile.getName());
 
 		amazonS3.putObject(
 				new PutObjectRequest(endpoint, imagePath, convertImageFile)
 						.withCannedAcl(CannedAccessControlList.PublicRead));
 		deleteImageFile(convertImageFile);
 
-		return amazonS3.getUrl(endpoint, image.getOriginalFilename()).toString();
+		return cloudFrontUrl + "/" + imagePath;
 	}
 
 	private static void deleteImageFile(File convertImageFile) {

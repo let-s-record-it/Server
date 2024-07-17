@@ -17,7 +17,7 @@ public class FeedQueryService {
 
 	public Feed searchById(Long feedId) {
 		return feedRepository
-				.findById(feedId)
+				.findByIdWithFetchJoin(feedId)
 				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
 	}
 }
