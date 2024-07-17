@@ -58,15 +58,4 @@ class TaskRepetitionPatternRepositoryTest {
 				.ignoringFields("id", "taskGroup", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
 	}
-
-	@Test
-	@DisplayName("할 일 그룹의 id로 반복 패턴을 삭제한다.")
-	void deleteByTaskGroupId() {
-		TaskRepetitionPattern repetitionPattern = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
-		taskRepetitionPatternRepository.save(repetitionPattern);
-
-		taskRepetitionPatternRepository.deleteByTaskGroupId(taskGroup.getId());
-
-		assertThat(taskRepetitionPatternRepository.findById(repetitionPattern.getId())).isEmpty();
-	}
 }

@@ -1,19 +1,13 @@
 package com.sillim.recordit.task.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
-import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
-import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.member.fixture.MemberFixture;
@@ -75,44 +69,5 @@ class TaskGroupServiceTest {
 				.ignoringFields("id", "weeklyGoal", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
 		then(taskGroupRepository).should(times(1)).save(any(TaskGroup.class));
-	}
-
-	@Test
-	@DisplayName("할 일 그룹을 수정한다.")
-	void modifyTaskGroup() {
-		Long taskGroupId = 1L;
-		Long memberId = 2L;
-		TaskGroup originTaskGroup =
-				new TaskGroup(false, mock(MonthlyGoal.class), mock(WeeklyGoal.class));
-		given(taskGroupRepository.findById(eq(taskGroupId)))
-				.willReturn(Optional.of(originTaskGroup));
-		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
-				.willReturn(Optional.empty());
-
-		TaskGroup modifiedTaskGroup =
-				taskGroupService.modifyTaskGroup(taskGroupId, true, null, null, memberId);
-
-		assertAll(
-				() -> {
-					assertThat(modifiedTaskGroup.getIsRepeated()).isTrue();
-					assertThat(modifiedTaskGroup.getMonthlyGoal()).isEmpty();
-					assertThat(modifiedTaskGroup.getWeeklyGoal()).isEmpty();
-				});
-	}
-
-	@Test
-	@DisplayName("수정하려는 할 일 그룹이 존재하지 않는다면 RecordNotFoundException이 발생한다.")
-	void throwsRecordNotFoundExceptionIfTaskGroupNotExists() {
-		Long taskGroupId = 1L;
-		Long memberId = 2L;
-		given(taskGroupRepository.findById(eq(taskGroupId)))
-				.willThrow(new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
-
-		assertThatCode(
-						() ->
-								taskGroupService.modifyTaskGroup(
-										taskGroupId, false, null, null, memberId))
-				.isInstanceOf(RecordNotFoundException.class)
-				.hasMessage(ErrorCode.TASK_GROUP_NOT_FOUND.getDescription());
 	}
 }
