@@ -7,20 +7,19 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
+import com.sillim.recordit.feed.dto.response.FeedDetailsResponse;
 import com.sillim.recordit.feed.dto.response.FeedInListResponse;
 import com.sillim.recordit.feed.fixture.FeedFixture;
-import com.sillim.recordit.feed.service.FeedCommandService;
-import com.sillim.recordit.feed.service.FeedImageUploadService;
-import com.sillim.recordit.feed.service.FeedQueryService;
+import com.sillim.recordit.feed.service.*;
 import com.sillim.recordit.global.dto.response.SliceResponse;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
@@ -38,9 +37,10 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(FeedController.class)
 class FeedControllerTest extends RestDocsTest {
 
-	@MockBean FeedImageUploadService feedImageUploadService;
 	@MockBean FeedCommandService feedCommandService;
 	@MockBean FeedQueryService feedQueryService;
+	@MockBean FeedLikeService feedLikeService;
+	@MockBean FeedScrapService feedScrapService;
 
 	@Test
 	@DisplayName("피드를 생성한다.")
@@ -84,8 +84,9 @@ class FeedControllerTest extends RestDocsTest {
 		long feedId = 1L;
 		Member member = mock(Member.class);
 		Feed feed = FeedFixture.DEFAULT.getFeed(member);
+		FeedDetailsResponse feedResponse = FeedDetailsResponse.of(feed, 1L, false, false);
 		given(member.equalsId(any())).willReturn(true);
-		given(feedQueryService.searchById(any())).willReturn(feed);
+		given(feedQueryService.searchById(any(), any())).willReturn(feedResponse);
 
 		ResultActions perform = mockMvc.perform(get("/api/v1/feeds/{feedId}", feedId));
 
@@ -99,15 +100,16 @@ class FeedControllerTest extends RestDocsTest {
 	@DisplayName("피드 목록을 조회한다.")
 	void feedList() throws Exception {
 		Member member = mock(Member.class);
-		Feed feed = FeedFixture.DEFAULT.getFeed(member);
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		given(feed.getId()).willReturn(1L);
 		SliceResponse<FeedInListResponse> response =
 				SliceResponse.of(
 						new SliceImpl<>(
-								List.of(FeedInListResponse.from(feed)),
+								List.of(FeedInListResponse.from(feed, false, false)),
 								PageRequest.of(0, 10),
 								false));
 		given(member.equalsId(any())).willReturn(true);
-		given(feedQueryService.searchPaginatedRecentCreated(any())).willReturn(response);
+		given(feedQueryService.searchPaginatedRecentCreated(any(), any())).willReturn(response);
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -117,5 +119,53 @@ class FeedControllerTest extends RestDocsTest {
 
 		perform.andDo(print())
 				.andDo(document("feed-list", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("피드 좋아요를 한다.")
+	void feedLike() throws Exception {
+		long feedId = 1L;
+		ResultActions perform = mockMvc.perform(post("/api/v1/feeds/{feedId}/like", feedId));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("feed-like", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("피드 좋아요를 취소한다.")
+	void feedUnlike() throws Exception {
+		long feedId = 1L;
+		ResultActions perform = mockMvc.perform(delete("/api/v1/feeds/{feedId}/unlike", feedId));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("feed-unlike", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("피드 스크랩를 한다.")
+	void feedScrap() throws Exception {
+		long feedId = 1L;
+		ResultActions perform = mockMvc.perform(post("/api/v1/feeds/{feedId}/scrap", feedId));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("feed-scrap", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("피드 스크랩를 취소한다.")
+	void feedUnScrap() throws Exception {
+		long feedId = 1L;
+		ResultActions perform = mockMvc.perform(delete("/api/v1/feeds/{feedId}/unscrap", feedId));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("feed-unscrap", getDocumentRequest(), getDocumentResponse()));
 	}
 }
