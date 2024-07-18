@@ -122,6 +122,18 @@ class FeedControllerTest extends RestDocsTest {
 	}
 
 	@Test
+	@DisplayName("피드를 삭제한다.")
+	void feedRemove() throws Exception {
+		long feedId = 1L;
+		ResultActions perform = mockMvc.perform(delete("/api/v1/feeds/{feedId}", feedId));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("feed-remove", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
 	@DisplayName("피드 좋아요를 한다.")
 	void feedLike() throws Exception {
 		long feedId = 1L;

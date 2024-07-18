@@ -56,6 +56,12 @@ public class FeedController {
 				feedQueryService.searchPaginatedRecentCreated(pageable, member.getId()));
 	}
 
+	@DeleteMapping("/{feedId}")
+	public ResponseEntity<Void> feedRemove(@PathVariable Long feedId) {
+		feedCommandService.removeFeed(feedId);
+		return ResponseEntity.noContent().build();
+	}
+
 	@PostMapping("/{feedId}/like")
 	public ResponseEntity<Void> feedLike(@PathVariable Long feedId, @CurrentMember Member member) {
 		feedLikeService.feedLike(feedId, member.getId());
