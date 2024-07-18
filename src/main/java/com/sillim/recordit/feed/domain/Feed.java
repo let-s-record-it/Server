@@ -4,6 +4,8 @@ import com.sillim.recordit.feed.domain.vo.FeedContent;
 import com.sillim.recordit.feed.domain.vo.FeedImages;
 import com.sillim.recordit.feed.domain.vo.FeedTitle;
 import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.feed.InvalidFeedLikeException;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
 import java.util.List;
@@ -33,6 +35,9 @@ public class Feed extends BaseTime {
 	@ColumnDefault("false")
 	private Boolean deleted;
 
+	@Column(nullable = false)
+	private Long likeCount;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
@@ -43,6 +48,7 @@ public class Feed extends BaseTime {
 		this.title = new FeedTitle(title);
 		this.content = new FeedContent(content);
 		this.member = member;
+		this.likeCount = 0L;
 		this.deleted = false;
 		this.feedImages =
 				new FeedImages(
@@ -69,5 +75,16 @@ public class Feed extends BaseTime {
 
 	public boolean isOwner(Long memberId) {
 		return this.member.equalsId(memberId);
+	}
+
+	public void like() {
+		this.likeCount++;
+	}
+
+	public void unlike() {
+		if (likeCount <= 0) {
+			throw new InvalidFeedLikeException(ErrorCode.INVALID_FEED_UNLIKE);
+		}
+		this.likeCount--;
 	}
 }

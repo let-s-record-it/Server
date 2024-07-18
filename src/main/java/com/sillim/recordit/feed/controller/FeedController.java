@@ -5,7 +5,9 @@ import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.dto.response.FeedDetailsResponse;
 import com.sillim.recordit.feed.dto.response.FeedInListResponse;
 import com.sillim.recordit.feed.service.FeedCommandService;
+import com.sillim.recordit.feed.service.FeedLikeService;
 import com.sillim.recordit.feed.service.FeedQueryService;
+import com.sillim.recordit.feed.service.FeedScrapService;
 import com.sillim.recordit.global.dto.response.SliceResponse;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.validation.Valid;
@@ -17,12 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Validated
@@ -33,6 +30,8 @@ public class FeedController {
 
 	private final FeedCommandService feedCommandService;
 	private final FeedQueryService feedQueryService;
+	private final FeedLikeService feedLikeService;
+	private final FeedScrapService feedScrapService;
 
 	@PostMapping
 	public ResponseEntity<Void> feedAdd(
@@ -47,12 +46,39 @@ public class FeedController {
 	@GetMapping("/{feedId}")
 	public ResponseEntity<FeedDetailsResponse> feedDetails(
 			@PathVariable Long feedId, @CurrentMember Member member) {
-		return ResponseEntity.ok(
-				FeedDetailsResponse.of(feedQueryService.searchById(feedId), member.getId()));
+		return ResponseEntity.ok(feedQueryService.searchById(feedId, member.getId()));
 	}
 
 	@GetMapping
-	public ResponseEntity<SliceResponse<FeedInListResponse>> feedList(Pageable pageable) {
-		return ResponseEntity.ok(feedQueryService.searchPaginatedRecentCreated(pageable));
+	public ResponseEntity<SliceResponse<FeedInListResponse>> feedList(
+			Pageable pageable, @CurrentMember Member member) {
+		return ResponseEntity.ok(
+				feedQueryService.searchPaginatedRecentCreated(pageable, member.getId()));
+	}
+
+	@PostMapping("/{feedId}/like")
+	public ResponseEntity<Void> feedLike(@PathVariable Long feedId, @CurrentMember Member member) {
+		feedLikeService.feedLike(feedId, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{feedId}/unlike")
+	public ResponseEntity<Void> feedUnlike(
+			@PathVariable Long feedId, @CurrentMember Member member) {
+		feedLikeService.feedUnlike(feedId, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{feedId}/scrap")
+	public ResponseEntity<Void> feedScrap(@PathVariable Long feedId, @CurrentMember Member member) {
+		feedScrapService.feedScrap(feedId, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{feedId}/unscrap")
+	public ResponseEntity<Void> feedUnScrap(
+			@PathVariable Long feedId, @CurrentMember Member member) {
+		feedScrapService.feedUnScrap(feedId, member.getId());
+		return ResponseEntity.noContent().build();
 	}
 }
