@@ -2,6 +2,8 @@ package com.sillim.recordit.feed.service;
 
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.repository.FeedRepository;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.member.service.MemberQueryService;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
@@ -29,5 +31,12 @@ public class FeedCommandService {
 		return feedRepository
 				.save(request.toFeed(memberQueryService.findByMemberId(memberId), imageUrls))
 				.getId();
+	}
+
+	public void removeFeed(Long feedId) {
+		feedRepository
+				.findById(feedId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND))
+				.delete();
 	}
 }

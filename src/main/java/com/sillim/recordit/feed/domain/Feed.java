@@ -87,4 +87,8 @@ public class Feed extends BaseTime {
 		}
 		this.likeCount--;
 	}
+
+	public void delete() {
+		this.deleted = true;
+	}
 }

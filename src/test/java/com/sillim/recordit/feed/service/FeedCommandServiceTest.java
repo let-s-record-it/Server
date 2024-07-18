@@ -4,16 +4,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
+import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.feed.repository.FeedRepository;
 import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,5 +70,18 @@ class FeedCommandServiceTest {
 		Long feedId = feedCommandService.addFeed(feedAddRequest, null, 1L);
 
 		assertThat(feedId).isEqualTo(1L);
+	}
+
+	@Test
+	@DisplayName("피드를 지울 수 있다.")
+	void removeFeed() {
+		long feedId = 1L;
+		Member member = MemberFixture.DEFAULT.getMember();
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		given(feedRepository.findById(eq(feedId))).willReturn(Optional.of(feed));
+
+		feedCommandService.removeFeed(feedId);
+
+		then(feed).should(times(1)).delete();
 	}
 }
