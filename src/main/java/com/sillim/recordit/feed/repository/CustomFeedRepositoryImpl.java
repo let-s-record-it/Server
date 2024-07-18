@@ -27,7 +27,7 @@ public class CustomFeedRepositoryImpl extends QuerydslRepositorySupport
 						.fetchJoin()
 						.leftJoin(feed.member)
 						.fetchJoin()
-						.where(feed.deleted.eq(false))
+						.where(feed.deleted.isFalse())
 						.where(feed.id.eq(feedId))
 						.fetchOne());
 	}
