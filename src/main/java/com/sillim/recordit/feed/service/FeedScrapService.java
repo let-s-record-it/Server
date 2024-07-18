@@ -15,19 +15,23 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FeedScrapService {
 
-    private final FeedScrapRepository feedScrapRepository;
-    private final FeedRepository feedRepository;
-    private final MemberQueryService memberQueryService;
+	private final FeedScrapRepository feedScrapRepository;
+	private final FeedRepository feedRepository;
+	private final MemberQueryService memberQueryService;
 
-    public void feedScrap(Long feedId, Long memberId) {
-        feedScrapRepository.save(
-                new FeedScrap(
-                        feedRepository.findById(feedId).orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND)),
-                        memberQueryService.findByMemberId(memberId)));
-    }
+	public void feedScrap(Long feedId, Long memberId) {
+		feedScrapRepository.save(
+				new FeedScrap(
+						feedRepository
+								.findById(feedId)
+								.orElseThrow(
+										() ->
+												new RecordNotFoundException(
+														ErrorCode.FEED_NOT_FOUND)),
+						memberQueryService.findByMemberId(memberId)));
+	}
 
-    public void feedUnScrap(Long feedId, Long memberId) {
-        feedScrapRepository.deleteByFeedIdAndMemberId(feedId, memberId);
-    }
-
+	public void feedUnScrap(Long feedId, Long memberId) {
+		feedScrapRepository.deleteByFeedIdAndMemberId(feedId, memberId);
+	}
 }

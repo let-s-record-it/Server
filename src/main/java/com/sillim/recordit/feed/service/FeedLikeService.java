@@ -16,19 +16,24 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FeedLikeService {
 
-    private final FeedLikeRepository feedLikeRepository;
-    private final FeedRepository feedRepository;
-    private final MemberQueryService memberQueryService;
+	private final FeedLikeRepository feedLikeRepository;
+	private final FeedRepository feedRepository;
+	private final MemberQueryService memberQueryService;
 
-    public void feedLike(Long feedId, Long memberId) {
-        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
-        feed.like();
-        feedLikeRepository.save(new FeedLike(feed, memberQueryService.findByMemberId(memberId)));
-    }
+	public void feedLike(Long feedId, Long memberId) {
+		Feed feed =
+				feedRepository
+						.findById(feedId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
+		feed.like();
+		feedLikeRepository.save(new FeedLike(feed, memberQueryService.findByMemberId(memberId)));
+	}
 
-    public void feedUnlike(Long feedId, Long memberId) {
-        feedRepository.findById(feedId).orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND)).unlike();
-        feedLikeRepository.deleteByFeedIdAndMemberId(feedId, memberId);
-    }
-
+	public void feedUnlike(Long feedId, Long memberId) {
+		feedRepository
+				.findById(feedId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND))
+				.unlike();
+		feedLikeRepository.deleteByFeedIdAndMemberId(feedId, memberId);
+	}
 }

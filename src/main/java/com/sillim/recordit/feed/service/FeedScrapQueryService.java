@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FeedScrapQueryService {
 
-    private final FeedScrapRepository feedScrapRepository;
+	private final FeedScrapRepository feedScrapRepository;
 
-    public boolean isScraped(Long feedId, Long memberId) {
-        return feedScrapRepository.existsByFeedIdAndMemberId(feedId, memberId);
-    }
+	public boolean isScraped(Long feedId, Long memberId) {
+		return feedScrapRepository.existsByFeedIdAndMemberId(feedId, memberId);
+	}
 }

@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FeedLikeQueryService {
 
-    private final FeedLikeRepository feedLikeRepository;
+	private final FeedLikeRepository feedLikeRepository;
 
-    public boolean isLiked(Long feedId, Long memberId) {
-        return feedLikeRepository.existsByFeedIdAndMemberId(feedId, memberId);
-    }
+	public boolean isLiked(Long feedId, Long memberId) {
+		return feedLikeRepository.existsByFeedIdAndMemberId(feedId, memberId);
+	}
 }

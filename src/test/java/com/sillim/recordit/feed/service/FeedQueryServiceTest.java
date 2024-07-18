@@ -31,10 +31,8 @@ import org.springframework.data.domain.SliceImpl;
 class FeedQueryServiceTest {
 
 	@Mock FeedRepository feedRepository;
-	@Mock
-	FeedLikeQueryService feedLikeQueryService;
-	@Mock
-	FeedScrapQueryService feedScrapQueryService;
+	@Mock FeedLikeQueryService feedLikeQueryService;
+	@Mock FeedScrapQueryService feedScrapQueryService;
 	@InjectMocks FeedQueryService feedQueryService;
 
 	@Test
