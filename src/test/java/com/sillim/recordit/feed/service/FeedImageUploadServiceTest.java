@@ -47,6 +47,14 @@ class FeedImageUploadServiceTest {
 	}
 
 	@Test
+	@DisplayName("이미지가 null이면 업로드를 수행하지 않는다.")
+	void notUploadIfImageIsNull() throws IOException {
+		List<String> uploaded = feedImageUploadService.upload(null);
+
+		assertThat(uploaded).isEmpty();
+	}
+
+	@Test
 	@DisplayName("피드 이미지가 비어있으면 FileNotFoundException이 발생한다.")
 	void throwFileNotFoundExceptionIfFeedImageFileNotExists() {
 		long feedId = 1L;

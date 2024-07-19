@@ -52,4 +52,24 @@ class FeedImagesTest {
 				.isInstanceOf(InvalidFeedImageCountException.class)
 				.hasMessage(ErrorCode.OVER_FEED_IMAGE_COUNT.getDescription());
 	}
+
+	@Test
+	@DisplayName("이미 존재하는 이미지를 제외하고 다 삭제 후 새 이미지를 저장한다.")
+	void removeExcludeExistingImageAndSaveNewIamges() {
+		Member member = MemberFixture.DEFAULT.getMember();
+		Feed feed = FeedFixture.DEFAULT.getFeed(member);
+
+		FeedImages feedImages =
+				new FeedImages(
+						new ArrayList<>(
+								List.of(new FeedImage("url1", feed), new FeedImage("url2", feed))));
+
+		feedImages.modifyFeedImages(List.of("url2"), List.of(new FeedImage("url3", feed)));
+
+		List<String> feedImageUrls =
+				feedImages.getFeedImages().stream().map(FeedImage::getImageUrl).toList();
+
+		assertThat(feedImageUrls).hasSize(2);
+		assertThat(feedImageUrls).containsExactly("url2", "url3");
+	}
 }
