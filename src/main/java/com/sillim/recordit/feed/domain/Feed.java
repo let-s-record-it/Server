@@ -5,6 +5,7 @@ import com.sillim.recordit.feed.domain.vo.FeedImages;
 import com.sillim.recordit.feed.domain.vo.FeedTitle;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.feed.InvalidFeedLikeException;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
@@ -73,8 +74,28 @@ public class Feed extends BaseTime {
 		return feedImages.getFeedImages().stream().map(FeedImage::getImageUrl).toList();
 	}
 
+	public void modify(
+			String title,
+			String content,
+			List<String> existingImageUrls,
+			List<String> newImageUrls) {
+		this.title = new FeedTitle(title);
+		this.content = new FeedContent(content);
+		feedImages.modifyFeedImages(
+				existingImageUrls,
+				newImageUrls.stream()
+						.map(newImageUrl -> new FeedImage(newImageUrl, this))
+						.collect(Collectors.toList()));
+	}
+
 	public boolean isOwner(Long memberId) {
 		return this.member.equalsId(memberId);
+	}
+
+	public void validateAuthenticatedUser(Long memberId) {
+		if (!isOwner(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
 	}
 
 	public void like() {
