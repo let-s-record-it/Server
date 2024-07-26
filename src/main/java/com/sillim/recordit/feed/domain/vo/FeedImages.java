@@ -51,6 +51,12 @@ public class FeedImages {
 		this.feedImages.addAll(feedImages);
 	}
 
+	public void modifyFeedImages(List<String> existingImageUrls, List<FeedImage> newImages) {
+		validateFeedImageCount(existingImageUrls.size() + newImages.size());
+		feedImages.removeIf(feedImage -> !existingImageUrls.contains(feedImage.getImageUrl()));
+		feedImages.addAll(newImages);
+	}
+
 	public List<FeedImage> getFeedImages() {
 		return Collections.unmodifiableList(feedImages);
 	}

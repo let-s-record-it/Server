@@ -2,6 +2,7 @@ package com.sillim.recordit.feed.controller;
 
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
+import com.sillim.recordit.feed.dto.request.FeedModifyRequest;
 import com.sillim.recordit.feed.dto.response.FeedDetailsResponse;
 import com.sillim.recordit.feed.dto.response.FeedInListResponse;
 import com.sillim.recordit.feed.service.FeedCommandService;
@@ -54,6 +55,17 @@ public class FeedController {
 			Pageable pageable, @CurrentMember Member member) {
 		return ResponseEntity.ok(
 				feedQueryService.searchPaginatedRecentCreated(pageable, member.getId()));
+	}
+
+	@PutMapping("/{feedId}")
+	public ResponseEntity<Void> feedModify(
+			@PathVariable Long feedId,
+			@Validated @RequestPart FeedModifyRequest feedModifyRequest,
+			@Valid @Size(max = 10) @RequestPart(required = false) List<MultipartFile> newImages,
+			@CurrentMember Member member)
+			throws IOException {
+		feedCommandService.modifyFeed(feedModifyRequest, newImages, feedId, member.getId());
+		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{feedId}")

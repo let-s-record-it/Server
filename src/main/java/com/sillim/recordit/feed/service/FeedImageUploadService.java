@@ -37,13 +37,17 @@ public class FeedImageUploadService {
 
 	public List<String> upload(List<MultipartFile> images) throws IOException {
 		List<String> feedImageUrls = new ArrayList<>();
+		if (images == null) {
+			return feedImageUrls;
+		}
+
 		for (MultipartFile image : images) {
 			feedImageUrls.add(upload(image));
 		}
 		return feedImageUrls;
 	}
 
-	public String upload(MultipartFile image) throws IOException {
+	private String upload(MultipartFile image) throws IOException {
 		validateImageIsEmpty(image);
 		File convertImageFile =
 				FileUtils.convert(
