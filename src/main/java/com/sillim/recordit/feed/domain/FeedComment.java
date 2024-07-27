@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 @Getter
@@ -29,6 +30,10 @@ public class FeedComment extends BaseTime {
 
 	private FeedCommentContent content;
 
+	@Column(nullable = false)
+	@ColumnDefault("false")
+	private Boolean deleted;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "feed_id")
 	private Feed feed;
@@ -39,11 +44,16 @@ public class FeedComment extends BaseTime {
 
 	public FeedComment(String content, Feed feed, Member member) {
 		this.content = new FeedCommentContent(content);
+		this.deleted = false;
 		this.feed = feed;
 		this.member = member;
 	}
 
 	public String getContent() {
 		return content.getContent();
+	}
+
+	public boolean isOwner(Long memberId) {
+		return this.member.equalsId(memberId);
 	}
 }
