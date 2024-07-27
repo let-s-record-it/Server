@@ -65,4 +65,12 @@ public abstract class QuerydslRepositorySupport {
 
 		return PageableExecutionUtils.getPage(content, pageable, jpaCountQuery::fetchOne);
 	}
+
+	protected <T> boolean hasNext(Pageable pageable, List<T> content) {
+		if (content.size() > pageable.getPageSize()) {
+			content.remove(pageable.getPageSize());
+			return true;
+		}
+		return false;
+	}
 }

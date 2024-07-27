@@ -127,6 +127,7 @@ public enum ErrorCode {
 	INVALID_FEED_UNLIKE("ERR_FEED_010", "유효하지 않은 피드 좋아요 취소 요청입니다."),
 	NULL_FEED_COMMENT_CONTENT("ERR_FEED_011", "피드 댓글 내용은 null일 수 없습니다."),
 	INVALID_FEED_COMMENT_CONTENT_LENGTH("ERR_FEED_012", "피드 댓글의 길이는 1000자를 넘을 수 없습니다."),
+	FEED_COMMENT_NOT_FOUND("ERR_FEED_003", "요청한 피드 댓글을 찾을 수 없습니다."),
 
 	FILE_GENERATE_FAIL("ERR_FILE_001", "새 파일을 생성할 수 없습니다."),
 	FILE_NOT_FOUND("ERR_FILE_002", "파일을 찾을 수 없습니다."),

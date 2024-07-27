@@ -46,12 +46,4 @@ public class CustomFeedRepositoryImpl extends QuerydslRepositorySupport
 
 		return new SliceImpl<>(feeds, pageable, hasNext(pageable, feeds));
 	}
-
-	private boolean hasNext(Pageable pageable, List<Feed> feeds) {
-		if (feeds.size() > pageable.getPageSize()) {
-			feeds.remove(pageable.getPageSize());
-			return true;
-		}
-		return false;
-	}
 }
