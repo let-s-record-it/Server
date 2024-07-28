@@ -12,8 +12,8 @@ import com.sillim.recordit.calendar.service.CalendarService;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
-import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.dto.request.TaskAddRequest;
+import com.sillim.recordit.task.dto.request.TaskGroupUpdateRequest;
 import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
 import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
 import com.sillim.recordit.task.repository.TaskRepository;
@@ -32,7 +32,6 @@ class TaskCommandServiceTest {
 	@InjectMocks TaskCommandService taskCommandService;
 	@Mock CalendarService calendarService;
 	@Mock TaskGroupService taskGroupService;
-	@Mock TaskRepetitionPatternService repetitionPatternService;
 	@Mock TaskRepository taskRepository;
 
 	private Calendar calendar;
@@ -45,6 +44,7 @@ class TaskCommandServiceTest {
 	@Test
 	@DisplayName("반복 없는 task를 추가할 수 있다.")
 	void addNonRepeatingTaskTest() {
+		TaskGroupUpdateRequest taskGroupRequest = new TaskGroupUpdateRequest(null, null);
 		TaskAddRequest request =
 				new TaskAddRequest(
 						"회의록 작성",
@@ -53,13 +53,12 @@ class TaskCommandServiceTest {
 						"ff40d974",
 						false,
 						null,
-						null,
-						null);
+						taskGroupRequest);
 		Long calendarId = 1L;
 		Long memberId = 1L;
-		TaskGroup taskGroup = new TaskGroup(false, null, null);
+		TaskGroup taskGroup = new TaskGroup(null, null);
 
-		given(taskGroupService.addTaskGroup(eq(false), any(), any(), eq(memberId)))
+		given(taskGroupService.addNonRepeatingTaskGroup(eq(taskGroupRequest), eq(memberId)))
 				.willReturn(taskGroup);
 		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
@@ -71,6 +70,7 @@ class TaskCommandServiceTest {
 	@Test
 	@DisplayName("반복되는 task들을 추가할 수 있다.")
 	void addRepeatingTaskTest() {
+		TaskGroupUpdateRequest taskGroupRequest = new TaskGroupUpdateRequest(null, null);
 		TaskRepetitionUpdateRequest repetitionRequest =
 				new TaskRepetitionUpdateRequest(
 						TaskRepetitionType.DAILY,
@@ -90,20 +90,17 @@ class TaskCommandServiceTest {
 						"ff40d974",
 						true,
 						repetitionRequest,
-						null,
-						null);
+						taskGroupRequest);
 		Long calendarId = 1L;
 		Long memberId = 1L;
-		TaskGroup taskGroup = new TaskGroup(true, null, null);
-		TaskRepetitionPattern repetitionPattern = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
+		TaskGroup taskGroup = new TaskGroup(null, null);
+		taskGroup.setRepetitionPattern(TaskRepetitionPatternFixture.DAILY.get(taskGroup));
 
-		given(taskGroupService.addTaskGroup(eq(true), any(), any(), eq(memberId)))
+		given(
+						taskGroupService.addRepeatingTaskGroup(
+								eq(taskGroupRequest), eq(repetitionRequest), eq(memberId)))
 				.willReturn(taskGroup);
 		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(
-						repetitionPatternService.addRepetitionPattern(
-								eq(request.repetition()), eq(taskGroup)))
-				.willReturn(repetitionPattern);
 
 		taskCommandService.addTasks(request, calendarId, memberId);
 

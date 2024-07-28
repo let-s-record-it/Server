@@ -37,7 +37,7 @@ class TaskRepositoryTest {
 		em.persist(member);
 		calendar = CalendarFixture.DEFAULT.getCalendar(member);
 		em.persist(calendar);
-		taskGroup = new TaskGroup(false, null, null);
+		taskGroup = new TaskGroup(null, null);
 		em.persist(taskGroup);
 	}
 

@@ -16,7 +16,6 @@ import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
-import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.dto.response.TaskDetailsResponse;
 import com.sillim.recordit.task.fixture.TaskFixture;
 import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
@@ -37,7 +36,6 @@ class TaskQueryServiceTest {
 
 	@InjectMocks TaskQueryService taskQueryService;
 	@Mock CalendarService calendarService;
-	@Mock TaskRepetitionPatternService repetitionPatternService;
 	@Mock TaskRepository taskRepository;
 
 	private Calendar calendar;
@@ -52,7 +50,7 @@ class TaskQueryServiceTest {
 	void searchAllByCalendarIdAndDate() {
 		Long memberId = 1L;
 		Long calendarId = 2L;
-		TaskGroup taskGroup = new TaskGroup(false, null, null);
+		TaskGroup taskGroup = new TaskGroup(null, null);
 		LocalDate date = LocalDate.of(2024, 6, 12);
 		List<Task> tasks =
 				List.of(
@@ -73,7 +71,7 @@ class TaskQueryServiceTest {
 	void searchByIdAndCalendarIdWithNoRepeat() {
 		Long memberId = 1L;
 		Long calendarId = 2L;
-		TaskGroup taskGroup = new TaskGroup(false, null, null);
+		TaskGroup taskGroup = new TaskGroup(null, null);
 		Long taskId = 3L;
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
@@ -104,19 +102,15 @@ class TaskQueryServiceTest {
 	void searchByIdAndCalendarIdWithRepeat() {
 		Long memberId = 1L;
 		Long calendarId = 2L;
-		Long taskGroupId = 3L;
-		TaskGroup taskGroup = spy(new TaskGroup(true, null, null));
-		given(taskGroup.getId()).willReturn(taskGroupId);
+		TaskGroup taskGroup = spy(new TaskGroup(null, null));
+		taskGroup.setRepetitionPattern(TaskRepetitionPatternFixture.DAILY.get(taskGroup));
 		Long taskId = 4L;
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
-		TaskRepetitionPattern repetitionPattern = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
 
 		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
 				.willReturn(Optional.of(task));
-		given(repetitionPatternService.searchByTaskGroupId(eq(taskGroupId)))
-				.willReturn(repetitionPattern);
 
 		TaskDetailsResponse taskDto =
 				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId);
@@ -133,13 +127,13 @@ class TaskQueryServiceTest {
 					assertThat(taskDto.relatedMonthlyGoal()).isNull();
 					assertThat(taskDto.relatedWeeklyGoal()).isNull();
 					assertThat(taskDto.repetition().repetitionType())
-							.isEqualTo(repetitionPattern.getRepetitionType());
+							.isEqualTo(taskGroup.getRepetitionPattern().getRepetitionType());
 					assertThat(taskDto.repetition().repetitionPeriod())
-							.isEqualTo(repetitionPattern.getRepetitionPeriod());
+							.isEqualTo(taskGroup.getRepetitionPattern().getRepetitionPeriod());
 					assertThat(taskDto.repetition().repetitionStartDate())
-							.isEqualTo(repetitionPattern.getRepetitionStartDate());
+							.isEqualTo(taskGroup.getRepetitionPattern().getRepetitionStartDate());
 					assertThat(taskDto.repetition().repetitionEndDate())
-							.isEqualTo(repetitionPattern.getRepetitionEndDate());
+							.isEqualTo(taskGroup.getRepetitionPattern().getRepetitionEndDate());
 				});
 	}
 
@@ -149,7 +143,7 @@ class TaskQueryServiceTest {
 		Long memberId = 1L;
 		Long calendarId = 2L;
 		MonthlyGoal monthlyGoal = mock(MonthlyGoal.class);
-		TaskGroup taskGroup = new TaskGroup(false, monthlyGoal, null);
+		TaskGroup taskGroup = new TaskGroup(monthlyGoal, null);
 		Long taskId = 4L;
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);

@@ -12,6 +12,7 @@ import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.TaskGroup;
+import com.sillim.recordit.task.dto.request.TaskGroupUpdateRequest;
 import com.sillim.recordit.task.repository.TaskGroupRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -34,12 +35,13 @@ class TaskGroupServiceTest {
 	@DisplayName("연관 목표가 없는 할 일 그룹을 추가할 수 있다.")
 	void addTaskGroupTest() {
 		Long memberId = 1L;
-		TaskGroup expected = new TaskGroup(false, null, null);
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskGroup expected = new TaskGroup(null, null);
 		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
 				.willReturn(Optional.empty());
 		given(taskGroupRepository.save(any(TaskGroup.class))).willReturn(expected);
 
-		TaskGroup saved = taskGroupService.addTaskGroup(false, null, null, memberId);
+		TaskGroup saved = taskGroupService.addNonRepeatingTaskGroup(request, memberId);
 
 		assertThat(saved)
 				.usingRecursiveComparison()
@@ -53,16 +55,16 @@ class TaskGroupServiceTest {
 	void addTaskGroupTest_WithRelatedGoals() {
 		Long memberId = 1L;
 		Long relatedMonthlyGoalId = 1L;
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(relatedMonthlyGoalId, null);
 		MonthlyGoal monthlyGoal =
 				MonthlyGoalFixture.DEFAULT.getWithMember(MemberFixture.DEFAULT.getMember());
-		TaskGroup expected = new TaskGroup(false, monthlyGoal, null);
+		TaskGroup expected = new TaskGroup(monthlyGoal, null);
 
 		given(monthlyGoalQueryService.searchOptionalById(eq(relatedMonthlyGoalId), eq(memberId)))
 				.willReturn(Optional.of(monthlyGoal));
 		given(taskGroupRepository.save(any(TaskGroup.class))).willReturn(expected);
 
-		TaskGroup saved =
-				taskGroupService.addTaskGroup(false, relatedMonthlyGoalId, null, memberId);
+		TaskGroup saved = taskGroupService.addNonRepeatingTaskGroup(request, memberId);
 
 		assertThat(saved)
 				.usingRecursiveComparison()
