@@ -1,12 +1,9 @@
 package com.sillim.recordit.task.domain;
 
-import com.sillim.recordit.enums.date.WeekNumber;
-import com.sillim.recordit.enums.date.Weekday;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
-import com.sillim.recordit.task.domain.repetition.TaskRepetitionPatternFactory;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import java.time.LocalDate;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -65,29 +61,9 @@ public class TaskGroup extends BaseTime {
 		this.weeklyGoal = weeklyGoal;
 	}
 
-	public void setRepetitionPattern(
-			final TaskRepetitionType repetitionType,
-			final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate,
-			final LocalDate repetitionEndDate,
-			final Integer monthOfYear,
-			final Integer dayOfMonth,
-			final WeekNumber weekNumber,
-			final Weekday weekday,
-			final Integer weekdayBit) {
+	public void setRepetitionPattern(final TaskRepetitionPattern repetitionPattern) {
 		this.isRepeated = true;
-		this.repetitionPattern =
-				TaskRepetitionPatternFactory.create(
-						repetitionType,
-						repetitionPeriod,
-						repetitionStartDate,
-						repetitionEndDate,
-						monthOfYear,
-						dayOfMonth,
-						weekNumber,
-						weekday,
-						weekdayBit,
-						this);
+		this.repetitionPattern = repetitionPattern;
 	}
 
 	public void removeRepetitionPattern() {

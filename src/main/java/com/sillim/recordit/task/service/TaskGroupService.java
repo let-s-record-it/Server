@@ -4,6 +4,7 @@ import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.task.domain.TaskGroup;
+import com.sillim.recordit.task.domain.repetition.TaskRepetitionPatternFactory;
 import com.sillim.recordit.task.dto.request.TaskGroupUpdateRequest;
 import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
 import com.sillim.recordit.task.repository.TaskGroupRepository;
@@ -44,15 +45,17 @@ public class TaskGroupService {
 		WeeklyGoal weeklyGoal = null;
 		TaskGroup taskGroup = new TaskGroup(monthlyGoal, weeklyGoal);
 		taskGroup.setRepetitionPattern(
-				repetitionRequest.repetitionType(),
-				repetitionRequest.repetitionPeriod(),
-				repetitionRequest.repetitionStartDate(),
-				repetitionRequest.repetitionEndDate(),
-				repetitionRequest.monthOfYear(),
-				repetitionRequest.dayOfMonth(),
-				repetitionRequest.weekNumber(),
-				repetitionRequest.weekday(),
-				repetitionRequest.weekdayBit());
+				TaskRepetitionPatternFactory.create(
+						repetitionRequest.repetitionType(),
+						repetitionRequest.repetitionPeriod(),
+						repetitionRequest.repetitionStartDate(),
+						repetitionRequest.repetitionEndDate(),
+						repetitionRequest.monthOfYear(),
+						repetitionRequest.dayOfMonth(),
+						repetitionRequest.weekNumber(),
+						repetitionRequest.weekday(),
+						repetitionRequest.weekdayBit(),
+						taskGroup));
 		return taskGroupRepository.save(taskGroup);
 	}
 
@@ -82,15 +85,17 @@ public class TaskGroupService {
 		WeeklyGoal weeklyGoal = null;
 		taskGroup.modify(monthlyGoal, weeklyGoal);
 		taskGroup.setRepetitionPattern(
-				repetitionRequest.repetitionType(),
-				repetitionRequest.repetitionPeriod(),
-				repetitionRequest.repetitionStartDate(),
-				repetitionRequest.repetitionEndDate(),
-				repetitionRequest.monthOfYear(),
-				repetitionRequest.dayOfMonth(),
-				repetitionRequest.weekNumber(),
-				repetitionRequest.weekday(),
-				repetitionRequest.weekdayBit());
+				TaskRepetitionPatternFactory.create(
+						repetitionRequest.repetitionType(),
+						repetitionRequest.repetitionPeriod(),
+						repetitionRequest.repetitionStartDate(),
+						repetitionRequest.repetitionEndDate(),
+						repetitionRequest.monthOfYear(),
+						repetitionRequest.dayOfMonth(),
+						repetitionRequest.weekNumber(),
+						repetitionRequest.weekday(),
+						repetitionRequest.weekdayBit(),
+						taskGroup));
 		return taskGroup;
 	}
 }
