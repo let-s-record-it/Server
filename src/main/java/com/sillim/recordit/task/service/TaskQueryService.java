@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskQueryService {
 
 	private final CalendarService calendarService;
-	private final TaskRepetitionPatternService repetitionPatternService;
 	private final TaskRepository taskRepository;
 
 	public List<Task> searchAllByDate(
@@ -41,9 +40,7 @@ public class TaskQueryService {
 						.findByIdAndCalendarId(taskId, calendarId)
 						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		if (task.isRepeated()) {
-			Long taskGroupId = task.getTaskGroup().getId();
-			return TaskDetailsResponse.of(
-					task, repetitionPatternService.searchByTaskGroupId(taskGroupId));
+			return TaskDetailsResponse.of(task, task.getTaskGroup().getRepetitionPattern());
 		}
 		return TaskDetailsResponse.from(task);
 	}

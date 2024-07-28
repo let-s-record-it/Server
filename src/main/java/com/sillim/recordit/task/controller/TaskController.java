@@ -70,7 +70,8 @@ public class TaskController {
 			@PathVariable Long taskId,
 			@CurrentMember Member member) {
 
-		taskCommandService.modifyAllTasksInGroup(request, calendarId, taskId, member.getId());
+		taskCommandService.resetTaskGroupAndAddNewTasks(
+				request, calendarId, taskId, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}

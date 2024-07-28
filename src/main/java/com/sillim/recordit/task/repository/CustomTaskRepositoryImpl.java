@@ -6,10 +6,8 @@ import static com.sillim.recordit.goal.domain.QWeeklyGoal.weeklyGoal;
 import static com.sillim.recordit.task.domain.QTask.task;
 import static com.sillim.recordit.task.domain.QTaskGroup.taskGroup;
 
-import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.task.domain.Task;
-import java.time.LocalDate;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
@@ -38,24 +36,10 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public void updateAllByCalendarIdAndTaskGroupId(
-			Long calendarId,
-			Long taskGroupId,
-			String newTitle,
-			String newDescription,
-			LocalDate newDate,
-			String newColorHex,
-			Calendar newCalendar) {
+	public void deleteAllByTaskGroupId(Long taskGroupId) {
 
 		getEntityManager().flush();
-		update(task)
-				.set(task.title.title, newTitle)
-				.set(task.description.description, newDescription)
-				.set(task.date, newDate)
-				.set(task.colorHex.colorHex, newColorHex)
-				.set(task.calendar, newCalendar)
-				.where(task.calendar.id.eq(calendarId).and(task.taskGroup.id.eq(taskGroupId)))
-				.execute();
+		update(task).set(task.deleted, true).where(task.taskGroup.id.eq(taskGroupId)).execute();
 		getEntityManager().clear();
 	}
 }

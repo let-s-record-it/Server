@@ -5,6 +5,7 @@ import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.dto.request.TaskGroupUpdateRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
 import com.sillim.recordit.task.repository.TaskGroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,27 +22,75 @@ public class TaskGroupService {
 	private final TaskGroupRepository taskGroupRepository;
 
 	@Transactional
-	public TaskGroup addTaskGroup(
-			final Boolean isRepeated,
-			final Long relatedMonthlyGoalId,
-			final Long relatedWeeklyGoalId,
-			final Long memberId) {
+	public TaskGroup addNonRepeatingTaskGroup(
+			final TaskGroupUpdateRequest request, final Long memberId) {
 		MonthlyGoal monthlyGoal =
 				monthlyGoalQueryService
-						.searchOptionalById(relatedMonthlyGoalId, memberId)
+						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
 						.orElse(null);
 		WeeklyGoal weeklyGoal = null;
-		return taskGroupRepository.save(new TaskGroup(isRepeated, monthlyGoal, weeklyGoal));
+		return taskGroupRepository.save(new TaskGroup(monthlyGoal, weeklyGoal));
 	}
 
 	@Transactional
-	public void modifyTaskGroup(
+	public TaskGroup addRepeatingTaskGroup(
+			final TaskGroupUpdateRequest request,
+			final TaskRepetitionUpdateRequest repetitionRequest,
+			final Long memberId) {
+		MonthlyGoal monthlyGoal =
+				monthlyGoalQueryService
+						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
+						.orElse(null);
+		WeeklyGoal weeklyGoal = null;
+		TaskGroup taskGroup = new TaskGroup(monthlyGoal, weeklyGoal);
+		taskGroup.setRepetitionPattern(
+				repetitionRequest.repetitionType(),
+				repetitionRequest.repetitionPeriod(),
+				repetitionRequest.repetitionStartDate(),
+				repetitionRequest.repetitionEndDate(),
+				repetitionRequest.monthOfYear(),
+				repetitionRequest.dayOfMonth(),
+				repetitionRequest.weekNumber(),
+				repetitionRequest.weekday(),
+				repetitionRequest.weekdayBit());
+		return taskGroupRepository.save(taskGroup);
+	}
+
+	@Transactional
+	public TaskGroup modifyTaskGroupAndMakeNonRepeatable(
 			final TaskGroup taskGroup, final TaskGroupUpdateRequest request, final Long memberId) {
 		MonthlyGoal monthlyGoal =
 				monthlyGoalQueryService
 						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
 						.orElse(null);
 		WeeklyGoal weeklyGoal = null;
-		taskGroup.modify(request.isRepeated(), monthlyGoal, weeklyGoal);
+		taskGroup.modify(monthlyGoal, weeklyGoal);
+		taskGroup.removeRepetitionPattern();
+		return taskGroup;
+	}
+
+	@Transactional
+	public TaskGroup modifyTaskGroupAndMakeRepeatable(
+			final TaskGroup taskGroup,
+			final TaskGroupUpdateRequest request,
+			final TaskRepetitionUpdateRequest repetitionRequest,
+			final Long memberId) {
+		MonthlyGoal monthlyGoal =
+				monthlyGoalQueryService
+						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
+						.orElse(null);
+		WeeklyGoal weeklyGoal = null;
+		taskGroup.modify(monthlyGoal, weeklyGoal);
+		taskGroup.setRepetitionPattern(
+				repetitionRequest.repetitionType(),
+				repetitionRequest.repetitionPeriod(),
+				repetitionRequest.repetitionStartDate(),
+				repetitionRequest.repetitionEndDate(),
+				repetitionRequest.monthOfYear(),
+				repetitionRequest.dayOfMonth(),
+				repetitionRequest.weekNumber(),
+				repetitionRequest.weekday(),
+				repetitionRequest.weekdayBit());
+		return taskGroup;
 	}
 }

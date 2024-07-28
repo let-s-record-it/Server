@@ -2,8 +2,6 @@ package com.sillim.recordit.task.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.global.domain.BaseTime;
-import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.task.domain.vo.TaskColorHex;
 import com.sillim.recordit.task.domain.vo.TaskDescription;
 import com.sillim.recordit.task.domain.vo.TaskTitle;
@@ -90,25 +88,6 @@ public class Task extends BaseTime {
 				new TaskColorHex(colorHex),
 				calendar,
 				taskGroup);
-	}
-
-	public void modify(
-			final String title,
-			final String description,
-			final LocalDate date,
-			final String colorHex,
-			final Calendar calendar) {
-		this.title = new TaskTitle(title);
-		this.description = new TaskDescription(description);
-		this.date = date;
-		this.colorHex = new TaskColorHex(colorHex);
-		this.calendar = calendar;
-	}
-
-	public void validateAuthenticatedMember(Long memberId) {
-		if (!calendar.isOwnedBy(memberId)) {
-			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
-		}
 	}
 
 	public String getTitle() {
