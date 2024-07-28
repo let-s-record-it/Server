@@ -19,7 +19,7 @@ public record TaskUpdateRequest(
 		@NotNull Long newCalendarId,
 		@NotNull Boolean isRepeated,
 		@Validated TaskRepetitionUpdateRequest newRepetition,
-		TaskGroupUpdateRequest newTaskGroup) {
+		@NotNull TaskGroupUpdateRequest newTaskGroup) {
 
 	public Task toTask(TemporalAmount plusAmount, Calendar calendar, TaskGroup taskGroup) {
 		return Task.builder()

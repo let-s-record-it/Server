@@ -18,7 +18,7 @@ public record TaskAddRequest(
 		@ColorHexValid String colorHex,
 		@NotNull Boolean isRepeated,
 		@Validated TaskRepetitionUpdateRequest repetition,
-		TaskGroupUpdateRequest taskGroup) {
+		@NotNull TaskGroupUpdateRequest taskGroup) {
 
 	public Task toTask(TemporalAmount plusAmount, Calendar calendar, TaskGroup taskGroup) {
 		return Task.builder()
