@@ -68,7 +68,7 @@ class FeedTest {
 	}
 
 	@Test
-	@DisplayName("피드 소유자가 아니면 InvalidRequestException이 발생한다.")
+	@DisplayName("피드 작성자가 아니면 InvalidRequestException이 발생한다.")
 	void throwInvalidRequestExceptionIfNotFeedOwner() {
 		Member member = mock(Member.class);
 		Feed feed = FeedFixture.DEFAULT.getFeed(member);

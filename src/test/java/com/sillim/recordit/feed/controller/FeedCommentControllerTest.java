@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -64,6 +65,29 @@ class FeedCommentControllerTest extends RestDocsTest {
 	}
 
 	@Test
+	@DisplayName("피드 댓글을 조회한다.")
+	void feedComment() throws Exception {
+		Member member = mock(Member.class);
+		Feed feed = FeedFixture.DEFAULT.getFeed(member);
+		long feedId = 1L;
+		long feedCommentId = 1L;
+		FeedComment feedComment = spy(new FeedComment("content", feed, member));
+		given(feedComment.getId()).willReturn(feedCommentId);
+		FeedCommentInListResponse response = FeedCommentInListResponse.from(feedComment, 1L);
+		given(feedCommentQueryService.searchFeedCommentById(eq(feedCommentId), any()))
+				.willReturn(response);
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/feeds/{feedId}/comments/{commentId}", feedId, feedCommentId));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(document("feed-comment-one", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
 	@DisplayName("피드 댓글 목록을 조회한다.")
 	void feedCommentList() throws Exception {
 		Member member = mock(Member.class);
@@ -91,5 +115,23 @@ class FeedCommentControllerTest extends RestDocsTest {
 
 		perform.andDo(print())
 				.andDo(document("feed-comment-list", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("피드 댓글을 삭제한다.")
+	void feedRemove() throws Exception {
+		long feedCommentId = 1L;
+		ResultActions perform =
+				mockMvc.perform(
+						delete("/api/v1/feeds/{feedId}/comments/{commentId}", 1L, feedCommentId));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"feed-comment-remove",
+								getDocumentRequest(),
+								getDocumentResponse()));
 	}
 }

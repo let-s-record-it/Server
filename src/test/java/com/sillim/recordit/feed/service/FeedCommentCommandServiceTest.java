@@ -1,10 +1,13 @@
 package com.sillim.recordit.feed.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.domain.FeedComment;
@@ -50,5 +53,22 @@ class FeedCommentCommandServiceTest {
 				feedCommentCommandService.addFeedComment(request, feedId, memberId);
 
 		assertThat(savedFeedCommentId).isEqualTo(feedCommentId);
+	}
+
+	@Test
+	@DisplayName("피드 댓글을 삭제할 수 있다.")
+	void removeFeedComment() {
+		long feedCommentId = 1L;
+		long memberId = 1L;
+		Feed feed = FeedFixture.DEFAULT.getFeed(MemberFixture.DEFAULT.getMember());
+		Member commentWriter = mock(Member.class);
+		FeedComment feedComment = spy(new FeedComment("content", feed, commentWriter));
+		given(feedCommentRepository.findByIdWithFetch(eq(feedCommentId)))
+				.willReturn(Optional.of(feedComment));
+		given(commentWriter.equalsId(memberId)).willReturn(true);
+
+		feedCommentCommandService.removeFeedComment(feedCommentId, memberId);
+
+		then(feedComment).should(times(1)).delete();
 	}
 }

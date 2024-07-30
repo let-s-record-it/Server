@@ -11,6 +11,7 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,5 +52,12 @@ public class FeedCommentController {
 		return ResponseEntity.ok(
 				feedCommentQueryService.searchPaginatedOldCreated(
 						pageable, feedId, member.getId()));
+	}
+
+	@DeleteMapping("/{commentId}")
+	public ResponseEntity<Void> feedRemove(
+			@PathVariable Long commentId, @CurrentMember Member member) {
+		feedCommentCommandService.removeFeedComment(commentId, member.getId());
+		return ResponseEntity.noContent().build();
 	}
 }
