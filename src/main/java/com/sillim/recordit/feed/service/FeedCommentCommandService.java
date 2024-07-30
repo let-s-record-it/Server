@@ -30,4 +30,16 @@ public class FeedCommentCommandService {
 		Member member = memberQueryService.findByMemberId(memberId);
 		return feedCommentRepository.save(new FeedComment(request.content(), feed, member)).getId();
 	}
+
+	public void removeFeedComment(Long commentId, Long memberId) {
+		FeedComment feedComment =
+				feedCommentRepository
+						.findByIdWithFetch(commentId)
+						.orElseThrow(
+								() ->
+										new RecordNotFoundException(
+												ErrorCode.FEED_COMMENT_NOT_FOUND));
+		feedComment.validateAuthenticatedUser(memberId);
+		feedComment.delete();
+	}
 }

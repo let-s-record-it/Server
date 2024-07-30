@@ -2,6 +2,8 @@ package com.sillim.recordit.feed.domain;
 
 import com.sillim.recordit.feed.domain.vo.FeedCommentContent;
 import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,5 +57,15 @@ public class FeedComment extends BaseTime {
 
 	public boolean isOwner(Long memberId) {
 		return this.member.equalsId(memberId);
+	}
+
+	public void validateAuthenticatedUser(Long memberId) {
+		if (!isOwner(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
+	}
+
+	public void delete() {
+		this.deleted = true;
 	}
 }
