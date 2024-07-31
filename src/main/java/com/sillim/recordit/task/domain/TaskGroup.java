@@ -78,4 +78,8 @@ public class TaskGroup extends BaseTime {
 	public Optional<WeeklyGoal> getWeeklyGoal() {
 		return Optional.ofNullable(weeklyGoal);
 	}
+
+	public Optional<TaskRepetitionPattern> getRepetitionPattern() {
+		return Optional.ofNullable(repetitionPattern);
+	}
 }

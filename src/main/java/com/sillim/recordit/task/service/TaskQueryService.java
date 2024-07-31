@@ -40,7 +40,14 @@ public class TaskQueryService {
 						.findByIdAndCalendarId(taskId, calendarId)
 						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		if (task.isRepeated()) {
-			return TaskDetailsResponse.of(task, task.getTaskGroup().getRepetitionPattern());
+			return TaskDetailsResponse.of(
+					task,
+					task.getTaskGroup()
+							.getRepetitionPattern()
+							.orElseThrow(
+									() ->
+											new RecordNotFoundException(
+													ErrorCode.TASK_REPETITION_NOT_FOUND)));
 		}
 		return TaskDetailsResponse.from(task);
 	}

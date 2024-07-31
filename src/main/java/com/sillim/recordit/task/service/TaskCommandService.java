@@ -84,6 +84,11 @@ public class TaskCommandService {
 
 	private void addRepeatingTasks(
 			final Consumer<TemporalAmount> temporalToTask, final TaskGroup taskGroup) {
-		taskGroup.getRepetitionPattern().repeatingStream().forEach(temporalToTask);
+
+		taskGroup
+				.getRepetitionPattern()
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_REPETITION_NOT_FOUND))
+				.repeatingStream()
+				.forEach(temporalToTask);
 	}
 }
