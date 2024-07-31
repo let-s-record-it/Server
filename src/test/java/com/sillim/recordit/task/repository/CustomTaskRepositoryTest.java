@@ -9,6 +9,7 @@ import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.fixture.TaskFixture;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,5 +53,21 @@ public class CustomTaskRepositoryTest {
 
 		assertThat(found).isNotEmpty();
 		assertThat(found.get().getId()).isEqualTo(saved.getId());
+	}
+
+	@Test
+	@DisplayName("해당 할 일 그룹에 속하는 모든 할 일을 삭제한다.")
+	void deleteAllByTaskGroupId() {
+
+		List<Task> saved =
+				List.of(
+						TaskFixture.DEFAULT.get(calendar, taskGroup),
+						TaskFixture.DEFAULT.get(calendar, taskGroup));
+		saved.forEach(em::persist);
+
+		taskRepository.deleteAllByTaskGroupId(taskGroup.getId());
+
+		assertThat(em.find(Task.class, saved.get(0).getId())).isNull();
+		assertThat(em.find(Task.class, saved.get(1).getId())).isNull();
 	}
 }

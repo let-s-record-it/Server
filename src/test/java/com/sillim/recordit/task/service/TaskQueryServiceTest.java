@@ -16,6 +16,7 @@ import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
+import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.dto.response.TaskDetailsResponse;
 import com.sillim.recordit.task.fixture.TaskFixture;
 import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
@@ -126,14 +127,17 @@ class TaskQueryServiceTest {
 					assertThat(taskDto.repetition()).isNotNull();
 					assertThat(taskDto.relatedMonthlyGoal()).isNull();
 					assertThat(taskDto.relatedWeeklyGoal()).isNull();
+					assertThat(taskGroup.getRepetitionPattern()).isNotEmpty();
+					TaskRepetitionPattern repetitionPattern =
+							taskGroup.getRepetitionPattern().get();
 					assertThat(taskDto.repetition().repetitionType())
-							.isEqualTo(taskGroup.getRepetitionPattern().getRepetitionType());
+							.isEqualTo(repetitionPattern.getRepetitionType());
 					assertThat(taskDto.repetition().repetitionPeriod())
-							.isEqualTo(taskGroup.getRepetitionPattern().getRepetitionPeriod());
+							.isEqualTo(repetitionPattern.getRepetitionPeriod());
 					assertThat(taskDto.repetition().repetitionStartDate())
-							.isEqualTo(taskGroup.getRepetitionPattern().getRepetitionStartDate());
+							.isEqualTo(repetitionPattern.getRepetitionStartDate());
 					assertThat(taskDto.repetition().repetitionEndDate())
-							.isEqualTo(taskGroup.getRepetitionPattern().getRepetitionEndDate());
+							.isEqualTo(repetitionPattern.getRepetitionEndDate());
 				});
 	}
 
