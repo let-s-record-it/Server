@@ -6,17 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
-import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
@@ -40,16 +37,13 @@ class TaskQueryServiceTest {
 
 	@InjectMocks TaskQueryService taskQueryService;
 	@Mock CalendarService calendarService;
-	@Mock TaskRepetitionPatternService repetitionPatternService;
 	@Mock TaskRepository taskRepository;
 
-	private Member member;
 	private Calendar calendar;
 
 	@BeforeEach
 	void init() {
-		member = MemberFixture.DEFAULT.getMember();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		calendar = mock(Calendar.class);
 	}
 
 	@Test
@@ -57,7 +51,7 @@ class TaskQueryServiceTest {
 	void searchAllByCalendarIdAndDate() {
 		Long memberId = 1L;
 		Long calendarId = 2L;
-		TaskGroup taskGroup = new TaskGroup(false, null, null);
+		TaskGroup taskGroup = new TaskGroup(null, null);
 		LocalDate date = LocalDate.of(2024, 6, 12);
 		List<Task> tasks =
 				List.of(
@@ -65,8 +59,7 @@ class TaskQueryServiceTest {
 								LocalDate.of(2024, 6, 12), calendar, taskGroup),
 						TaskFixture.DEFAULT.getWithDate(
 								LocalDate.of(2024, 6, 12), calendar, taskGroup));
-		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
-				.willReturn(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findAllByCalendarIdAndDate(calendarId, date)).willReturn(tasks);
 
 		List<Task> found = taskQueryService.searchAllByDate(calendarId, date, memberId);
@@ -79,15 +72,12 @@ class TaskQueryServiceTest {
 	void searchByIdAndCalendarIdWithNoRepeat() {
 		Long memberId = 1L;
 		Long calendarId = 2L;
-		calendar = spy(calendar);
-		given(calendar.getId()).willReturn(calendarId);
-		TaskGroup taskGroup = new TaskGroup(false, null, null);
+		TaskGroup taskGroup = new TaskGroup(null, null);
 		Long taskId = 3L;
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
 
-		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
-				.willReturn(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
 				.willReturn(Optional.of(task));
 
@@ -113,22 +103,15 @@ class TaskQueryServiceTest {
 	void searchByIdAndCalendarIdWithRepeat() {
 		Long memberId = 1L;
 		Long calendarId = 2L;
-		calendar = spy(calendar);
-		given(calendar.getId()).willReturn(calendarId);
-		Long taskGroupId = 3L;
-		TaskGroup taskGroup = spy(new TaskGroup(true, null, null));
-		given(taskGroup.getId()).willReturn(taskGroupId);
+		TaskGroup taskGroup = spy(new TaskGroup(null, null));
+		taskGroup.setRepetitionPattern(TaskRepetitionPatternFixture.DAILY.get(taskGroup));
 		Long taskId = 4L;
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
-		TaskRepetitionPattern repetitionPattern = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
 
-		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
-				.willReturn(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
 				.willReturn(Optional.of(task));
-		given(repetitionPatternService.searchByTaskGroupId(eq(taskGroupId)))
-				.willReturn(repetitionPattern);
 
 		TaskDetailsResponse taskDto =
 				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId);
@@ -144,6 +127,9 @@ class TaskQueryServiceTest {
 					assertThat(taskDto.repetition()).isNotNull();
 					assertThat(taskDto.relatedMonthlyGoal()).isNull();
 					assertThat(taskDto.relatedWeeklyGoal()).isNull();
+					assertThat(taskGroup.getRepetitionPattern()).isNotEmpty();
+					TaskRepetitionPattern repetitionPattern =
+							taskGroup.getRepetitionPattern().get();
 					assertThat(taskDto.repetition().repetitionType())
 							.isEqualTo(repetitionPattern.getRepetitionType());
 					assertThat(taskDto.repetition().repetitionPeriod())
@@ -160,18 +146,13 @@ class TaskQueryServiceTest {
 	void searchByIdAndCalendarIdWithRelatedGoals() {
 		Long memberId = 1L;
 		Long calendarId = 2L;
-		calendar = spy(calendar);
-		given(calendar.getId()).willReturn(calendarId);
-		Long monthlyGoalId = 3L;
-		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
-		given(monthlyGoal.getId()).willReturn(monthlyGoalId);
-		TaskGroup taskGroup = new TaskGroup(false, monthlyGoal, null);
+		MonthlyGoal monthlyGoal = mock(MonthlyGoal.class);
+		TaskGroup taskGroup = new TaskGroup(monthlyGoal, null);
 		Long taskId = 4L;
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
 
-		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
-				.willReturn(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
 				.willReturn(Optional.of(task));
 
@@ -202,8 +183,7 @@ class TaskQueryServiceTest {
 		Long calendarId = 2L;
 		Long taskId = 3L;
 
-		given(calendarService.searchByCalendarId(eq(calendarId), eq(memberId)))
-				.willReturn(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willThrow(new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 

@@ -22,7 +22,7 @@ class TaskTest {
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
 		calendar = CalendarFixture.DEFAULT.getCalendar(member);
-		taskGroup = new TaskGroup(false, null, null);
+		taskGroup = new TaskGroup(null, null);
 	}
 
 	@Test

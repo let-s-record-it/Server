@@ -37,7 +37,7 @@ class TaskRepositoryTest {
 		em.persist(member);
 		calendar = CalendarFixture.DEFAULT.getCalendar(member);
 		em.persist(calendar);
-		taskGroup = new TaskGroup(false, null, null);
+		taskGroup = new TaskGroup(null, null);
 		em.persist(taskGroup);
 	}
 
@@ -86,9 +86,7 @@ class TaskRepositoryTest {
 						TaskFixture.DEFAULT.get(calendar, taskGroup));
 		taskRepository.saveAll(expected);
 
-		List<Task> found =
-				taskRepository.findAllByCalendarIdAndTaskGroupId(
-						calendar.getId(), taskGroup.getId());
+		List<Task> found = taskRepository.findAllByTaskGroupId(calendar.getId(), taskGroup.getId());
 
 		assertThat(found).hasSize(3);
 		assertAll(
@@ -106,39 +104,5 @@ class TaskRepositoryTest {
 							.ignoringFields("createdAt", "modifiedAt")
 							.isEqualTo(expected.get(2));
 				});
-	}
-
-	@Test
-	@DisplayName("캘린더 id와 할 일 그룹 id에 해당하는 할 일 중, 해당 날짜와 같거나 이후에 속하는 할 일 목록을 조회한다.")
-	void findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual() {
-		List<Task> saved =
-				List.of(
-						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 7, 13), calendar, taskGroup),
-						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 7, 14), calendar, taskGroup),
-						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 7, 15), calendar, taskGroup),
-						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 7, 16), calendar, taskGroup));
-		saved.forEach(em::persist);
-
-		List<Task> found =
-				taskRepository.findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual(
-						calendar.getId(), taskGroup.getId(), LocalDate.of(2024, 7, 14));
-
-		assertThat(found).hasSize(3);
-		assertThat(found.get(0))
-				.usingRecursiveComparison()
-				.ignoringFields("createdAt", "modifiedAt")
-				.isEqualTo(saved.get(1));
-		assertThat(found.get(1))
-				.usingRecursiveComparison()
-				.ignoringFields("createdAt", "modifiedAt")
-				.isEqualTo(saved.get(2));
-		assertThat(found.get(2))
-				.usingRecursiveComparison()
-				.ignoringFields("createdAt", "modifiedAt")
-				.isEqualTo(saved.get(3));
 	}
 }

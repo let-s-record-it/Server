@@ -23,7 +23,7 @@ class TaskMonthlyRepetitionPatternTest {
 
 	@BeforeEach
 	void init() {
-		taskGroup = new TaskGroup(false, null, null);
+		taskGroup = new TaskGroup(null, null);
 	}
 
 	@Test

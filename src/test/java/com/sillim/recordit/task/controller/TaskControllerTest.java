@@ -26,10 +26,10 @@ import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
-import com.sillim.recordit.task.domain.TaskRemoveStrategy;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
 import com.sillim.recordit.task.dto.request.TaskAddRequest;
+import com.sillim.recordit.task.dto.request.TaskGroupUpdateRequest;
 import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
 import com.sillim.recordit.task.dto.request.TaskUpdateRequest;
 import com.sillim.recordit.task.dto.response.TaskDetailsResponse;
@@ -67,6 +67,7 @@ public class TaskControllerTest extends RestDocsTest {
 	@DisplayName("할 일을 생성한다.")
 	void addNonRepeatingTaskTest() throws Exception {
 
+		TaskGroupUpdateRequest taskGroupRequest = new TaskGroupUpdateRequest(null, null);
 		TaskRepetitionUpdateRequest repetitionRequest =
 				new TaskRepetitionUpdateRequest(
 						TaskRepetitionType.DAILY,
@@ -86,8 +87,7 @@ public class TaskControllerTest extends RestDocsTest {
 						"ff40d974",
 						true,
 						repetitionRequest,
-						null,
-						null);
+						taskGroupRequest);
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -112,7 +112,7 @@ public class TaskControllerTest extends RestDocsTest {
 	void getTaskListTest() throws Exception {
 
 		Long calendarId = 1L;
-		TaskGroup taskGroup = new TaskGroup(false, null, null);
+		TaskGroup taskGroup = new TaskGroup(null, null);
 		LocalDate date = LocalDate.of(2024, 6, 12);
 		List<Task> tasks =
 				LongStream.rangeClosed(1, 2)
@@ -161,7 +161,7 @@ public class TaskControllerTest extends RestDocsTest {
 		Long calendarId = 1L;
 		calendar = spy(calendar);
 		given(calendar.getId()).willReturn(calendarId);
-		TaskGroup taskGroup = new TaskGroup(false, null, null);
+		TaskGroup taskGroup = new TaskGroup(null, null);
 		Long taskId = 2L;
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
@@ -194,7 +194,7 @@ public class TaskControllerTest extends RestDocsTest {
 		Long calendarId = 1L;
 		calendar = spy(calendar);
 		given(calendar.getId()).willReturn(calendarId);
-		TaskGroup taskGroup = new TaskGroup(true, null, null);
+		TaskGroup taskGroup = new TaskGroup(null, null);
 		Long taskId = 2L;
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
@@ -231,7 +231,7 @@ public class TaskControllerTest extends RestDocsTest {
 		Long monthlyGoalId = 2L;
 		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
 		given(monthlyGoal.getId()).willReturn(monthlyGoalId);
-		TaskGroup taskGroup = new TaskGroup(false, monthlyGoal, null);
+		TaskGroup taskGroup = new TaskGroup(monthlyGoal, null);
 		Long taskId = 3L;
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
@@ -259,11 +259,11 @@ public class TaskControllerTest extends RestDocsTest {
 	}
 
 	@Test
-	@DisplayName("선택한 할 일이 속한 할 일 그룹 내의 모든 할 일을 수정한다.")
-	void modifyAllTasks() throws Exception {
+	@DisplayName("선택한 할 일이 속한 그룹 내의 모든 할 일들을 수정한다.")
+	void modifyAll() throws Exception {
+
 		Long calendarId = 1L;
-		Long newCalendarId = 2L;
-		Long taskId = 3L;
+		Long taskId = 2L;
 		TaskRepetitionUpdateRequest repetitionRequest =
 				new TaskRepetitionUpdateRequest(
 						TaskRepetitionType.DAILY,
@@ -275,18 +275,17 @@ public class TaskControllerTest extends RestDocsTest {
 						null,
 						null,
 						null);
+		TaskGroupUpdateRequest taskGroupRequest = new TaskGroupUpdateRequest(1L, null);
 		TaskUpdateRequest request =
 				new TaskUpdateRequest(
-						TaskRemoveStrategy.REMOVE_NOTHING,
-						"회의록 작성",
-						"프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 1, 1),
+						"(수정) 회의록 작성",
+						"(수정) 프로젝트 회의록 작성하기",
+						LocalDate.of(2024, 7, 28),
 						"ff40d974",
-						newCalendarId,
+						3L,
 						true,
 						repetitionRequest,
-						null,
-						null);
+						taskGroupRequest);
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -306,61 +305,8 @@ public class TaskControllerTest extends RestDocsTest {
 								getDocumentRequest(),
 								getDocumentResponse(),
 								pathParameters(
-										parameterWithName("calendarId")
-												.description("선택한 할 일이 속한 캘린더 ID"),
-										parameterWithName("taskId").description("선택한 할 일 ID"))));
-	}
-
-	@Test
-	@DisplayName("선택한 할 일이 속한 할 일 그룹 내의 할 일 중, 선택한 할 일의 날짜와 같거나 이후의 할 일들을 수정한다.")
-	void modifyAfterAllTasks() throws Exception {
-		Long calendarId = 1L;
-		Long newCalendarId = 2L;
-		Long taskId = 3L;
-		TaskRepetitionUpdateRequest repetitionRequest =
-				new TaskRepetitionUpdateRequest(
-						TaskRepetitionType.DAILY,
-						1,
-						LocalDate.of(2024, 1, 1),
-						LocalDate.of(2024, 3, 31),
-						null,
-						null,
-						null,
-						null,
-						null);
-		TaskUpdateRequest request =
-				new TaskUpdateRequest(
-						TaskRemoveStrategy.REMOVE_NOTHING,
-						"회의록 작성",
-						"프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 1, 1),
-						"ff40d974",
-						newCalendarId,
-						true,
-						repetitionRequest,
-						null,
-						null);
-
-		ResultActions perform =
-				mockMvc.perform(
-						put(
-										"/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-after-all",
-										calendarId,
-										taskId)
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(request)));
-
-		perform.andExpect(status().isNoContent());
-
-		perform.andDo(print())
-				.andDo(
-						document(
-								"modify-after-all-tasks",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId")
-												.description("선택한 할 일이 속한 캘린더 ID"),
-										parameterWithName("taskId").description("선택한 할 일 ID"))));
+										parameterWithName("calendarId").description("캘린더 ID"),
+										parameterWithName("taskId")
+												.description("수정을 위해 선택한 할 일의 ID"))));
 	}
 }
