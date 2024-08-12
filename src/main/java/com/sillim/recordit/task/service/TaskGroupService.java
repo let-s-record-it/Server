@@ -1,5 +1,7 @@
 package com.sillim.recordit.task.service;
 
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
@@ -44,6 +46,7 @@ public class TaskGroupService {
 						.orElse(null);
 		WeeklyGoal weeklyGoal = null;
 		TaskGroup taskGroup = new TaskGroup(monthlyGoal, weeklyGoal);
+
 		taskGroup.setRepetitionPattern(
 				TaskRepetitionPatternFactory.create(
 						repetitionRequest.repetitionType(),
@@ -61,29 +64,48 @@ public class TaskGroupService {
 
 	@Transactional
 	public TaskGroup modifyTaskGroupAndMakeNonRepeatable(
-			final TaskGroup taskGroup, final TaskGroupUpdateRequest request, final Long memberId) {
+			final Long taskGroupId, final TaskGroupUpdateRequest request, final Long memberId) {
+		TaskGroup taskGroup =
+				taskGroupRepository
+						.findById(taskGroupId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
 		MonthlyGoal monthlyGoal =
 				monthlyGoalQueryService
 						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
 						.orElse(null);
 		WeeklyGoal weeklyGoal = null;
 		taskGroup.modify(monthlyGoal, weeklyGoal);
-		taskGroup.removeRepetitionPattern();
+
+		if (taskGroup.getIsRepeated()) {
+			taskGroup.removeRepetitionPattern();
+			taskGroupRepository.flush();
+		}
 		return taskGroup;
 	}
 
 	@Transactional
 	public TaskGroup modifyTaskGroupAndMakeRepeatable(
-			final TaskGroup taskGroup,
+			final Long taskGroupId,
 			final TaskGroupUpdateRequest request,
 			final TaskRepetitionUpdateRequest repetitionRequest,
 			final Long memberId) {
+		TaskGroup taskGroup =
+				taskGroupRepository
+						.findById(taskGroupId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
 		MonthlyGoal monthlyGoal =
 				monthlyGoalQueryService
 						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
 						.orElse(null);
 		WeeklyGoal weeklyGoal = null;
 		taskGroup.modify(monthlyGoal, weeklyGoal);
+
+		if (taskGroup.getIsRepeated()) {
+			taskGroup.removeRepetitionPattern();
+			taskGroupRepository.flush();
+		}
 		taskGroup.setRepetitionPattern(
 				TaskRepetitionPatternFactory.create(
 						repetitionRequest.repetitionType(),

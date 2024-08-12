@@ -147,6 +147,15 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 		return (weekdayBit.getWeekdayBit() & (1 << (dayOfWeek.getValue() - 1))) > 0;
 	}
 
+	public void setTaskGroup(TaskGroup taskGroup) {
+		this.taskGroup = taskGroup;
+	}
+
+	public void remove() {
+		this.deleted = true;
+		this.taskGroup = null;
+	}
+
 	protected void validate(
 			final TaskRepetitionType repetitionType,
 			final Integer repetitionPeriod,

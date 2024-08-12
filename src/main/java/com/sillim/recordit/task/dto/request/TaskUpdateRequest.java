@@ -25,7 +25,7 @@ public record TaskUpdateRequest(
 		return Task.builder()
 				.title(newTitle)
 				.description(newDescription)
-				.date(date.plus(plusAmount))
+				.date(newRepetition.repetitionStartDate().plus(plusAmount))
 				.colorHex(newColorHex)
 				.calendar(calendar)
 				.taskGroup(taskGroup)

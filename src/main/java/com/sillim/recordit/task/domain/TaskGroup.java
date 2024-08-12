@@ -64,10 +64,12 @@ public class TaskGroup extends BaseTime {
 	public void setRepetitionPattern(final TaskRepetitionPattern repetitionPattern) {
 		this.isRepeated = true;
 		this.repetitionPattern = repetitionPattern;
+		this.repetitionPattern.setTaskGroup(this);
 	}
 
 	public void removeRepetitionPattern() {
 		this.isRepeated = false;
+		this.repetitionPattern.remove();
 		this.repetitionPattern = null;
 	}
 

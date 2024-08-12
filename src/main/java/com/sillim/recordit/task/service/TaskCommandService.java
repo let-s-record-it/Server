@@ -68,7 +68,10 @@ public class TaskCommandService {
 		if (request.isRepeated()) {
 			TaskGroup newTaskGroup =
 					taskGroupService.modifyTaskGroupAndMakeRepeatable(
-							taskGroup, request.newTaskGroup(), request.newRepetition(), memberId);
+							taskGroup.getId(),
+							request.newTaskGroup(),
+							request.newRepetition(),
+							memberId);
 			addRepeatingTasks(
 					temporalAmount ->
 							taskRepository.save(
@@ -78,7 +81,7 @@ public class TaskCommandService {
 		}
 		TaskGroup newTaskGroup =
 				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
-						taskGroup, request.newTaskGroup(), memberId);
+						taskGroup.getId(), request.newTaskGroup(), memberId);
 		taskRepository.save(request.toTask(newCalendar, newTaskGroup));
 	}
 
