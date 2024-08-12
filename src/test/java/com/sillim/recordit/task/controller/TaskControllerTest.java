@@ -397,7 +397,7 @@ public class TaskControllerTest extends RestDocsTest {
 
 	@Test
 	@DisplayName("선택한 할 일의 속한 할 일 그룹 내의 모든 할 일을 삭제한다.")
-	void deleteAll() throws Exception {
+	void deleteAllTasks() throws Exception {
 		Long calendarId = 1L;
 		Long taskId = 2L;
 
@@ -415,6 +415,34 @@ public class TaskControllerTest extends RestDocsTest {
 				.andDo(
 						document(
 								"delete-all-tasks",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								pathParameters(
+										parameterWithName("calendarId").description("캘린더 ID"),
+										parameterWithName("taskId")
+												.description("삭제를 위해 선택한 할 일의 ID"))));
+	}
+
+	@Test
+	@DisplayName("선택한 할 일이 속한 할 일 그룹 내의 모든 할 일 중 선택한 날짜 이후의 할 일을 삭제한다.")
+	void deleteAfterAllTasks() throws Exception {
+		Long calendarId = 1L;
+		Long taskId = 2L;
+
+		ResultActions perform =
+				mockMvc.perform(
+						delete(
+										"/api/v1/calendars/{calendarId}/tasks/{taskId}/remove-after-all",
+										calendarId,
+										taskId)
+								.contentType(MediaType.APPLICATION_JSON));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"delete-after-all-tasks",
 								getDocumentRequest(),
 								getDocumentResponse(),
 								pathParameters(
