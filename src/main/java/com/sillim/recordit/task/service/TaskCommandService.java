@@ -117,7 +117,7 @@ public class TaskCommandService {
 			return;
 		}
 		TaskGroup newTaskGroup =
-				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
+				taskGroupService.modifyTaskGroup(
 						taskGroup.getId(), request.newTaskGroup(), memberId);
 		selectedTask.modify(
 				request.newTitle(),
