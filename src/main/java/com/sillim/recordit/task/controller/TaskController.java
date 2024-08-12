@@ -110,4 +110,15 @@ public class TaskController {
 
 		return ResponseEntity.noContent().build();
 	}
+
+	@DeleteMapping("/{taskId}/remove-one")
+	public ResponseEntity<Void> removeOneTask(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		taskCommandService.removeOne(calendarId, taskId, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
 }
