@@ -90,6 +90,25 @@ public class Task extends BaseTime {
 				taskGroup);
 	}
 
+	public void modify(
+			String title,
+			String description,
+			LocalDate date,
+			String colorHex,
+			Calendar calendar,
+			TaskGroup taskGroup) {
+		this.title = new TaskTitle(title);
+		this.description = new TaskDescription(description);
+		this.date = date;
+		this.colorHex = new TaskColorHex(colorHex);
+		this.calendar = calendar;
+		this.taskGroup = taskGroup;
+	}
+
+	public void remove() {
+		this.deleted = true;
+	}
+
 	public String getTitle() {
 		return title.getTitle();
 	}

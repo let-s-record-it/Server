@@ -60,7 +60,6 @@ public class TaskCommandService {
 						.findByIdAndCalendarId(selectedTaskId, calendarId)
 						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		TaskGroup taskGroup = selectedTask.getTaskGroup();
-
 		taskRepository.deleteAllByTaskGroupId(taskGroup.getId()); // 기존에 있던 Task 모두 삭제
 
 		Calendar newCalendar = calendarService.searchByCalendarId(request.newCalendarId());
@@ -75,7 +74,7 @@ public class TaskCommandService {
 			addRepeatingTasks(
 					temporalAmount ->
 							taskRepository.save(
-									request.toTask(temporalAmount, calendar, newTaskGroup)),
+									request.toTask(temporalAmount, newCalendar, newTaskGroup)),
 					newTaskGroup);
 			return;
 		}
@@ -83,6 +82,50 @@ public class TaskCommandService {
 				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
 						taskGroup.getId(), request.newTaskGroup(), memberId);
 		taskRepository.save(request.toTask(newCalendar, newTaskGroup));
+	}
+
+	public void modifyOne(
+			final TaskUpdateRequest request,
+			final Long calendarId,
+			final Long selectedTaskId,
+			final Long memberId) {
+
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
+
+		Task selectedTask =
+				taskRepository
+						.findByIdAndCalendarId(selectedTaskId, calendarId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		TaskGroup taskGroup = selectedTask.getTaskGroup();
+
+		Calendar newCalendar = calendarService.searchByCalendarId(request.newCalendarId());
+		newCalendar.validateAuthenticatedMember(memberId);
+		if (request.isRepeated()) {
+			selectedTask.remove();
+			TaskGroup newTaskGroup =
+					taskGroupService.modifyTaskGroupAndMakeRepeatable(
+							taskGroup.getId(),
+							request.newTaskGroup(),
+							request.newRepetition(),
+							memberId);
+			addRepeatingTasks(
+					temporalAmount ->
+							taskRepository.save(
+									request.toTask(temporalAmount, newCalendar, newTaskGroup)),
+					newTaskGroup);
+			return;
+		}
+		TaskGroup newTaskGroup =
+				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
+						taskGroup.getId(), request.newTaskGroup(), memberId);
+		selectedTask.modify(
+				request.newTitle(),
+				request.newDescription(),
+				request.date(),
+				request.newColorHex(),
+				newCalendar,
+				newTaskGroup);
 	}
 
 	private void addRepeatingTasks(

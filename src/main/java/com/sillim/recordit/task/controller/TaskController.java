@@ -75,4 +75,16 @@ public class TaskController {
 
 		return ResponseEntity.noContent().build();
 	}
+
+	@PutMapping("/{taskId}/modify-one")
+	public ResponseEntity<Void> modifyOne(
+			@Validated @RequestBody TaskUpdateRequest request,
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		taskCommandService.modifyOne(request, calendarId, taskId, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
 }
