@@ -1,7 +1,6 @@
 package com.sillim.recordit.task.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
@@ -10,7 +9,6 @@ import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.fixture.TaskFixture;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +37,7 @@ public class CustomTaskRepositoryTest {
 		em.persist(member);
 		calendar = CalendarFixture.DEFAULT.getCalendar(member);
 		em.persist(calendar);
-		taskGroup = new TaskGroup(false, null, null);
+		taskGroup = new TaskGroup(null, null);
 		em.persist(taskGroup);
 	}
 
@@ -58,107 +56,18 @@ public class CustomTaskRepositoryTest {
 	}
 
 	@Test
-	@DisplayName("해당 할 일 그룹에 속한 할 일 중, 선택한 할 일을 제외하고 모두 삭제한다.")
-	void deleteAllByTaskGroupIdAndTaskIdNot() {
+	@DisplayName("해당 할 일 그룹에 속하는 모든 할 일을 삭제한다.")
+	void deleteAllByTaskGroupId() {
+
 		List<Task> saved =
 				List.of(
-						TaskFixture.DEFAULT.get(calendar, taskGroup),
 						TaskFixture.DEFAULT.get(calendar, taskGroup),
 						TaskFixture.DEFAULT.get(calendar, taskGroup));
 		saved.forEach(em::persist);
-		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
-		em.persist(selectedTask);
 
-		taskRepository.deleteAllByTaskGroupIdAndTaskIdNot(taskGroup.getId(), selectedTask.getId());
+		taskRepository.deleteAllByTaskGroupId(taskGroup.getId());
 
-		assertAll(
-				() -> {
-					assertThat(em.find(Task.class, selectedTask.getId())).isNotNull();
-					saved.forEach(
-							task -> {
-								assertThat(em.find(Task.class, task.getId())).isNull();
-							});
-				});
-	}
-
-	@Test
-	@DisplayName("해당 할 일 그룹에 속한 달성하지 못한 할 일 중, 선택한 할 일을 제외하고 모두 삭제한다.")
-	void deleteAllNotAchievedTasksByTaskGroupIdAndTaskIdNot() {
-		List<Task> saved =
-				List.of(
-						TaskFixture.DEFAULT.get(calendar, taskGroup),
-						TaskFixture.DEFAULT.get(calendar, taskGroup),
-						TaskFixture.DEFAULT.get(calendar, taskGroup));
-		saved.forEach(em::persist);
-		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
-		em.persist(selectedTask);
-
-		taskRepository.deleteAllNotAchievedTasksByTaskGroupIdAndTaskIdNot(
-				taskGroup.getId(), selectedTask.getId());
-
-		assertAll(
-				() -> {
-					assertThat(em.find(Task.class, selectedTask.getId())).isNotNull();
-					saved.forEach(
-							task -> {
-								assertThat(em.find(Task.class, task.getId())).isNull();
-							});
-				});
-	}
-
-	@Test
-	@DisplayName("해당 할 일 그룹에 속한 할 일 중, 선택한 할 일 이후의 날짜에 해당하는 할 일을 모두 삭제한다.")
-	void deleteAllByTaskGroupIdAndDateAfter() {
-		List<Task> saved =
-				List.of(
-						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 7, 13), calendar, taskGroup),
-						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 7, 15), calendar, taskGroup),
-						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 7, 16), calendar, taskGroup));
-		saved.forEach(em::persist);
-		Task selectedTask =
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 7, 14), calendar, taskGroup);
-		em.persist(selectedTask);
-
-		taskRepository.deleteAllByTaskGroupIdAndDateAfter(
-				taskGroup.getId(), selectedTask.getDate());
-
-		assertAll(
-				() -> {
-					assertThat(em.find(Task.class, selectedTask.getId())).isNotNull();
-					assertThat(em.find(Task.class, saved.get(0).getId())).isNotNull();
-					assertThat(em.find(Task.class, saved.get(1).getId())).isNull();
-					assertThat(em.find(Task.class, saved.get(2).getId())).isNull();
-				});
-	}
-
-	@Test
-	@DisplayName("해당 할 일 그룹에 속한 달성하지 못한 할 일 중, 선택한 할 일 이후의 날짜에 해당하는 할 일을 모두 삭제한다.")
-	void deleteAllNotAchievedTasksByTaskGroupIdAndDateAfter() {
-		List<Task> saved =
-				List.of(
-						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 7, 13), calendar, taskGroup),
-						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 7, 15), calendar, taskGroup),
-						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 7, 16), calendar, taskGroup));
-		saved.forEach(em::persist);
-		Task selectedTask =
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 7, 14), calendar, taskGroup);
-		em.persist(selectedTask);
-
-		taskRepository.deleteAllNotAchievedByTaskGroupIdAndDateAfter(
-				taskGroup.getId(), selectedTask.getDate());
-
-		assertAll(
-				() -> {
-					assertThat(em.find(Task.class, selectedTask.getId())).isNotNull();
-					assertThat(em.find(Task.class, saved.get(0).getId())).isNotNull();
-					assertThat(em.find(Task.class, saved.get(1).getId())).isNull();
-					assertThat(em.find(Task.class, saved.get(2).getId())).isNull();
-				});
+		assertThat(em.find(Task.class, saved.get(0).getId())).isNull();
+		assertThat(em.find(Task.class, saved.get(1).getId())).isNull();
 	}
 }

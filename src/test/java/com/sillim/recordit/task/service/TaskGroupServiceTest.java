@@ -1,7 +1,6 @@
 package com.sillim.recordit.task.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -10,15 +9,18 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
-import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
-import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.TaskGroup;
+import com.sillim.recordit.task.domain.TaskRepetitionType;
+import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
+import com.sillim.recordit.task.domain.repetition.TaskRepetitionPatternFactory;
+import com.sillim.recordit.task.dto.request.TaskGroupUpdateRequest;
+import com.sillim.recordit.task.dto.request.TaskRepetitionUpdateRequest;
+import com.sillim.recordit.task.fixture.TaskRepetitionPatternFixture;
 import com.sillim.recordit.task.repository.TaskGroupRepository;
+import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,15 +39,16 @@ class TaskGroupServiceTest {
 	// TODO: WeeklyGoal 기능 구현 후 테스트 추가 필요
 
 	@Test
-	@DisplayName("연관 목표가 없는 할 일 그룹을 추가할 수 있다.")
-	void addTaskGroupTest() {
+	@DisplayName("반복이 없는 할 일 그룹을 추가할 수 있다.")
+	void addNonRepeatingTaskGroup() {
 		Long memberId = 1L;
-		TaskGroup expected = new TaskGroup(false, null, null);
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskGroup expected = new TaskGroup(null, null);
 		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
 				.willReturn(Optional.empty());
 		given(taskGroupRepository.save(any(TaskGroup.class))).willReturn(expected);
 
-		TaskGroup saved = taskGroupService.addTaskGroup(false, null, null, memberId);
+		TaskGroup saved = taskGroupService.addNonRepeatingTaskGroup(request, memberId);
 
 		assertThat(saved)
 				.usingRecursiveComparison()
@@ -55,64 +58,215 @@ class TaskGroupServiceTest {
 	}
 
 	@Test
-	@DisplayName("월 연관 목표가 있는 할 일 그룹을 추가할 수 있다.")
-	void addTaskGroupTest_WithRelatedGoals() {
+	@DisplayName("반복이 있는 할 일 그룹을 추가할 수 있다.")
+	void addRepeatingTaskGroup() {
 		Long memberId = 1L;
-		Long relatedMonthlyGoalId = 1L;
-		MonthlyGoal monthlyGoal =
-				MonthlyGoalFixture.DEFAULT.getWithMember(MemberFixture.DEFAULT.getMember());
-		TaskGroup expected = new TaskGroup(false, monthlyGoal, null);
-
-		given(monthlyGoalQueryService.searchOptionalById(eq(relatedMonthlyGoalId), eq(memberId)))
-				.willReturn(Optional.of(monthlyGoal));
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskRepetitionUpdateRequest repetitionRequest =
+				new TaskRepetitionUpdateRequest(
+						TaskRepetitionType.DAILY,
+						1,
+						LocalDate.of(2024, 1, 1),
+						LocalDate.of(2024, 3, 31),
+						null,
+						null,
+						null,
+						null,
+						null);
+		TaskGroup expected = new TaskGroup(null, null);
+		expected.setRepetitionPattern(
+				TaskRepetitionPatternFactory.create(
+						repetitionRequest.repetitionType(),
+						repetitionRequest.repetitionPeriod(),
+						repetitionRequest.repetitionStartDate(),
+						repetitionRequest.repetitionEndDate(),
+						repetitionRequest.monthOfYear(),
+						repetitionRequest.dayOfMonth(),
+						repetitionRequest.weekNumber(),
+						repetitionRequest.weekday(),
+						repetitionRequest.weekdayBit(),
+						expected));
+		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
+				.willReturn(Optional.empty());
 		given(taskGroupRepository.save(any(TaskGroup.class))).willReturn(expected);
 
 		TaskGroup saved =
-				taskGroupService.addTaskGroup(false, relatedMonthlyGoalId, null, memberId);
+				taskGroupService.addRepeatingTaskGroup(request, repetitionRequest, memberId);
 
 		assertThat(saved)
 				.usingRecursiveComparison()
-				.ignoringFields("id", "weeklyGoal", "createdAt", "modifiedAt")
+				.ignoringFields("id", "createdAt", "modifiedAt", "repetition")
 				.isEqualTo(expected);
+		assertAll(
+				() -> {
+					assertThat(saved.getRepetitionPattern()).isNotEmpty();
+					TaskRepetitionPattern repetitionPattern = saved.getRepetitionPattern().get();
+					assertThat(repetitionPattern.getRepetitionType())
+							.isEqualTo(repetitionRequest.repetitionType());
+					assertThat(repetitionPattern.getRepetitionPeriod())
+							.isEqualTo(repetitionRequest.repetitionPeriod());
+					assertThat(repetitionPattern.getRepetitionStartDate())
+							.isEqualTo(repetitionRequest.repetitionStartDate());
+					assertThat(repetitionPattern.getRepetitionEndDate())
+							.isEqualTo(repetitionRequest.repetitionEndDate());
+					assertThat(repetitionPattern.getMonthOfYear()).isEmpty();
+					assertThat(repetitionPattern.getDayOfMonth()).isEmpty();
+					assertThat(repetitionPattern.getWeekNumber()).isEmpty();
+					assertThat(repetitionPattern.getWeekday()).isEmpty();
+					assertThat(repetitionPattern.getWeekdayBit()).isEmpty();
+				});
 		then(taskGroupRepository).should(times(1)).save(any(TaskGroup.class));
 	}
 
 	@Test
-	@DisplayName("할 일 그룹을 수정한다.")
-	void modifyTaskGroup() {
-		Long taskGroupId = 1L;
-		Long memberId = 2L;
-		TaskGroup originTaskGroup =
-				new TaskGroup(false, mock(MonthlyGoal.class), mock(WeeklyGoal.class));
-		given(taskGroupRepository.findById(eq(taskGroupId)))
-				.willReturn(Optional.of(originTaskGroup));
+	@DisplayName("반복이 있는 할 일 그룹을 수정하고 반복을 제거한다.")
+	void modifyTaskGroupAndMakeNonRepeatableWithRepeatableTask() {
+		Long memberId = 1L;
+		Long originTaskGroupId = 2L;
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
+		origin.setRepetitionPattern(TaskRepetitionPatternFixture.DAILY.get(origin));
 		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
 				.willReturn(Optional.empty());
+		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
-		TaskGroup modifiedTaskGroup =
-				taskGroupService.modifyTaskGroup(taskGroupId, true, null, null, memberId);
+		TaskGroup modified =
+				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
+						originTaskGroupId, request, memberId);
 
 		assertAll(
 				() -> {
-					assertThat(modifiedTaskGroup.getIsRepeated()).isTrue();
-					assertThat(modifiedTaskGroup.getMonthlyGoal()).isEmpty();
-					assertThat(modifiedTaskGroup.getWeeklyGoal()).isEmpty();
+					assertThat(modified.getIsRepeated()).isFalse();
+					assertThat(modified.getMonthlyGoal()).isEmpty();
+					assertThat(modified.getWeeklyGoal()).isEmpty();
+					assertThat(modified.getRepetitionPattern()).isEmpty();
 				});
 	}
 
 	@Test
-	@DisplayName("수정하려는 할 일 그룹이 존재하지 않는다면 RecordNotFoundException이 발생한다.")
-	void throwsRecordNotFoundExceptionIfTaskGroupNotExists() {
-		Long taskGroupId = 1L;
-		Long memberId = 2L;
-		given(taskGroupRepository.findById(eq(taskGroupId)))
-				.willThrow(new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
+	@DisplayName("반복이 없는 할 일 그룹을 수정한다.")
+	void modifyTaskGroupAndMakeNonRepeatableWithNonRepeatableTask() {
+		Long memberId = 1L;
+		Long originTaskGroupId = 2L;
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
+		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
+				.willReturn(Optional.empty());
+		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
-		assertThatCode(
-						() ->
-								taskGroupService.modifyTaskGroup(
-										taskGroupId, false, null, null, memberId))
-				.isInstanceOf(RecordNotFoundException.class)
-				.hasMessage(ErrorCode.TASK_GROUP_NOT_FOUND.getDescription());
+		TaskGroup modified =
+				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
+						originTaskGroupId, request, memberId);
+
+		assertAll(
+				() -> {
+					assertThat(modified.getIsRepeated()).isFalse();
+					assertThat(modified.getMonthlyGoal()).isEmpty();
+					assertThat(modified.getWeeklyGoal()).isEmpty();
+					assertThat(modified.getRepetitionPattern()).isEmpty();
+				});
+	}
+
+	@Test
+	@DisplayName("반복이 있는 할 일의 할 일 그룹을 수정하고 반복을 재생성한다.")
+	void modifyTaskGroupAndMakeRepeatableWithRepeatableTask() {
+		Long memberId = 1L;
+		Long originTaskGroupId = 2L;
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskRepetitionUpdateRequest repetitionRequest =
+				new TaskRepetitionUpdateRequest(
+						TaskRepetitionType.DAILY,
+						1,
+						LocalDate.of(2024, 1, 1),
+						LocalDate.of(2024, 3, 31),
+						null,
+						null,
+						null,
+						null,
+						null);
+		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
+		TaskRepetitionPattern originRepetitionPattern =
+				TaskRepetitionPatternFixture.WEEKLY.get(origin);
+		origin.setRepetitionPattern(originRepetitionPattern);
+		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
+				.willReturn(Optional.empty());
+		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
+
+		TaskGroup modified =
+				taskGroupService.modifyTaskGroupAndMakeRepeatable(
+						originTaskGroupId, request, repetitionRequest, memberId);
+
+		assertAll(
+				() -> {
+					assertThat(modified.getIsRepeated()).isTrue();
+					assertThat(modified.getMonthlyGoal()).isEmpty();
+					assertThat(modified.getWeeklyGoal()).isEmpty();
+					assertThat(modified.getRepetitionPattern()).isNotEmpty();
+					TaskRepetitionPattern modifiedRepetitionPattern =
+							modified.getRepetitionPattern().get();
+					assertThat(modifiedRepetitionPattern.getRepetitionType())
+							.isEqualTo(repetitionRequest.repetitionType());
+					assertThat(modifiedRepetitionPattern.getRepetitionPeriod())
+							.isEqualTo(repetitionRequest.repetitionPeriod());
+					assertThat(modifiedRepetitionPattern.getRepetitionStartDate())
+							.isEqualTo(repetitionRequest.repetitionStartDate());
+					assertThat(modifiedRepetitionPattern.getRepetitionEndDate())
+							.isEqualTo(repetitionRequest.repetitionEndDate());
+					assertThat(modifiedRepetitionPattern.getMonthOfYear()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getDayOfMonth()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getWeekNumber()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getWeekday()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getWeekdayBit()).isEmpty();
+				});
+	}
+
+	@Test
+	@DisplayName("반복이 없는 할 일의 그룹을 수정하고 반복을 생성한다.")
+	void modifyTaskGroupAndMakeRepeatableWithNonRepeatableTask() {
+		Long memberId = 1L;
+		Long originTaskGroupId = 2L;
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskRepetitionUpdateRequest repetitionRequest =
+				new TaskRepetitionUpdateRequest(
+						TaskRepetitionType.DAILY,
+						1,
+						LocalDate.of(2024, 1, 1),
+						LocalDate.of(2024, 3, 31),
+						null,
+						null,
+						null,
+						null,
+						null);
+		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
+		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
+				.willReturn(Optional.empty());
+		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
+
+		TaskGroup modified =
+				taskGroupService.modifyTaskGroupAndMakeRepeatable(
+						originTaskGroupId, request, repetitionRequest, memberId);
+
+		assertAll(
+				() -> {
+					assertThat(modified.getIsRepeated()).isTrue();
+					assertThat(modified.getMonthlyGoal()).isEmpty();
+					assertThat(modified.getWeeklyGoal()).isEmpty();
+					assertThat(modified.getRepetitionPattern()).isNotEmpty();
+					TaskRepetitionPattern modifiedRepetitionPattern =
+							modified.getRepetitionPattern().get();
+					assertThat(modifiedRepetitionPattern.getRepetitionType())
+							.isEqualTo(repetitionRequest.repetitionType());
+					assertThat(modifiedRepetitionPattern.getRepetitionPeriod())
+							.isEqualTo(repetitionRequest.repetitionPeriod());
+					assertThat(modifiedRepetitionPattern.getRepetitionStartDate())
+							.isEqualTo(repetitionRequest.repetitionStartDate());
+					assertThat(modifiedRepetitionPattern.getRepetitionEndDate())
+							.isEqualTo(repetitionRequest.repetitionEndDate());
+					assertThat(modifiedRepetitionPattern.getMonthOfYear()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getDayOfMonth()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getWeekNumber()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getWeekday()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getWeekdayBit()).isEmpty();
+				});
 	}
 }

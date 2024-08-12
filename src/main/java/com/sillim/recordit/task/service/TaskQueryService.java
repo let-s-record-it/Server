@@ -1,5 +1,6 @@
 package com.sillim.recordit.task.service;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.service.CalendarService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
@@ -18,13 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskQueryService {
 
 	private final CalendarService calendarService;
-	private final TaskRepetitionPatternService repetitionPatternService;
 	private final TaskRepository taskRepository;
 
 	public List<Task> searchAllByDate(
 			final Long calendarId, final LocalDate date, final Long memberId) {
 
-		validateOwnerOfCalendar(calendarId, memberId);
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
 
 		return taskRepository.findAllByCalendarIdAndDate(calendarId, date);
 	}
@@ -32,20 +33,22 @@ public class TaskQueryService {
 	public TaskDetailsResponse searchByIdAndCalendarId(
 			final Long taskId, final Long calendarId, final Long memberId) {
 
-		validateOwnerOfCalendar(calendarId, memberId);
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
 		Task task =
 				taskRepository
 						.findByIdAndCalendarId(taskId, calendarId)
 						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		if (task.isRepeated()) {
-			Long taskGroupId = task.getTaskGroup().getId();
 			return TaskDetailsResponse.of(
-					task, repetitionPatternService.searchByTaskGroupId(taskGroupId));
+					task,
+					task.getTaskGroup()
+							.getRepetitionPattern()
+							.orElseThrow(
+									() ->
+											new RecordNotFoundException(
+													ErrorCode.TASK_REPETITION_NOT_FOUND)));
 		}
 		return TaskDetailsResponse.from(task);
-	}
-
-	private void validateOwnerOfCalendar(Long calendarId, Long memberId) {
-		calendarService.searchByCalendarId(calendarId, memberId);
 	}
 }

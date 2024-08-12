@@ -77,7 +77,7 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 	@ColumnDefault("false")
 	private boolean deleted = false;
 
-	@OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "task_group_id")
 	private TaskGroup taskGroup;
 
@@ -145,6 +145,15 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 
 	public boolean isValidWeekday(final DayOfWeek dayOfWeek) {
 		return (weekdayBit.getWeekdayBit() & (1 << (dayOfWeek.getValue() - 1))) > 0;
+	}
+
+	public void setTaskGroup(TaskGroup taskGroup) {
+		this.taskGroup = taskGroup;
+	}
+
+	public void remove() {
+		this.deleted = true;
+		this.taskGroup = null;
 	}
 
 	protected void validate(

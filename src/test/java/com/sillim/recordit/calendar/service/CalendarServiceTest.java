@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.calendar.domain.Calendar;
@@ -124,20 +123,5 @@ class CalendarServiceTest {
 		assertThatCode(() -> calendarService.deleteByCalendarId(calendarId, memberId))
 				.isInstanceOf(InvalidCalendarException.class)
 				.hasMessage(ErrorCode.INVALID_CALENDAR_DELETE_REQUEST.getDescription());
-	}
-
-	@Test
-	@DisplayName("캘린더가 해당 사용자의 소유가 아니라면 InvalidMonthlyGoalException을 발생시킨다.")
-	void throwInvalidCalendarExceptionIfCalendarIsNotOwnedByMember() {
-		long calendarId = 1L;
-		long memberId = 1L;
-
-		Calendar calendar = mock(Calendar.class);
-		given(calendarRepository.findById(eq(1L))).willReturn(Optional.of(calendar));
-		willReturn(false).given(calendar).isOwnedBy(eq(memberId));
-
-		assertThatCode(() -> calendarService.searchByCalendarId(calendarId, memberId))
-				.isInstanceOf(InvalidCalendarException.class)
-				.hasMessage(ErrorCode.CALENDAR_ACCESS_DENIED.getDescription());
 	}
 }
