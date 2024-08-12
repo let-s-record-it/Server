@@ -309,4 +309,88 @@ public class TaskControllerTest extends RestDocsTest {
 										parameterWithName("taskId")
 												.description("수정을 위해 선택한 할 일의 ID"))));
 	}
+
+	@Test
+	@DisplayName("선택한 할 일의 내용을 수정한다.")
+	void modifyOne() throws Exception {
+
+		Long calendarId = 1L;
+		Long taskId = 2L;
+		TaskGroupUpdateRequest taskGroupRequest = new TaskGroupUpdateRequest(1L, null);
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						"(수정) 회의록 작성",
+						"(수정) 프로젝트 회의록 작성하기",
+						LocalDate.of(2024, 7, 28),
+						"ff40d974",
+						3L,
+						false,
+						null,
+						taskGroupRequest);
+
+		ResultActions perform =
+				mockMvc.perform(
+						put(
+										"/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-one",
+										calendarId,
+										taskId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"modify-one",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								pathParameters(
+										parameterWithName("calendarId").description("캘린더 ID"),
+										parameterWithName("taskId")
+												.description("수정을 위해 선택한 할 일의 ID"))));
+	}
+
+	@Test
+	@DisplayName("선택한 할 일의 내용을 수정하고 반복하도록 만든다.")
+	void modifyOneAndMakeRepeatable() throws Exception {
+
+		Long calendarId = 1L;
+		Long taskId = 2L;
+		TaskRepetitionUpdateRequest repetitionRequest =
+				new TaskRepetitionUpdateRequest(
+						TaskRepetitionType.DAILY,
+						1,
+						LocalDate.of(2024, 1, 1),
+						LocalDate.of(2024, 3, 31),
+						null,
+						null,
+						null,
+						null,
+						null);
+		TaskGroupUpdateRequest taskGroupRequest = new TaskGroupUpdateRequest(1L, null);
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						"(수정) 회의록 작성",
+						"(수정) 프로젝트 회의록 작성하기",
+						LocalDate.of(2024, 7, 28),
+						"ff40d974",
+						3L,
+						true,
+						repetitionRequest,
+						taskGroupRequest);
+
+		ResultActions perform =
+				mockMvc.perform(
+						put(
+										"/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-one",
+										calendarId,
+										taskId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print()).andDo(document("modify-one", getDocumentRequest()));
+	}
 }
