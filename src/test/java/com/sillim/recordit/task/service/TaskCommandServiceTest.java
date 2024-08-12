@@ -215,7 +215,7 @@ class TaskCommandServiceTest {
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
 
 		given(
-						taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
+						taskGroupService.modifyTaskGroup(
 								anyLong(), any(TaskGroupUpdateRequest.class), anyLong()))
 				.willReturn(newTaskGroup);
 
