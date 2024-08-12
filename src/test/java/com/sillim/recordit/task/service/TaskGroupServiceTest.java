@@ -119,16 +119,20 @@ class TaskGroupServiceTest {
 	}
 
 	@Test
-	@DisplayName("할 일 그룹을 수정하고 반복을 제거한다.")
-	void modifyTaskGroupAndMakeNonRepeatable() {
+	@DisplayName("반복이 있는 할 일 그룹을 수정하고 반복을 제거한다.")
+	void modifyTaskGroupAndMakeNonRepeatableWithRepeatableTask() {
 		Long memberId = 1L;
+		Long originTaskGroupId = 2L;
 		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
 		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
+		origin.setRepetitionPattern(TaskRepetitionPatternFixture.DAILY.get(origin));
 		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
 				.willReturn(Optional.empty());
+		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
 		TaskGroup modified =
-				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(origin, request, memberId);
+				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
+						originTaskGroupId, request, memberId);
 
 		assertAll(
 				() -> {
@@ -140,9 +144,34 @@ class TaskGroupServiceTest {
 	}
 
 	@Test
-	@DisplayName("할 일 그룹을 수정하고 반복을 재생성한다.")
-	void modifyTaskGroupAndMakeRepeatable() {
+	@DisplayName("반복이 없는 할 일 그룹을 수정한다.")
+	void modifyTaskGroupAndMakeNonRepeatableWithNonRepeatableTask() {
 		Long memberId = 1L;
+		Long originTaskGroupId = 2L;
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
+		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
+				.willReturn(Optional.empty());
+		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
+
+		TaskGroup modified =
+				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
+						originTaskGroupId, request, memberId);
+
+		assertAll(
+				() -> {
+					assertThat(modified.getIsRepeated()).isFalse();
+					assertThat(modified.getMonthlyGoal()).isEmpty();
+					assertThat(modified.getWeeklyGoal()).isEmpty();
+					assertThat(modified.getRepetitionPattern()).isEmpty();
+				});
+	}
+
+	@Test
+	@DisplayName("반복이 있는 할 일의 할 일 그룹을 수정하고 반복을 재생성한다.")
+	void modifyTaskGroupAndMakeRepeatableWithRepeatableTask() {
+		Long memberId = 1L;
+		Long originTaskGroupId = 2L;
 		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
 		TaskRepetitionUpdateRequest repetitionRequest =
 				new TaskRepetitionUpdateRequest(
@@ -161,10 +190,61 @@ class TaskGroupServiceTest {
 		origin.setRepetitionPattern(originRepetitionPattern);
 		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
 				.willReturn(Optional.empty());
+		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
 		TaskGroup modified =
 				taskGroupService.modifyTaskGroupAndMakeRepeatable(
-						origin, request, repetitionRequest, memberId);
+						originTaskGroupId, request, repetitionRequest, memberId);
+
+		assertAll(
+				() -> {
+					assertThat(modified.getIsRepeated()).isTrue();
+					assertThat(modified.getMonthlyGoal()).isEmpty();
+					assertThat(modified.getWeeklyGoal()).isEmpty();
+					assertThat(modified.getRepetitionPattern()).isNotEmpty();
+					TaskRepetitionPattern modifiedRepetitionPattern =
+							modified.getRepetitionPattern().get();
+					assertThat(modifiedRepetitionPattern.getRepetitionType())
+							.isEqualTo(repetitionRequest.repetitionType());
+					assertThat(modifiedRepetitionPattern.getRepetitionPeriod())
+							.isEqualTo(repetitionRequest.repetitionPeriod());
+					assertThat(modifiedRepetitionPattern.getRepetitionStartDate())
+							.isEqualTo(repetitionRequest.repetitionStartDate());
+					assertThat(modifiedRepetitionPattern.getRepetitionEndDate())
+							.isEqualTo(repetitionRequest.repetitionEndDate());
+					assertThat(modifiedRepetitionPattern.getMonthOfYear()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getDayOfMonth()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getWeekNumber()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getWeekday()).isEmpty();
+					assertThat(modifiedRepetitionPattern.getWeekdayBit()).isEmpty();
+				});
+	}
+
+	@Test
+	@DisplayName("반복이 없는 할 일의 그룹을 수정하고 반복을 생성한다.")
+	void modifyTaskGroupAndMakeRepeatableWithNonRepeatableTask() {
+		Long memberId = 1L;
+		Long originTaskGroupId = 2L;
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskRepetitionUpdateRequest repetitionRequest =
+				new TaskRepetitionUpdateRequest(
+						TaskRepetitionType.DAILY,
+						1,
+						LocalDate.of(2024, 1, 1),
+						LocalDate.of(2024, 3, 31),
+						null,
+						null,
+						null,
+						null,
+						null);
+		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
+		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
+				.willReturn(Optional.empty());
+		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
+
+		TaskGroup modified =
+				taskGroupService.modifyTaskGroupAndMakeRepeatable(
+						originTaskGroupId, request, repetitionRequest, memberId);
 
 		assertAll(
 				() -> {

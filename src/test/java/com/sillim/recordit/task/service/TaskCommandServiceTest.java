@@ -124,13 +124,14 @@ class TaskCommandServiceTest {
 		Long taskGroupId = 4L;
 		Long newCalendarId = 5L;
 		TaskRepetitionUpdateRequest repetitionRequest = mock(TaskRepetitionUpdateRequest.class);
+		given(repetitionRequest.repetitionStartDate()).willReturn(LocalDate.of(2024, 1, 1));
 
 		TaskGroupUpdateRequest taskGroupRequest = mock(TaskGroupUpdateRequest.class);
 		TaskUpdateRequest request =
 				new TaskUpdateRequest(
 						"(수정) 회의록 작성",
 						"(수정) 프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 1, 1),
+						LocalDate.of(2024, 1, 10),
 						"ff40d974",
 						newCalendarId,
 						true,
@@ -160,7 +161,7 @@ class TaskCommandServiceTest {
 
 		given(
 						taskGroupService.modifyTaskGroupAndMakeRepeatable(
-								any(TaskGroup.class),
+								anyLong(),
 								any(TaskGroupUpdateRequest.class),
 								any(TaskRepetitionUpdateRequest.class),
 								anyLong()))
