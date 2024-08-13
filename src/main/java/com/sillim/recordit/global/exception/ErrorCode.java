@@ -67,6 +67,7 @@ public enum ErrorCode {
 	INVALID_START_DAY_OF_WEEK("ERR_WEEKLY_GOAL_002", "주 목표 기간의 시작일은 일요일이어야 합니다."),
 	INVALID_DIFFERENCE_OF_DATE("ERR_WEEKLY_GOAL_003", "주 목표 기간의 시작일과 종료일은 6일 차이여야 합니다."),
 	WEEKLY_GOAL_ACCESS_DENIED("ERR_WEEKLY_GOAL_004", "해당 사용자는 접근할 수 없는 주 목표입니다."),
+	WEEK_NOT_CONTAINS_DATE("ERR_WEEKLY_GOAL_005", "해당 주차에 존재하지 않는 날짜입니다."),
 
 	// goal
 	NULL_GOAL_TITLE("ERR_GOAL_001", "목표 제목은 null일 수 없습니다."),

@@ -9,9 +9,9 @@ import com.sillim.recordit.goal.dto.response.MonthlyGoalListResponse;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.goal.service.MonthlyGoalUpdateService;
 import com.sillim.recordit.member.domain.Member;
+import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,8 +38,8 @@ public class MonthlyGoalController {
 			@Validated @RequestBody final MonthlyGoalUpdateRequest request,
 			@CurrentMember final Member member) {
 
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(monthlyGoalUpdateService.add(request, member.getId()));
+		Long monthlyGoalId = monthlyGoalUpdateService.add(request, member.getId());
+		return ResponseEntity.created(URI.create("/api/v1/goals/months/" + monthlyGoalId)).build();
 	}
 
 	@PutMapping("/months/{monthlyGoalId}")
