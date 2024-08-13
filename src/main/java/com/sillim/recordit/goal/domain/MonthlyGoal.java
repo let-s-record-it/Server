@@ -1,6 +1,8 @@
 package com.sillim.recordit.goal.domain;
 
 import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.goal.domain.vo.GoalColorHex;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
@@ -21,13 +23,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE monthly_goal SET deleted = true WHERE monthly_goal_id = ?")
 @SQLRestriction("deleted = false")
 public class MonthlyGoal extends BaseTime {
 
@@ -89,8 +89,14 @@ public class MonthlyGoal extends BaseTime {
 		this.achieved = status;
 	}
 
-	public boolean isOwnedBy(Long memberId) {
-		return member.equalsId(memberId);
+	public void validateAuthenticatedMember(Long memberId) {
+		if (!isOwnedBy(memberId)) {
+			throw new InvalidRequestException(ErrorCode.MONTHLY_GOAL_ACCESS_DENIED);
+		}
+	}
+
+	public void remove() {
+		this.deleted = true;
 	}
 
 	public String getTitle() {
@@ -111,5 +117,9 @@ public class MonthlyGoal extends BaseTime {
 
 	public String getColorHex() {
 		return colorHex.getColorHex();
+	}
+
+	private boolean isOwnedBy(Long memberId) {
+		return this.member.equalsId(memberId);
 	}
 }
