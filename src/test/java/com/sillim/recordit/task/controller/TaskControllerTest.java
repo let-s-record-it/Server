@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -342,7 +343,7 @@ public class TaskControllerTest extends RestDocsTest {
 		perform.andDo(print())
 				.andDo(
 						document(
-								"modify-one",
+								"modify-one-task",
 								getDocumentRequest(),
 								getDocumentResponse(),
 								pathParameters(
@@ -391,6 +392,34 @@ public class TaskControllerTest extends RestDocsTest {
 
 		perform.andExpect(status().isNoContent());
 
-		perform.andDo(print()).andDo(document("modify-one", getDocumentRequest()));
+		perform.andDo(print()).andDo(document("modify-one-task", getDocumentRequest()));
+	}
+
+	@Test
+	@DisplayName("선택한 할 일의 속한 할 일 그룹 내의 모든 할 일을 삭제한다.")
+	void deleteAll() throws Exception {
+		Long calendarId = 1L;
+		Long taskId = 2L;
+
+		ResultActions perform =
+				mockMvc.perform(
+						delete(
+										"/api/v1/calendars/{calendarId}/tasks/{taskId}/remove-all",
+										calendarId,
+										taskId)
+								.contentType(MediaType.APPLICATION_JSON));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"delete-all-tasks",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								pathParameters(
+										parameterWithName("calendarId").description("캘린더 ID"),
+										parameterWithName("taskId")
+												.description("삭제를 위해 선택한 할 일의 ID"))));
 	}
 }

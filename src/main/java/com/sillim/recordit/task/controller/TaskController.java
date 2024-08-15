@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -84,6 +85,17 @@ public class TaskController {
 			@CurrentMember Member member) {
 
 		taskCommandService.modifyOne(request, calendarId, taskId, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{taskId}/remove-all")
+	public ResponseEntity<Void> removeAll(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		taskCommandService.removeAll(calendarId, taskId, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}

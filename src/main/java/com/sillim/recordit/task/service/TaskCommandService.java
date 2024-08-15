@@ -128,6 +128,19 @@ public class TaskCommandService {
 				newTaskGroup);
 	}
 
+	public void removeAll(final Long calendarId, final Long selectedTaskId, final Long memberId) {
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
+
+		Task selectedTask =
+				taskRepository
+						.findByIdAndCalendarId(selectedTaskId, calendarId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		TaskGroup taskGroup = selectedTask.getTaskGroup();
+
+		taskRepository.deleteAllByTaskGroupId(taskGroup.getId());
+	}
+
 	private void addRepeatingTasks(
 			final Consumer<TemporalAmount> temporalToTask, final TaskGroup taskGroup) {
 
