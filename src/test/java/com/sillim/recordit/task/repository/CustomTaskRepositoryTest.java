@@ -9,6 +9,7 @@ import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.fixture.TaskFixture;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,6 +69,28 @@ public class CustomTaskRepositoryTest {
 		taskRepository.deleteAllByTaskGroupId(taskGroup.getId());
 
 		assertThat(em.find(Task.class, saved.get(0).getId())).isNull();
+		assertThat(em.find(Task.class, saved.get(1).getId())).isNull();
+	}
+
+	@Test
+	@DisplayName("해당 할 일 그룹에 속하는 모든 할 일 중 특정 날짜 이후의 할일을 삭제한다.")
+	void deleteAllByTaskGroupIdAndDateAfterOrEqual() {
+
+		List<Task> saved =
+				List.of(
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 8, 12), calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 8, 13), calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 8, 14), calendar, taskGroup));
+		saved.forEach(em::persist);
+
+		taskRepository.deleteAllByTaskGroupIdAndDateAfterOrEqual(
+				taskGroup.getId(), LocalDate.of(2024, 8, 13));
+
+		assertThat(em.find(Task.class, saved.get(0).getId())).isNotNull();
+		assertThat(em.find(Task.class, saved.get(1).getId())).isNull();
 		assertThat(em.find(Task.class, saved.get(1).getId())).isNull();
 	}
 }

@@ -65,7 +65,7 @@ public class TaskController {
 	}
 
 	@PutMapping("/{taskId}/modify-all")
-	public ResponseEntity<Void> modifyAll(
+	public ResponseEntity<Void> modifyAllTasks(
 			@Validated @RequestBody TaskUpdateRequest request,
 			@PathVariable Long calendarId,
 			@PathVariable Long taskId,
@@ -78,7 +78,7 @@ public class TaskController {
 	}
 
 	@PutMapping("/{taskId}/modify-one")
-	public ResponseEntity<Void> modifyOne(
+	public ResponseEntity<Void> modifyOneTask(
 			@Validated @RequestBody TaskUpdateRequest request,
 			@PathVariable Long calendarId,
 			@PathVariable Long taskId,
@@ -90,12 +90,34 @@ public class TaskController {
 	}
 
 	@DeleteMapping("/{taskId}/remove-all")
-	public ResponseEntity<Void> removeAll(
+	public ResponseEntity<Void> removeAllTasks(
 			@PathVariable Long calendarId,
 			@PathVariable Long taskId,
 			@CurrentMember Member member) {
 
 		taskCommandService.removeAll(calendarId, taskId, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{taskId}/remove-after-all")
+	public ResponseEntity<Void> removeAfterAllTasks(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		taskCommandService.removeAllAfterDate(calendarId, taskId, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{taskId}/remove-one")
+	public ResponseEntity<Void> removeOneTask(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		taskCommandService.removeOne(calendarId, taskId, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}

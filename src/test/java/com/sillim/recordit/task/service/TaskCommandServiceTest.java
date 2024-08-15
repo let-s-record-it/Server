@@ -310,4 +310,51 @@ class TaskCommandServiceTest {
 
 		then(taskRepository).should(times(1)).deleteAllByTaskGroupId(anyLong());
 	}
+
+	@Test
+	@DisplayName("선택한 할 일이 속한 할 일 그룹 내의 모든 할 일 중 선택한 날짜 이후의 할 일을 삭제한다.")
+	void removeAfterAll() {
+		Long calendarId = 1L;
+		Long selectedTaskId = 2L;
+		Long memberId = 3L;
+		Long taskGroupId = 4L;
+
+		calendar = spy(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
+
+		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
+		given(taskGroup.getId()).willReturn(taskGroupId);
+
+		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
+				.willReturn(Optional.of(selectedTask));
+
+		taskCommandService.removeAllAfterDate(calendarId, selectedTaskId, memberId);
+
+		then(taskRepository)
+				.should(times(1))
+				.deleteAllByTaskGroupIdAndDateAfterOrEqual(anyLong(), any(LocalDate.class));
+	}
+
+	@Test
+	@DisplayName("선택한 할 일을 삭제한다.")
+	void removeOne() {
+		Long calendarId = 1L;
+		Long selectedTaskId = 2L;
+		Long memberId = 3L;
+
+		calendar = spy(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
+
+		TaskGroup taskGroup = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
+		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
+				.willReturn(Optional.of(selectedTask));
+
+		taskCommandService.removeOne(calendarId, selectedTaskId, memberId);
+
+		assertThat(selectedTask.isDeleted()).isTrue();
+	}
 }
