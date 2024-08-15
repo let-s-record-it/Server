@@ -1,5 +1,7 @@
 package com.sillim.recordit.task.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -123,9 +125,9 @@ class TaskCommandServiceTest {
 		Long memberId = 3L;
 		Long taskGroupId = 4L;
 		Long newCalendarId = 5L;
+
 		TaskRepetitionUpdateRequest repetitionRequest = mock(TaskRepetitionUpdateRequest.class);
 		given(repetitionRequest.repetitionStartDate()).willReturn(LocalDate.of(2024, 1, 1));
-
 		TaskGroupUpdateRequest taskGroupRequest = mock(TaskGroupUpdateRequest.class);
 		TaskUpdateRequest request =
 				new TaskUpdateRequest(
@@ -171,6 +173,117 @@ class TaskCommandServiceTest {
 				request, calendarId, selectedTaskId, memberId);
 
 		then(taskRepository).should(times(1)).deleteAllByTaskGroupId(anyLong());
+		then(taskRepository).should(times(91)).save(any(Task.class));
+	}
+
+	@Test
+	@DisplayName("선택한 할 일 하나를 수정한다.")
+	void modifyOne() {
+		Long calendarId = 1L;
+		Long selectedTaskId = 2L;
+		Long memberId = 3L;
+		Long taskGroupId = 4L;
+		Long newCalendarId = 5L;
+
+		TaskGroupUpdateRequest taskGroupRequest = mock(TaskGroupUpdateRequest.class);
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						"(수정) 회의록 작성",
+						"(수정) 프로젝트 회의록 작성하기",
+						LocalDate.of(2024, 1, 10),
+						"ff40d974",
+						newCalendarId,
+						false,
+						null,
+						taskGroupRequest);
+
+		calendar = spy(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
+
+		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
+		given(taskGroup.getId()).willReturn(taskGroupId);
+
+		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
+				.willReturn(Optional.of(selectedTask));
+
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		given(calendarService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
+		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
+
+		TaskGroup newTaskGroup = new TaskGroup(null, null);
+
+		given(
+						taskGroupService.modifyTaskGroup(
+								anyLong(), any(TaskGroupUpdateRequest.class), anyLong()))
+				.willReturn(newTaskGroup);
+
+		taskCommandService.modifyOne(request, calendarId, selectedTaskId, memberId);
+
+		assertAll(
+				() -> {
+					assertThat(selectedTask.getTitle()).isEqualTo(request.newTitle());
+					assertThat(selectedTask.getDescription()).isEqualTo(request.newDescription());
+					assertThat(selectedTask.getDate()).isEqualTo(request.date());
+					assertThat(selectedTask.getColorHex()).isEqualTo(request.newColorHex());
+					assertThat(selectedTask.getCalendar()).isEqualTo(newCalendar);
+					assertThat(selectedTask.getTaskGroup().getMonthlyGoal()).isEmpty();
+					assertThat(selectedTask.getTaskGroup().getWeeklyGoal()).isEmpty();
+				});
+	}
+
+	@Test
+	@DisplayName("선택한 할 일의 수정사항을 반영하여 새로운 반복 패턴에 맞게 할 일들을 추가한다.")
+	void modifyOneAndMakeRepeatable() {
+		Long calendarId = 1L;
+		Long selectedTaskId = 2L;
+		Long memberId = 3L;
+		Long taskGroupId = 4L;
+		Long newCalendarId = 5L;
+
+		TaskRepetitionUpdateRequest repetitionRequest = mock(TaskRepetitionUpdateRequest.class);
+		given(repetitionRequest.repetitionStartDate()).willReturn(LocalDate.of(2024, 1, 1));
+		TaskGroupUpdateRequest taskGroupRequest = mock(TaskGroupUpdateRequest.class);
+		TaskUpdateRequest request =
+				new TaskUpdateRequest(
+						"(수정) 회의록 작성",
+						"(수정) 프로젝트 회의록 작성하기",
+						LocalDate.of(2024, 1, 10),
+						"ff40d974",
+						newCalendarId,
+						true,
+						repetitionRequest,
+						taskGroupRequest);
+
+		calendar = spy(calendar);
+		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
+
+		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
+		given(taskGroup.getId()).willReturn(taskGroupId);
+
+		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
+				.willReturn(Optional.of(selectedTask));
+
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		given(calendarService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
+		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
+
+		TaskGroup newTaskGroup = new TaskGroup(null, null);
+		newTaskGroup.setRepetitionPattern(TaskRepetitionPatternFixture.DAILY.get(taskGroup));
+
+		given(
+						taskGroupService.modifyTaskGroupAndMakeRepeatable(
+								anyLong(),
+								any(TaskGroupUpdateRequest.class),
+								any(TaskRepetitionUpdateRequest.class),
+								anyLong()))
+				.willReturn(newTaskGroup);
+
+		taskCommandService.modifyOne(request, calendarId, selectedTaskId, memberId);
+
 		then(taskRepository).should(times(91)).save(any(Task.class));
 	}
 }

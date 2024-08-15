@@ -63,6 +63,24 @@ public class TaskGroupService {
 	}
 
 	@Transactional
+	public TaskGroup modifyTaskGroup(
+			final Long taskGroupId, final TaskGroupUpdateRequest request, final Long memberId) {
+		TaskGroup taskGroup =
+				taskGroupRepository
+						.findById(taskGroupId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
+		MonthlyGoal monthlyGoal =
+				monthlyGoalQueryService
+						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
+						.orElse(null);
+		WeeklyGoal weeklyGoal = null;
+		taskGroup.modify(monthlyGoal, weeklyGoal);
+
+		return taskGroup;
+	}
+
+	@Transactional
 	public TaskGroup modifyTaskGroupAndMakeNonRepeatable(
 			final Long taskGroupId, final TaskGroupUpdateRequest request, final Long memberId) {
 		TaskGroup taskGroup =
