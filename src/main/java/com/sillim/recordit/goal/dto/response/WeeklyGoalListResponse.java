@@ -5,7 +5,7 @@ import java.util.List;
 
 public record WeeklyGoalListResponse(Integer week, List<WeeklyGoalResponse> weeklyGoals) {
 
-	public static WeeklyGoalListResponse from(Integer week, List<WeeklyGoal> weeklyGoals) {
+	public static WeeklyGoalListResponse of(Integer week, List<WeeklyGoal> weeklyGoals) {
 
 		return new WeeklyGoalListResponse(
 				week, weeklyGoals.stream().map(WeeklyGoalResponse::from).toList());

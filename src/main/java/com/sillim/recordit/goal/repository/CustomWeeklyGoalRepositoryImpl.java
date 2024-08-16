@@ -26,8 +26,20 @@ public class CustomWeeklyGoalRepositoryImpl extends QuerydslRepositorySupport
 								.member
 								.id
 								.eq(memberId)
-								.and(weeklyGoal.period.startDate.year().eq(year))
-								.and(weeklyGoal.period.startDate.month().eq(month)))
+								.and(
+										weeklyGoal
+												.period
+												.startDate
+												.year()
+												.eq(year)
+												.and(weeklyGoal.period.startDate.month().eq(month)))
+								.or(
+										weeklyGoal
+												.period
+												.endDate
+												.year()
+												.eq(year)
+												.and(weeklyGoal.period.endDate.month().eq(month))))
 				.fetch();
 	}
 }
