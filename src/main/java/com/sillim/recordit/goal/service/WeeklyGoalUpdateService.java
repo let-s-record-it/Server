@@ -1,8 +1,9 @@
 package com.sillim.recordit.goal.service;
 
-import com.sillim.recordit.goal.domain.WeeklyGoal;
+import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.dto.request.WeeklyGoalUpdateRequest;
 import com.sillim.recordit.goal.repository.WeeklyGoalRepository;
+import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,13 +14,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class WeeklyGoalUpdateService {
 
+	private final MonthlyGoalQueryService monthlyGoalQueryService;
 	private final MemberQueryService memberQueryService;
 	private final WeeklyGoalRepository weeklyGoalRepository;
 
 	public Long addWeeklyGoal(final WeeklyGoalUpdateRequest request, final Long memberId) {
-		WeeklyGoal saved =
-				weeklyGoalRepository.save(
-						request.toEntity(memberQueryService.findByMemberId(memberId)));
-		return saved.getId();
+
+		Member member = memberQueryService.findByMemberId(memberId);
+		if (request.relatedMonthlyGoalId() == null) {
+
+			return weeklyGoalRepository.save(request.toEntity(member)).getId();
+		}
+		MonthlyGoal relatedMonthlyGoal =
+				monthlyGoalQueryService.searchByIdAndCheckAuthority(
+						request.relatedMonthlyGoalId(), memberId);
+		return weeklyGoalRepository
+				.save(
+						request.toEntity(
+								relatedMonthlyGoal, memberQueryService.findByMemberId(memberId)))
+				.getId();
 	}
 }
