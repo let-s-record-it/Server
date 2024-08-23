@@ -1,6 +1,8 @@
 package com.sillim.recordit.goal.domain;
 
 import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.goal.domain.vo.GoalColorHex;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
@@ -79,6 +81,12 @@ public class WeeklyGoal extends BaseTime {
 		this.deleted = false;
 	}
 
+	public void validateAuthenticatedMember(Long memberId) {
+		if (!isOwnedBy(memberId)) {
+			throw new InvalidRequestException(ErrorCode.WEEKLY_GOAL_ACCESS_DENIED);
+		}
+	}
+
 	public String getTitle() {
 		return title.getTitle();
 	}
@@ -105,5 +113,9 @@ public class WeeklyGoal extends BaseTime {
 
 	public Optional<MonthlyGoal> getRelatedMonthlyGoal() {
 		return Optional.ofNullable(relatedMonthlyGoal);
+	}
+
+	private boolean isOwnedBy(Long memberId) {
+		return this.member.equalsId(memberId);
 	}
 }

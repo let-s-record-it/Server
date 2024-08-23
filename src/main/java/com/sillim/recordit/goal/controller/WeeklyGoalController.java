@@ -3,6 +3,7 @@ package com.sillim.recordit.goal.controller;
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.dto.request.WeeklyGoalUpdateRequest;
+import com.sillim.recordit.goal.dto.response.WeeklyGoalDetailsResponse;
 import com.sillim.recordit.goal.dto.response.WeeklyGoalListResponse;
 import com.sillim.recordit.goal.service.WeeklyGoalQueryService;
 import com.sillim.recordit.goal.service.WeeklyGoalUpdateService;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/goals/weeks")
 public class WeeklyGoalController {
 
-	private static final int FIST_WEEK = 1;
+	private static final int FIRST_WEEK = 1;
 
 	private final WeeklyGoalUpdateService weeklyGoalUpdateService;
 	private final WeeklyGoalQueryService weeklyGoalQueryService;
@@ -63,11 +65,20 @@ public class WeeklyGoalController {
 						.toList());
 	}
 
+	@GetMapping("/{id}")
+	public ResponseEntity<WeeklyGoalDetailsResponse> getWeeklyGoalDetails(
+			@PathVariable final Long id, @CurrentMember final Member member) {
+
+		return ResponseEntity.ok(
+				WeeklyGoalDetailsResponse.from(
+						weeklyGoalQueryService.searchByIdAndCheckAuthority(id, member.getId())));
+	}
+
 	private Integer changeWeekIfMonthOfStartDateIsNotEqual(
 			final WeeklyGoal weeklyGoal, final Integer currentMonth) {
 		if (weeklyGoal.getStartDate().getMonthValue() == currentMonth) {
 			return weeklyGoal.getWeek();
 		}
-		return FIST_WEEK;
+		return FIRST_WEEK;
 	}
 }
