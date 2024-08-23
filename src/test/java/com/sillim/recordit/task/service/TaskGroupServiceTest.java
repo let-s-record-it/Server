@@ -58,7 +58,7 @@ class TaskGroupServiceTest {
 	@DisplayName("반복이 있는 할 일 그룹을 추가할 수 있다.")
 	void addRepeatingTaskGroup() {
 		Long memberId = 1L;
-		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(1L, null);
 		TaskRepetitionUpdateRequest repetitionRequest =
 				new TaskRepetitionUpdateRequest(
 						TaskRepetitionType.DAILY,
@@ -70,7 +70,7 @@ class TaskGroupServiceTest {
 						null,
 						null,
 						null);
-		TaskGroup expected = new TaskGroup(null, null);
+		TaskGroup expected = new TaskGroup(mock(MonthlyGoal.class), null);
 		expected.setRepetitionPattern(
 				TaskRepetitionPatternFactory.create(
 						repetitionRequest.repetitionType(),
@@ -118,7 +118,7 @@ class TaskGroupServiceTest {
 	void modifyTaskGroupAndMakeNonRepeatableWithRepeatableTask() {
 		Long memberId = 1L;
 		Long originTaskGroupId = 2L;
-		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(1L, 2L);
 		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
 		origin.setRepetitionPattern(TaskRepetitionPatternFixture.DAILY.get(origin));
 		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
@@ -141,7 +141,7 @@ class TaskGroupServiceTest {
 	void modifyTaskGroupAndMakeNonRepeatableWithNonRepeatableTask() {
 		Long memberId = 1L;
 		Long originTaskGroupId = 2L;
-		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
+		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, 1L);
 		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
 		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
