@@ -21,13 +21,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE weekly_goal SET deleted = true WHERE weekly_goal_id = ?")
 @SQLRestriction("deleted = false")
 public class WeeklyGoal extends BaseTime {
 
@@ -60,13 +58,14 @@ public class WeeklyGoal extends BaseTime {
 	public WeeklyGoal(
 			final String title,
 			final String description,
+			final Integer week,
 			final LocalDate startDate,
 			final LocalDate endDate,
 			final String colorHex,
 			final Member member) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
-		this.period = new WeeklyGoalPeriod(startDate, endDate);
+		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
 		this.colorHex = new GoalColorHex(colorHex);
 		this.achieved = false;
 		this.member = member;
@@ -76,12 +75,13 @@ public class WeeklyGoal extends BaseTime {
 	public void modify(
 			final String newTitle,
 			final String newDescription,
+			final Integer week,
 			final LocalDate newStartDate,
 			final LocalDate newEndDate,
 			final String newColorHex) {
 		this.title = new GoalTitle(newTitle);
 		this.description = new GoalDescription(newDescription);
-		this.period = new WeeklyGoalPeriod(newStartDate, newEndDate);
+		this.period = new WeeklyGoalPeriod(week, newStartDate, newEndDate);
 		this.colorHex = new GoalColorHex(newColorHex);
 	}
 

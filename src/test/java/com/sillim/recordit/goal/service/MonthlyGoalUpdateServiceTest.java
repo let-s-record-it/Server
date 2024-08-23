@@ -75,7 +75,7 @@ public class MonthlyGoalUpdateServiceTest {
 						LocalDate.of(2024, 5, 31),
 						"ff123456");
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(monthlyGoalQueryService.searchById(eq(monthlyGoalId), eq(memberId)))
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
 				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.modify(request, monthlyGoalId, memberId);
@@ -97,7 +97,7 @@ public class MonthlyGoalUpdateServiceTest {
 		Long monthlyGoalId = 2L;
 		Boolean status = true;
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(monthlyGoalQueryService.searchById(eq(monthlyGoalId), eq(memberId)))
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
 				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
@@ -111,11 +111,11 @@ public class MonthlyGoalUpdateServiceTest {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		given(monthlyGoalQueryService.searchById(eq(monthlyGoalId), eq(memberId)))
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
 				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.remove(monthlyGoalId, memberId);
 
-		then(monthlyGoalRepository).should(times(1)).delete(eq(monthlyGoal));
+		assertThat(monthlyGoal.isDeleted()).isTrue();
 	}
 }

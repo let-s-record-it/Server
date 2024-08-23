@@ -4,6 +4,7 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
+import com.sillim.recordit.goal.dto.RelatedGoals;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPatternFactory;
@@ -27,12 +28,11 @@ public class TaskGroupService {
 	@Transactional
 	public TaskGroup addNonRepeatingTaskGroup(
 			final TaskGroupUpdateRequest request, final Long memberId) {
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService
-						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
-						.orElse(null);
-		WeeklyGoal weeklyGoal = null;
-		return taskGroupRepository.save(new TaskGroup(monthlyGoal, weeklyGoal));
+		RelatedGoals relatedGoals =
+				getRelatedGoals(
+						request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(), memberId);
+		TaskGroup taskGroup = new TaskGroup(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
+		return taskGroupRepository.save(taskGroup);
 	}
 
 	@Transactional
@@ -40,12 +40,10 @@ public class TaskGroupService {
 			final TaskGroupUpdateRequest request,
 			final TaskRepetitionUpdateRequest repetitionRequest,
 			final Long memberId) {
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService
-						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
-						.orElse(null);
-		WeeklyGoal weeklyGoal = null;
-		TaskGroup taskGroup = new TaskGroup(monthlyGoal, weeklyGoal);
+		RelatedGoals relatedGoals =
+				getRelatedGoals(
+						request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(), memberId);
+		TaskGroup taskGroup = new TaskGroup(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
 
 		taskGroup.setRepetitionPattern(
 				TaskRepetitionPatternFactory.create(
@@ -70,12 +68,10 @@ public class TaskGroupService {
 						.findById(taskGroupId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService
-						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
-						.orElse(null);
-		WeeklyGoal weeklyGoal = null;
-		taskGroup.modify(monthlyGoal, weeklyGoal);
+		RelatedGoals relatedGoals =
+				getRelatedGoals(
+						request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(), memberId);
+		taskGroup.modify(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
 
 		return taskGroup;
 	}
@@ -88,12 +84,10 @@ public class TaskGroupService {
 						.findById(taskGroupId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService
-						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
-						.orElse(null);
-		WeeklyGoal weeklyGoal = null;
-		taskGroup.modify(monthlyGoal, weeklyGoal);
+		RelatedGoals relatedGoals =
+				getRelatedGoals(
+						request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(), memberId);
+		taskGroup.modify(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
 
 		if (taskGroup.getIsRepeated()) {
 			taskGroup.removeRepetitionPattern();
@@ -113,12 +107,10 @@ public class TaskGroupService {
 						.findById(taskGroupId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService
-						.searchOptionalById(request.relatedMonthlyGoalId(), memberId)
-						.orElse(null);
-		WeeklyGoal weeklyGoal = null;
-		taskGroup.modify(monthlyGoal, weeklyGoal);
+		RelatedGoals relatedGoals =
+				getRelatedGoals(
+						request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(), memberId);
+		taskGroup.modify(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
 
 		if (taskGroup.getIsRepeated()) {
 			taskGroup.removeRepetitionPattern();
@@ -137,5 +129,25 @@ public class TaskGroupService {
 						repetitionRequest.weekdayBit(),
 						taskGroup));
 		return taskGroup;
+	}
+
+	private RelatedGoals getRelatedGoals(
+			final Long monthlyGoalId, final Long weeklyGoalId, final Long memberId) {
+		if (monthlyGoalId == null && weeklyGoalId == null) {
+			return RelatedGoals.empty();
+		}
+		if (monthlyGoalId == null) {
+			WeeklyGoal weeklyGoal = null;
+			return RelatedGoals.from(weeklyGoal);
+		}
+		if (weeklyGoalId == null) {
+			MonthlyGoal monthlyGoal =
+					monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
+			return RelatedGoals.from(monthlyGoal);
+		}
+		MonthlyGoal monthlyGoal =
+				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
+		WeeklyGoal weeklyGoal = null;
+		return RelatedGoals.of(monthlyGoal, weeklyGoal);
 	}
 }

@@ -3,7 +3,6 @@ package com.sillim.recordit.task.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -44,8 +43,6 @@ class TaskGroupServiceTest {
 		Long memberId = 1L;
 		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
 		TaskGroup expected = new TaskGroup(null, null);
-		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
-				.willReturn(Optional.empty());
 		given(taskGroupRepository.save(any(TaskGroup.class))).willReturn(expected);
 
 		TaskGroup saved = taskGroupService.addNonRepeatingTaskGroup(request, memberId);
@@ -86,8 +83,6 @@ class TaskGroupServiceTest {
 						repetitionRequest.weekday(),
 						repetitionRequest.weekdayBit(),
 						expected));
-		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
-				.willReturn(Optional.empty());
 		given(taskGroupRepository.save(any(TaskGroup.class))).willReturn(expected);
 
 		TaskGroup saved =
@@ -126,8 +121,6 @@ class TaskGroupServiceTest {
 		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
 		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
 		origin.setRepetitionPattern(TaskRepetitionPatternFixture.DAILY.get(origin));
-		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
-				.willReturn(Optional.empty());
 		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
 		TaskGroup modified =
@@ -150,8 +143,6 @@ class TaskGroupServiceTest {
 		Long originTaskGroupId = 2L;
 		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
 		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
-		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
-				.willReturn(Optional.empty());
 		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
 		TaskGroup modified =
@@ -188,8 +179,6 @@ class TaskGroupServiceTest {
 		TaskRepetitionPattern originRepetitionPattern =
 				TaskRepetitionPatternFixture.WEEKLY.get(origin);
 		origin.setRepetitionPattern(originRepetitionPattern);
-		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
-				.willReturn(Optional.empty());
 		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
 		TaskGroup modified =
@@ -238,8 +227,6 @@ class TaskGroupServiceTest {
 						null,
 						null);
 		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
-		given(monthlyGoalQueryService.searchOptionalById(any(), eq(memberId)))
-				.willReturn(Optional.empty());
 		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
 		TaskGroup modified =
