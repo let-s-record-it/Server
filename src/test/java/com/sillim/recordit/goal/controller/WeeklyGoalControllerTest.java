@@ -4,6 +4,7 @@ import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentR
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -11,6 +12,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -168,5 +170,38 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								queryParameters(
 										parameterWithName("year").description("조회할 연도"),
 										parameterWithName("month").description("조회할 월"))));
+	}
+
+	@Test
+	@DisplayName("특정 id의 주 목표를 상세하게 조회한다.")
+	void weeklyGoalDetailsTest() throws Exception {
+
+		WeeklyGoal weeklyGoal = spy(WeeklyGoalFixture.DEFAULT.getWithMember(member));
+		given(weeklyGoal.getId()).willReturn(1L);
+
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(anyLong(), any()))
+				.willReturn(weeklyGoal);
+
+		ResultActions perform =
+				mockMvc.perform(get("/api/v1/goals/weeks/{id}", 1L).headers(authorizationHeader()));
+
+		perform.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(weeklyGoal.getId()))
+				.andExpect(jsonPath("$.title").value(weeklyGoal.getTitle()))
+				.andExpect(jsonPath("$.week").value(weeklyGoal.getWeek()))
+				.andExpect(jsonPath("$.startDate").value(weeklyGoal.getStartDate().toString()))
+				.andExpect(jsonPath("$.endDate").value(weeklyGoal.getEndDate().toString()))
+				.andExpect(jsonPath("$.description").value(weeklyGoal.getDescription()))
+				.andExpect(jsonPath("$.colorHex").value(weeklyGoal.getColorHex()));
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"weekly-goal-details",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								requestHeaders(authorizationDesc()),
+								pathParameters(
+										parameterWithName("id").description("조회할 주 목표 id"))));
 	}
 }

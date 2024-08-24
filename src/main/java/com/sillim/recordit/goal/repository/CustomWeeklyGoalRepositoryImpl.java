@@ -6,6 +6,7 @@ import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -41,5 +42,15 @@ public class CustomWeeklyGoalRepositoryImpl extends QuerydslRepositorySupport
 												.eq(year)
 												.and(weeklyGoal.period.endDate.month().eq(month))))
 				.fetch();
+	}
+
+	@Override
+	public Optional<WeeklyGoal> findWeeklyGoalById(Long id) {
+		return Optional.ofNullable(
+				selectFrom(weeklyGoal)
+						.leftJoin(weeklyGoal.relatedMonthlyGoal)
+						.fetchJoin()
+						.where(weeklyGoal.id.eq(id))
+						.fetchOne());
 	}
 }

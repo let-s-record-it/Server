@@ -8,6 +8,7 @@ import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -113,5 +114,21 @@ public class WeeklyGoalRepositoryTest {
 						assertThat(found.getEndDate().getMonthValue()).isEqualTo(expectedMonth);
 					});
 		}
+	}
+
+	@Test
+	@DisplayName("id에 해당하는 주 목표 레코드를 조회한다.")
+	void findWeeklyGoalByIdTest() {
+		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		WeeklyGoal saved =
+				weeklyGoalRepository.save(WeeklyGoalFixture.DEFAULT.getWithMember(member));
+
+		Optional<WeeklyGoal> found = weeklyGoalRepository.findWeeklyGoalById(saved.getId());
+
+		assertThat(found).isNotEmpty();
+		assertThat(found.get())
+				.usingRecursiveComparison()
+				.ignoringFields("id", "member", "createdAt", "modifiedAt")
+				.isEqualTo(expected);
 	}
 }

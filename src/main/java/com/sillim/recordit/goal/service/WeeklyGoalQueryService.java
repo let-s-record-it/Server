@@ -1,5 +1,7 @@
 package com.sillim.recordit.goal.service;
 
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.repository.WeeklyGoalRepository;
 import java.util.List;
@@ -18,5 +20,17 @@ public class WeeklyGoalQueryService {
 			final Integer year, final Integer month, final Long memberId) {
 
 		return weeklyGoalRepository.findWeeklyGoalInMonth(year, month, memberId);
+	}
+
+	public WeeklyGoal searchByIdAndCheckAuthority(final Long weeklyGoalId, final Long memberId) {
+
+		WeeklyGoal weeklyGoal =
+				weeklyGoalRepository
+						.findWeeklyGoalById(weeklyGoalId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.WEEKLY_GOAL_NOT_FOUND));
+		weeklyGoal.validateAuthenticatedMember(memberId);
+
+		return weeklyGoal;
 	}
 }
