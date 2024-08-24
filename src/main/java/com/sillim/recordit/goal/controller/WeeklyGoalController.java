@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -82,6 +83,16 @@ public class WeeklyGoalController {
 			@CurrentMember final Member member) {
 
 		weeklyGoalUpdateService.modifyWeeklyGoal(request, id, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/{id}")
+	public ResponseEntity<Void> changeWeeklyGoalAchieveStatus(
+			@PathVariable final Long id,
+			@RequestParam final Boolean status,
+			@CurrentMember final Member member) {
+
+		weeklyGoalUpdateService.changeAchieveStatus(id, status, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
