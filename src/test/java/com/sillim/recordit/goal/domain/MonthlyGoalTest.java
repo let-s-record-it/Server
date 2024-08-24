@@ -2,6 +2,7 @@ package com.sillim.recordit.goal.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
@@ -38,9 +39,16 @@ class MonthlyGoalTest {
 	@DisplayName("월 목표의 달성 상태를 변경할 수 있다.")
 	void changeAchieveStatusTrue() {
 
-		MonthlyGoal achieved = MonthlyGoalFixture.DEFAULT.getWithMember(member);
-		achieved.changeAchieveStatus(true);
-		assertThat(achieved.isAchieved()).isTrue();
+		MonthlyGoal monthlyGoal1 = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		monthlyGoal1.changeAchieveStatus(true);
+		MonthlyGoal monthlyGoal2 = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		monthlyGoal2.changeAchieveStatus(false);
+
+		assertAll(
+				() -> {
+					assertThat(monthlyGoal1.isAchieved()).isTrue();
+					assertThat(monthlyGoal2.isAchieved()).isFalse();
+				});
 	}
 
 	@Test

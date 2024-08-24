@@ -163,4 +163,19 @@ public class WeeklyGoalUpdateServiceTest {
 					assertThat(modified.getRelatedMonthlyGoal()).isNotEmpty();
 				});
 	}
+
+	@Test
+	@DisplayName("주 목표의 달성 상태를 변경한다.")
+	void changeAchieveStatus() {
+		Long memberId = 1L;
+		Long monthlyGoalId = 2L;
+		Boolean status = true;
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
+				.willReturn(weeklyGoal);
+
+		weeklyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
+
+		assertThat(weeklyGoal.isAchieved()).isTrue();
+	}
 }

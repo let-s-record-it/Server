@@ -2,6 +2,7 @@ package com.sillim.recordit.goal.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
@@ -66,5 +67,21 @@ public class WeeklyGoalTest {
 				expected.getColorHex());
 
 		assertThat(modified).usingRecursiveComparison().isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("주 목표의 달성 상태를 변경할 수 있다.")
+	void changeAchieveStatusTrue() {
+
+		WeeklyGoal weeklyGoal1 = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		weeklyGoal1.changeAchieveStatus(true);
+		WeeklyGoal weeklyGoal2 = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		weeklyGoal2.changeAchieveStatus(false);
+
+		assertAll(
+				() -> {
+					assertThat(weeklyGoal1.isAchieved()).isTrue();
+					assertThat(weeklyGoal2.isAchieved()).isFalse();
+				});
 	}
 }
