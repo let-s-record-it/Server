@@ -11,6 +11,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
@@ -203,5 +204,39 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								requestHeaders(authorizationDesc()),
 								pathParameters(
 										parameterWithName("id").description("조회할 주 목표 id"))));
+	}
+
+	@Test
+	@DisplayName("id에 해당하는 주 목표를 수정한다.")
+	void modifyWeeklyGoal() throws Exception {
+
+		WeeklyGoalUpdateRequest request =
+				new WeeklyGoalUpdateRequest(
+						"취뽀하기!(수정)",
+						"취업할 때까지 숨 참는다.(수정)",
+						4,
+						LocalDate.of(2024, 8, 18),
+						LocalDate.of(2024, 8, 24),
+						"ff123456",
+						1L);
+
+		ResultActions perform =
+				mockMvc.perform(
+						put("/api/v1/goals/weeks/{id}", 1L)
+								.headers(authorizationHeader())
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"weekly-goal-modify",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								requestHeaders(authorizationDesc()),
+								pathParameters(
+										parameterWithName("id").description("수정할 주 목표 id"))));
 	}
 }
