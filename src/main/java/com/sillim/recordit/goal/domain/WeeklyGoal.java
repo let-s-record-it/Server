@@ -87,6 +87,34 @@ public class WeeklyGoal extends BaseTime {
 		}
 	}
 
+	public void modify(
+			final String title,
+			final String description,
+			final Integer week,
+			final LocalDate startDate,
+			final LocalDate endDate,
+			final String colorHex,
+			final MonthlyGoal relatedMonthlyGoal) {
+		this.title = new GoalTitle(title);
+		this.description = new GoalDescription(description);
+		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
+		this.colorHex = new GoalColorHex(colorHex);
+		this.relatedMonthlyGoal = relatedMonthlyGoal;
+	}
+
+	public void modify(
+			final String title,
+			final String description,
+			final Integer week,
+			final LocalDate startDate,
+			final LocalDate endDate,
+			final String colorHex) {
+		this.title = new GoalTitle(title);
+		this.description = new GoalDescription(description);
+		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
+		this.colorHex = new GoalColorHex(colorHex);
+	}
+
 	public String getTitle() {
 		return title.getTitle();
 	}
