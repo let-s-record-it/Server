@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -265,5 +266,26 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								queryParameters(
 										parameterWithName("status")
 												.description("달성 상태(false, true)"))));
+	}
+
+	@Test
+	@DisplayName("id에 해당하는 주 목표를 삭제한다.")
+	void removeWeeklyGoal() throws Exception {
+
+		ResultActions perform =
+				mockMvc.perform(
+						delete("/api/v1/goals/weeks/{id}", 1L).headers(authorizationHeader()));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"weekly-goal-remove",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								requestHeaders(authorizationDesc()),
+								pathParameters(
+										parameterWithName("id").description("삭제할 주 목표 id"))));
 	}
 }
