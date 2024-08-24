@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -93,6 +94,14 @@ public class WeeklyGoalController {
 			@CurrentMember final Member member) {
 
 		weeklyGoalUpdateService.changeAchieveStatus(id, status, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> removeWeeklyGoal(
+			@PathVariable final Long id, @CurrentMember final Member member) {
+
+		weeklyGoalUpdateService.remove(id, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
