@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Auth {
 
-	@Column
-	private String oauthAccount;
+	@Column private String oauthAccount;
 
 	@Enumerated(EnumType.STRING)
 	private OAuthProvider oauthProvider;
