@@ -109,7 +109,7 @@ class FeedControllerTest extends RestDocsTest {
 								PageRequest.of(0, 10),
 								false));
 		given(member.equalsId(any())).willReturn(true);
-		given(feedQueryService.searchPaginatedRecentCreated(any(), any())).willReturn(response);
+		given(feedQueryService.searchRecentCreated(any(), any())).willReturn(response);
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -119,6 +119,33 @@ class FeedControllerTest extends RestDocsTest {
 
 		perform.andDo(print())
 				.andDo(document("feed-list", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("자신의 피드 목록을 조회한다.")
+	void myFeedList() throws Exception {
+		Member member = mock(Member.class);
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		given(feed.getId()).willReturn(1L);
+		SliceResponse<FeedInListResponse> response =
+				SliceResponse.of(
+						new SliceImpl<>(
+								List.of(FeedInListResponse.from(feed, false, false)),
+								PageRequest.of(0, 10),
+								false));
+		given(member.equalsId(any())).willReturn(true);
+		given(feedQueryService.searchRecentCreatedByMemberId(any(), any())).willReturn(response);
+
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/feeds/my-feed")
+								.queryParam("page", "0")
+								.queryParam("size", "10"));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(document("my-feed-list", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
