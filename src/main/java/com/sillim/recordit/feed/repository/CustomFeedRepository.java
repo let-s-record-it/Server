@@ -9,5 +9,7 @@ public interface CustomFeedRepository {
 
 	Optional<Feed> findByIdWithFetchJoin(Long feedId);
 
-	Slice<Feed> findPaginatedOrderByCreatedAtDesc(Pageable pageable);
+	Slice<Feed> findOrderByCreatedAtDesc(Pageable pageable);
+
+	Slice<Feed> findByMemberIdOrderByCreatedAtDesc(Pageable pageable, Long memberId);
 }
