@@ -63,4 +63,12 @@ public class WeeklyGoalUpdateService {
 				request.colorHex(),
 				monthlyGoal);
 	}
+
+	public void changeAchieveStatus(
+			final Long weeklyGoalId, final Boolean status, final Long memberId) {
+
+		WeeklyGoal weeklyGoal =
+				weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
+		weeklyGoal.changeAchieveStatus(status);
+	}
 }

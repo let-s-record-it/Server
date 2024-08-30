@@ -10,6 +10,7 @@ import static org.mockito.Mockito.spy;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -238,5 +239,31 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								requestHeaders(authorizationDesc()),
 								pathParameters(
 										parameterWithName("id").description("수정할 주 목표 id"))));
+	}
+
+	@Test
+	@DisplayName("id에 해당하는 주 목표의 달성 상태를 변경한다.")
+	void weeklyGoalChangeAchieveStatus() throws Exception {
+
+		ResultActions perform =
+				mockMvc.perform(
+						patch("/api/v1/goals/weeks/{id}", 1L)
+								.headers(authorizationHeader())
+								.queryParam("status", "true"));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"weekly-goal-change-achieve-status",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								requestHeaders(authorizationDesc()),
+								pathParameters(
+										parameterWithName("id").description("달성 상태를 변경할 주 목표 id")),
+								queryParameters(
+										parameterWithName("status")
+												.description("달성 상태(false, true)"))));
 	}
 }

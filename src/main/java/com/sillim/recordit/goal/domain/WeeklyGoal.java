@@ -81,6 +81,10 @@ public class WeeklyGoal extends BaseTime {
 		this.deleted = false;
 	}
 
+	public void changeAchieveStatus(final Boolean status) {
+		this.achieved = status;
+	}
+
 	public void validateAuthenticatedMember(Long memberId) {
 		if (!isOwnedBy(memberId)) {
 			throw new InvalidRequestException(ErrorCode.WEEKLY_GOAL_ACCESS_DENIED);
