@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,6 +73,16 @@ public class WeeklyGoalController {
 		return ResponseEntity.ok(
 				WeeklyGoalDetailsResponse.from(
 						weeklyGoalQueryService.searchByIdAndCheckAuthority(id, member.getId())));
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Void> modifyWeeklyGoal(
+			@Validated @RequestBody final WeeklyGoalUpdateRequest request,
+			@PathVariable final Long id,
+			@CurrentMember final Member member) {
+
+		weeklyGoalUpdateService.modifyWeeklyGoal(request, id, member.getId());
+		return ResponseEntity.noContent().build();
 	}
 
 	private Integer changeWeekIfMonthOfStartDateIsNotEqual(

@@ -1,6 +1,7 @@
 package com.sillim.recordit.goal.service;
 
 import com.sillim.recordit.goal.domain.MonthlyGoal;
+import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.dto.request.WeeklyGoalUpdateRequest;
 import com.sillim.recordit.goal.repository.WeeklyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class WeeklyGoalUpdateService {
 
+	private final WeeklyGoalQueryService weeklyGoalQueryService;
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
 	private final MemberQueryService memberQueryService;
 	private final WeeklyGoalRepository weeklyGoalRepository;
@@ -22,7 +24,6 @@ public class WeeklyGoalUpdateService {
 
 		Member member = memberQueryService.findByMemberId(memberId);
 		if (request.relatedMonthlyGoalId() == null) {
-
 			return weeklyGoalRepository.save(request.toEntity(member)).getId();
 		}
 		MonthlyGoal relatedMonthlyGoal =
@@ -33,5 +34,33 @@ public class WeeklyGoalUpdateService {
 						request.toEntity(
 								relatedMonthlyGoal, memberQueryService.findByMemberId(memberId)))
 				.getId();
+	}
+
+	public void modifyWeeklyGoal(
+			final WeeklyGoalUpdateRequest request, final Long weeklyGoalId, final Long memberId) {
+
+		WeeklyGoal weeklyGoal =
+				weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
+		if (request.relatedMonthlyGoalId() == null) {
+			weeklyGoal.modify(
+					request.title(),
+					request.description(),
+					request.week(),
+					request.startDate(),
+					request.endDate(),
+					request.colorHex());
+			return;
+		}
+		MonthlyGoal monthlyGoal =
+				monthlyGoalQueryService.searchByIdAndCheckAuthority(
+						request.relatedMonthlyGoalId(), memberId);
+		weeklyGoal.modify(
+				request.title(),
+				request.description(),
+				request.week(),
+				request.startDate(),
+				request.endDate(),
+				request.colorHex(),
+				monthlyGoal);
 	}
 }

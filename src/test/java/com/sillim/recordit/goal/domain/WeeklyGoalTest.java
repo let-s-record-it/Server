@@ -1,5 +1,6 @@
 package com.sillim.recordit.goal.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.willReturn;
@@ -48,5 +49,22 @@ public class WeeklyGoalTest {
 						})
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.WEEKLY_GOAL_ACCESS_DENIED.getDescription());
+	}
+
+	@Test
+	@DisplayName("주 목표를 수정할 수 있다.")
+	void modify() {
+		WeeklyGoal expected = WeeklyGoalFixture.MODIFIED.getWithMember(member);
+
+		WeeklyGoal modified = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		modified.modify(
+				expected.getTitle(),
+				expected.getDescription(),
+				expected.getWeek(),
+				expected.getStartDate(),
+				expected.getEndDate(),
+				expected.getColorHex());
+
+		assertThat(modified).usingRecursiveComparison().isEqualTo(expected);
 	}
 }
