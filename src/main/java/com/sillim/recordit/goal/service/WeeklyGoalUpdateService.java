@@ -71,4 +71,11 @@ public class WeeklyGoalUpdateService {
 				weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
 		weeklyGoal.changeAchieveStatus(status);
 	}
+
+	public void remove(final Long weeklyGoalId, final Long memberId) {
+
+		WeeklyGoal weeklyGoal =
+				weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
+		weeklyGoal.remove();
+	}
 }

@@ -84,4 +84,14 @@ public class WeeklyGoalTest {
 					assertThat(weeklyGoal2.isAchieved()).isFalse();
 				});
 	}
+
+	@Test
+	@DisplayName("주 목표를 삭제할 경우 deleted 플래그가 true로 변경된다.")
+	void remove() {
+
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		weeklyGoal.remove();
+
+		assertThat(weeklyGoal.isDeleted()).isTrue();
+	}
 }

@@ -127,7 +127,7 @@ public class WeeklyGoalUpdateServiceTest {
 	}
 
 	@Test
-	@DisplayName("새로운 주 목표를 추가한다. - 연관 월 목표 있음")
+	@DisplayName("id에 해당하는 주 목표를 수정한다. - 연관 월 목표 있음")
 	void modifyWeeklyGoalWithRelatedMonthlyGoal() {
 		Long memberId = 1L;
 		Long weeklyGoalId = 2L;
@@ -165,7 +165,7 @@ public class WeeklyGoalUpdateServiceTest {
 	}
 
 	@Test
-	@DisplayName("주 목표의 달성 상태를 변경한다.")
+	@DisplayName("id에 해당하는 주 목표의 달성 상태를 변경한다.")
 	void changeAchieveStatus() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
@@ -177,5 +177,19 @@ public class WeeklyGoalUpdateServiceTest {
 		weeklyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
 
 		assertThat(weeklyGoal.isAchieved()).isTrue();
+	}
+
+	@Test
+	@DisplayName("id에 해당하는 주 목표를 삭제한다.")
+	void removeTest() {
+		Long memberId = 1L;
+		Long monthlyGoalId = 2L;
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
+				.willReturn(weeklyGoal);
+
+		weeklyGoalUpdateService.remove(monthlyGoalId, memberId);
+
+		assertThat(weeklyGoal.isDeleted()).isTrue();
 	}
 }

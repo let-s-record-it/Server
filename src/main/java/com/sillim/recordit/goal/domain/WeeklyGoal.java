@@ -85,7 +85,7 @@ public class WeeklyGoal extends BaseTime {
 		this.achieved = status;
 	}
 
-	public void validateAuthenticatedMember(Long memberId) {
+	public void validateAuthenticatedMember(final Long memberId) {
 		if (!isOwnedBy(memberId)) {
 			throw new InvalidRequestException(ErrorCode.WEEKLY_GOAL_ACCESS_DENIED);
 		}
@@ -117,6 +117,10 @@ public class WeeklyGoal extends BaseTime {
 		this.description = new GoalDescription(description);
 		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
 		this.colorHex = new GoalColorHex(colorHex);
+	}
+
+	public void remove() {
+		this.deleted = true;
 	}
 
 	public String getTitle() {
