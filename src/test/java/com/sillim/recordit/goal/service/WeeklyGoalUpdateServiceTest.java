@@ -1,6 +1,7 @@
 package com.sillim.recordit.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -9,6 +10,8 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.goal.InvalidWeeklyGoalException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.dto.request.WeeklyGoalUpdateRequest;
@@ -213,5 +216,38 @@ public class WeeklyGoalUpdateServiceTest {
 		assertThat(weeklyGoal.getRelatedMonthlyGoal().get())
 				.usingRecursiveComparison()
 				.isEqualTo(relatedMonthlyGoal);
+	}
+
+	@Test
+	@DisplayName("id에 해당하는 주 목표를 월 목표와 연결한다.")
+	void unlinkRelatedMonthlyGoal() {
+		Long memberId = 1L;
+		Long weeklyGoalId = 2L;
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		weeklyGoal.linkRelatedMonthlyGoal(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId), eq(memberId)))
+				.willReturn(weeklyGoal);
+
+		weeklyGoalUpdateService.unlinkRelatedMonthlyGoal(weeklyGoalId, memberId);
+
+		assertThat(weeklyGoal.getRelatedMonthlyGoal()).isEmpty();
+	}
+
+	@Test
+	@DisplayName("주 목표의 연관 목표가 없는 상태에서 연결 해제를 시도할 경우, InvalidWeeklyGoalException이 발생한다.")
+	void unlinkRelatedMonthlyGoalThrowsInvalidWeeklyGoalExceptionIfRelatedGoalIsNotExists() {
+		Long memberId = 1L;
+		Long weeklyGoalId = 2L;
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId), eq(memberId)))
+				.willReturn(weeklyGoal);
+
+		assertThatCode(
+						() -> {
+							weeklyGoalUpdateService.unlinkRelatedMonthlyGoal(
+									weeklyGoalId, memberId);
+						})
+				.isInstanceOf(InvalidWeeklyGoalException.class)
+				.hasMessage(ErrorCode.RELATED_GOAL_NOT_FOUND.getDescription());
 	}
 }

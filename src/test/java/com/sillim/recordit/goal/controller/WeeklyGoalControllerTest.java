@@ -314,4 +314,27 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 										parameterWithName("relatedGoalId")
 												.description("주 목표와 연결할 월 목표 id"))));
 	}
+
+	@Test
+	@DisplayName("id에 해당하는 주 목표와 연관 목표의 연결을 해제할 수 있다.")
+	void unlinkRelatedGoal() throws Exception {
+
+		ResultActions perform =
+				mockMvc.perform(
+						patch("/api/v1/goals/weeks/{id}/unlink", 1L)
+								.headers(authorizationHeader()));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"weekly-goal-unlink-related-goal",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								requestHeaders(authorizationDesc()),
+								pathParameters(
+										parameterWithName("id")
+												.description("연관 목표를 연결 해제할 주 목표 id"))));
+	}
 }

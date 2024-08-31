@@ -109,4 +109,17 @@ public class WeeklyGoalTest {
 				.usingRecursiveComparison()
 				.isEqualTo(relatedMonthlyGoal);
 	}
+
+	@Test
+	@DisplayName("주 목표의 연관 목표를 연결 해제 할 수 있다.")
+	void unlinkRelatedMonthlyGoal() {
+
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		MonthlyGoal relatedMonthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		weeklyGoal.linkRelatedMonthlyGoal(relatedMonthlyGoal);
+
+		weeklyGoal.unlinkRelatedMonthlyGoal();
+
+		assertThat(weeklyGoal.getRelatedMonthlyGoal()).isEmpty();
+	}
 }
