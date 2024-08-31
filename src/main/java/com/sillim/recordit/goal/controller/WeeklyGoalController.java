@@ -116,6 +116,15 @@ public class WeeklyGoalController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@PatchMapping("/{id}/unlink")
+	public ResponseEntity<Void> unlinkRelatedMonthlyGoal(
+			@PathVariable final Long id, @CurrentMember final Member member) {
+
+		weeklyGoalUpdateService.unlinkRelatedMonthlyGoal(id, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
+
 	private Integer changeWeekIfMonthOfStartDateIsNotEqual(
 			final WeeklyGoal weeklyGoal, final Integer currentMonth) {
 		if (weeklyGoal.getStartDate().getMonthValue() == currentMonth) {

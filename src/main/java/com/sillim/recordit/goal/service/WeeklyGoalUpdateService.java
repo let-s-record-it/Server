@@ -1,5 +1,7 @@
 package com.sillim.recordit.goal.service;
 
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.goal.InvalidWeeklyGoalException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.dto.request.WeeklyGoalUpdateRequest;
@@ -87,5 +89,15 @@ public class WeeklyGoalUpdateService {
 		MonthlyGoal monthlyGoal =
 				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
 		weeklyGoal.linkRelatedMonthlyGoal(monthlyGoal);
+	}
+
+	public void unlinkRelatedMonthlyGoal(final Long weeklyGoalId, final Long memberId) {
+
+		WeeklyGoal weeklyGoal =
+				weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
+		if (weeklyGoal.getRelatedMonthlyGoal().isEmpty()) {
+			throw new InvalidWeeklyGoalException(ErrorCode.RELATED_GOAL_NOT_FOUND);
+		}
+		weeklyGoal.unlinkRelatedMonthlyGoal();
 	}
 }

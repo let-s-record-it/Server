@@ -123,6 +123,10 @@ public class WeeklyGoal extends BaseTime {
 		this.relatedMonthlyGoal = relatedMonthlyGoal;
 	}
 
+	public void unlinkRelatedMonthlyGoal() {
+		this.relatedMonthlyGoal = null;
+	}
+
 	public void remove() {
 		this.deleted = true;
 	}
