@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
+import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.fixture.WeeklyGoalFixture;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
@@ -93,5 +94,19 @@ public class WeeklyGoalTest {
 		weeklyGoal.remove();
 
 		assertThat(weeklyGoal.isDeleted()).isTrue();
+	}
+
+	@Test
+	@DisplayName("주 목표와 월 목표를 연결할 수 있다.")
+	void linkRelatedMonthlyGoal() {
+
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		MonthlyGoal relatedMonthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		weeklyGoal.linkRelatedMonthlyGoal(relatedMonthlyGoal);
+
+		assertThat(weeklyGoal.getRelatedMonthlyGoal()).isNotEmpty();
+		assertThat(weeklyGoal.getRelatedMonthlyGoal().get())
+				.usingRecursiveComparison()
+				.isEqualTo(relatedMonthlyGoal);
 	}
 }

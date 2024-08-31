@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.dto.request.WeeklyGoalUpdateRequest;
+import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.fixture.WeeklyGoalFixture;
 import com.sillim.recordit.goal.repository.WeeklyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
@@ -168,13 +169,13 @@ public class WeeklyGoalUpdateServiceTest {
 	@DisplayName("id에 해당하는 주 목표의 달성 상태를 변경한다.")
 	void changeAchieveStatus() {
 		Long memberId = 1L;
-		Long monthlyGoalId = 2L;
+		Long weeklyGoalId = 2L;
 		Boolean status = true;
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId), eq(memberId)))
 				.willReturn(weeklyGoal);
 
-		weeklyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
+		weeklyGoalUpdateService.changeAchieveStatus(weeklyGoalId, status, memberId);
 
 		assertThat(weeklyGoal.isAchieved()).isTrue();
 	}
@@ -183,13 +184,34 @@ public class WeeklyGoalUpdateServiceTest {
 	@DisplayName("id에 해당하는 주 목표를 삭제한다.")
 	void removeTest() {
 		Long memberId = 1L;
-		Long monthlyGoalId = 2L;
+		Long weeklyGoalId = 2L;
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId), eq(memberId)))
 				.willReturn(weeklyGoal);
 
-		weeklyGoalUpdateService.remove(monthlyGoalId, memberId);
+		weeklyGoalUpdateService.remove(weeklyGoalId, memberId);
 
 		assertThat(weeklyGoal.isDeleted()).isTrue();
+	}
+
+	@Test
+	@DisplayName("id에 해당하는 주 목표를 월 목표와 연결한다.")
+	void linkRelatedMonthlyGoal() {
+		Long memberId = 1L;
+		Long weeklyGoalId = 2L;
+		Long relatedGoalId = 3L;
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId), eq(memberId)))
+				.willReturn(weeklyGoal);
+		MonthlyGoal relatedMonthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(relatedGoalId), eq(memberId)))
+				.willReturn(relatedMonthlyGoal);
+
+		weeklyGoalUpdateService.linkRelatedMonthlyGoal(weeklyGoalId, relatedGoalId, memberId);
+
+		assertThat(weeklyGoal.getRelatedMonthlyGoal()).isNotEmpty();
+		assertThat(weeklyGoal.getRelatedMonthlyGoal().get())
+				.usingRecursiveComparison()
+				.isEqualTo(relatedMonthlyGoal);
 	}
 }

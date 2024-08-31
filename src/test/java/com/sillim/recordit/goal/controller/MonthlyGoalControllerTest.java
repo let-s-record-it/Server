@@ -261,7 +261,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 		ResultActions perform =
 				mockMvc.perform(
-						patch("/api/v1/goals/months/{id}", 1L)
+						patch("/api/v1/goals/months/{id}/achieve", 1L)
 								.headers(authorizationHeader())
 								.queryParam("status", "true"));
 
