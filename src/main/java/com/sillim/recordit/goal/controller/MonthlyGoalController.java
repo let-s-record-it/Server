@@ -72,7 +72,7 @@ public class MonthlyGoalController {
 						monthlyGoalQueryService.searchByIdAndCheckAuthority(id, member.getId())));
 	}
 
-	@PatchMapping("/{id}")
+	@PatchMapping("/{id}/achieve")
 	public ResponseEntity<Void> monthlyGoalChangeAchieveStatus(
 			@PathVariable final Long id,
 			@RequestParam final Boolean status,
