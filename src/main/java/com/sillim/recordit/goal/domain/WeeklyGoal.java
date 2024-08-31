@@ -119,6 +119,10 @@ public class WeeklyGoal extends BaseTime {
 		this.colorHex = new GoalColorHex(colorHex);
 	}
 
+	public void linkRelatedMonthlyGoal(final MonthlyGoal relatedMonthlyGoal) {
+		this.relatedMonthlyGoal = relatedMonthlyGoal;
+	}
+
 	public void remove() {
 		this.deleted = true;
 	}

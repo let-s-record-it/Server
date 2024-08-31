@@ -78,4 +78,14 @@ public class WeeklyGoalUpdateService {
 				weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
 		weeklyGoal.remove();
 	}
+
+	public void linkRelatedMonthlyGoal(
+			final Long weeklyGoalId, final Long monthlyGoalId, final Long memberId) {
+
+		WeeklyGoal weeklyGoal =
+				weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
+		MonthlyGoal monthlyGoal =
+				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
+		weeklyGoal.linkRelatedMonthlyGoal(monthlyGoal);
+	}
 }

@@ -87,7 +87,7 @@ public class WeeklyGoalController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@PatchMapping("/{id}")
+	@PatchMapping("/{id}/achieve")
 	public ResponseEntity<Void> changeWeeklyGoalAchieveStatus(
 			@PathVariable final Long id,
 			@RequestParam final Boolean status,
@@ -102,6 +102,17 @@ public class WeeklyGoalController {
 			@PathVariable final Long id, @CurrentMember final Member member) {
 
 		weeklyGoalUpdateService.remove(id, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/{id}/link")
+	public ResponseEntity<Void> linkRelatedMonthlyGoal(
+			@PathVariable final Long id,
+			@RequestParam final Long relatedGoalId,
+			@CurrentMember final Member member) {
+
+		weeklyGoalUpdateService.linkRelatedMonthlyGoal(id, relatedGoalId, member.getId());
+
 		return ResponseEntity.noContent().build();
 	}
 
