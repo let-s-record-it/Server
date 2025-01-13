@@ -67,6 +67,7 @@ public enum ErrorCode {
 	INVALID_START_DAY_OF_WEEK("ERR_WEEKLY_GOAL_002", "주 목표 기간의 시작일은 일요일이어야 합니다."),
 	INVALID_DIFFERENCE_OF_DATE("ERR_WEEKLY_GOAL_003", "주 목표 기간의 시작일과 종료일은 6일 차이여야 합니다."),
 	WEEKLY_GOAL_ACCESS_DENIED("ERR_WEEKLY_GOAL_004", "해당 사용자는 접근할 수 없는 주 목표입니다."),
+	WEEK_NOT_CONTAINS_DATE("ERR_WEEKLY_GOAL_005", "해당 주차에 존재하지 않는 날짜입니다."),
 
 	// goal
 	NULL_GOAL_TITLE("ERR_GOAL_001", "목표 제목은 null일 수 없습니다."),
@@ -119,12 +120,15 @@ public enum ErrorCode {
 	BLANK_FEED_TITLE("ERR_FEED_002", "피드 제목은 빈 값일 수 없습니다."),
 	INVALID_FEED_TITLE_LENGTH("ERR_FEED_003", "피드 제목의 길이는 30자를 넘을 수 없습니다."),
 	NULL_FEED_CONTENT("ERR_FEED_004", "피드 내용은 null일 수 없습니다."),
-	INVALID_FEED_CONTENT_LENGTH("ERR_FEED_005", "피드의 길이는 500자를 넘을 수 없습니다."),
+	INVALID_FEED_CONTENT_LENGTH("ERR_FEED_005", "피드의 길이는 5000자를 넘을 수 없습니다."),
 	NULL_FEED_IMAGE_URL("ERR_FEED_006", "피드 이미지 url은 null일 수 없습니다."),
 	BLANK_FEED_IMAGE_URL("ERR_FEED_007", "피드 이미지 url은 빈 값일 수 없습니다."),
 	OVER_FEED_IMAGE_COUNT("ERR_FEED_008", "피드 이미지 개수는 10개를 넘을 수 없습니다."),
 	FEED_NOT_FOUND("ERR_FEED_009", "요청한 피드를 찾을 수 없습니다."),
 	INVALID_FEED_UNLIKE("ERR_FEED_010", "유효하지 않은 피드 좋아요 취소 요청입니다."),
+	NULL_FEED_COMMENT_CONTENT("ERR_FEED_011", "피드 댓글 내용은 null일 수 없습니다."),
+	INVALID_FEED_COMMENT_CONTENT_LENGTH("ERR_FEED_012", "피드 댓글의 길이는 1000자를 넘을 수 없습니다."),
+	FEED_COMMENT_NOT_FOUND("ERR_FEED_003", "요청한 피드 댓글을 찾을 수 없습니다."),
 
 	FILE_GENERATE_FAIL("ERR_FILE_001", "새 파일을 생성할 수 없습니다."),
 	FILE_NOT_FOUND("ERR_FILE_002", "파일을 찾을 수 없습니다."),

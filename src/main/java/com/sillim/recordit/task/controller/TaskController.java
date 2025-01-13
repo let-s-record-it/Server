@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,24 +66,58 @@ public class TaskController {
 
 	@PutMapping("/{taskId}/modify-all")
 	public ResponseEntity<Void> modifyAllTasks(
-			@RequestBody @Validated TaskUpdateRequest request,
+			@Validated @RequestBody TaskUpdateRequest request,
 			@PathVariable Long calendarId,
 			@PathVariable Long taskId,
 			@CurrentMember Member member) {
 
-		taskCommandService.modifyAllTasks(request, calendarId, taskId, member.getId());
+		taskCommandService.resetTaskGroupAndAddNewTasks(
+				request, calendarId, taskId, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}
 
-	@PutMapping("/{taskId}/modify-after-all")
-	public ResponseEntity<Void> modifyAfterAllTasks(
-			@RequestBody @Validated TaskUpdateRequest request,
+	@PutMapping("/{taskId}/modify-one")
+	public ResponseEntity<Void> modifyOneTask(
+			@Validated @RequestBody TaskUpdateRequest request,
 			@PathVariable Long calendarId,
 			@PathVariable Long taskId,
 			@CurrentMember Member member) {
 
-		taskCommandService.modifyAfterAllTasks(request, calendarId, taskId, member.getId());
+		taskCommandService.modifyOne(request, calendarId, taskId, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{taskId}/remove-all")
+	public ResponseEntity<Void> removeAllTasks(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		taskCommandService.removeAll(calendarId, taskId, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{taskId}/remove-after-all")
+	public ResponseEntity<Void> removeAfterAllTasks(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		taskCommandService.removeAllAfterDate(calendarId, taskId, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{taskId}/remove-one")
+	public ResponseEntity<Void> removeOneTask(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
+
+		taskCommandService.removeOne(calendarId, taskId, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}

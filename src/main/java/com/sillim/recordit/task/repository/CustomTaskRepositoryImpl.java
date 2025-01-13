@@ -37,52 +37,20 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public void deleteAllByTaskGroupIdAndTaskIdNot(Long taskGroupId, Long taskId) {
+	public void deleteAllByTaskGroupId(Long taskGroupId) {
 
 		getEntityManager().flush();
-		update(task)
-				.set(task.deleted, true)
-				.where(task.taskGroup.id.eq(taskGroupId).and(task.id.ne(taskId)))
-				.execute();
+		update(task).set(task.deleted, true).where(task.taskGroup.id.eq(taskGroupId)).execute();
 		getEntityManager().clear();
 	}
 
 	@Override
-	public void deleteAllNotAchievedTasksByTaskGroupIdAndTaskIdNot(Long taskGroupId, Long taskId) {
-		getEntityManager().flush();
-		update(task)
-				.set(task.deleted, true)
-				.where(
-						task.taskGroup
-								.id
-								.eq(taskGroupId)
-								.and(task.achieved.eq(false))
-								.and(task.id.ne(taskId)))
-				.execute();
-		getEntityManager().clear();
-	}
+	public void deleteAllByTaskGroupIdAndDateAfterOrEqual(Long taskGroupId, LocalDate date) {
 
-	@Override
-	public void deleteAllByTaskGroupIdAndDateAfter(Long taskGroupId, LocalDate date) {
 		getEntityManager().flush();
 		update(task)
 				.set(task.deleted, true)
-				.where(task.taskGroup.id.eq(taskGroupId).and(task.date.after(date)))
-				.execute();
-		getEntityManager().clear();
-	}
-
-	@Override
-	public void deleteAllNotAchievedByTaskGroupIdAndDateAfter(Long taskGroupId, LocalDate date) {
-		getEntityManager().flush();
-		update(task)
-				.set(task.deleted, true)
-				.where(
-						task.taskGroup
-								.id
-								.eq(taskGroupId)
-								.and(task.achieved.eq(false))
-								.and(task.date.after(date)))
+				.where(task.taskGroup.id.eq(taskGroupId).and(task.date.goe(date)))
 				.execute();
 		getEntityManager().clear();
 	}

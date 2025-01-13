@@ -1,6 +1,8 @@
 package com.sillim.recordit.goal.domain;
 
 import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.goal.domain.vo.GoalColorHex;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
@@ -16,18 +18,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE weekly_goal SET deleted = true WHERE weekly_goal_id = ?")
 @SQLRestriction("deleted = false")
 public class WeeklyGoal extends BaseTime {
 
@@ -49,6 +50,10 @@ public class WeeklyGoal extends BaseTime {
 	private boolean achieved;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "monthly_goal_id")
+	private MonthlyGoal relatedMonthlyGoal;
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
@@ -60,37 +65,62 @@ public class WeeklyGoal extends BaseTime {
 	public WeeklyGoal(
 			final String title,
 			final String description,
+			final Integer week,
 			final LocalDate startDate,
 			final LocalDate endDate,
 			final String colorHex,
+			final MonthlyGoal relatedMonthlyGoal,
 			final Member member) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
-		this.period = new WeeklyGoalPeriod(startDate, endDate);
+		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
 		this.colorHex = new GoalColorHex(colorHex);
 		this.achieved = false;
+		this.relatedMonthlyGoal = relatedMonthlyGoal;
 		this.member = member;
 		this.deleted = false;
-	}
-
-	public void modify(
-			final String newTitle,
-			final String newDescription,
-			final LocalDate newStartDate,
-			final LocalDate newEndDate,
-			final String newColorHex) {
-		this.title = new GoalTitle(newTitle);
-		this.description = new GoalDescription(newDescription);
-		this.period = new WeeklyGoalPeriod(newStartDate, newEndDate);
-		this.colorHex = new GoalColorHex(newColorHex);
 	}
 
 	public void changeAchieveStatus(final Boolean status) {
 		this.achieved = status;
 	}
 
-	public boolean isOwnedBy(Long memberId) {
-		return member.equalsId(memberId);
+	public void validateAuthenticatedMember(final Long memberId) {
+		if (!isOwnedBy(memberId)) {
+			throw new InvalidRequestException(ErrorCode.WEEKLY_GOAL_ACCESS_DENIED);
+		}
+	}
+
+	public void modify(
+			final String title,
+			final String description,
+			final Integer week,
+			final LocalDate startDate,
+			final LocalDate endDate,
+			final String colorHex,
+			final MonthlyGoal relatedMonthlyGoal) {
+		this.title = new GoalTitle(title);
+		this.description = new GoalDescription(description);
+		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
+		this.colorHex = new GoalColorHex(colorHex);
+		this.relatedMonthlyGoal = relatedMonthlyGoal;
+	}
+
+	public void modify(
+			final String title,
+			final String description,
+			final Integer week,
+			final LocalDate startDate,
+			final LocalDate endDate,
+			final String colorHex) {
+		this.title = new GoalTitle(title);
+		this.description = new GoalDescription(description);
+		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
+		this.colorHex = new GoalColorHex(colorHex);
+	}
+
+	public void remove() {
+		this.deleted = true;
 	}
 
 	public String getTitle() {
@@ -99,6 +129,10 @@ public class WeeklyGoal extends BaseTime {
 
 	public String getDescription() {
 		return description.getDescription();
+	}
+
+	public Integer getWeek() {
+		return period.getWeek();
 	}
 
 	public LocalDate getStartDate() {
@@ -111,5 +145,13 @@ public class WeeklyGoal extends BaseTime {
 
 	public String getColorHex() {
 		return colorHex.getColorHex();
+	}
+
+	public Optional<MonthlyGoal> getRelatedMonthlyGoal() {
+		return Optional.ofNullable(relatedMonthlyGoal);
+	}
+
+	private boolean isOwnedBy(Long memberId) {
+		return this.member.equalsId(memberId);
 	}
 }

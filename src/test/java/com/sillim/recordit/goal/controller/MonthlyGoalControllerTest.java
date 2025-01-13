@@ -205,12 +205,12 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
 		given(monthlyGoal.getId()).willReturn(1L);
 
-		given(monthlyGoalQueryService.searchById(anyLong(), any())).willReturn(monthlyGoal);
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(anyLong(), any()))
+				.willReturn(monthlyGoal);
 
 		ResultActions perform =
 				mockMvc.perform(
-						get("/api/v1/goals/months/{monthlyGoalId}", 1L)
-								.headers(authorizationHeader()));
+						get("/api/v1/goals/months/{id}", 1L).headers(authorizationHeader()));
 
 		perform.andExpect(status().isOk())
 				.andExpect(jsonPath("$.id").value(monthlyGoal.getId()))
@@ -228,21 +228,19 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								pathParameters(
-										parameterWithName("monthlyGoalId")
-												.description("조회할 월 목표 id"))));
+										parameterWithName("id").description("조회할 월 목표 id"))));
 	}
 
 	@Test
 	@DisplayName("존재하지 않는 월 목표를 상세하게 조회할 경우 NOT FOUND 응답을 반환한다.")
 	void monthlyGoalDetailsNotFoundTest() throws Exception {
 
-		given(monthlyGoalQueryService.searchById(anyLong(), any()))
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(anyLong(), any()))
 				.willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 
 		ResultActions perform =
 				mockMvc.perform(
-						get("/api/v1/goals/months/{monthlyGoalId}", 1L)
-								.headers(authorizationHeader()));
+						get("/api/v1/goals/months/{id}", 1L).headers(authorizationHeader()));
 
 		perform.andExpect(status().isNotFound());
 
@@ -263,7 +261,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 		ResultActions perform =
 				mockMvc.perform(
-						patch("/api/v1/goals/months/{monthlyGoalId}", 1L)
+						patch("/api/v1/goals/months/{id}", 1L)
 								.headers(authorizationHeader())
 								.queryParam("status", "true"));
 
@@ -277,8 +275,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								pathParameters(
-										parameterWithName("monthlyGoalId")
-												.description("달성 상태를 변경할 월 목표 id")),
+										parameterWithName("id").description("달성 상태를 변경할 월 목표 id")),
 								queryParameters(
 										parameterWithName("status")
 												.description("달성 상태(false, true)"))));
@@ -294,7 +291,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 		ResultActions perform =
 				mockMvc.perform(
-						patch("/api/v1/goals/months/{monthlyGoalId}", 1L)
+						patch("/api/v1/goals/months/{id}", 1L)
 								.headers(authorizationHeader())
 								.queryParam("status", "true"));
 
@@ -315,8 +312,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 
 		ResultActions perform =
 				mockMvc.perform(
-						delete("/api/v1/goals/months/{monthlyGoalId}", 1L)
-								.headers(authorizationHeader()));
+						delete("/api/v1/goals/months/{id}", 1L).headers(authorizationHeader()));
 
 		perform.andExpect(status().isNoContent());
 
@@ -328,7 +324,6 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								pathParameters(
-										parameterWithName("monthlyGoalId")
-												.description("달성 상태를 변경할 월 목표 id"))));
+										parameterWithName("id").description("삭제할 월 목표 id"))));
 	}
 }

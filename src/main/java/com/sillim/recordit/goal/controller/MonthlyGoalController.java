@@ -9,9 +9,9 @@ import com.sillim.recordit.goal.dto.response.MonthlyGoalListResponse;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
 import com.sillim.recordit.goal.service.MonthlyGoalUpdateService;
 import com.sillim.recordit.member.domain.Member;
+import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,32 +27,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/goals")
+@RequestMapping("/api/v1/goals/months")
 public class MonthlyGoalController {
 
 	private final MonthlyGoalUpdateService monthlyGoalUpdateService;
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
 
-	@PostMapping("/months")
+	@PostMapping
 	public ResponseEntity<Long> monthlyGoalAdd(
 			@Validated @RequestBody final MonthlyGoalUpdateRequest request,
 			@CurrentMember final Member member) {
 
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(monthlyGoalUpdateService.add(request, member.getId()));
+		Long monthlyGoalId = monthlyGoalUpdateService.add(request, member.getId());
+		return ResponseEntity.created(URI.create("/api/v1/goals/months/" + monthlyGoalId)).build();
 	}
 
-	@PutMapping("/months/{monthlyGoalId}")
+	@PutMapping("/{id}")
 	public ResponseEntity<Void> monthlyGoalModify(
 			@Validated @RequestBody final MonthlyGoalUpdateRequest request,
-			@PathVariable final Long monthlyGoalId,
+			@PathVariable final Long id,
 			@CurrentMember final Member member) {
 
-		monthlyGoalUpdateService.modify(request, monthlyGoalId, member.getId());
+		monthlyGoalUpdateService.modify(request, id, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
-	@GetMapping("/months")
+	@GetMapping
 	public ResponseEntity<List<MonthlyGoalListResponse>> monthlyGoalList(
 			@RequestParam @ValidYear final Integer year,
 			@RequestParam @ValidMonth final Integer month,
@@ -63,30 +63,30 @@ public class MonthlyGoalController {
 						.toList());
 	}
 
-	@GetMapping("/months/{monthlyGoalId}")
+	@GetMapping("/{id}")
 	public ResponseEntity<MonthlyGoalDetailsResponse> monthlyGoalDetails(
-			@PathVariable final Long monthlyGoalId, @CurrentMember final Member member) {
+			@PathVariable final Long id, @CurrentMember final Member member) {
 
 		return ResponseEntity.ok(
 				MonthlyGoalDetailsResponse.from(
-						monthlyGoalQueryService.searchById(monthlyGoalId, member.getId())));
+						monthlyGoalQueryService.searchByIdAndCheckAuthority(id, member.getId())));
 	}
 
-	@PatchMapping("/months/{monthlyGoalId}")
+	@PatchMapping("/{id}")
 	public ResponseEntity<Void> monthlyGoalChangeAchieveStatus(
-			@PathVariable final Long monthlyGoalId,
+			@PathVariable final Long id,
 			@RequestParam final Boolean status,
 			@CurrentMember final Member member) {
 
-		monthlyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, member.getId());
+		monthlyGoalUpdateService.changeAchieveStatus(id, status, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
-	@DeleteMapping("/months/{monthlyGoalId}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> monthlyGoalRemove(
-			@PathVariable final Long monthlyGoalId, @CurrentMember final Member member) {
+			@PathVariable final Long id, @CurrentMember final Member member) {
 
-		monthlyGoalUpdateService.remove(monthlyGoalId, member.getId());
+		monthlyGoalUpdateService.remove(id, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 }

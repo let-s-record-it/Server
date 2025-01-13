@@ -91,12 +91,12 @@ public class Task extends BaseTime {
 	}
 
 	public void modify(
-			final String title,
-			final String description,
-			final LocalDate date,
-			final String colorHex,
-			final Calendar calendar,
-			final TaskGroup taskGroup) {
+			String title,
+			String description,
+			LocalDate date,
+			String colorHex,
+			Calendar calendar,
+			TaskGroup taskGroup) {
 		this.title = new TaskTitle(title);
 		this.description = new TaskDescription(description);
 		this.date = date;
@@ -105,8 +105,8 @@ public class Task extends BaseTime {
 		this.taskGroup = taskGroup;
 	}
 
-	public boolean hasSameDate(final LocalDate date) {
-		return this.date.isEqual(date);
+	public void remove() {
+		this.deleted = true;
 	}
 
 	public String getTitle() {

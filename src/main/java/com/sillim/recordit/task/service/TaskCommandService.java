@@ -6,12 +6,11 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
-import com.sillim.recordit.task.domain.TaskRemoveStrategy;
 import com.sillim.recordit.task.dto.request.TaskAddRequest;
 import com.sillim.recordit.task.dto.request.TaskUpdateRequest;
 import com.sillim.recordit.task.repository.TaskRepository;
-import java.time.LocalDate;
-import java.util.List;
+import java.time.temporal.TemporalAmount;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,196 +21,159 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskCommandService {
 
 	private final TaskGroupService taskGroupService;
-	private final TaskRepetitionPatternService repetitionPatternService;
 	private final CalendarService calendarService;
 
 	private final TaskRepository taskRepository;
 
 	public void addTasks(final TaskAddRequest request, final Long calendarId, final Long memberId) {
 
-		final TaskGroup taskGroup =
-				taskGroupService.addTaskGroup(
-						request.isRepeated(),
-						request.relatedMonthlyGoalId(),
-						request.relatedWeeklyGoalId(),
-						memberId);
-		final Calendar calendar = calendarService.searchByCalendarId(calendarId, memberId);
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
+
 		if (request.isRepeated()) {
-			addRepeatingTasks(request, taskGroup, calendar);
+			TaskGroup taskGroup =
+					taskGroupService.addRepeatingTaskGroup(
+							request.taskGroup(), request.repetition(), memberId);
+			addRepeatingTasks(
+					temporalAmount ->
+							taskRepository.save(
+									request.toTask(temporalAmount, calendar, taskGroup)),
+					taskGroup);
 			return;
 		}
+		TaskGroup taskGroup =
+				taskGroupService.addNonRepeatingTaskGroup(request.taskGroup(), memberId);
 		taskRepository.save(request.toTask(calendar, taskGroup));
 	}
 
-	public void modifyAllTasks(
+	public void resetTaskGroupAndAddNewTasks(
 			final TaskUpdateRequest request,
 			final Long calendarId,
-			final Long taskId,
+			final Long selectedTaskId,
 			final Long memberId) {
 
-		validateOwnerOfCalendar(calendarId, memberId);
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
+
 		Task selectedTask =
 				taskRepository
-						.findByIdAndCalendarId(taskId, calendarId)
+						.findByIdAndCalendarId(selectedTaskId, calendarId)
 						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
-		Long taskGroupId = selectedTask.getTaskGroup().getId();
+		TaskGroup taskGroup = selectedTask.getTaskGroup();
+		taskRepository.deleteAllByTaskGroupId(taskGroup.getId()); // 기존에 있던 Task 모두 삭제
 
-		removeTasksInGroupExceptCurrentTask(request.removeStrategy(), taskGroupId, taskId);
-
-		TaskGroup newTaskGroup =
-				taskGroupService.modifyTaskGroup(
-						taskGroupId,
-						request.isRepeated(),
-						request.relatedMonthlyGoalId(),
-						request.relatedWeeklyGoalId(),
-						memberId);
-		Calendar newCalendar = calendarService.searchByCalendarId(request.calendarId(), memberId);
-		List<Task> modifiedTasks =
-				modifyAllTasksInTaskGroup(
-						request, calendarId, taskGroupId, newCalendar, newTaskGroup);
-
+		Calendar newCalendar = calendarService.searchByCalendarId(request.newCalendarId());
+		newCalendar.validateAuthenticatedMember(memberId);
 		if (request.isRepeated()) {
-			addNewRepeatingTask(modifiedTasks, request, newTaskGroup, newCalendar);
+			TaskGroup newTaskGroup =
+					taskGroupService.modifyTaskGroupAndMakeRepeatable(
+							taskGroup.getId(),
+							request.newTaskGroup(),
+							request.newRepetition(),
+							memberId);
+			addRepeatingTasks(
+					temporalAmount ->
+							taskRepository.save(
+									request.toTask(temporalAmount, newCalendar, newTaskGroup)),
+					newTaskGroup);
+			return;
 		}
+		TaskGroup newTaskGroup =
+				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
+						taskGroup.getId(), request.newTaskGroup(), memberId);
+		taskRepository.save(request.toTask(newCalendar, newTaskGroup));
 	}
 
-	public void modifyAfterAllTasks(
+	public void modifyOne(
 			final TaskUpdateRequest request,
 			final Long calendarId,
-			final Long taskId,
+			final Long selectedTaskId,
 			final Long memberId) {
 
-		validateOwnerOfCalendar(calendarId, memberId);
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
+
 		Task selectedTask =
 				taskRepository
-						.findByIdAndCalendarId(taskId, calendarId)
+						.findByIdAndCalendarId(selectedTaskId, calendarId)
 						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
-		Long taskGroupId = selectedTask.getTaskGroup().getId();
+		TaskGroup taskGroup = selectedTask.getTaskGroup();
 
-		removeTasksInGroupAfterDate(request.removeStrategy(), taskGroupId, selectedTask.getDate());
-
-		TaskGroup newTaskGroup =
-				taskGroupService.addTaskGroup(
-						request.isRepeated(),
-						request.relatedMonthlyGoalId(),
-						request.relatedWeeklyGoalId(),
-						memberId); // 새로운 TaskGroup 생성
-		Calendar newCalendar = calendarService.searchByCalendarId(request.calendarId(), memberId);
-		List<Task> modifiedTasks =
-				modifyAfterAllTasksInTaskGroup(
-						request,
-						calendarId,
-						taskGroupId,
-						selectedTask.getDate(),
-						newCalendar,
-						newTaskGroup);
-
+		Calendar newCalendar = calendarService.searchByCalendarId(request.newCalendarId());
+		newCalendar.validateAuthenticatedMember(memberId);
 		if (request.isRepeated()) {
-			addNewRepeatingTask(modifiedTasks, request, newTaskGroup, newCalendar);
+			selectedTask.remove();
+			TaskGroup newTaskGroup =
+					taskGroupService.modifyTaskGroupAndMakeRepeatable(
+							taskGroup.getId(),
+							request.newTaskGroup(),
+							request.newRepetition(),
+							memberId);
+			addRepeatingTasks(
+					temporalAmount ->
+							taskRepository.save(
+									request.toTask(temporalAmount, newCalendar, newTaskGroup)),
+					newTaskGroup);
+			return;
 		}
+		TaskGroup newTaskGroup =
+				taskGroupService.modifyTaskGroup(
+						taskGroup.getId(), request.newTaskGroup(), memberId);
+		selectedTask.modify(
+				request.newTitle(),
+				request.newDescription(),
+				request.date(),
+				request.newColorHex(),
+				newCalendar,
+				newTaskGroup);
+	}
+
+	public void removeAll(final Long calendarId, final Long selectedTaskId, final Long memberId) {
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
+
+		Task selectedTask =
+				taskRepository
+						.findByIdAndCalendarId(selectedTaskId, calendarId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		TaskGroup taskGroup = selectedTask.getTaskGroup();
+
+		taskRepository.deleteAllByTaskGroupId(taskGroup.getId());
+	}
+
+	public void removeAllAfterDate(
+			final Long calendarId, final Long selectedTaskId, final Long memberId) {
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
+
+		Task selectedTask =
+				taskRepository
+						.findByIdAndCalendarId(selectedTaskId, calendarId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		TaskGroup taskGroup = selectedTask.getTaskGroup();
+
+		taskRepository.deleteAllByTaskGroupIdAndDateAfterOrEqual(
+				taskGroup.getId(), selectedTask.getDate());
+	}
+
+	public void removeOne(final Long calendarId, final Long selectedTaskId, final Long memberId) {
+		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
+
+		Task selectedTask =
+				taskRepository
+						.findByIdAndCalendarId(selectedTaskId, calendarId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		selectedTask.remove();
 	}
 
 	private void addRepeatingTasks(
-			final TaskAddRequest request, final TaskGroup taskGroup, final Calendar calendar) {
-		repetitionPatternService
-				.addRepetitionPattern(request.repetition(), taskGroup)
+			final Consumer<TemporalAmount> temporalToTask, final TaskGroup taskGroup) {
+
+		taskGroup
+				.getRepetitionPattern()
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_REPETITION_NOT_FOUND))
 				.repeatingStream()
-				.forEach(
-						temporalAmount ->
-								taskRepository.save(
-										request.toTask(temporalAmount, calendar, taskGroup)));
-	}
-
-	/**
-	 * 변경된 반복 패턴에 의해 생성된 새로운 task를 taskGroup에 추가한다.
-	 * 해당 날짜에 동일한 task가 존재한다면 생성해주지 않는다.
-	 * @param tasksInGroup 현재 taskGroup에 남아있는 task들
-	 */
-	private void addNewRepeatingTask(
-			final List<Task> tasksInGroup,
-			final TaskUpdateRequest request,
-			final TaskGroup taskGroup,
-			final Calendar calendar) {
-		repetitionPatternService
-				.modifyRepetitionPattern(request.repetition(), taskGroup)
-				.repeatingStream()
-				.forEach(
-						temporalAmount -> {
-							Task newTask = request.toTask(temporalAmount, calendar, taskGroup);
-							if (tasksInGroup.stream()
-									.noneMatch(task -> task.hasSameDate(newTask.getDate()))) {
-								taskRepository.save(newTask);
-							}
-						});
-	}
-
-	/**
-	 * 기존 task들 처리 방법 -> 1) 모두 삭제, 2) 달성하지 않은 것들만 삭제
-	 * 현재 선택한 task 외의 tasks들에게 적용
-	 */
-	private void removeTasksInGroupExceptCurrentTask(
-			final TaskRemoveStrategy strategy, final Long taskGroupId, final Long taskId) {
-		switch (strategy) {
-			case REMOVE_ALL ->
-					taskRepository.deleteAllByTaskGroupIdAndTaskIdNot(taskGroupId, taskId);
-			case REMOVE_NOT_ACHIEVED ->
-					taskRepository.deleteAllNotAchievedTasksByTaskGroupIdAndTaskIdNot(
-							taskGroupId, taskId);
-		}
-	}
-
-	private void removeTasksInGroupAfterDate(
-			final TaskRemoveStrategy strategy, final Long taskGroupId, final LocalDate date) {
-		switch (strategy) {
-			case REMOVE_ALL -> taskRepository.deleteAllByTaskGroupIdAndDateAfter(taskGroupId, date);
-			case REMOVE_NOT_ACHIEVED ->
-					taskRepository.deleteAllNotAchievedByTaskGroupIdAndDateAfter(taskGroupId, date);
-		}
-	}
-
-	private List<Task> modifyAllTasksInTaskGroup(
-			final TaskUpdateRequest request,
-			final Long calendarId,
-			final Long taskGroupId,
-			final Calendar newCalendar,
-			final TaskGroup newTaskGroup) {
-		List<Task> tasksInGroup =
-				taskRepository.findAllByCalendarIdAndTaskGroupId(calendarId, taskGroupId);
-		tasksInGroup.forEach(
-				task ->
-						task.modify(
-								request.title(),
-								request.description(),
-								request.date(),
-								request.colorHex(),
-								newCalendar,
-								newTaskGroup));
-		return tasksInGroup;
-	}
-
-	private List<Task> modifyAfterAllTasksInTaskGroup(
-			final TaskUpdateRequest request,
-			final Long calendarId,
-			final Long taskGroupId,
-			final LocalDate date,
-			final Calendar newCalendar,
-			final TaskGroup newTaskGroup) {
-		List<Task> tasksInGroup =
-				taskRepository.findAllByCalendarIdAndTaskGroupIdAndDateGreaterThanEqual(
-						calendarId, taskGroupId, date);
-		tasksInGroup.forEach(
-				task ->
-						task.modify(
-								request.title(),
-								request.description(),
-								request.date(),
-								request.colorHex(),
-								newCalendar,
-								newTaskGroup));
-		return tasksInGroup;
-	}
-
-	private void validateOwnerOfCalendar(Long calendarId, Long memberId) {
-		calendarService.searchByCalendarId(calendarId, memberId);
+				.forEach(temporalToTask);
 	}
 }

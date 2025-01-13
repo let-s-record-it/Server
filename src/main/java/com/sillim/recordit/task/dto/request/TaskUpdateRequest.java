@@ -4,7 +4,6 @@ import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.global.validation.common.ColorHexValid;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
-import com.sillim.recordit.task.domain.TaskRemoveStrategy;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -13,23 +12,32 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 
 public record TaskUpdateRequest(
-		@NotNull TaskRemoveStrategy removeStrategy,
-		@NotBlank @Length(max = 30) String title,
-		@Length(max = 500) String description,
+		@NotBlank @Length(max = 30) String newTitle,
+		@Length(max = 500) String newDescription,
 		@NotNull LocalDate date,
-		@ColorHexValid String colorHex,
-		@NotNull Long calendarId,
+		@ColorHexValid String newColorHex,
+		@NotNull Long newCalendarId,
 		@NotNull Boolean isRepeated,
-		@Validated TaskRepetitionUpdateRequest repetition,
-		Long relatedMonthlyGoalId,
-		Long relatedWeeklyGoalId) {
+		@Validated TaskRepetitionUpdateRequest newRepetition,
+		@NotNull TaskGroupUpdateRequest newTaskGroup) {
 
 	public Task toTask(TemporalAmount plusAmount, Calendar calendar, TaskGroup taskGroup) {
 		return Task.builder()
-				.title(title)
-				.description(description)
-				.date(repetition.repetitionStartDate().plus(plusAmount))
-				.colorHex(colorHex)
+				.title(newTitle)
+				.description(newDescription)
+				.date(newRepetition.repetitionStartDate().plus(plusAmount))
+				.colorHex(newColorHex)
+				.calendar(calendar)
+				.taskGroup(taskGroup)
+				.build();
+	}
+
+	public Task toTask(Calendar calendar, TaskGroup taskGroup) {
+		return Task.builder()
+				.title(newTitle)
+				.description(newDescription)
+				.date(date)
+				.colorHex(newColorHex)
 				.calendar(calendar)
 				.taskGroup(taskGroup)
 				.build();
