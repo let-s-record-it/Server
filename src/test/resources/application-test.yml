@@ -12,20 +12,13 @@ spring:
   h2:
     console:
       enabled: true
-
-cloud:
-  aws:
-    credentials:
-      access-key: accessKey
-      secret-key: secretKey
-    s3:
-      endpoint: endpoint
-      region: region
-    stack:
-      auto: false
-
-aws:
-  cloudfront-url: https://cloudfront.net
+  cloud:
+    gcp:
+      storage:
+        credentials:
+          location: ${GCP_CREDENTIAL_LOCATION}
+        project-id: projectId
+        bucket: bucketName
 
 app-key:
   kakao: 9271001b53c4033a3fda0465978165fb
