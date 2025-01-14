@@ -16,7 +16,7 @@ spring:
     gcp:
       storage:
         credentials:
-          location: ${GCP_CREDENTIAL_LOCATION}
+          location: classpath:keyfile.json
         project-id: projectId
         bucket: bucketName
 
