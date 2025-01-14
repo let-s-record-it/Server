@@ -5,7 +5,6 @@ import com.google.cloud.storage.Storage;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.FileNotFoundException;
 import com.sillim.recordit.global.util.FileUtils;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
