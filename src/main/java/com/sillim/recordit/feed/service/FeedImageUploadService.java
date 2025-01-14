@@ -55,14 +55,6 @@ public class FeedImageUploadService {
 		return imageUrl;
 	}
 
-	private static void deleteImageFile(File convertImageFile) {
-		if (convertImageFile.delete()) {
-			log.info("[FeedImageUploadService.upload] 임시 파일이 삭제되었습니다.");
-		} else {
-			log.info("[FeedImageUploadService.upload] 임시 파일을 삭제하지 못했습니다.");
-		}
-	}
-
 	private void validateImageIsEmpty(MultipartFile image) {
 		if (image.isEmpty()) {
 			throw new FileNotFoundException(ErrorCode.FILE_NOT_FOUND);

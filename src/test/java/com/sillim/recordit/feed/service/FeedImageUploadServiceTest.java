@@ -59,7 +59,6 @@ class FeedImageUploadServiceTest {
 	@Test
 	@DisplayName("피드 이미지가 비어있으면 FileNotFoundException이 발생한다.")
 	void throwFileNotFoundExceptionIfFeedImageFileNotExists() {
-		long feedId = 1L;
 		MockMultipartFile multipartFile =
 				new MockMultipartFile(
 						"images", "image.jpg", "text/plain", "".getBytes(StandardCharsets.UTF_8));
