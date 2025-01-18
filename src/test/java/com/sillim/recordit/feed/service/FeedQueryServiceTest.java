@@ -58,13 +58,35 @@ class FeedQueryServiceTest {
 		Member member = MemberFixture.DEFAULT.getMember();
 		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
 		given(feed.getId()).willReturn(1L);
-		given(feedRepository.findPaginatedOrderByCreatedAtDesc(eq(pageRequest)))
+		given(feedRepository.findOrderByCreatedAtDesc(eq(pageRequest)))
 				.willReturn(new SliceImpl<>(List.of(feed), pageRequest, false));
 		given(feedLikeQueryService.isLiked(any(), any())).willReturn(true);
 		given(feedScrapQueryService.isScraped(any(), any())).willReturn(true);
 
 		SliceResponse<FeedInListResponse> feeds =
-				feedQueryService.searchPaginatedRecentCreated(pageRequest, 1L);
+				feedQueryService.searchRecentCreated(pageRequest, 1L);
+
+		assertAll(
+				() -> {
+					assertThat(feeds.content()).hasSize(1);
+					assertThat(feeds.isLast()).isTrue();
+				});
+	}
+
+	@Test
+	@DisplayName("최신 순으로 pagination해서 특정 Member의 피드 목록을 조회할 수 있다.")
+	void searchFeedByMemberIdPaginatedOrderByRecentCreated() {
+		PageRequest pageRequest = PageRequest.of(1, 10);
+		Member member = MemberFixture.DEFAULT.getMember();
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		given(feed.getId()).willReturn(1L);
+		given(feedRepository.findByMemberIdOrderByCreatedAtDesc(eq(pageRequest), eq(1L)))
+				.willReturn(new SliceImpl<>(List.of(feed), pageRequest, false));
+		given(feedLikeQueryService.isLiked(any(), any())).willReturn(true);
+		given(feedScrapQueryService.isScraped(any(), any())).willReturn(true);
+
+		SliceResponse<FeedInListResponse> feeds =
+				feedQueryService.searchRecentCreatedByMemberId(pageRequest, 1L);
 
 		assertAll(
 				() -> {
