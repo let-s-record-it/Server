@@ -53,8 +53,14 @@ public class FeedController {
 	@GetMapping
 	public ResponseEntity<SliceResponse<FeedInListResponse>> feedList(
 			Pageable pageable, @CurrentMember Member member) {
+		return ResponseEntity.ok(feedQueryService.searchRecentCreated(pageable, member.getId()));
+	}
+
+	@GetMapping("/my-feed")
+	public ResponseEntity<SliceResponse<FeedInListResponse>> myFeedList(
+			Pageable pageable, @CurrentMember Member member) {
 		return ResponseEntity.ok(
-				feedQueryService.searchPaginatedRecentCreated(pageable, member.getId()));
+				feedQueryService.searchRecentCreatedByMemberId(pageable, member.getId()));
 	}
 
 	@PutMapping("/{feedId}")
