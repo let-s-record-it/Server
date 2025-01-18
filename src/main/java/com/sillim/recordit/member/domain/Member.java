@@ -71,4 +71,9 @@ public class Member extends BaseTime {
 	public boolean equalsId(Long id) {
 		return this.id.equals(id);
 	}
+
+	public void modifyInfo(String name, String job) {
+		this.name = name;
+		this.job = job;
+	}
 }
