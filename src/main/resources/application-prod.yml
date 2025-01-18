@@ -5,20 +5,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-
-cloud:
-  aws:
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-    s3:
-      endpoint: ${S3_ENDPOINT}
-      region: ${AWS_REGION}
-    stack:
-      auto: false
-
-aws:
-  cloudfront-url: ${CLOUDFRONT_URL}
+  cloud:
+    gcp:
+      storage:
+        credentials:
+          location: ${GCP_CREDENTIAL_LOCATION}
+        project-id: ${GCP_PROJECT_ID}
+        bucket: ${GCP_BUCKET_NAME}
 
 app-key:
   kakao: ${KAKAO_APP_KEY}
