@@ -243,12 +243,11 @@ class CustomScheduleRepositoryTest {
 		em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
 		em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
 		em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
-		scheduleRepository.findSchedulesInGroup(scheduleGroup.getId()).forEach(Schedule::delete);
+		scheduleRepository.findGroupSchedules(scheduleGroup.getId()).forEach(Schedule::delete);
 
 		em.flush();
 		em.clear();
-		List<Schedule> foundSchedule =
-				scheduleRepository.findSchedulesInGroup(scheduleGroup.getId());
+		List<Schedule> foundSchedule = scheduleRepository.findGroupSchedules(scheduleGroup.getId());
 
 		assertThat(foundSchedule).hasSize(0);
 	}
@@ -277,13 +276,12 @@ class CustomScheduleRepositoryTest {
 						LocalDateTime.of(2024, 1, 7, 0, 0),
 						LocalDateTime.of(2024, 1, 8, 0, 0)));
 		scheduleRepository
-				.findSchedulesInGroupAfter(scheduleGroup.getId(), schedule.getStartDateTime())
+				.findGroupSchedulesAfterCurrent(scheduleGroup.getId(), schedule.getStartDateTime())
 				.forEach(Schedule::delete);
 
 		em.flush();
 		em.clear();
-		List<Schedule> foundSchedule =
-				scheduleRepository.findSchedulesInGroup(scheduleGroup.getId());
+		List<Schedule> foundSchedule = scheduleRepository.findGroupSchedules(scheduleGroup.getId());
 
 		assertThat(foundSchedule).hasSize(1);
 	}

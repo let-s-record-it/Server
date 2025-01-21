@@ -21,7 +21,7 @@ public class NaverAuthenticationService implements AuthenticationService {
 	}
 
 	@Override
-	public MemberInfo getMemberInfoByAccessToken(String accessToken) {
+	public MemberInfo getMemberInfoByAccessToken(String accessToken, String pushAlarmToken) {
 		NaverUserInfo naverUserInfo =
 				naverUserInfoClient.getNaverUserInfo(
 						TokenType.BEARER.getValueWithSpace() + accessToken);
@@ -30,6 +30,7 @@ public class NaverAuthenticationService implements AuthenticationService {
 				.oauthAccount(naverUserInfo.response().id())
 				.oAuthProvider(OAuthProvider.NAVER)
 				.name(naverUserInfo.response().nickname())
+				.pushAlarmToken(pushAlarmToken)
 				.build();
 	}
 }

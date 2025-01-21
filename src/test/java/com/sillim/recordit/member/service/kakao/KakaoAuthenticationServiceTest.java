@@ -89,7 +89,8 @@ class KakaoAuthenticationServiceTest {
 				.willReturn(kakaoUserInfo);
 
 		MemberInfo memberInfo =
-				kakaoAuthenticationService.getMemberInfoByAccessToken("accessToken");
+				kakaoAuthenticationService.getMemberInfoByAccessToken(
+						"accessToken", "pushAlarmToken");
 
 		assertThat(memberInfo.oauthAccount()).isEqualTo(kakaoUserInfo.id().toString());
 	}

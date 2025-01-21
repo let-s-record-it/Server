@@ -78,6 +78,12 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-gcp-starter:1.2.8.RELEASE"
     implementation "org.springframework.cloud:spring-cloud-gcp-storage:1.2.8.RELEASE"
 
+    // firebase
+    implementation 'com.google.firebase:firebase-admin:9.4.3'
+
+    // quartz
+    implementation 'org.springframework.boot:spring-boot-starter-quartz:3.4.1'
+
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarService;
@@ -19,6 +20,7 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
+import com.sillim.recordit.pushalarm.service.PushAlarmService;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.RepetitionType;
 import com.sillim.recordit.schedule.domain.Schedule;
@@ -38,6 +40,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.quartz.SchedulerException;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleCommandServiceTest {
@@ -46,11 +49,12 @@ class ScheduleCommandServiceTest {
 	@Mock CalendarService calendarService;
 	@Mock ScheduleGroupService scheduleGroupService;
 	@Mock RepetitionPatternService repetitionPatternService;
+	@Mock PushAlarmService pushAlarmService;
 	@InjectMocks ScheduleCommandService scheduleCommandService;
 
 	@Test
 	@DisplayName("반복 없는 schedule을 추가할 수 있다.")
-	void addSchedule() {
+	void addSchedule() throws FirebaseMessagingException, SchedulerException {
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(MemberFixture.DEFAULT.getMember());
 		ScheduleAddRequest scheduleAddRequest =
 				new ScheduleAddRequest(
@@ -87,6 +91,7 @@ class ScheduleCommandServiceTest {
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
+		given(scheduleGroupService.newScheduleGroup(any())).willReturn(scheduleGroup);
 
 		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest, 1L);
 
@@ -106,7 +111,7 @@ class ScheduleCommandServiceTest {
 
 	@Test
 	@DisplayName("반복되는 schedule들을 추가할 수 있다.")
-	void addRepeatingSchedules() {
+	void addRepeatingSchedules() throws FirebaseMessagingException, SchedulerException {
 		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
 		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
@@ -160,7 +165,7 @@ class ScheduleCommandServiceTest {
 						.scheduleGroup(scheduleGroup)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(scheduleGroupService.addScheduleGroup(true)).willReturn(scheduleGroup);
+		given(scheduleGroupService.newScheduleGroup(true)).willReturn(scheduleGroup);
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 		given(repetitionPatternService.addRepetitionPattern(repetitionUpdateRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
@@ -242,7 +247,7 @@ class ScheduleCommandServiceTest {
 
 	@Test
 	@DisplayName("단일 일정을 수정할 수 있다.")
-	void modifySchedule() {
+	void modifySchedule() throws SchedulerException {
 		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
 		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
@@ -288,7 +293,7 @@ class ScheduleCommandServiceTest {
 		given(member.equalsId(anyLong())).willReturn(true);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
 		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar);
-		given(scheduleGroupService.addScheduleGroup(true)).willReturn(scheduleGroup);
+		given(scheduleGroupService.newScheduleGroup(true)).willReturn(scheduleGroup);
 		given(repetitionPatternService.addRepetitionPattern(repetitionUpdateRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
 
@@ -310,7 +315,7 @@ class ScheduleCommandServiceTest {
 
 	@Test
 	@DisplayName("그룹 일정을 반복이 있는 그룹 일정으로 수정할 수 있다.")
-	void modifySchedulesInGroupToRepeated() {
+	void modifyGroupSchedulesToRepeated() throws SchedulerException {
 		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
 		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
@@ -357,20 +362,20 @@ class ScheduleCommandServiceTest {
 		given(scheduleGroup.getId()).willReturn(1L);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
 		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar);
-		given(scheduleRepository.findSchedulesInGroup(eq(1L))).willReturn(List.of(schedule));
+		given(scheduleRepository.findGroupSchedules(eq(1L))).willReturn(List.of(schedule));
 		given(
 						repetitionPatternService.updateRepetitionPattern(
 								repetitionUpdateRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
 
-		scheduleCommandService.modifySchedulesInGroup(scheduleModifyRequest, scheduleId, memberId);
+		scheduleCommandService.modifyGroupSchedules(scheduleModifyRequest, scheduleId, memberId);
 
 		then(scheduleRepository).should(times(32)).save(any(Schedule.class));
 	}
 
 	@Test
 	@DisplayName("그룹 일정을 반복이 없는 그룹 일정으로 수정할 수 있다.")
-	void modifySchedulesInGroupToNotRepeated() {
+	void modifyGroupSchedulesToNotRepeated() throws SchedulerException {
 		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
 		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
@@ -414,9 +419,9 @@ class ScheduleCommandServiceTest {
 		given(scheduleGroup.getId()).willReturn(1L);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
 		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar);
-		given(scheduleRepository.findSchedulesInGroup(eq(1L))).willReturn(List.of(schedule));
+		given(scheduleRepository.findGroupSchedules(eq(1L))).willReturn(List.of(schedule));
 
-		scheduleCommandService.modifySchedulesInGroup(scheduleModifyRequest, scheduleId, memberId);
+		scheduleCommandService.modifyGroupSchedules(scheduleModifyRequest, scheduleId, memberId);
 
 		then(scheduleGroup).should(times(1)).modifyNotRepeated();
 		then(scheduleRepository).should(times(1)).save(any(Schedule.class));
@@ -424,8 +429,10 @@ class ScheduleCommandServiceTest {
 
 	@Test
 	@DisplayName("일정을 삭제할 수 있다.")
-	void removeSchedule() {
+	void removeSchedule() throws SchedulerException {
 		Schedule schedule = mock(Schedule.class);
+		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
 		scheduleCommandService.removeSchedule(schedule.getId(), 1L);
@@ -435,40 +442,40 @@ class ScheduleCommandServiceTest {
 
 	@Test
 	@DisplayName("그룹 내 일정을 삭제할 수 있다.")
-	void removeSchedulesInGroup() {
+	void removeGroupSchedules() throws SchedulerException {
 		Schedule schedule = mock(Schedule.class);
 		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
 		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
 		given(scheduleGroup.getId()).willReturn(1L);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
-		given(scheduleRepository.findSchedulesInGroup(eq(1L)))
+		given(scheduleRepository.findGroupSchedules(eq(1L)))
 				.willReturn(List.of(schedule, schedule, schedule));
 
-		scheduleCommandService.removeSchedulesInGroup(schedule.getId(), 1L);
+		scheduleCommandService.removeGroupSchedules(schedule.getId(), 1L);
 
 		then(schedule).should(times(3)).delete();
 	}
 
 	@Test
 	@DisplayName("그룹 내 특정 일 이후 일정을 삭제할 수 있다.")
-	void removeSchedulesInGroupAfter() {
+	void removeGroupSchedulesAfter() {
 		Schedule schedule = mock(Schedule.class);
 		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
 		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
 		given(schedule.getStartDateTime()).willReturn(LocalDateTime.of(2024, 1, 1, 0, 0));
 		given(scheduleGroup.getId()).willReturn(1L);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
-		given(scheduleRepository.findSchedulesInGroupAfter(eq(1L), any(LocalDateTime.class)))
+		given(scheduleRepository.findGroupSchedulesAfterCurrent(eq(1L), any(LocalDateTime.class)))
 				.willReturn(List.of(schedule, schedule, schedule));
 
-		scheduleCommandService.removeSchedulesInGroupAfter(schedule.getId(), 1L);
+		scheduleCommandService.removeGroupSchedulesAfterCurrent(schedule.getId(), 1L);
 
 		then(schedule).should(times(3)).delete();
 	}
 
 	@Test
 	@DisplayName("그룹 내 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
-	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveSchedulesInGroup() {
+	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveGroupSchedules() {
 		Member member = mock(Member.class);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
@@ -476,14 +483,14 @@ class ScheduleCommandServiceTest {
 		given(member.equalsId(anyLong())).willReturn(false);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
-		assertThatCode(() -> scheduleCommandService.removeSchedulesInGroup(schedule.getId(), 1L))
+		assertThatCode(() -> scheduleCommandService.removeGroupSchedules(schedule.getId(), 1L))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
 
 	@Test
 	@DisplayName("그룹 내 특정 일 이후 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
-	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveSchedulesInGroupAfter() {
+	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveGroupSchedulesAfter() {
 		Member member = mock(Member.class);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
@@ -493,7 +500,7 @@ class ScheduleCommandServiceTest {
 
 		assertThatCode(
 						() ->
-								scheduleCommandService.removeSchedulesInGroupAfter(
+								scheduleCommandService.removeGroupSchedulesAfterCurrent(
 										schedule.getId(), 1L))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());

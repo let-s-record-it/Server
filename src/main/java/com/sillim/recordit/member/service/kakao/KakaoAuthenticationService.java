@@ -32,7 +32,7 @@ public class KakaoAuthenticationService implements AuthenticationService {
 	}
 
 	@Override
-	public MemberInfo getMemberInfoByAccessToken(String accessToken) {
+	public MemberInfo getMemberInfoByAccessToken(String accessToken, String pushAlarmToken) {
 		KakaoUserInfo kakaoUserInfo =
 				kakaoUserInfoClient.getKakaoUserInfo(
 						TokenType.BEARER.getValueWithSpace() + accessToken);
@@ -41,6 +41,7 @@ public class KakaoAuthenticationService implements AuthenticationService {
 				.oauthAccount(kakaoUserInfo.id().toString())
 				.oAuthProvider(OAuthProvider.KAKAO)
 				.name(kakaoUserInfo.kakaoAccount().profile().nickname())
+				.pushAlarmToken(pushAlarmToken)
 				.build();
 	}
 }

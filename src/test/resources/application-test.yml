@@ -20,6 +20,10 @@ spring:
         project-id: projectId
         bucket: bucketName
 
+firebase:
+  credentials:
+    location: classpath:keyfile.json
+
 app-key:
   kakao: 9271001b53c4033a3fda0465978165fb
   google: 418252766261-ns8p3tb4otr34b000gk29rbbl464qsko.apps.googleusercontent.com
