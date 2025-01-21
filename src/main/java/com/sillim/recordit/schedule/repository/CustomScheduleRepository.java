@@ -14,7 +14,7 @@ public interface CustomScheduleRepository {
 
 	List<Schedule> findScheduleInDay(Long calendarId, LocalDate date);
 
-	List<Schedule> findSchedulesInGroup(Long scheduleGroupId);
+	List<Schedule> findGroupSchedules(Long scheduleGroupId);
 
-	List<Schedule> findSchedulesInGroupAfter(Long scheduleGroupId, LocalDateTime dateTime);
+	List<Schedule> findGroupSchedulesAfterCurrent(Long scheduleGroupId, LocalDateTime dateTime);
 }

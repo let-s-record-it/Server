@@ -65,14 +65,16 @@ public class LoginService {
 								() ->
 										signupService.signup(
 												authenticationService.getMemberInfoByAccessToken(
-														loginRequest.accessToken())))
+														loginRequest.accessToken(),
+														loginRequest.pushAlarmToken())))
 						.getId());
 	}
 
 	private AuthorizationToken loginWithoutOidc(
 			LoginRequest loginRequest, AuthenticationService authenticationService) {
 		MemberInfo memberInfo =
-				authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
+				authenticationService.getMemberInfoByAccessToken(
+						loginRequest.accessToken(), loginRequest.pushAlarmToken());
 		return jwtProvider.generateAuthorizationToken(
 				memberRepository
 						.findByAuthOauthAccount(memberInfo.oauthAccount())

@@ -27,6 +27,8 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 						.fetchJoin()
 						.leftJoin(schedule.calendar.member)
 						.fetchJoin()
+						.leftJoin(schedule.scheduleGroup)
+						.fetchJoin()
 						.where(schedule.id.eq(scheduleId).and(schedule.deleted.eq(false)))
 						.fetchOne());
 	}
@@ -57,7 +59,7 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public List<Schedule> findSchedulesInGroup(Long scheduleGroupId) {
+	public List<Schedule> findGroupSchedules(Long scheduleGroupId) {
 		return selectFrom(schedule)
 				.where(
 						schedule.scheduleGroup
@@ -67,7 +69,8 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.fetch();
 	}
 
-	public List<Schedule> findSchedulesInGroupAfter(Long scheduleGroupId, LocalDateTime dateTime) {
+	public List<Schedule> findGroupSchedulesAfterCurrent(
+			Long scheduleGroupId, LocalDateTime dateTime) {
 		return selectFrom(schedule)
 				.where(
 						schedule.scheduleGroup

@@ -367,7 +367,7 @@ class ScheduleControllerTest extends RestDocsTest {
 										1L)
 								.contentType(MediaType.APPLICATION_JSON));
 
-		verify(scheduleCommandService, times(1)).removeSchedulesInGroup(eq(1L), any());
+		verify(scheduleCommandService, times(1)).removeGroupSchedules(eq(1L), any());
 		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
@@ -389,7 +389,7 @@ class ScheduleControllerTest extends RestDocsTest {
 										1L)
 								.contentType(MediaType.APPLICATION_JSON));
 
-		verify(scheduleCommandService, times(1)).removeSchedulesInGroupAfter(eq(1L), any());
+		verify(scheduleCommandService, times(1)).removeGroupSchedulesAfterCurrent(eq(1L), any());
 		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
