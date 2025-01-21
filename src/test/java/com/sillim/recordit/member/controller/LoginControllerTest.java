@@ -32,7 +32,8 @@ class LoginControllerTest extends RestDocsTest {
 	void loginWithToken() throws Exception {
 		String accessToken = "accessToken";
 		String refreshToken = "refreshToken";
-		LoginRequest loginRequest = new LoginRequest("idToken", accessToken, OAuthProvider.KAKAO);
+		LoginRequest loginRequest =
+				new LoginRequest("idToken", accessToken, OAuthProvider.KAKAO, "token");
 		AuthorizationToken token = new AuthorizationToken(accessToken, refreshToken);
 		given(loginService.login(loginRequest)).willReturn(token);
 
