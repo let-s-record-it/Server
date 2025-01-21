@@ -20,6 +20,10 @@ spring:
         project-id: ${GCP_PROJECT_ID}
         bucket: ${GCP_BUCKET_NAME}
 
+firebase:
+  credentials:
+    location: ${FIREBASE_KEY_LOCATION}
+
 app-key:
   kakao: 9271001b53c4033a3fda0465978165fb
   google: 418252766261-ns8p3tb4otr34b000gk29rbbl464qsko.apps.googleusercontent.com
