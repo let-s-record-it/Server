@@ -9,5 +9,7 @@ public interface CustomFeedCommentRepository {
 
 	Slice<FeedComment> findPaginatedOrderByCreatedAtAsc(Pageable pageable, Long feedId);
 
+	Slice<FeedComment> findByMemberIdOrderByCreatedAtAsc(Pageable pageable, Long memberId);
+
 	Optional<FeedComment> findByIdWithFetch(Long commentId);
 }
