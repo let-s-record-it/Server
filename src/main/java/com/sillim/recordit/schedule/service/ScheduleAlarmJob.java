@@ -6,6 +6,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 
 @Slf4j
@@ -13,14 +14,18 @@ public class ScheduleAlarmJob implements Job {
 
 	@Override
 	public void execute(JobExecutionContext context) {
-		String title = context.getJobDetail().getJobDataMap().getString("title");
-		String body = context.getJobDetail().getJobDataMap().getString("body");
-		String pushAlarmToken = context.getJobDetail().getJobDataMap().getString("pushAlarmToken");
+		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+		String title = jobDataMap.getString("title");
+		String body = jobDataMap.getString("body");
+		String pushAlarmToken = jobDataMap.getString("pushAlarmToken");
+		String scheduleId = String.valueOf(jobDataMap.getLong("scheduleId"));
+
 		try {
 			Message message =
 					Message.builder()
 							.setNotification(
 									Notification.builder().setTitle(title).setBody(body).build())
+							.putData("scheduleId", scheduleId)
 							.setToken(pushAlarmToken)
 							.build();
 

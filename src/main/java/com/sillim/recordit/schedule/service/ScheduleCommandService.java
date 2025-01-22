@@ -16,6 +16,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAmount;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
@@ -74,6 +75,7 @@ public class ScheduleCommandService {
 				standSchedule
 						.getStartDateTime()
 						.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)")),
+				Map.of("scheduleId", standSchedule.getId()),
 				standSchedule.getScheduleAlarms().stream()
 						.map(ScheduleAlarm::getAlarmTime)
 						.toList());
@@ -117,6 +119,7 @@ public class ScheduleCommandService {
 				schedule.getTitle(),
 				schedule.getStartDateTime()
 						.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)")),
+				Map.of("scheduleId", schedule.getId()),
 				schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList());
 
 		if (request.isRepeated()) {
@@ -165,6 +168,7 @@ public class ScheduleCommandService {
 				SCHEDULE_GROUP_PREFIX + memberId + "/" + scheduleGroup.getId(),
 				request.title(),
 				request.startDateTime().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)")),
+				Map.of("scheduleId", schedule.getId()),
 				request.alarmTimes());
 	}
 
