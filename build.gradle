@@ -145,6 +145,7 @@ jacocoTestReport {
                     fileTree(dir: it, excludes: [
                             '*.dto.*',
                             '*.util.LoggingUtils',
+                            '*.*Config',
                     ] + QDomains)
                 })
         )
@@ -174,6 +175,7 @@ jacocoTestCoverageVerification {
             excludes = [
                     '*.dto.*',
                     '*.util.LoggingUtils',
+                    '*.*Config',
             ] + QDomains
         }
     }
