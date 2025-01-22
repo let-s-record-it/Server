@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class PushAlarmService {
 			String jobGroupName,
 			String title,
 			String body,
+			Map<String, Object> payload,
 			List<LocalDateTime> dateTimes)
 			throws SchedulerException {
 		Member member = memberQueryService.findByMemberId(memberId);
@@ -47,6 +49,11 @@ public class PushAlarmService {
 			job.getJobDataMap().put("title", title);
 			job.getJobDataMap().put("body", body);
 			job.getJobDataMap().put("pushAlarmToken", member.getPushAlarmToken());
+			payload.forEach(
+					(key, value) -> {
+						log.info("{} {}", key, value);
+						job.getJobDataMap().put(key, value);
+					});
 			Date date = Date.from(alarm.atZone(ZoneId.systemDefault()).toInstant());
 			Trigger trigger =
 					TriggerBuilder.newTrigger()

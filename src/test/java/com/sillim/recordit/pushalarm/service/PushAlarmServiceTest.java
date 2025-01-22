@@ -15,6 +15,7 @@ import com.sillim.recordit.member.service.MemberQueryService;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,8 @@ class PushAlarmServiceTest {
 		List<LocalDateTime> alarmTimes = List.of(LocalDateTime.of(2024, 1, 1, 0, 0));
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 
-		pushAlarmService.reservePushAlarmJobs(memberId, jobGroupName, title, body, alarmTimes);
+		pushAlarmService.reservePushAlarmJobs(
+				memberId, jobGroupName, title, body, Map.of("test", "test"), alarmTimes);
 
 		assertAll(
 				() -> {
