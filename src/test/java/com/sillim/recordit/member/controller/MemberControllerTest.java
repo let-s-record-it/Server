@@ -8,6 +8,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sillim.recordit.feed.service.FeedCommentQueryService;
 import com.sillim.recordit.member.dto.request.ProfileModifyRequest;
 import com.sillim.recordit.member.service.MemberCommandService;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
 class MemberControllerTest extends RestDocsTest {
 
 	@MockBean MemberCommandService memberCommandService;
+	@MockBean FeedCommentQueryService feedCommentQueryService;
 
 	@Test
 	@DisplayName("자신의 정보를 조회한다.")
@@ -48,5 +50,16 @@ class MemberControllerTest extends RestDocsTest {
 
 		perform.andDo(print())
 				.andDo(document("profile-modify", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("자신의 피드 댓글들을 조회한다.")
+	void myFeedComments() throws Exception {
+		ResultActions perform = mockMvc.perform(get("/api/v1/members/me/comments"));
+
+		perform.andExpect(status().isOk());
+
+		perform.andDo(print())
+				.andDo(document("my-feed-comments", getDocumentRequest(), getDocumentResponse()));
 	}
 }
