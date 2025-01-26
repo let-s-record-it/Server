@@ -24,7 +24,12 @@ public enum MemberFixture {
 	private final List<MemberRole> memberRole;
 
 	MemberFixture(
-			Auth auth, String name, String job, String profileImageUrl, Boolean deleted, List<MemberRole> memberRole) {
+			Auth auth,
+			String name,
+			String job,
+			String profileImageUrl,
+			Boolean deleted,
+			List<MemberRole> memberRole) {
 		this.auth = auth;
 		this.name = name;
 		this.job = job;

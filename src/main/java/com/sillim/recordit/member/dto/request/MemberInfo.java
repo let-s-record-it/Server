@@ -6,9 +6,11 @@ import com.sillim.recordit.member.domain.OAuthProvider;
 import lombok.Builder;
 
 @Builder
-public record MemberInfo(String oauthAccount, OAuthProvider oAuthProvider, String name, String profileImageUrl) {
+public record MemberInfo(
+		String oauthAccount, OAuthProvider oAuthProvider, String name, String profileImageUrl) {
 
 	public Member toMember() {
-		return Member.createNoJobMember(new Auth(oauthAccount, oAuthProvider), name, profileImageUrl);
+		return Member.createNoJobMember(
+				new Auth(oauthAccount, oAuthProvider), name, profileImageUrl);
 	}
 }

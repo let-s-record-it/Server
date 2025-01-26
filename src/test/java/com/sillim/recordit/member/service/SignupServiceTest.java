@@ -40,7 +40,8 @@ class SignupServiceTest {
 				.willReturn(
 						Calendar.builder().title("일반").colorHex("ff40d974").member(target).build());
 
-		Member member = signupService.signup(new MemberInfo(account, provider, name, profileImageUrl));
+		Member member =
+				signupService.signup(new MemberInfo(account, provider, name, profileImageUrl));
 
 		assertThat(member.getAuth().getOauthAccount()).isEqualTo(account);
 		assertThat(member.getAuth().getOauthProvider()).isEqualTo(provider);
