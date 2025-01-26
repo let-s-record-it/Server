@@ -7,5 +7,5 @@ public interface AuthenticationService {
 
 	String authenticate(IdToken idToken);
 
-	MemberInfo getMemberInfoByAccessToken(String accessToken, String pushAlarmToken);
+	MemberInfo getMemberInfoByAccessToken(String accessToken);
 }
