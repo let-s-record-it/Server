@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -17,22 +18,28 @@ public class ScheduleAlarmJob implements Job {
 		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 		String title = jobDataMap.getString("title");
 		String body = jobDataMap.getString("body");
-		String pushAlarmToken = jobDataMap.getString("pushAlarmToken");
+		List<String> fcmTokens = (List<String>) jobDataMap.get("fcmTokens");
 		String scheduleId = String.valueOf(jobDataMap.getLong("scheduleId"));
 
-		try {
-			Message message =
-					Message.builder()
-							.setNotification(
-									Notification.builder().setTitle(title).setBody(body).build())
-							.putData("scheduleId", scheduleId)
-							.setToken(pushAlarmToken)
-							.build();
+		fcmTokens.forEach(
+				fcmToken -> {
+					try {
+						Message message =
+								Message.builder()
+										.setNotification(
+												Notification.builder()
+														.setTitle(title)
+														.setBody(body)
+														.build())
+										.putData("scheduleId", scheduleId)
+										.setToken(fcmToken)
+										.build();
 
-			String response = FirebaseMessaging.getInstance().send(message);
-			log.info("send push message response: {}", response);
-		} catch (FirebaseMessagingException e) {
-			throw new RuntimeException(e);
-		}
+						String response = FirebaseMessaging.getInstance().send(message);
+						log.info("send push message response: {}", response);
+					} catch (FirebaseMessagingException e) {
+						throw new RuntimeException(e);
+					}
+				});
 	}
 }

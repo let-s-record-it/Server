@@ -34,15 +34,18 @@ class SignupServiceTest {
 		String account = target.getAuth().getOauthAccount();
 		OAuthProvider provider = target.getAuth().getOauthProvider();
 		String name = target.getName();
+		String profileImageUrl = target.getProfileImageUrl();
 		given(memberRepository.save(any(Member.class))).willReturn(target);
 		given(calendarService.addCalendar(any(), eq(target.getId())))
 				.willReturn(
 						Calendar.builder().title("일반").colorHex("ff40d974").member(target).build());
 
-		Member member = signupService.signup(new MemberInfo(account, provider, name, "token"));
+		Member member =
+				signupService.signup(new MemberInfo(account, provider, name, profileImageUrl));
 
 		assertThat(member.getAuth().getOauthAccount()).isEqualTo(account);
 		assertThat(member.getAuth().getOauthProvider()).isEqualTo(provider);
 		assertThat(member.getName()).isEqualTo(name);
+		assertThat(member.getProfileImageUrl()).isEqualTo(profileImageUrl);
 	}
 }

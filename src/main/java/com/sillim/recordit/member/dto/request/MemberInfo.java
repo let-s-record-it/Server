@@ -7,10 +7,10 @@ import lombok.Builder;
 
 @Builder
 public record MemberInfo(
-		String oauthAccount, OAuthProvider oAuthProvider, String name, String pushAlarmToken) {
+		String oauthAccount, OAuthProvider oAuthProvider, String name, String profileImageUrl) {
 
 	public Member toMember() {
 		return Member.createNoJobMember(
-				new Auth(oauthAccount, oAuthProvider), name, pushAlarmToken);
+				new Auth(oauthAccount, oAuthProvider), name, profileImageUrl);
 	}
 }

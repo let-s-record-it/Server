@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
-import com.sillim.recordit.member.service.MemberQueryService;
+import com.sillim.recordit.member.service.MemberDeviceService;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +29,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 @ExtendWith(MockitoExtension.class)
 class PushAlarmServiceTest {
 
-	@Mock MemberQueryService memberQueryService;
+	@Mock MemberDeviceService memberDeviceService;
 	@Mock Scheduler scheduler;
 	@InjectMocks PushAlarmService pushAlarmService;
 
@@ -43,9 +43,11 @@ class PushAlarmServiceTest {
 		String title = "title";
 		String body = "body";
 		Member member =
-				Member.createNoJobMember(new Auth("12345", OAuthProvider.KAKAO), "name", "token");
+				Member.createNoJobMember(
+						new Auth("12345", OAuthProvider.KAKAO), "name", "https://image.url");
 		List<LocalDateTime> alarmTimes = List.of(LocalDateTime.of(2024, 1, 1, 0, 0));
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
+		given(memberDeviceService.searchFcmTokensByMemberId(eq(memberId)))
+				.willReturn(List.of("token"));
 
 		pushAlarmService.reservePushAlarmJobs(
 				memberId, jobGroupName, title, body, Map.of("test", "test"), alarmTimes);
