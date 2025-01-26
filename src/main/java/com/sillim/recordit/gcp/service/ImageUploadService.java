@@ -1,4 +1,4 @@
-package com.sillim.recordit.feed.service;
+package com.sillim.recordit.gcp.service;
 
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -20,26 +20,26 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class FeedImageUploadService {
+public class ImageUploadService {
 
 	private final Storage storage;
 
 	@Value("${spring.cloud.gcp.storage.bucket}")
 	private String bucketName;
 
-	public List<String> upload(List<MultipartFile> images) throws IOException {
-		List<String> feedImageUrls = new ArrayList<>();
+	public List<String> uploadImages(List<MultipartFile> images) throws IOException {
+		List<String> imageUrls = new ArrayList<>();
 		if (images == null) {
-			return feedImageUrls;
+			return imageUrls;
 		}
 
 		for (MultipartFile image : images) {
-			feedImageUrls.add(upload(image));
+			imageUrls.add(uploadImage(image));
 		}
-		return feedImageUrls;
+		return imageUrls;
 	}
 
-	private String upload(MultipartFile image) throws IOException {
+	public String uploadImage(MultipartFile image) throws IOException {
 		validateImageIsEmpty(image);
 
 		String uuidFileName =

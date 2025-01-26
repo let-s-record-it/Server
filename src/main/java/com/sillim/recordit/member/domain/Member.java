@@ -86,4 +86,8 @@ public class Member extends BaseTime {
 		this.name = name;
 		this.job = job;
 	}
+
+	public void modifyProfileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
+	}
 }
