@@ -72,7 +72,7 @@ class LoginServiceTest {
 		Member member = MemberFixture.DEFAULT.getMember();
 		String idToken = "header.payload.signature";
 		String account = "account";
-		MemberInfo memberInfo = new MemberInfo(account, OAuthProvider.KAKAO, "name");
+		MemberInfo memberInfo = new MemberInfo(account, OAuthProvider.KAKAO, "name", "https://image.url");
 		given(kakaoAuthenticationService.authenticate(any(IdToken.class))).willReturn(account);
 		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.empty());
 		given(kakaoAuthenticationService.getMemberInfoByAccessToken(anyString()))
@@ -100,7 +100,7 @@ class LoginServiceTest {
 		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
 		Member member = MemberFixture.DEFAULT.getMember();
 		String account = "account";
-		MemberInfo memberInfo = new MemberInfo(account, OAuthProvider.NAVER, "name");
+		MemberInfo memberInfo = new MemberInfo(account, OAuthProvider.NAVER, "name", "https://image.url");
 		given(naverAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
 		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.of(member));
@@ -121,7 +121,7 @@ class LoginServiceTest {
 		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
 		Member member = MemberFixture.DEFAULT.getMember();
 		String account = "account";
-		MemberInfo memberInfo = new MemberInfo(account, OAuthProvider.NAVER, "name");
+		MemberInfo memberInfo = new MemberInfo(account, OAuthProvider.NAVER, "name", "https://image.url");
 		given(naverAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
 		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.empty());
