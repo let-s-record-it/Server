@@ -34,8 +34,7 @@ class NaverAuthenticationServiceTest {
 				.willReturn(naverUserInfo);
 
 		MemberInfo memberInfo =
-				naverAuthenticationService.getMemberInfoByAccessToken(
-						"accessToken", "pushAlarmToken");
+				naverAuthenticationService.getMemberInfoByAccessToken("accessToken");
 
 		assertThat(memberInfo.oauthAccount()).isEqualTo(naverUserInfo.response().id());
 	}

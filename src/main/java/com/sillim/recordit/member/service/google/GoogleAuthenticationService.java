@@ -30,7 +30,7 @@ public class GoogleAuthenticationService implements AuthenticationService {
 	}
 
 	@Override
-	public MemberInfo getMemberInfoByAccessToken(String accessToken, String pushAlarmToken) {
+	public MemberInfo getMemberInfoByAccessToken(String accessToken) {
 		GoogleUserInfo googleUserInfo =
 				googleUserInfoClient.getGoogleUserInfo(
 						TokenType.BEARER.getValueWithSpace() + accessToken);
@@ -39,7 +39,6 @@ public class GoogleAuthenticationService implements AuthenticationService {
 				.oauthAccount(googleUserInfo.sub())
 				.oAuthProvider(OAuthProvider.GOOGLE)
 				.name(googleUserInfo.name())
-				.pushAlarmToken(pushAlarmToken)
 				.build();
 	}
 }

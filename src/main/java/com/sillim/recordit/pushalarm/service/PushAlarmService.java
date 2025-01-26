@@ -1,7 +1,6 @@
 package com.sillim.recordit.pushalarm.service;
 
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.service.MemberQueryService;
+import com.sillim.recordit.member.service.MemberDeviceService;
 import com.sillim.recordit.schedule.service.ScheduleAlarmJob;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -22,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PushAlarmService {
 
+	private final MemberDeviceService memberDeviceService;
 	private final Scheduler scheduler;
-	private final MemberQueryService memberQueryService;
 
 	/**
 	 *
@@ -39,7 +38,7 @@ public class PushAlarmService {
 			Map<String, Object> payload,
 			List<LocalDateTime> dateTimes)
 			throws SchedulerException {
-		Member member = memberQueryService.findByMemberId(memberId);
+		List<String> fcmTokens = memberDeviceService.searchFcmTokensByMemberId(memberId);
 
 		for (LocalDateTime alarm : dateTimes) {
 			JobDetail job =
@@ -48,7 +47,7 @@ public class PushAlarmService {
 							.build();
 			job.getJobDataMap().put("title", title);
 			job.getJobDataMap().put("body", body);
-			job.getJobDataMap().put("pushAlarmToken", member.getPushAlarmToken());
+			job.getJobDataMap().put("fcmTokens", fcmTokens);
 			payload.forEach(
 					(key, value) -> {
 						log.info("{} {}", key, value);

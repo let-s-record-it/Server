@@ -40,35 +40,26 @@ public class Member extends BaseTime {
 	@Column(nullable = false)
 	private Boolean deleted;
 
-	@Column private String pushAlarmToken;
-
 	@Enumerated(EnumType.STRING)
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<MemberRole> memberRole;
 
 	@Builder
 	public Member(
-			Auth auth,
-			String name,
-			String job,
-			Boolean deleted,
-			String pushAlarmToken,
-			List<MemberRole> memberRole) {
+			Auth auth, String name, String job, Boolean deleted, List<MemberRole> memberRole) {
 		this.auth = auth;
 		this.name = name;
 		this.job = job;
 		this.deleted = deleted;
-		this.pushAlarmToken = pushAlarmToken;
 		this.memberRole = memberRole;
 	}
 
-	public static Member createNoJobMember(Auth auth, String name, String pushAlarmToken) {
+	public static Member createNoJobMember(Auth auth, String name) {
 		return Member.builder()
 				.auth(auth)
 				.name(name)
 				.job("")
 				.deleted(false)
-				.pushAlarmToken(pushAlarmToken)
 				.memberRole(List.of(MemberRole.ROLE_USER))
 				.build();
 	}
