@@ -42,7 +42,9 @@ class PushAlarmServiceTest {
 		String jobGroupName = memberId + "/" + scheduleGroupId + "/" + scheduleId;
 		String title = "title";
 		String body = "body";
-		Member member = Member.createNoJobMember(new Auth("12345", OAuthProvider.KAKAO), "name");
+		Member member =
+				Member.createNoJobMember(
+						new Auth("12345", OAuthProvider.KAKAO), "name", "https://image.url");
 		List<LocalDateTime> alarmTimes = List.of(LocalDateTime.of(2024, 1, 1, 0, 0));
 		given(memberDeviceService.searchFcmTokensByMemberId(eq(memberId)))
 				.willReturn(List.of("token"));
