@@ -79,8 +79,7 @@ class GoogleAuthenticationServiceTest {
 				.willReturn(googleUserInfo);
 
 		MemberInfo memberInfo =
-				googleAuthenticationService.getMemberInfoByAccessToken(
-						"accessToken", "pushAlarmToken");
+				googleAuthenticationService.getMemberInfoByAccessToken("accessToken");
 
 		assertThat(memberInfo.oauthAccount()).isEqualTo(googleUserInfo.sub());
 	}
