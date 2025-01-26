@@ -12,6 +12,7 @@ public record FeedCommentInListResponse(
 		long memberId,
 		String memberName,
 		String memberJob,
+		String memberProfileImageUrl,
 		boolean isOwner) {
 
 	public static FeedCommentInListResponse from(FeedComment feedComment, Long memberId) {
@@ -22,6 +23,7 @@ public record FeedCommentInListResponse(
 				.memberId(feedComment.getMember().getId())
 				.memberName(feedComment.getMember().getName())
 				.memberJob(feedComment.getMember().getJob())
+				.memberProfileImageUrl(feedComment.getMember().getProfileImageUrl())
 				.isOwner(feedComment.isOwner(memberId))
 				.build();
 	}
