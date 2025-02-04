@@ -1,9 +1,8 @@
 package com.sillim.recordit.invite.controller;
 
-import com.sillim.recordit.config.security.authenticate.CurrentMember;
+import com.sillim.recordit.invite.dto.response.InviteInfoResponse;
 import com.sillim.recordit.invite.dto.response.InviteLinkResponse;
 import com.sillim.recordit.invite.service.InviteService;
-import com.sillim.recordit.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,12 @@ public class InviteController {
 
 	@GetMapping("/{calenderId}")
 	public ResponseEntity<InviteLinkResponse> getInviteLink(@PathVariable Long calenderId) {
-		return ResponseEntity.ok(new InviteLinkResponse(inviteService.generateInviteLink(calenderId)));
+		return ResponseEntity.ok(
+				new InviteLinkResponse(inviteService.getOrGenerateInviteLink(calenderId)));
+	}
+
+	@GetMapping("/info/{inviteCode}")
+	public ResponseEntity<InviteInfoResponse> getInviteInfo(@PathVariable String inviteCode) {
+		return ResponseEntity.ok(inviteService.searchInviteInfo(inviteCode));
 	}
 }

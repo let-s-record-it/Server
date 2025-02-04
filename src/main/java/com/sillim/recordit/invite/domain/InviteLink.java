@@ -24,17 +24,22 @@ public class InviteLink extends BaseTime {
 	@Column(nullable = false)
 	private LocalDateTime expiredTime;
 
-    @Column(nullable = false)
-    private boolean expired;
+	@Column(nullable = false)
+	private boolean expired;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "calendar_id")
 	private Calendar calendar;
 
-	public InviteLink(String inviteCode, LocalDateTime expiredTime, boolean expired, Calendar calendar) {
+	public InviteLink(
+			String inviteCode, LocalDateTime expiredTime, boolean expired, Calendar calendar) {
 		this.inviteCode = inviteCode;
 		this.expiredTime = expiredTime;
-        this.expired = expired;
+		this.expired = expired;
 		this.calendar = calendar;
+	}
+
+	public void expire() {
+		this.expired = true;
 	}
 }
