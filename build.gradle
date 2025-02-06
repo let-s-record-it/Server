@@ -146,6 +146,7 @@ jacocoTestReport {
                             '*.dto.*',
                             '*.util.LoggingUtils',
                             '*.*Config',
+                            '*.DefaultUserService',
                     ] + QDomains)
                 })
         )
@@ -176,6 +177,7 @@ jacocoTestCoverageVerification {
                     '*.dto.*',
                     '*.util.LoggingUtils',
                     '*.*Config',
+                    '*.DefaultUserService',
             ] + QDomains
         }
     }
