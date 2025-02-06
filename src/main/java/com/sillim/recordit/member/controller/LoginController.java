@@ -30,7 +30,8 @@ public class LoginController {
 	}
 
 	@PostMapping("/web-login")
-	public ResponseEntity<OAuthTokenResponse> webLogin(@RequestBody WebLoginRequest webLoginRequest) {
+	public ResponseEntity<OAuthTokenResponse> webLogin(
+			@RequestBody WebLoginRequest webLoginRequest) {
 		log.info("token: {}", webLoginRequest.exchangeToken());
 		AuthorizationToken token = loginService.login(webLoginRequest.exchangeToken());
 		return ResponseEntity.ok(new OAuthTokenResponse(token.accessToken(), token.refreshToken()));

@@ -56,7 +56,8 @@ public class LoginService {
 	}
 
 	public AuthorizationToken login(String exchangeToken) {
-        return jwtProvider.generateAuthorizationToken(jwtValidator.getMemberIdIfValid(exchangeToken));
+		return jwtProvider.generateAuthorizationToken(
+				jwtValidator.getMemberIdIfValid(exchangeToken));
 	}
 
 	@Transactional

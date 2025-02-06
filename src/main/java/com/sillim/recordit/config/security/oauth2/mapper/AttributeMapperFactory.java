@@ -11,9 +11,10 @@ public class AttributeMapperFactory {
 	private final Map<OAuthProvider, AttributeMapper> mapperMap =
 			new EnumMap<>(OAuthProvider.class);
 
-	public AttributeMapperFactory(KakaoAttributeMapper kakaoAttributeMapper,
-								  NaverAttributeMapper naverAttributeMapper,
-								  GoogleAttributeMapper googleAttributeMapper) {
+	public AttributeMapperFactory(
+			KakaoAttributeMapper kakaoAttributeMapper,
+			NaverAttributeMapper naverAttributeMapper,
+			GoogleAttributeMapper googleAttributeMapper) {
 		mapperMap.put(OAuthProvider.KAKAO, kakaoAttributeMapper);
 		mapperMap.put(OAuthProvider.NAVER, naverAttributeMapper);
 		mapperMap.put(OAuthProvider.GOOGLE, googleAttributeMapper);

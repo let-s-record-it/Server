@@ -2,6 +2,7 @@ package com.sillim.recordit.config.security;
 
 import com.sillim.recordit.config.security.filter.AuthExceptionTranslationFilter;
 import com.sillim.recordit.config.security.filter.JwtAuthenticationFilter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +27,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -63,7 +62,9 @@ public class SecurityConfig {
 				.authorizeHttpRequests(
 						authorize ->
 								authorize
-										.requestMatchers(mvc.pattern("/api/v1/login"), mvc.pattern("/api/v1/web-login"))
+										.requestMatchers(
+												mvc.pattern("/api/v1/login"),
+												mvc.pattern("/api/v1/web-login"))
 										.permitAll()
 										.requestMatchers(mvc.pattern("api/**"))
 										.authenticated()
