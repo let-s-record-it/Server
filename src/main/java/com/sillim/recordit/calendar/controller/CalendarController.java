@@ -58,22 +58,19 @@ public class CalendarController {
 
 	@GetMapping("/{calendarId}/members")
 	public ResponseEntity<List<CalendarMemberResponse>> calendarMemberList(
-			@PathVariable Long calendarId, @CurrentMember Member member) {
+			@PathVariable Long calendarId) {
 		return ResponseEntity.ok(
-				calendarMemberService.searchCalendarMembers(calendarId, member.getId()).stream()
+				calendarMemberService.searchCalendarMembers(calendarId).stream()
 						.map(CalendarMemberResponse::of)
 						.toList());
 	}
 
 	@GetMapping("/{calendarId}/members/{memberId}")
 	public ResponseEntity<CalendarMemberResponse> calendarMemberDetails(
-			@PathVariable Long calendarId,
-			@PathVariable Long memberId,
-			@CurrentMember Member member) {
+			@PathVariable Long calendarId, @PathVariable Long memberId) {
 		return ResponseEntity.ok(
 				CalendarMemberResponse.of(
-						calendarMemberService.searchCalendarMember(
-								calendarId, memberId, member.getId())));
+						calendarMemberService.searchCalendarMember(calendarId, memberId)));
 	}
 
 	@PostMapping("/join")

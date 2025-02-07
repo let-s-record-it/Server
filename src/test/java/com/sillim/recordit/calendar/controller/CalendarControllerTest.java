@@ -113,7 +113,7 @@ class CalendarControllerTest extends RestDocsTest {
 		long calendarId = 1L;
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
 		CalendarMember calendarMember = new CalendarMember(member, calendar);
-		given(calendarMemberService.searchCalendarMembers(eq(calendarId), any()))
+		given(calendarMemberService.searchCalendarMembers(eq(calendarId)))
 				.willReturn(List.of(calendarMember));
 
 		ResultActions perform =
@@ -136,7 +136,7 @@ class CalendarControllerTest extends RestDocsTest {
 		long memberId = 1L;
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
 		CalendarMember calendarMember = new CalendarMember(member, calendar);
-		given(calendarMemberService.searchCalendarMember(eq(calendarId), eq(memberId), any()))
+		given(calendarMemberService.searchCalendarMember(eq(calendarId), eq(memberId)))
 				.willReturn(calendarMember);
 
 		ResultActions perform =

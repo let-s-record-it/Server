@@ -4,7 +4,6 @@ import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.repository.CalendarMemberRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
@@ -22,18 +21,14 @@ public class CalendarMemberService {
 	private final CalendarQueryService calendarQueryService;
 	private final MemberQueryService memberQueryService;
 
-	public CalendarMember searchCalendarMember(Long calendarId, Long memberId, Long ownerId) {
-		validateCalendarOwner(calendarId, ownerId);
-
+	public CalendarMember searchCalendarMember(Long calendarId, Long memberId) {
 		return calendarMemberRepository
 				.findCalendarMember(calendarId, memberId)
 				.orElseThrow(
 						() -> new RecordNotFoundException(ErrorCode.CALENDAR_MEMBER_NOT_FOUND));
 	}
 
-	public List<CalendarMember> searchCalendarMembers(Long calendarId, Long ownerId) {
-		validateCalendarOwner(calendarId, ownerId);
-
+	public List<CalendarMember> searchCalendarMembers(Long calendarId) {
 		return calendarMemberRepository.findCalendarMembers(calendarId);
 	}
 
@@ -46,12 +41,5 @@ public class CalendarMemberService {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		Member member = memberQueryService.findByMemberId(memberId);
 		return calendarMemberRepository.save(new CalendarMember(member, calendar)).getId();
-	}
-
-	private void validateCalendarOwner(Long calendarId, Long ownerId) {
-		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
-		if (!calendar.isOwner(ownerId)) {
-			throw new InvalidRequestException(ErrorCode.INVALID_CALENDAR_MEMBER_GET_REQUEST);
-		}
 	}
 }
