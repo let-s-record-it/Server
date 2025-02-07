@@ -19,7 +19,6 @@ import com.sillim.recordit.calendar.dto.request.JoinInCalendarRequest;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarCommandService;
 import com.sillim.recordit.calendar.service.CalendarMemberService;
-import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.calendar.service.JoinCalendarService;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
@@ -39,7 +38,6 @@ import org.springframework.test.web.servlet.ResultActions;
 class CalendarControllerTest extends RestDocsTest {
 
 	@MockBean CalendarCommandService calendarCommandService;
-	@MockBean CalendarQueryService calendarQueryService;
 	@MockBean CalendarMemberService calendarMemberService;
 	@MockBean JoinCalendarService joinCalendarService;
 
@@ -61,7 +59,7 @@ class CalendarControllerTest extends RestDocsTest {
 	@DisplayName("캘린더 목록을 조회한다.")
 	void calendarList() throws Exception {
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
-		given(calendarQueryService.searchByMemberId(any())).willReturn(List.of(calendar));
+		given(calendarMemberService.searchCalendarsByMemberId(any())).willReturn(List.of(calendar));
 
 		ResultActions perform = mockMvc.perform(get("/api/v1/calendars"));
 

@@ -8,7 +8,6 @@ import com.sillim.recordit.calendar.dto.response.CalendarMemberResponse;
 import com.sillim.recordit.calendar.dto.response.CalendarResponse;
 import com.sillim.recordit.calendar.service.CalendarCommandService;
 import com.sillim.recordit.calendar.service.CalendarMemberService;
-import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.calendar.service.JoinCalendarService;
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.member.domain.Member;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CalendarController {
 
-	private final CalendarQueryService calendarQueryService;
 	private final CalendarCommandService calendarCommandService;
 	private final CalendarMemberService calendarMemberService;
 	private final JoinCalendarService joinCalendarService;
@@ -41,6 +39,7 @@ public class CalendarController {
 	public ResponseEntity<CalendarResponse> addCalendar(
 			@RequestBody @Valid CalendarAddRequest request, @CurrentMember Member member) {
 		Calendar calendar = calendarCommandService.addCalendar(request, member.getId());
+		calendarMemberService.addCalendarMember(calendar.getId(), member.getId());
 		return ResponseEntity.created(URI.create("/api/v1/calendars/" + calendar.getId()))
 				.body(CalendarResponse.from(calendar));
 	}
