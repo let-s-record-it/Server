@@ -54,7 +54,8 @@ public class Calendar {
 		}
 	}
 
-	public boolean isOwner(Long ownerId) {
-		return member.getId().equals(ownerId);
+	public void modify(String title, String colorHex) {
+		this.title = new CalendarTitle(title);
+		this.colorHex = new CalendarColorHex(colorHex);
 	}
 }

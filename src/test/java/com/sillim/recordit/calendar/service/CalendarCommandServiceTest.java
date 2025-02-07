@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
+import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.repository.CalendarRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
@@ -50,6 +51,20 @@ class CalendarCommandServiceTest {
 		Calendar calendar = calendarCommandService.addCalendar(calendarAddRequest, 1L);
 
 		assertThat(calendar).isEqualTo(expectedCalendar);
+	}
+
+	@Test
+	@DisplayName("캘린더를 수정할 수 있다.")
+	void modifyCalendar() {
+		Calendar calendar = mock(Calendar.class);
+		given(calendar.isOwnedBy(any())).willReturn(true);
+		given(calendarQueryService.searchByCalendarId(eq(1L))).willReturn(calendar);
+
+		CalendarModifyRequest calendarModifyRequest =
+				new CalendarModifyRequest("calendar1", "aabbff");
+
+		assertThatCode(() -> calendarCommandService.modifyCalendar(calendarModifyRequest, 1L, 1L))
+				.doesNotThrowAnyException();
 	}
 
 	@Test

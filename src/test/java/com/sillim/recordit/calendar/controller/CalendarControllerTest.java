@@ -7,15 +7,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
+import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
 import com.sillim.recordit.calendar.dto.request.JoinInCalendarRequest;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarCommandService;
@@ -90,6 +89,24 @@ class CalendarControllerTest extends RestDocsTest {
 
 		perform.andDo(print())
 				.andDo(document("add-calendar", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("캘린더를 수정한다.")
+	void modifyCalendar() throws Exception {
+		long calendarId = 1L;
+		CalendarModifyRequest request = new CalendarModifyRequest("calendar1", "aabbff");
+
+		ResultActions perform =
+				mockMvc.perform(
+						put("/api/v1/calendars/{calendarId}", calendarId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("modify-calendar", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
