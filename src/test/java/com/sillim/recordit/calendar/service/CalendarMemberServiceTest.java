@@ -13,7 +13,6 @@ import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.repository.CalendarMemberRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
@@ -59,10 +58,7 @@ class CalendarMemberServiceTest {
 		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
 				.willReturn(Optional.empty());
 
-		assertThatCode(
-						() ->
-								calendarMemberService.searchCalendarMember(
-										calendarId, memberId))
+		assertThatCode(() -> calendarMemberService.searchCalendarMember(calendarId, memberId))
 				.isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.CALENDAR_MEMBER_NOT_FOUND.getDescription());
 	}
