@@ -14,7 +14,7 @@ import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.member.domain.Member;
@@ -43,7 +43,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class TaskCommandServiceTest {
 
 	@InjectMocks TaskCommandService taskCommandService;
-	@Mock CalendarService calendarService;
+	@Mock CalendarQueryService calendarQueryService;
 	@Mock TaskGroupService taskGroupService;
 	@Mock TaskRepository taskRepository;
 
@@ -78,7 +78,7 @@ class TaskCommandServiceTest {
 
 		given(taskGroupService.addNonRepeatingTaskGroup(eq(taskGroupRequest), eq(memberId)))
 				.willReturn(taskGroup);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
 		taskCommandService.addTasks(request, calendarId, memberId);
 
@@ -110,7 +110,7 @@ class TaskCommandServiceTest {
 						taskGroupService.addRepeatingTaskGroup(
 								eq(taskGroupRequest), eq(repetitionRequest), eq(memberId)))
 				.willReturn(taskGroup);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
 		taskCommandService.addTasks(request, calendarId, memberId);
 
@@ -141,7 +141,7 @@ class TaskCommandServiceTest {
 						taskGroupRequest);
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
@@ -153,7 +153,7 @@ class TaskCommandServiceTest {
 		willDoNothing().given(taskRepository).deleteAllByTaskGroupId(anyLong());
 
 		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
-		given(calendarService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
+		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
@@ -198,7 +198,7 @@ class TaskCommandServiceTest {
 						taskGroupRequest);
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
@@ -209,7 +209,7 @@ class TaskCommandServiceTest {
 				.willReturn(Optional.of(selectedTask));
 
 		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
-		given(calendarService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
+		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
@@ -257,7 +257,7 @@ class TaskCommandServiceTest {
 						taskGroupRequest);
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
@@ -268,7 +268,7 @@ class TaskCommandServiceTest {
 				.willReturn(Optional.of(selectedTask));
 
 		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
-		given(calendarService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
+		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
@@ -296,7 +296,7 @@ class TaskCommandServiceTest {
 		Long taskGroupId = 4L;
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
@@ -320,7 +320,7 @@ class TaskCommandServiceTest {
 		Long taskGroupId = 4L;
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
@@ -345,7 +345,7 @@ class TaskCommandServiceTest {
 		Long memberId = 3L;
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));

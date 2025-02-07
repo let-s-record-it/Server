@@ -53,4 +53,8 @@ public class Calendar {
 			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
 		}
 	}
+
+	public boolean isOwner(Long ownerId) {
+		return member.getId().equals(ownerId);
+	}
 }

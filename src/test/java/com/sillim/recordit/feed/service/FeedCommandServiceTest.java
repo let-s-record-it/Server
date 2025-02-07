@@ -13,6 +13,7 @@ import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.feed.repository.FeedRepository;
+import com.sillim.recordit.gcp.service.ImageUploadService;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
@@ -33,7 +34,7 @@ class FeedCommandServiceTest {
 
 	@Mock FeedRepository feedRepository;
 	@Mock MemberQueryService memberQueryService;
-	@Mock FeedImageUploadService feedImageUploadService;
+	@Mock ImageUploadService imageUploadService;
 	@InjectMocks FeedCommandService feedCommandService;
 
 	@Test
