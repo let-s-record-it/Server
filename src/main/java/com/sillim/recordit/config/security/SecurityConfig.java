@@ -64,6 +64,7 @@ public class SecurityConfig {
 								authorize
 										.requestMatchers(
 												mvc.pattern("/api/v1/login"),
+												mvc.pattern("/api/v1/invite/info/**"),
 												mvc.pattern("/api/v1/web-login"))
 										.permitAll()
 										.requestMatchers(mvc.pattern("api/**"))

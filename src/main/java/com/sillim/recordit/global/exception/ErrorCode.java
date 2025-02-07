@@ -55,6 +55,9 @@ public enum ErrorCode {
 	INVALID_CALENDAR_DELETE_REQUEST("ERR_CALENDAR_007", "유효하지 않은 캘린더 삭제 요청입니다."),
 	CALENDAR_ACCESS_DENIED("ERR_CALENDAR_008", "해당 사용자는 접근할 수 없는 캘린더입니다."),
 
+	CALENDAR_MEMBER_NOT_FOUND("ERR_CALENDAR_MEMBER_001", "캘린더 멤버를 찾을 수 없습니다."),
+	INVALID_CALENDAR_MEMBER_GET_REQUEST("ERR_CALENDAR_MEMBER_002", "유효하지 않은 캘린더 멤버 조회 요청입니다."),
+
 	// monthly-goal
 	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다."),
 	DIFFERENT_YEAR_MONTH("ERR_MONTHLY_GOAL_002", "월 목표 기간 시작일과 종료일의 년,월은 같아야 합니다."),

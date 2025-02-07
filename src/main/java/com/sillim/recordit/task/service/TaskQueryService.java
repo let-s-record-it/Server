@@ -1,7 +1,7 @@
 package com.sillim.recordit.task.service;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.task.domain.Task;
@@ -18,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TaskQueryService {
 
-	private final CalendarService calendarService;
+	private final CalendarQueryService calendarQueryService;
 	private final TaskRepository taskRepository;
 
 	public List<Task> searchAllByDate(
 			final Long calendarId, final LocalDate date, final Long memberId) {
 
-		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
 		return taskRepository.findAllByCalendarIdAndDate(calendarId, date);
@@ -33,7 +33,7 @@ public class TaskQueryService {
 	public TaskDetailsResponse searchByIdAndCalendarId(
 			final Long taskId, final Long calendarId, final Long memberId) {
 
-		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 		Task task =
 				taskRepository

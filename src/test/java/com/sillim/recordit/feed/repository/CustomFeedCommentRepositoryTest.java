@@ -86,8 +86,8 @@ class CustomFeedCommentRepositoryTest {
 				() -> {
 					assertThat(foundFeedComments1).hasSize(5);
 					assertThat(foundFeedComments1.isLast()).isFalse();
-					assertThat(foundFeedComments1.getContent().get(0).getId())
-							.isEqualTo(feedComments.get(0).getId());
+					assertThat(foundFeedComments1.getContent().get(0).getCreatedAt())
+							.isBefore(foundFeedComments2.getContent().get(0).getCreatedAt());
 					assertThat(foundFeedComments2).hasSize(1);
 					assertThat(foundFeedComments2.isLast()).isTrue();
 				});

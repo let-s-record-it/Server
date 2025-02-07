@@ -3,11 +3,11 @@ package com.sillim.recordit.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.given;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarCommandService;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.dto.request.MemberInfo;
@@ -24,7 +24,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class SignupServiceTest {
 
 	@Mock MemberRepository memberRepository;
-	@Mock CalendarService calendarService;
+	@Mock CalendarCommandService calendarCommandService;
+	@Mock CalendarMemberService calendarMemberService;
 	@InjectMocks SignupService signupService;
 
 	@Test
@@ -36,7 +37,7 @@ class SignupServiceTest {
 		String name = target.getName();
 		String profileImageUrl = target.getProfileImageUrl();
 		given(memberRepository.save(any(Member.class))).willReturn(target);
-		given(calendarService.addCalendar(any(), eq(target.getId())))
+		given(calendarCommandService.addCalendar(any(), eq(target.getId())))
 				.willReturn(
 						Calendar.builder().title("일반").colorHex("ff40d974").member(target).build());
 

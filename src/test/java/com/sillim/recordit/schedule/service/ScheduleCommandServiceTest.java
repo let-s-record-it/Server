@@ -11,7 +11,7 @@ import static org.mockito.Mockito.*;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
@@ -41,7 +41,7 @@ import org.quartz.SchedulerException;
 class ScheduleCommandServiceTest {
 
 	@Mock ScheduleRepository scheduleRepository;
-	@Mock CalendarService calendarService;
+	@Mock CalendarQueryService calendarQueryService;
 	@Mock ScheduleGroupService scheduleGroupService;
 	@Mock RepetitionPatternService repetitionPatternService;
 	@Mock PushAlarmService pushAlarmService;
@@ -212,7 +212,7 @@ class ScheduleCommandServiceTest {
 		given(member1.equalsId(anyLong())).willReturn(true);
 		given(member2.equalsId(anyLong())).willReturn(false);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
-		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar2);
+		given(calendarQueryService.searchByCalendarId(calendarId)).willReturn(calendar2);
 
 		assertThatCode(
 						() ->
@@ -270,7 +270,7 @@ class ScheduleCommandServiceTest {
 		given(schedule.getId()).willReturn(1L);
 		given(member.equalsId(anyLong())).willReturn(true);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
-		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(calendarId)).willReturn(calendar);
 		given(scheduleGroupService.newScheduleGroup(true)).willReturn(scheduleGroup);
 		given(repetitionPatternService.addRepetitionPattern(repetitionUpdateRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
@@ -340,7 +340,7 @@ class ScheduleCommandServiceTest {
 		given(member.equalsId(anyLong())).willReturn(true);
 		given(scheduleGroup.getId()).willReturn(1L);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
-		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(calendarId)).willReturn(calendar);
 		given(scheduleRepository.findGroupSchedules(eq(1L))).willReturn(List.of(schedule));
 		given(
 						repetitionPatternService.updateRepetitionPattern(
@@ -398,7 +398,7 @@ class ScheduleCommandServiceTest {
 		given(scheduleGroup.getId()).willReturn(1L);
 		given(schedule.getId()).willReturn(1L);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
-		given(calendarService.searchByCalendarId(calendarId)).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(calendarId)).willReturn(calendar);
 		given(scheduleRepository.findGroupSchedules(eq(1L))).willReturn(List.of(schedule));
 
 		scheduleCommandService.modifyGroupSchedules(scheduleModifyRequest, scheduleId, memberId);

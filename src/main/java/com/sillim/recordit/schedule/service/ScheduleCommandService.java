@@ -1,7 +1,7 @@
 package com.sillim.recordit.schedule.service;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.pushalarm.service.PushAlarmService;
@@ -33,7 +33,7 @@ public class ScheduleCommandService {
 	private static final String SCHEDULE_GROUP_PREFIX = "SCHEDULE/";
 
 	private final ScheduleRepository scheduleRepository;
-	private final CalendarService calendarService;
+	private final CalendarQueryService calendarQueryService;
 	private final ScheduleGroupService scheduleGroupService;
 	private final RepetitionPatternService repetitionPatternService;
 	private final PushAlarmService pushAlarmService;
@@ -44,7 +44,7 @@ public class ScheduleCommandService {
 		List<Schedule> schedules;
 
 		if (request.isRepeated()) {
-			Calendar calendar = calendarService.searchByCalendarId(calendarId);
+			Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 			schedules =
 					addRepeatingSchedule(
 							temporalAmount ->
@@ -60,7 +60,7 @@ public class ScheduleCommandService {
 					List.of(
 							scheduleRepository.save(
 									request.toSchedule(
-											calendarService.searchByCalendarId(calendarId),
+											calendarQueryService.searchByCalendarId(calendarId),
 											scheduleGroup)));
 		}
 
@@ -91,7 +91,7 @@ public class ScheduleCommandService {
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		schedule.validateAuthenticatedMember(memberId);
-		Calendar calendar = calendarService.searchByCalendarId(request.calendarId());
+		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
 		calendar.validateAuthenticatedMember(memberId);
 		ScheduleGroup newScheduleGroup =
 				scheduleGroupService.newScheduleGroup(request.isRepeated());
@@ -141,7 +141,7 @@ public class ScheduleCommandService {
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		schedule.validateAuthenticatedMember(memberId);
-		Calendar calendar = calendarService.searchByCalendarId(request.calendarId());
+		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
 		calendar.validateAuthenticatedMember(memberId);
 		ScheduleGroup scheduleGroup = schedule.getScheduleGroup();
 
