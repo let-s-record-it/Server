@@ -1,0 +1,110 @@
+package com.sillim.recordit.calendar.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarMember;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.calendar.repository.CalendarMemberRepository;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
+import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.fixture.MemberFixture;
+import com.sillim.recordit.member.service.MemberQueryService;
+import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class CalendarMemberServiceTest {
+
+	@Mock CalendarMemberRepository calendarMemberRepository;
+	@Mock CalendarQueryService calendarQueryService;
+	@Mock MemberQueryService memberQueryService;
+	@InjectMocks CalendarMemberService calendarMemberService;
+
+	@Test
+	@DisplayName("캘린더 소유자면 캘린더 멤버를 조회할 수 있다.")
+	void searchCalendarMemberIfCalendarOwner() {
+		long calendarId = 1L;
+		long memberId = 1L;
+		Member member = spy(MemberFixture.DEFAULT.getMember());
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		CalendarMember expectCalendarMember = new CalendarMember(member, calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(member.getId()).willReturn(memberId);
+		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
+				.willReturn(Optional.of(expectCalendarMember));
+
+		CalendarMember calendarMember =
+				calendarMemberService.searchCalendarMember(calendarId, memberId, memberId);
+
+		assertThat(calendarMember).isEqualTo(expectCalendarMember);
+	}
+
+	@Test
+	@DisplayName("캘린더 소유자가 아니면 InvalidRequestException이 발생한다.")
+	void throwInvalidRequestExceptionWhenSearchCalendarMemberIfNotCalendarOwner() {
+		long calendarId = 1L;
+		long memberId = 1L;
+		Member member = spy(MemberFixture.DEFAULT.getMember());
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(member.getId()).willReturn(memberId);
+
+		assertThatCode(() -> calendarMemberService.searchCalendarMember(calendarId, memberId, 2L))
+				.isInstanceOf(InvalidRequestException.class)
+				.hasMessage(ErrorCode.INVALID_CALENDAR_MEMBER_GET_REQUEST.getDescription());
+	}
+
+	@Test
+	@DisplayName("캘린더 멤버가 존재하지 않으면 RecordNotFoundException이 발생한다.")
+	void throwRecordNotFoundExceptionWhenSearchCalendarMemberIfNotExistsCalendarMember() {
+		long calendarId = 1L;
+		long memberId = 1L;
+		Member member = spy(MemberFixture.DEFAULT.getMember());
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(member.getId()).willReturn(memberId);
+		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
+				.willReturn(Optional.empty());
+
+		assertThatCode(
+						() ->
+								calendarMemberService.searchCalendarMember(
+										calendarId, memberId, memberId))
+				.isInstanceOf(RecordNotFoundException.class)
+				.hasMessage(ErrorCode.CALENDAR_MEMBER_NOT_FOUND.getDescription());
+	}
+
+	@Test
+	@DisplayName("캘린더 멤버를 추가할 수 있다.")
+	void addCalendarMember() {
+		long memberId = 1L;
+		long calendarId = 1L;
+		long calendarMemberId = 1L;
+		Member member = spy(MemberFixture.DEFAULT.getMember());
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		CalendarMember expectCalendarMember = mock(CalendarMember.class);
+		given(expectCalendarMember.getId()).willReturn(calendarMemberId);
+		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarMemberRepository.save(any(CalendarMember.class)))
+				.willReturn(expectCalendarMember);
+
+		Long savedCalendarMemberId = calendarMemberService.addCalendarMember(calendarId, memberId);
+
+		assertThat(savedCalendarMemberId).isEqualTo(calendarMemberId);
+	}
+}

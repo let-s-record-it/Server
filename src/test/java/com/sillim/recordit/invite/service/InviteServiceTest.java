@@ -5,12 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.invite.domain.InviteLink;
-import com.sillim.recordit.invite.dto.response.InviteInfoResponse;
 import com.sillim.recordit.invite.repository.InviteLinkRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
@@ -29,7 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class InviteServiceTest {
 
 	@Mock InviteLinkRepository inviteLinkRepository;
-	@Mock CalendarService calendarService;
+	@Mock CalendarQueryService calendarQueryService;
 	@InjectMocks InviteService inviteService;
 
 	@DisplayName("유효한 초대 코드가 있다면 가져온다.")
@@ -74,20 +74,26 @@ class InviteServiceTest {
 	}
 
 	@DisplayName("초대 코드가 같은 초대 정보가 있다면 가져온다.")
+	@Test
 	void getInviteInfoIfExistsInviteLinkThatEqualsInviteCode() {
 		String inviteCode = UUID.randomUUID().toString();
-		InviteInfoResponse expectRes = new InviteInfoResponse(1L, "calendar", 1L, "member");
+		Member member = spy(MemberFixture.DEFAULT.getMember());
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		given(member.getId()).willReturn(1L);
+		given(calendar.getId()).willReturn(1L);
+		InviteLink expectInviteLink = new InviteLink("code", LocalDateTime.now(), false, calendar);
 		given(
 						inviteLinkRepository.findInfoByInviteCode(
 								eq(new String(Base64.getUrlDecoder().decode(inviteCode)))))
-				.willReturn(expectRes);
+				.willReturn(expectInviteLink);
 
-		InviteInfoResponse response = inviteService.searchInviteInfo(inviteCode);
+		InviteLink inviteLink = inviteService.searchInviteInfo(inviteCode);
 
 		assertAll(
 				() -> {
-					assertThat(response.calendarId()).isEqualTo(expectRes.calendarId());
-					assertThat(response.ownerId()).isEqualTo(expectRes.ownerId());
+					assertThat(inviteLink.getCalendar().getId()).isEqualTo(calendar.getId());
+					assertThat(inviteLink.getCalendar().getMember().getId())
+							.isEqualTo(member.getId());
 				});
 	}
 }

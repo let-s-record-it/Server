@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
@@ -36,7 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class TaskQueryServiceTest {
 
 	@InjectMocks TaskQueryService taskQueryService;
-	@Mock CalendarService calendarService;
+	@Mock CalendarQueryService calendarQueryService;
 	@Mock TaskRepository taskRepository;
 
 	private Calendar calendar;
@@ -59,7 +59,7 @@ class TaskQueryServiceTest {
 								LocalDate.of(2024, 6, 12), calendar, taskGroup),
 						TaskFixture.DEFAULT.getWithDate(
 								LocalDate.of(2024, 6, 12), calendar, taskGroup));
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findAllByCalendarIdAndDate(calendarId, date)).willReturn(tasks);
 
 		List<Task> found = taskQueryService.searchAllByDate(calendarId, date, memberId);
@@ -77,7 +77,7 @@ class TaskQueryServiceTest {
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
 
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
 				.willReturn(Optional.of(task));
 
@@ -109,7 +109,7 @@ class TaskQueryServiceTest {
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
 
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
 				.willReturn(Optional.of(task));
 
@@ -152,7 +152,7 @@ class TaskQueryServiceTest {
 		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
 
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
 				.willReturn(Optional.of(task));
 
@@ -183,7 +183,7 @@ class TaskQueryServiceTest {
 		Long calendarId = 2L;
 		Long taskId = 3L;
 
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willThrow(new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 
