@@ -27,7 +27,9 @@ import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.MemberRole;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
+
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,141 +41,145 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(CalendarController.class)
 class CalendarControllerTest extends RestDocsTest {
 
-	@MockBean CalendarCommandService calendarCommandService;
-	@MockBean CalendarQueryService calendarQueryService;
-	@MockBean CalendarMemberService calendarMemberService;
-	@MockBean JoinCalendarService joinCalendarService;
+    @MockBean
+    CalendarCommandService calendarCommandService;
+    @MockBean
+    CalendarQueryService calendarQueryService;
+    @MockBean
+    CalendarMemberService calendarMemberService;
+    @MockBean
+    JoinCalendarService joinCalendarService;
 
-	Member member;
+    Member member;
 
-	@BeforeEach
-	void initObjects() {
-		member =
-				Member.builder()
-						.auth(new Auth("1234567", OAuthProvider.KAKAO))
-						.name("name")
-						.job("job")
-						.deleted(false)
-						.memberRole(List.of(MemberRole.ROLE_USER))
-						.build();
-	}
+    @BeforeEach
+    void initObjects() {
+        member =
+                Member.builder()
+                        .auth(new Auth("1234567", OAuthProvider.KAKAO))
+                        .name("name")
+                        .job("job")
+                        .deleted(false)
+                        .memberRole(List.of(MemberRole.ROLE_USER))
+                        .build();
+    }
 
-	@Test
-	@DisplayName("캘린더 목록을 조회한다.")
-	void calendarList() throws Exception {
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
-		given(calendarQueryService.searchByMemberId(any())).willReturn(List.of(calendar));
+    @Test
+    @DisplayName("캘린더 목록을 조회한다.")
+    void calendarList() throws Exception {
+        Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+        given(calendarQueryService.searchByMemberId(any())).willReturn(List.of(calendar));
 
-		ResultActions perform = mockMvc.perform(get("/api/v1/calendars"));
+        ResultActions perform = mockMvc.perform(get("/api/v1/calendars"));
 
-		perform.andExpect(status().isOk());
+        perform.andExpect(status().isOk());
 
-		perform.andDo(print())
-				.andDo(document("calendar-list", getDocumentRequest(), getDocumentResponse()));
-	}
+        perform.andDo(print())
+                .andDo(document("calendar-list", getDocumentRequest(), getDocumentResponse()));
+    }
 
-	@Test
-	@DisplayName("캘린더를 추가한다.")
-	void addCalendar() throws Exception {
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
-		CalendarAddRequest request = new CalendarAddRequest("calendar1", "aabbff");
-		given(calendarCommandService.addCalendar(any(CalendarAddRequest.class), any()))
-				.willReturn(calendar);
+    @Test
+    @DisplayName("캘린더를 추가한다.")
+    void addCalendar() throws Exception {
+        Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+        CalendarAddRequest request = new CalendarAddRequest("calendar1", "aabbff");
+        given(calendarCommandService.addCalendar(any(CalendarAddRequest.class), any()))
+                .willReturn(calendar);
 
-		ResultActions perform =
-				mockMvc.perform(
-						post("/api/v1/calendars")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(request)));
+        ResultActions perform =
+                mockMvc.perform(
+                        post("/api/v1/calendars")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(toJson(request)));
 
-		perform.andExpect(status().isCreated());
+        perform.andExpect(status().isCreated());
 
-		perform.andDo(print())
-				.andDo(document("add-calendar", getDocumentRequest(), getDocumentResponse()));
-	}
+        perform.andDo(print())
+                .andDo(document("add-calendar", getDocumentRequest(), getDocumentResponse()));
+    }
 
-	@Test
-	@DisplayName("캘린더를 삭제한다.")
-	void deleteCalendar() throws Exception {
-		long calendarId = 1L;
-		willDoNothing().given(calendarCommandService).deleteByCalendarId(any(), any());
+    @Test
+    @DisplayName("캘린더를 삭제한다.")
+    void deleteCalendar() throws Exception {
+        long calendarId = 1L;
+        willDoNothing().given(calendarCommandService).deleteByCalendarId(any(), any());
 
-		ResultActions perform =
-				mockMvc.perform(delete("/api/v1/calendars/{calendarId}", calendarId));
+        ResultActions perform =
+                mockMvc.perform(delete("/api/v1/calendars/{calendarId}", calendarId));
 
-		perform.andExpect(status().isNoContent());
+        perform.andExpect(status().isNoContent());
 
-		perform.andDo(print())
-				.andDo(document("calendar-delete", getDocumentRequest(), getDocumentResponse()));
-	}
+        perform.andDo(print())
+                .andDo(document("calendar-delete", getDocumentRequest(), getDocumentResponse()));
+    }
 
-	@Test
-	@DisplayName("캘린더 멤버 목록을 조회한다.")
-	void calendarMemberList() throws Exception {
-		long calendarId = 1L;
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
-		CalendarMember calendarMember = new CalendarMember(member, calendar);
-		given(calendarMemberService.searchCalendarMembers(eq(calendarId), any()))
-				.willReturn(List.of(calendarMember));
+    @Test
+    @DisplayName("캘린더 멤버 목록을 조회한다.")
+    void calendarMemberList() throws Exception {
+        long calendarId = 1L;
+        Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+        CalendarMember calendarMember = new CalendarMember(member, calendar);
+        given(calendarMemberService.searchCalendarMembers(eq(calendarId)))
+                .willReturn(List.of(calendarMember));
 
-		ResultActions perform =
-				mockMvc.perform(get("/api/v1/calendars/{calendarId}/members", calendarId));
+        ResultActions perform =
+                mockMvc.perform(get("/api/v1/calendars/{calendarId}/members", calendarId));
 
-		perform.andExpect(status().isOk());
+        perform.andExpect(status().isOk());
 
-		perform.andDo(print())
-				.andDo(
-						document(
-								"calendar-member-list",
-								getDocumentRequest(),
-								getDocumentResponse()));
-	}
+        perform.andDo(print())
+                .andDo(
+                        document(
+                                "calendar-member-list",
+                                getDocumentRequest(),
+                                getDocumentResponse()));
+    }
 
-	@Test
-	@DisplayName("캘린더 멤버를 조회한다.")
-	void calendarMemberDetails() throws Exception {
-		long calendarId = 1L;
-		long memberId = 1L;
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
-		CalendarMember calendarMember = new CalendarMember(member, calendar);
-		given(calendarMemberService.searchCalendarMember(eq(calendarId), eq(memberId), any()))
-				.willReturn(calendarMember);
+    @Test
+    @DisplayName("캘린더 멤버를 조회한다.")
+    void calendarMemberDetails() throws Exception {
+        long calendarId = 1L;
+        long memberId = 1L;
+        Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+        CalendarMember calendarMember = new CalendarMember(member, calendar);
+        given(calendarMemberService.searchCalendarMember(eq(calendarId), eq(memberId)))
+                .willReturn(calendarMember);
 
-		ResultActions perform =
-				mockMvc.perform(
-						get(
-								"/api/v1/calendars/{calendarId}/members/{memberId}",
-								calendarId,
-								memberId));
+        ResultActions perform =
+                mockMvc.perform(
+                        get(
+                                "/api/v1/calendars/{calendarId}/members/{memberId}",
+                                calendarId,
+                                memberId));
 
-		perform.andExpect(status().isOk());
+        perform.andExpect(status().isOk());
 
-		perform.andDo(print())
-				.andDo(
-						document(
-								"calendar-member-details",
-								getDocumentRequest(),
-								getDocumentResponse()));
-	}
+        perform.andDo(print())
+                .andDo(
+                        document(
+                                "calendar-member-details",
+                                getDocumentRequest(),
+                                getDocumentResponse()));
+    }
 
-	@Test
-	@DisplayName("캘린더에 참가한다.")
-	void joinInCalendar() throws Exception {
-		String inviteCode = "inviteCode";
-		long calendarMemberId = 1L;
-		JoinInCalendarRequest request = new JoinInCalendarRequest(inviteCode);
-		given(joinCalendarService.joinInCalendar(eq(inviteCode), any()))
-				.willReturn(calendarMemberId);
+    @Test
+    @DisplayName("캘린더에 참가한다.")
+    void joinInCalendar() throws Exception {
+        String inviteCode = "inviteCode";
+        long calendarMemberId = 1L;
+        JoinInCalendarRequest request = new JoinInCalendarRequest(inviteCode);
+        given(joinCalendarService.joinInCalendar(eq(inviteCode), any()))
+                .willReturn(calendarMemberId);
 
-		ResultActions perform =
-				mockMvc.perform(
-						post("/api/v1/calendars/join")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(request)));
+        ResultActions perform =
+                mockMvc.perform(
+                        post("/api/v1/calendars/join")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(toJson(request)));
 
-		perform.andExpect(status().isCreated());
+        perform.andExpect(status().isCreated());
 
-		perform.andDo(print())
-				.andDo(document("join-in-calendar", getDocumentRequest(), getDocumentResponse()));
-	}
+        perform.andDo(print())
+                .andDo(document("join-in-calendar", getDocumentRequest(), getDocumentResponse()));
+    }
 }

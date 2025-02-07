@@ -35,37 +35,20 @@ class CalendarMemberServiceTest {
 	@InjectMocks CalendarMemberService calendarMemberService;
 
 	@Test
-	@DisplayName("캘린더 소유자면 캘린더 멤버를 조회할 수 있다.")
+	@DisplayName("캘린더 멤버를 조회할 수 있다.")
 	void searchCalendarMemberIfCalendarOwner() {
 		long calendarId = 1L;
 		long memberId = 1L;
 		Member member = spy(MemberFixture.DEFAULT.getMember());
 		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
 		CalendarMember expectCalendarMember = new CalendarMember(member, calendar);
-		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(member.getId()).willReturn(memberId);
 		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
 				.willReturn(Optional.of(expectCalendarMember));
 
 		CalendarMember calendarMember =
-				calendarMemberService.searchCalendarMember(calendarId, memberId, memberId);
+				calendarMemberService.searchCalendarMember(calendarId, memberId);
 
 		assertThat(calendarMember).isEqualTo(expectCalendarMember);
-	}
-
-	@Test
-	@DisplayName("캘린더 소유자가 아니면 InvalidRequestException이 발생한다.")
-	void throwInvalidRequestExceptionWhenSearchCalendarMemberIfNotCalendarOwner() {
-		long calendarId = 1L;
-		long memberId = 1L;
-		Member member = spy(MemberFixture.DEFAULT.getMember());
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
-		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(member.getId()).willReturn(memberId);
-
-		assertThatCode(() -> calendarMemberService.searchCalendarMember(calendarId, memberId, 2L))
-				.isInstanceOf(InvalidRequestException.class)
-				.hasMessage(ErrorCode.INVALID_CALENDAR_MEMBER_GET_REQUEST.getDescription());
 	}
 
 	@Test
@@ -73,17 +56,13 @@ class CalendarMemberServiceTest {
 	void throwRecordNotFoundExceptionWhenSearchCalendarMemberIfNotExistsCalendarMember() {
 		long calendarId = 1L;
 		long memberId = 1L;
-		Member member = spy(MemberFixture.DEFAULT.getMember());
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
-		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(member.getId()).willReturn(memberId);
 		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
 				.willReturn(Optional.empty());
 
 		assertThatCode(
 						() ->
 								calendarMemberService.searchCalendarMember(
-										calendarId, memberId, memberId))
+										calendarId, memberId))
 				.isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.CALENDAR_MEMBER_NOT_FOUND.getDescription());
 	}
