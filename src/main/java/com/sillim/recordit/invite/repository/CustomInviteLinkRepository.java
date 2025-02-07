@@ -1,8 +1,8 @@
 package com.sillim.recordit.invite.repository;
 
-import com.sillim.recordit.invite.dto.response.InviteInfoResponse;
+import com.sillim.recordit.invite.domain.InviteLink;
 
 public interface CustomInviteLinkRepository {
 
-	InviteInfoResponse findInfoByInviteCode(String inviteCode);
+	InviteLink findInfoByInviteCode(String inviteCode);
 }

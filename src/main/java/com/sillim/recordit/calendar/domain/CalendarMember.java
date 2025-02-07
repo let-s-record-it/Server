@@ -1,5 +1,6 @@
 package com.sillim.recordit.calendar.domain;
 
+import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,8 +9,15 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(
+		name = "calendar_member",
+		uniqueConstraints = {
+			@UniqueConstraint(
+					name = "CalendarAndMember",
+					columnNames = {"member_id", "calendar_id"})
+		})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CalendarMember {
+public class CalendarMember extends BaseTime {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

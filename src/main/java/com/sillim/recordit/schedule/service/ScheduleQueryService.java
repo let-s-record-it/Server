@@ -1,6 +1,6 @@
 package com.sillim.recordit.schedule.service;
 
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.schedule.domain.Schedule;
@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleQueryService {
 
 	private final ScheduleRepository scheduleRepository;
-	private final CalendarService calendarService;
 	private final RepetitionPatternService repetitionPatternService;
+	private final CalendarQueryService calendarQueryService;
 
 	public DayScheduleResponse searchSchedule(Long scheduleId, Long memberId) {
 		Schedule schedule =
@@ -51,7 +51,7 @@ public class ScheduleQueryService {
 
 	public List<MonthScheduleResponse> searchSchedulesInMonth(
 			Long calendarId, Integer year, Integer month, Long memberId) {
-		calendarService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
+		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
 		return scheduleRepository.findScheduleInMonth(calendarId, year, month).stream()
 				.map(MonthScheduleResponse::from)
 				.toList();
@@ -59,7 +59,7 @@ public class ScheduleQueryService {
 
 	public List<DayScheduleResponse> searchSchedulesInDay(
 			Long calendarId, LocalDate date, Long memberId) {
-		calendarService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
+		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
 		return scheduleRepository.findScheduleInDay(calendarId, date).stream()
 				.map(
 						schedule ->

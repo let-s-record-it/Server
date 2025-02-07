@@ -1,7 +1,7 @@
 package com.sillim.recordit.task.service;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.task.domain.Task;
@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskCommandService {
 
 	private final TaskGroupService taskGroupService;
-	private final CalendarService calendarService;
+	private final CalendarQueryService calendarQueryService;
 
 	private final TaskRepository taskRepository;
 
 	public void addTasks(final TaskAddRequest request, final Long calendarId, final Long memberId) {
 
-		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
 		if (request.isRepeated()) {
@@ -52,7 +52,7 @@ public class TaskCommandService {
 			final Long selectedTaskId,
 			final Long memberId) {
 
-		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
 		Task selectedTask =
@@ -62,7 +62,7 @@ public class TaskCommandService {
 		TaskGroup taskGroup = selectedTask.getTaskGroup();
 		taskRepository.deleteAllByTaskGroupId(taskGroup.getId()); // 기존에 있던 Task 모두 삭제
 
-		Calendar newCalendar = calendarService.searchByCalendarId(request.newCalendarId());
+		Calendar newCalendar = calendarQueryService.searchByCalendarId(request.newCalendarId());
 		newCalendar.validateAuthenticatedMember(memberId);
 		if (request.isRepeated()) {
 			TaskGroup newTaskGroup =
@@ -90,7 +90,7 @@ public class TaskCommandService {
 			final Long selectedTaskId,
 			final Long memberId) {
 
-		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
 		Task selectedTask =
@@ -99,7 +99,7 @@ public class TaskCommandService {
 						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		TaskGroup taskGroup = selectedTask.getTaskGroup();
 
-		Calendar newCalendar = calendarService.searchByCalendarId(request.newCalendarId());
+		Calendar newCalendar = calendarQueryService.searchByCalendarId(request.newCalendarId());
 		newCalendar.validateAuthenticatedMember(memberId);
 		if (request.isRepeated()) {
 			selectedTask.remove();
@@ -129,7 +129,7 @@ public class TaskCommandService {
 	}
 
 	public void removeAll(final Long calendarId, final Long selectedTaskId, final Long memberId) {
-		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
 		Task selectedTask =
@@ -143,7 +143,7 @@ public class TaskCommandService {
 
 	public void removeAllAfterDate(
 			final Long calendarId, final Long selectedTaskId, final Long memberId) {
-		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
 		Task selectedTask =
@@ -157,7 +157,7 @@ public class TaskCommandService {
 	}
 
 	public void removeOne(final Long calendarId, final Long selectedTaskId, final Long memberId) {
-		Calendar calendar = calendarService.searchByCalendarId(calendarId);
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
 		Task selectedTask =

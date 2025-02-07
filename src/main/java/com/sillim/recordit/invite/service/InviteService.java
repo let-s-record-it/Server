@@ -1,8 +1,7 @@
 package com.sillim.recordit.invite.service;
 
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.invite.domain.InviteLink;
-import com.sillim.recordit.invite.dto.response.InviteInfoResponse;
 import com.sillim.recordit.invite.repository.InviteLinkRepository;
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -18,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InviteService {
 
 	private final InviteLinkRepository inviteLinkRepository;
-	private final CalendarService calendarService;
+	private final CalendarQueryService calendarQueryService;
 
 	public String getOrGenerateInviteLink(Long calendarId) {
 		Optional<InviteLink> inviteLink =
@@ -36,7 +35,8 @@ public class InviteService {
 												UUID.randomUUID().toString(),
 												LocalDateTime.now().plusDays(7),
 												false,
-												calendarService.searchByCalendarId(calendarId)))
+												calendarQueryService.searchByCalendarId(
+														calendarId)))
 								.getInviteCode()
 								.getBytes());
 	}
@@ -55,7 +55,7 @@ public class InviteService {
 	}
 
 	@Transactional(readOnly = true)
-	public InviteInfoResponse searchInviteInfo(String inviteCode) {
+	public InviteLink searchInviteInfo(String inviteCode) {
 		return inviteLinkRepository.findInfoByInviteCode(
 				new String(Base64.getUrlDecoder().decode(inviteCode)));
 	}
