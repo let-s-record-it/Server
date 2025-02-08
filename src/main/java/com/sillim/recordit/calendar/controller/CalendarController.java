@@ -2,33 +2,27 @@ package com.sillim.recordit.calendar.controller;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
+import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
 import com.sillim.recordit.calendar.dto.request.JoinInCalendarRequest;
 import com.sillim.recordit.calendar.dto.response.CalendarMemberResponse;
 import com.sillim.recordit.calendar.dto.response.CalendarResponse;
 import com.sillim.recordit.calendar.service.CalendarCommandService;
 import com.sillim.recordit.calendar.service.CalendarMemberService;
-import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.calendar.service.JoinCalendarService;
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.member.domain.Member;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/calendars")
 @RequiredArgsConstructor
 public class CalendarController {
 
-	private final CalendarQueryService calendarQueryService;
 	private final CalendarCommandService calendarCommandService;
 	private final CalendarMemberService calendarMemberService;
 	private final JoinCalendarService joinCalendarService;
@@ -43,10 +37,20 @@ public class CalendarController {
 
 	@PostMapping
 	public ResponseEntity<CalendarResponse> addCalendar(
-			@RequestBody CalendarAddRequest request, @CurrentMember Member member) {
+			@RequestBody @Valid CalendarAddRequest request, @CurrentMember Member member) {
 		Calendar calendar = calendarCommandService.addCalendar(request, member.getId());
+		calendarMemberService.addCalendarMember(calendar.getId(), member.getId());
 		return ResponseEntity.created(URI.create("/api/v1/calendars/" + calendar.getId()))
 				.body(CalendarResponse.from(calendar));
+	}
+
+	@PutMapping("/{calendarId}")
+	public ResponseEntity<Void> calendarModify(
+			@RequestBody @Valid CalendarModifyRequest request,
+			@PathVariable Long calendarId,
+			@CurrentMember Member member) {
+		calendarCommandService.modifyCalendar(request, calendarId, member.getId());
+		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{calendarId}")
@@ -58,22 +62,19 @@ public class CalendarController {
 
 	@GetMapping("/{calendarId}/members")
 	public ResponseEntity<List<CalendarMemberResponse>> calendarMemberList(
-			@PathVariable Long calendarId, @CurrentMember Member member) {
+			@PathVariable Long calendarId) {
 		return ResponseEntity.ok(
-				calendarMemberService.searchCalendarMembers(calendarId, member.getId()).stream()
+				calendarMemberService.searchCalendarMembers(calendarId).stream()
 						.map(CalendarMemberResponse::of)
 						.toList());
 	}
 
 	@GetMapping("/{calendarId}/members/{memberId}")
 	public ResponseEntity<CalendarMemberResponse> calendarMemberDetails(
-			@PathVariable Long calendarId,
-			@PathVariable Long memberId,
-			@CurrentMember Member member) {
+			@PathVariable Long calendarId, @PathVariable Long memberId) {
 		return ResponseEntity.ok(
 				CalendarMemberResponse.of(
-						calendarMemberService.searchCalendarMember(
-								calendarId, memberId, member.getId())));
+						calendarMemberService.searchCalendarMember(calendarId, memberId)));
 	}
 
 	@PostMapping("/join")

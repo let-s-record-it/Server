@@ -7,20 +7,18 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
+import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
 import com.sillim.recordit.calendar.dto.request.JoinInCalendarRequest;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarCommandService;
 import com.sillim.recordit.calendar.service.CalendarMemberService;
-import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.calendar.service.JoinCalendarService;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
@@ -40,7 +38,6 @@ import org.springframework.test.web.servlet.ResultActions;
 class CalendarControllerTest extends RestDocsTest {
 
 	@MockBean CalendarCommandService calendarCommandService;
-	@MockBean CalendarQueryService calendarQueryService;
 	@MockBean CalendarMemberService calendarMemberService;
 	@MockBean JoinCalendarService joinCalendarService;
 
@@ -62,7 +59,7 @@ class CalendarControllerTest extends RestDocsTest {
 	@DisplayName("캘린더 목록을 조회한다.")
 	void calendarList() throws Exception {
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
-		given(calendarQueryService.searchByMemberId(any())).willReturn(List.of(calendar));
+		given(calendarMemberService.searchCalendarsByMemberId(any())).willReturn(List.of(calendar));
 
 		ResultActions perform = mockMvc.perform(get("/api/v1/calendars"));
 
@@ -93,6 +90,24 @@ class CalendarControllerTest extends RestDocsTest {
 	}
 
 	@Test
+	@DisplayName("캘린더를 수정한다.")
+	void modifyCalendar() throws Exception {
+		long calendarId = 1L;
+		CalendarModifyRequest request = new CalendarModifyRequest("calendar1", "aabbff");
+
+		ResultActions perform =
+				mockMvc.perform(
+						put("/api/v1/calendars/{calendarId}", calendarId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("modify-calendar", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
 	@DisplayName("캘린더를 삭제한다.")
 	void deleteCalendar() throws Exception {
 		long calendarId = 1L;
@@ -113,7 +128,7 @@ class CalendarControllerTest extends RestDocsTest {
 		long calendarId = 1L;
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
 		CalendarMember calendarMember = new CalendarMember(member, calendar);
-		given(calendarMemberService.searchCalendarMembers(eq(calendarId), any()))
+		given(calendarMemberService.searchCalendarMembers(eq(calendarId)))
 				.willReturn(List.of(calendarMember));
 
 		ResultActions perform =
@@ -136,7 +151,7 @@ class CalendarControllerTest extends RestDocsTest {
 		long memberId = 1L;
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
 		CalendarMember calendarMember = new CalendarMember(member, calendar);
-		given(calendarMemberService.searchCalendarMember(eq(calendarId), eq(memberId), any()))
+		given(calendarMemberService.searchCalendarMember(eq(calendarId), eq(memberId)))
 				.willReturn(calendarMember);
 
 		ResultActions perform =
