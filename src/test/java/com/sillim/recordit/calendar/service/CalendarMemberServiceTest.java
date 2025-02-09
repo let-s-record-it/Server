@@ -13,6 +13,7 @@ import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.repository.CalendarMemberRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
@@ -81,5 +82,42 @@ class CalendarMemberServiceTest {
 		Long savedCalendarMemberId = calendarMemberService.addCalendarMember(calendarId, memberId);
 
 		assertThat(savedCalendarMemberId).isEqualTo(calendarMemberId);
+	}
+
+	@Test
+	@DisplayName("캘린더 소유자면 해당 캘린더 멤버를 삭제할 수 있다.")
+	void deleteCalendarMemberIfCalendarOwner() {
+		long memberId = 1L;
+		long calendarId = 1L;
+		long ownerId = 2L;
+		Member owner = mock(Member.class);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(owner));
+		given(owner.equalsId(eq(ownerId))).willReturn(true);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+
+		assertThatCode(
+						() ->
+								calendarMemberService.deleteCalendarMember(
+										calendarId, memberId, ownerId))
+				.doesNotThrowAnyException();
+	}
+
+	@Test
+	@DisplayName("캘린더 소유자가 아니면 InvalidRequestException이 발생한다.")
+	void throwInvalidRequestExceptionWhenDeleteCalendarMemberIfNotCalendarOwner() {
+		long memberId = 1L;
+		long calendarId = 1L;
+		long ownerId = 2L;
+		Member owner = mock(Member.class);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(owner));
+		given(owner.equalsId(eq(ownerId))).willReturn(false);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+
+		assertThatCode(
+						() ->
+								calendarMemberService.deleteCalendarMember(
+										calendarId, memberId, ownerId))
+				.isInstanceOf(InvalidRequestException.class)
+				.hasMessage(ErrorCode.INVALID_CALENDAR_MEMBER_GET_REQUEST.getDescription());
 	}
 }

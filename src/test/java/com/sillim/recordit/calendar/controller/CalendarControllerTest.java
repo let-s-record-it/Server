@@ -172,6 +172,29 @@ class CalendarControllerTest extends RestDocsTest {
 	}
 
 	@Test
+	@DisplayName("캘린더 멤버를 삭제한다.")
+	void calendarMemberDelete() throws Exception {
+		long calendarId = 1L;
+		long memberId = 1L;
+
+		ResultActions perform =
+				mockMvc.perform(
+						delete(
+								"/api/v1/calendars/{calendarId}/members/{memberId}",
+								calendarId,
+								memberId));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"calendar-member-delete",
+								getDocumentRequest(),
+								getDocumentResponse()));
+	}
+
+	@Test
 	@DisplayName("캘린더에 참가한다.")
 	void joinInCalendar() throws Exception {
 		String inviteCode = "inviteCode";
