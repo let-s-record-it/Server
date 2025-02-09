@@ -4,6 +4,7 @@ import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.repository.CalendarMemberRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
@@ -41,5 +42,14 @@ public class CalendarMemberService {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		Member member = memberQueryService.findByMemberId(memberId);
 		return calendarMemberRepository.save(new CalendarMember(member, calendar)).getId();
+	}
+
+	@Transactional
+	public void deleteCalendarMember(Long calendarId, Long memberId, Long ownerId) {
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
+		if (!calendar.isOwnedBy(ownerId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_CALENDAR_MEMBER_GET_REQUEST);
+		}
+		calendarMemberRepository.deleteByCalendarIdAndMemberId(calendarId, memberId);
 	}
 }
