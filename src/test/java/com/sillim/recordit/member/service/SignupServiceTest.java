@@ -9,6 +9,7 @@ import static org.mockito.Mockito.spy;
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.service.CalendarCategoryService;
 import com.sillim.recordit.calendar.service.CalendarCommandService;
+import com.sillim.recordit.category.service.ScheduleCategoryService;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.dto.request.MemberInfo;
@@ -28,6 +29,7 @@ class SignupServiceTest {
 	@Mock MemberRepository memberRepository;
 	@Mock CalendarCommandService calendarCommandService;
 	@Mock CalendarCategoryService calendarCategoryService;
+	@Mock ScheduleCategoryService scheduleCategoryService;
 	@InjectMocks SignupService signupService;
 
 	@Test

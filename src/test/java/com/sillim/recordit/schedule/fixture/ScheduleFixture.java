@@ -1,6 +1,7 @@
 package com.sillim.recordit.schedule.fixture;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import java.time.LocalDateTime;
@@ -13,7 +14,6 @@ public enum ScheduleFixture {
 			false,
 			LocalDateTime.of(2024, 1, 1, 0, 0),
 			LocalDateTime.of(2024, 1, 2, 0, 0),
-			"aabbff",
 			"서울역",
 			true,
 			36.0,
@@ -26,7 +26,6 @@ public enum ScheduleFixture {
 			false,
 			LocalDateTime.of(2024, 1, 1, 0, 0),
 			LocalDateTime.of(2024, 1, 2, 0, 0),
-			"aabbff",
 			"서울역",
 			false,
 			36.0,
@@ -39,7 +38,6 @@ public enum ScheduleFixture {
 			false,
 			LocalDateTime.of(2024, 1, 1, 0, 0),
 			LocalDateTime.of(2024, 1, 2, 0, 0),
-			"aabbff",
 			"서울역",
 			true,
 			36.0,
@@ -53,7 +51,6 @@ public enum ScheduleFixture {
 	private final Boolean isAllDay;
 	private final LocalDateTime startDatetime;
 	private final LocalDateTime endDatetime;
-	private final String colorHex;
 	private final String place;
 	private final Boolean setLocation;
 	private final Double latitude;
@@ -67,7 +64,6 @@ public enum ScheduleFixture {
 			Boolean isAllDay,
 			LocalDateTime startDatetime,
 			LocalDateTime endDatetime,
-			String colorHex,
 			String place,
 			Boolean setLocation,
 			Double latitude,
@@ -79,7 +75,6 @@ public enum ScheduleFixture {
 		this.isAllDay = isAllDay;
 		this.startDatetime = startDatetime;
 		this.endDatetime = endDatetime;
-		this.colorHex = colorHex;
 		this.place = place;
 		this.setLocation = setLocation;
 		this.latitude = latitude;
@@ -88,19 +83,20 @@ public enum ScheduleFixture {
 		this.scheduleAlarms = scheduleAlarms;
 	}
 
-	public Schedule getSchedule(ScheduleGroup scheduleGroup, Calendar calendar) {
+	public Schedule getSchedule(
+			ScheduleCategory category, ScheduleGroup scheduleGroup, Calendar calendar) {
 		return Schedule.builder()
 				.title(title)
 				.description(description)
 				.isAllDay(isAllDay)
 				.startDateTime(startDatetime)
 				.endDateTime(endDatetime)
-				.colorHex(colorHex)
 				.place(place)
 				.setLocation(setLocation)
 				.latitude(latitude)
 				.longitude(longitude)
 				.setAlarm(setAlarm)
+				.category(category)
 				.scheduleGroup(scheduleGroup)
 				.calendar(calendar)
 				.scheduleAlarms(scheduleAlarms)
@@ -108,6 +104,7 @@ public enum ScheduleFixture {
 	}
 
 	public Schedule getSchedule(
+			ScheduleCategory category,
 			ScheduleGroup scheduleGroup,
 			Calendar calendar,
 			LocalDateTime startDatetime,
@@ -118,12 +115,12 @@ public enum ScheduleFixture {
 				.isAllDay(isAllDay)
 				.startDateTime(startDatetime)
 				.endDateTime(endDatetime)
-				.colorHex(colorHex)
 				.place(place)
 				.setLocation(setLocation)
 				.latitude(latitude)
 				.longitude(longitude)
 				.setAlarm(setAlarm)
+				.category(category)
 				.scheduleGroup(scheduleGroup)
 				.calendar(calendar)
 				.scheduleAlarms(scheduleAlarms)
@@ -148,10 +145,6 @@ public enum ScheduleFixture {
 
 	public LocalDateTime getEndDatetime() {
 		return endDatetime;
-	}
-
-	public String getColorHex() {
-		return colorHex;
 	}
 
 	public String getPlace() {

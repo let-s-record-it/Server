@@ -7,6 +7,8 @@ import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
@@ -33,7 +35,10 @@ class ScheduleTest {
 	@Test
 	@DisplayName("스케줄을 생성할 수 있다.")
 	void createSchedule() {
-		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar);
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		Schedule schedule =
+				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
 		ScheduleFixture fixture = ScheduleFixture.DEFAULT;
 
 		assertAll(
@@ -44,7 +49,7 @@ class ScheduleTest {
 							.isEqualTo(
 									ScheduleDuration.createNotAllDay(
 											fixture.getStartDatetime(), fixture.getEndDatetime()));
-					assertThat(schedule.getColorHex()).isEqualTo(fixture.getColorHex());
+					assertThat(schedule.getColorHex()).isEqualTo(scheduleCategory.getColorHex());
 					assertThat(schedule.getPlace()).isEqualTo(fixture.getPlace());
 					assertThat(schedule.isSetLocation()).isEqualTo(fixture.getSetLocation());
 					assertThat(schedule.getLatitude()).isEqualTo(fixture.getLatitude());
@@ -56,7 +61,11 @@ class ScheduleTest {
 	@Test
 	@DisplayName("위치 설정 여부가 false이면 위치 값에 null이 저장된다.")
 	void locationIsNullWhenSetLocationIsFalse() {
-		Schedule schedule = ScheduleFixture.NOT_SET_LOCATION.getSchedule(scheduleGroup, calendar);
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		Schedule schedule =
+				ScheduleFixture.NOT_SET_LOCATION.getSchedule(
+						scheduleCategory, scheduleGroup, calendar);
 
 		assertThat(schedule.getLocation()).isNull();
 	}

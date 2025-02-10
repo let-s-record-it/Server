@@ -6,6 +6,8 @@ import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
@@ -50,6 +52,8 @@ class CustomScheduleRepositoryTest {
 	@Test
 	@DisplayName("schedule 저장 시 scheduleAlarm은 연관관계로 인해 같이 persist 된다.")
 	void saveSchedule() {
+		ScheduleCategory category =
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
 		ScheduleAddRequest scheduleAddRequest =
 				new ScheduleAddRequest(
@@ -60,16 +64,17 @@ class CustomScheduleRepositoryTest {
 						LocalDateTime.of(2024, 2, 1, 0, 0),
 						false,
 						null,
-						"aaffbb",
 						"서울역",
 						true,
 						36.0,
 						127.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 
 		Schedule schedule =
-				scheduleRepository.save(scheduleAddRequest.toSchedule(calendar, scheduleGroup));
+				scheduleRepository.save(
+						scheduleAddRequest.toSchedule(category, calendar, scheduleGroup));
 
 		assertThat(schedule.getScheduleAlarms()).hasSize(1);
 	}
@@ -77,6 +82,8 @@ class CustomScheduleRepositoryTest {
 	@Test
 	@DisplayName("년 월에 맞는 일정을 조회한다.")
 	void searchSchedules() {
+		ScheduleCategory category =
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
 		ScheduleGroup scheduleGroup1 = em.persist(new ScheduleGroup(false));
 		ScheduleGroup scheduleGroup2 = em.persist(new ScheduleGroup(false));
 		ScheduleGroup scheduleGroup3 = em.persist(new ScheduleGroup(false));
@@ -84,6 +91,7 @@ class CustomScheduleRepositoryTest {
 		ScheduleGroup scheduleGroup5 = em.persist(new ScheduleGroup(false));
 		scheduleRepository.save(
 				ScheduleFixture.DEFAULT.getSchedule(
+						category,
 						scheduleGroup1,
 						calendar,
 						LocalDateTime.of(2023, 2, 1, 0, 0),
@@ -91,6 +99,7 @@ class CustomScheduleRepositoryTest {
 		Schedule schedule2 =
 				scheduleRepository.save(
 						ScheduleFixture.DEFAULT.getSchedule(
+								category,
 								scheduleGroup2,
 								calendar,
 								LocalDateTime.of(2023, 2, 1, 0, 0),
@@ -98,6 +107,7 @@ class CustomScheduleRepositoryTest {
 		Schedule schedule3 =
 				scheduleRepository.save(
 						ScheduleFixture.DEFAULT.getSchedule(
+								category,
 								scheduleGroup3,
 								calendar,
 								LocalDateTime.of(2024, 1, 1, 0, 0),
@@ -105,12 +115,14 @@ class CustomScheduleRepositoryTest {
 		Schedule schedule4 =
 				scheduleRepository.save(
 						ScheduleFixture.DEFAULT.getSchedule(
+								category,
 								scheduleGroup4,
 								calendar,
 								LocalDateTime.of(2024, 2, 1, 0, 0),
 								LocalDateTime.of(2025, 1, 1, 0, 0)));
 		scheduleRepository.save(
 				ScheduleFixture.DEFAULT.getSchedule(
+						category,
 						scheduleGroup5,
 						calendar,
 						LocalDateTime.of(2024, 3, 1, 0, 0),
@@ -126,6 +138,8 @@ class CustomScheduleRepositoryTest {
 	@Test
 	@DisplayName("년 월 일에 맞는 일정을 조회한다.")
 	void searchSchedulesInDay() {
+		ScheduleCategory category =
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
 		ScheduleGroup scheduleGroup1 = em.persist(new ScheduleGroup(false));
 		ScheduleGroup scheduleGroup2 = em.persist(new ScheduleGroup(false));
 		ScheduleGroup scheduleGroup3 = em.persist(new ScheduleGroup(false));
@@ -151,30 +165,35 @@ class CustomScheduleRepositoryTest {
 						scheduleGroup4));
 		scheduleRepository.save(
 				ScheduleFixture.DEFAULT.getSchedule(
+						category,
 						scheduleGroup1,
 						calendar,
 						LocalDateTime.of(2023, 2, 1, 0, 0),
 						LocalDateTime.of(2024, 1, 1, 0, 0)));
 		scheduleRepository.save(
 				ScheduleFixture.DEFAULT.getSchedule(
+						category,
 						scheduleGroup2,
 						calendar,
 						LocalDateTime.of(2023, 2, 1, 0, 0),
 						LocalDateTime.of(2024, 2, 1, 0, 0)));
 		scheduleRepository.save(
 				ScheduleFixture.DEFAULT.getSchedule(
+						category,
 						scheduleGroup3,
 						calendar,
 						LocalDateTime.of(2024, 1, 1, 0, 0),
 						LocalDateTime.of(2024, 2, 1, 23, 59)));
 		scheduleRepository.save(
 				ScheduleFixture.DEFAULT.getSchedule(
+						category,
 						scheduleGroup4,
 						calendar,
 						LocalDateTime.of(2024, 2, 1, 0, 0),
 						LocalDateTime.of(2025, 1, 1, 0, 0)));
 		scheduleRepository.save(
 				ScheduleFixture.DEFAULT.getSchedule(
+						category,
 						scheduleGroup5,
 						calendar,
 						LocalDateTime.of(2024, 3, 1, 0, 0),
@@ -193,6 +212,8 @@ class CustomScheduleRepositoryTest {
 	@Test
 	@DisplayName("schedule에서 scheduleAlarm 조회 시 lazy loading되어 조회된다.")
 	void findScheduleWithFetchLazyScheduleAlarms() {
+		ScheduleCategory category =
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
 		ScheduleAddRequest scheduleAddRequest =
 				new ScheduleAddRequest(
@@ -203,15 +224,16 @@ class CustomScheduleRepositoryTest {
 						LocalDateTime.of(2024, 2, 1, 0, 0),
 						false,
 						null,
-						"aaffbb",
 						"서울역",
 						true,
 						36.0,
 						127.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		Schedule savedSchedule =
-				scheduleRepository.save(scheduleAddRequest.toSchedule(calendar, scheduleGroup));
+				scheduleRepository.save(
+						scheduleAddRequest.toSchedule(category, calendar, scheduleGroup));
 
 		em.clear();
 		Optional<Schedule> foundSchedule =
@@ -226,9 +248,11 @@ class CustomScheduleRepositoryTest {
 	@Test
 	@DisplayName("일정을 삭제하면 조회되지 않는다.")
 	void notSelectedWhenScheduleDeleted() {
+		ScheduleCategory category =
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
 		Schedule savedSchedule =
-				em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
+				em.persist(ScheduleFixture.DEFAULT.getSchedule(category, scheduleGroup, calendar));
 
 		savedSchedule.delete();
 
@@ -243,10 +267,12 @@ class CustomScheduleRepositoryTest {
 	@Test
 	@DisplayName("그룹 내 일정을 삭제하면 조회되지 않는다.")
 	void notSelectedWhenSchedulesDeletedInGroup() {
+		ScheduleCategory category =
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
-		em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
-		em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
-		em.persist(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
+		em.persist(ScheduleFixture.DEFAULT.getSchedule(category, scheduleGroup, calendar));
+		em.persist(ScheduleFixture.DEFAULT.getSchedule(category, scheduleGroup, calendar));
+		em.persist(ScheduleFixture.DEFAULT.getSchedule(category, scheduleGroup, calendar));
 		scheduleRepository.findGroupSchedules(scheduleGroup.getId()).forEach(Schedule::delete);
 
 		em.flush();
@@ -259,9 +285,12 @@ class CustomScheduleRepositoryTest {
 	@Test
 	@DisplayName("그룹 내 특정 일 이후 일정을 삭제하면 모두 조회되지 않는다.")
 	void notSelectedWhenSchedulesDeletedInGroupAfter() {
+		ScheduleCategory category =
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
 		em.persist(
 				ScheduleFixture.DEFAULT.getSchedule(
+						category,
 						scheduleGroup,
 						calendar,
 						LocalDateTime.of(2024, 1, 1, 0, 0),
@@ -269,12 +298,14 @@ class CustomScheduleRepositoryTest {
 		Schedule schedule =
 				em.persist(
 						ScheduleFixture.DEFAULT.getSchedule(
+								category,
 								scheduleGroup,
 								calendar,
 								LocalDateTime.of(2024, 1, 3, 0, 0),
 								LocalDateTime.of(2024, 1, 5, 0, 0)));
 		em.persist(
 				ScheduleFixture.DEFAULT.getSchedule(
+						category,
 						scheduleGroup,
 						calendar,
 						LocalDateTime.of(2024, 1, 7, 0, 0),

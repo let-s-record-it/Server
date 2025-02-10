@@ -14,6 +14,9 @@ import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
+import com.sillim.recordit.category.service.ScheduleCategoryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
@@ -47,6 +50,7 @@ class ScheduleCommandServiceTest {
 	@Mock ScheduleGroupService scheduleGroupService;
 	@Mock RepetitionPatternService repetitionPatternService;
 	@Mock PushAlarmService pushAlarmService;
+	@Mock ScheduleCategoryService scheduleCategoryService;
 	@InjectMocks ScheduleCommandService scheduleCommandService;
 
 	@Test
@@ -64,15 +68,18 @@ class ScheduleCommandServiceTest {
 						LocalDateTime.of(2024, 2, 1, 0, 0),
 						false,
 						null,
-						"aaffbb",
 						"서울역",
 						true,
 						36.0,
 						127.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-		Schedule schedule = spy(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		Schedule schedule =
+				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 		given(scheduleGroupService.newScheduleGroup(any())).willReturn(scheduleGroup);
@@ -119,12 +126,12 @@ class ScheduleCommandServiceTest {
 						endDate,
 						true,
 						repetitionUpdateRequest,
-						"aaffbb",
 						"서울역",
 						true,
 						36.0,
 						127.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
 		RepetitionPattern repetitionPattern =
@@ -133,7 +140,10 @@ class ScheduleCommandServiceTest {
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
-		Schedule schedule = spy(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		Schedule schedule =
+				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
 		given(scheduleGroupService.newScheduleGroup(true)).willReturn(scheduleGroup);
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
@@ -185,12 +195,12 @@ class ScheduleCommandServiceTest {
 						endDate,
 						true,
 						repetitionUpdateRequest,
-						"aaffcc",
 						"용산역",
 						true,
 						37.0,
 						128.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
 						1L);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
@@ -200,7 +210,10 @@ class ScheduleCommandServiceTest {
 		CalendarCategory category2 = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member2);
 		Calendar calendar1 = CalendarFixture.DEFAULT.getCalendar(member1, category1);
 		Calendar calendar2 = CalendarFixture.DEFAULT.getCalendar(member2, category2);
-		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar1);
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member1);
+		Schedule schedule =
+				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar1);
 		given(member1.equalsId(anyLong())).willReturn(true);
 		given(member2.equalsId(anyLong())).willReturn(false);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
@@ -244,12 +257,12 @@ class ScheduleCommandServiceTest {
 						endDate,
 						true,
 						repetitionUpdateRequest,
-						"aaffcc",
 						"용산역",
 						true,
 						37.0,
 						128.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
 						1L);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
@@ -259,9 +272,13 @@ class ScheduleCommandServiceTest {
 		Member member = mock(Member.class);
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
-		Schedule schedule = spy(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
+		ScheduleCategory scheduleCategory =
+				spy(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+		Schedule schedule =
+				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
 		given(member.equalsId(anyLong())).willReturn(true);
+		given(scheduleCategoryService.searchScheduleCategory(eq(1L))).willReturn(scheduleCategory);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
 		given(calendarQueryService.searchByCalendarId(calendarId)).willReturn(calendar);
 		given(scheduleGroupService.newScheduleGroup(true)).willReturn(scheduleGroup);
@@ -275,7 +292,7 @@ class ScheduleCommandServiceTest {
 					assertThat(schedule.getTitle()).isEqualTo("title2");
 					assertThat(schedule.getDescription()).isEqualTo("description2");
 					assertThat(schedule.isAllDay()).isTrue();
-					assertThat(schedule.getColorHex()).isEqualTo("aaffcc");
+					assertThat(schedule.getColorHex()).isEqualTo("aaffbb");
 					assertThat(schedule.getPlace()).isEqualTo("용산역");
 					assertThat(schedule.getLatitude()).isEqualTo(37.0);
 					assertThat(schedule.getLongitude()).isEqualTo(128.0);
@@ -314,12 +331,12 @@ class ScheduleCommandServiceTest {
 						endDate,
 						true,
 						repetitionUpdateRequest,
-						"aaffcc",
 						"용산역",
 						true,
 						37.0,
 						128.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
 						1L);
 		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
@@ -329,7 +346,10 @@ class ScheduleCommandServiceTest {
 		Member member = mock(Member.class);
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
-		Schedule schedule = spy(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		Schedule schedule =
+				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
 		given(member.equalsId(anyLong())).willReturn(true);
 		given(scheduleGroup.getId()).willReturn(1L);
@@ -376,19 +396,22 @@ class ScheduleCommandServiceTest {
 						endDate,
 						false,
 						repetitionUpdateRequest,
-						"aaffcc",
 						"용산역",
 						true,
 						37.0,
 						128.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
 						1L);
 		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
 		Member member = mock(Member.class);
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
-		Schedule schedule = spy(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		Schedule schedule =
+				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(member.equalsId(anyLong())).willReturn(true);
 		given(scheduleGroup.getId()).willReturn(1L);
 		given(schedule.getId()).willReturn(1L);
@@ -455,7 +478,10 @@ class ScheduleCommandServiceTest {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar);
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		Schedule schedule =
+				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
 		given(member.equalsId(anyLong())).willReturn(false);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
@@ -471,7 +497,10 @@ class ScheduleCommandServiceTest {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar);
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		Schedule schedule =
+				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
 		given(member.equalsId(anyLong())).willReturn(false);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
