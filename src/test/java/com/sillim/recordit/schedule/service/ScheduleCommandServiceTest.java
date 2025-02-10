@@ -10,6 +10,8 @@ import static org.mockito.Mockito.*;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
@@ -50,7 +52,9 @@ class ScheduleCommandServiceTest {
 	@Test
 	@DisplayName("반복 없는 schedule을 추가할 수 있다.")
 	void addSchedule() throws SchedulerException {
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(MemberFixture.DEFAULT.getMember());
+		Member member = MemberFixture.DEFAULT.getMember();
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleAddRequest scheduleAddRequest =
 				new ScheduleAddRequest(
 						"title",
@@ -126,24 +130,10 @@ class ScheduleCommandServiceTest {
 		RepetitionPattern repetitionPattern =
 				RepetitionPattern.createDaily(
 						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(MemberFixture.DEFAULT.getMember());
+		Member member = MemberFixture.DEFAULT.getMember();
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		Schedule schedule = spy(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
-		//		Schedule schedule = spy(Schedule.builder()
-		//				.title("title")
-		//				.description("description")
-		//				.isAllDay(false)
-		//				.startDateTime(startDate)
-		//				.endDateTime(endDate)
-		//				.colorHex("aaffbb")
-		//				.setLocation(true)
-		//				.place("서울역")
-		//				.latitude(36.0)
-		//				.longitude(127.0)
-		//				.setAlarm(true)
-		//				.calendar(calendar)
-		//				.scheduleGroup(scheduleGroup)
-		//				.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
-		//				.build());
 		given(schedule.getId()).willReturn(1L);
 		given(scheduleGroupService.newScheduleGroup(true)).willReturn(scheduleGroup);
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
@@ -206,8 +196,10 @@ class ScheduleCommandServiceTest {
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
 		Member member1 = mock(Member.class);
 		Member member2 = mock(Member.class);
-		Calendar calendar1 = CalendarFixture.DEFAULT.getCalendar(member1);
-		Calendar calendar2 = CalendarFixture.DEFAULT.getCalendar(member2);
+		CalendarCategory category1 = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member1);
+		CalendarCategory category2 = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member2);
+		Calendar calendar1 = CalendarFixture.DEFAULT.getCalendar(member1, category1);
+		Calendar calendar2 = CalendarFixture.DEFAULT.getCalendar(member2, category2);
 		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar1);
 		given(member1.equalsId(anyLong())).willReturn(true);
 		given(member2.equalsId(anyLong())).willReturn(false);
@@ -265,7 +257,8 @@ class ScheduleCommandServiceTest {
 				RepetitionPattern.createDaily(
 						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
 		Member member = mock(Member.class);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		Schedule schedule = spy(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
 		given(member.equalsId(anyLong())).willReturn(true);
@@ -334,7 +327,8 @@ class ScheduleCommandServiceTest {
 				RepetitionPattern.createDaily(
 						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
 		Member member = mock(Member.class);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		Schedule schedule = spy(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
 		given(member.equalsId(anyLong())).willReturn(true);
@@ -392,7 +386,8 @@ class ScheduleCommandServiceTest {
 						1L);
 		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
 		Member member = mock(Member.class);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		Schedule schedule = spy(ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar));
 		given(member.equalsId(anyLong())).willReturn(true);
 		given(scheduleGroup.getId()).willReturn(1L);
@@ -457,7 +452,8 @@ class ScheduleCommandServiceTest {
 	@DisplayName("그룹 내 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
 	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveGroupSchedules() {
 		Member member = mock(Member.class);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar);
 		given(member.equalsId(anyLong())).willReturn(false);
@@ -472,7 +468,8 @@ class ScheduleCommandServiceTest {
 	@DisplayName("그룹 내 특정 일 이후 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
 	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveGroupSchedulesAfter() {
 		Member member = mock(Member.class);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar);
 		given(member.equalsId(anyLong())).willReturn(false);

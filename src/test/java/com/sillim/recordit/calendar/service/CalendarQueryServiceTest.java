@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.repository.CalendarRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
@@ -39,8 +41,10 @@ class CalendarQueryServiceTest {
 	@Test
 	@DisplayName("calendar id를 통해 캘린더를 조회할 수 있다.")
 	void searchByCalendarId() {
-		Calendar expectedCalendar = CalendarFixture.DEFAULT.getCalendar(member);
-		given(calendarRepository.findById(eq(1L))).willReturn(Optional.of(expectedCalendar));
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar expectedCalendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		given(calendarRepository.findByIdWithFetchCategory(eq(1L)))
+				.willReturn(Optional.of(expectedCalendar));
 
 		Calendar calendar = calendarQueryService.searchByCalendarId(1L);
 
@@ -50,7 +54,7 @@ class CalendarQueryServiceTest {
 	@Test
 	@DisplayName("calendar id에 맞는 캘린더가 없으면 RecordNotFoundException이 발생한다.")
 	void throwRecordNotFoundExceptionIfNotExistsCalendarWhenSearchByCalendarId() {
-		given(calendarRepository.findById(eq(1L))).willReturn(Optional.empty());
+		given(calendarRepository.findByIdWithFetchCategory(eq(1L))).willReturn(Optional.empty());
 
 		assertThatCode(() -> calendarQueryService.searchByCalendarId(1L))
 				.isInstanceOf(RecordNotFoundException.class)
@@ -60,8 +64,9 @@ class CalendarQueryServiceTest {
 	@Test
 	@DisplayName("member id를 통해 캘린더 목록을 조회할 수 있다.")
 	void searchCalendarsByMemberId() {
-		Calendar expectedCalendar1 = CalendarFixture.DEFAULT.getCalendar(member);
-		Calendar expectedCalendar2 = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar expectedCalendar1 = CalendarFixture.DEFAULT.getCalendar(member, category);
+		Calendar expectedCalendar2 = CalendarFixture.DEFAULT.getCalendar(member, category);
 		given(calendarRepository.findByMemberId(eq(1L)))
 				.willReturn(List.of(expectedCalendar1, expectedCalendar2));
 

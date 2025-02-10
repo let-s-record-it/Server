@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.domain.CalendarMember;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
@@ -31,12 +33,14 @@ class CustomCalendarMemberRepositoryImplTest {
 	@Autowired TestEntityManager em;
 
 	Calendar calendar;
+	CalendarCategory category;
 	Member member;
 
 	@BeforeEach
 	void initObjects() {
 		member = em.persist(MemberFixture.DEFAULT.getMember());
-		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member));
+		category = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
+		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member, category));
 	}
 
 	@Test
@@ -81,7 +85,9 @@ class CustomCalendarMemberRepositoryImplTest {
 	@Test
 	@DisplayName("특정 멤버의 캘린더들을 조회한다.")
 	void findCalendarsByMemberId() {
-		Calendar calendar2 = em.persist(CalendarFixture.DEFAULT.getCalendar(member));
+		CalendarCategory category =
+				em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
+		Calendar calendar2 = em.persist(CalendarFixture.DEFAULT.getCalendar(member, category));
 		em.persist(new CalendarMember(member, calendar));
 		em.persist(new CalendarMember(member, calendar2));
 

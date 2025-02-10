@@ -13,6 +13,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
@@ -47,14 +49,15 @@ class TaskCommandServiceTest {
 	@Mock TaskGroupService taskGroupService;
 	@Mock TaskRepository taskRepository;
 
+	private CalendarCategory category;
 	private Calendar calendar;
-
 	private Member member;
 
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 	}
 
 	@Test
@@ -152,7 +155,7 @@ class TaskCommandServiceTest {
 				.willReturn(Optional.of(selectedTask));
 		willDoNothing().given(taskRepository).deleteAllByTaskGroupId(anyLong());
 
-		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member, category));
 		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
@@ -208,7 +211,7 @@ class TaskCommandServiceTest {
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willReturn(Optional.of(selectedTask));
 
-		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member, category));
 		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
@@ -267,7 +270,7 @@ class TaskCommandServiceTest {
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willReturn(Optional.of(selectedTask));
 
-		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member, category));
 		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 

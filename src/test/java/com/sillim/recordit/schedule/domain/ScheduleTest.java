@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
@@ -17,12 +19,14 @@ class ScheduleTest {
 
 	Member member;
 	Calendar calendar;
+	CalendarCategory category;
 	ScheduleGroup scheduleGroup;
 
 	@BeforeEach
 	void initObjects() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		scheduleGroup = new ScheduleGroup(false);
 	}
 

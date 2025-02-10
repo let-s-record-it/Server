@@ -8,8 +8,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
 import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.repository.CalendarRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
@@ -31,6 +33,8 @@ class CalendarCommandServiceTest {
 	@Mock CalendarRepository calendarRepository;
 	@Mock MemberQueryService memberQueryService;
 	@Mock CalendarQueryService calendarQueryService;
+	@Mock CalendarMemberService calendarMemberService;
+	@Mock CalendarCategoryService calendarCategoryService;
 	@InjectMocks CalendarCommandService calendarCommandService;
 
 	Member member;
@@ -43,11 +47,12 @@ class CalendarCommandServiceTest {
 	@Test
 	@DisplayName("캘린더를 추가할 수 있다.")
 	void addCalendar() {
-		Calendar expectedCalendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar expectedCalendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		given(calendarRepository.save(any(Calendar.class))).willReturn(expectedCalendar);
 		given(memberQueryService.findByMemberId(eq(1L))).willReturn(member);
 
-		CalendarAddRequest calendarAddRequest = new CalendarAddRequest("calendar1", "aabbff");
+		CalendarAddRequest calendarAddRequest = new CalendarAddRequest("calendar1", 1L);
 		Calendar calendar = calendarCommandService.addCalendar(calendarAddRequest, 1L);
 
 		assertThat(calendar).isEqualTo(expectedCalendar);
@@ -60,8 +65,7 @@ class CalendarCommandServiceTest {
 		given(calendar.isOwnedBy(any())).willReturn(true);
 		given(calendarQueryService.searchByCalendarId(eq(1L))).willReturn(calendar);
 
-		CalendarModifyRequest calendarModifyRequest =
-				new CalendarModifyRequest("calendar1", "aabbff");
+		CalendarModifyRequest calendarModifyRequest = new CalendarModifyRequest("calendar1", 1L);
 
 		assertThatCode(() -> calendarCommandService.modifyCalendar(calendarModifyRequest, 1L, 1L))
 				.doesNotThrowAnyException();

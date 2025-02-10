@@ -3,6 +3,8 @@ package com.sillim.recordit.schedule.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
@@ -35,12 +37,14 @@ class CustomScheduleRepositoryTest {
 	@Autowired TestEntityManager em;
 
 	Member member;
+	CalendarCategory category;
 	Calendar calendar;
 
 	@BeforeEach
 	void setEntities() {
 		member = em.persist(MemberFixture.DEFAULT.getMember());
-		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member));
+		category = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
+		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member, category));
 	}
 
 	@Test

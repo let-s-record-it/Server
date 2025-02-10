@@ -17,6 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
@@ -55,6 +57,7 @@ class ScheduleControllerTest extends RestDocsTest {
 	@MockBean RepetitionPatternService repetitionPatternService;
 
 	Member member;
+	CalendarCategory category;
 	Calendar calendar;
 
 	@BeforeEach
@@ -67,7 +70,8 @@ class ScheduleControllerTest extends RestDocsTest {
 						.deleted(false)
 						.memberRole(List.of(MemberRole.ROLE_USER))
 						.build();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 	}
 
 	@Test
