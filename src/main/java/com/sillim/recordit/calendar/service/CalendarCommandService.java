@@ -1,6 +1,7 @@
 package com.sillim.recordit.calendar.service;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
 import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
 import com.sillim.recordit.calendar.repository.CalendarRepository;
@@ -19,10 +20,18 @@ public class CalendarCommandService {
 	private final CalendarRepository calendarRepository;
 	private final MemberQueryService memberQueryService;
 	private final CalendarQueryService calendarQueryService;
+	private final CalendarMemberService calendarMemberService;
+	private final CalendarCategoryService calendarCategoryService;
 
 	public Calendar addCalendar(CalendarAddRequest request, Long memberId) {
-		return calendarRepository.save(
-				request.toCalendar(memberQueryService.findByMemberId(memberId)));
+		CalendarCategory calendarCategory =
+				calendarCategoryService.searchCalendarCategory(request.calendarCategoryId());
+		Calendar calendar =
+				calendarRepository.save(
+						request.toCalendar(
+								memberQueryService.findByMemberId(memberId), calendarCategory));
+		calendarMemberService.addCalendarMember(calendar.getId(), memberId);
+		return calendar;
 	}
 
 	public void modifyCalendar(CalendarModifyRequest request, Long calendarId, Long memberId) {
@@ -31,7 +40,9 @@ public class CalendarCommandService {
 		if (!calendar.isOwnedBy(memberId)) {
 			throw new InvalidCalendarException(ErrorCode.INVALID_CALENDAR_DELETE_REQUEST);
 		}
-		calendar.modify(request.title(), request.colorHex());
+		calendar.modify(
+				request.title(),
+				calendarCategoryService.searchCalendarCategory(request.calendarCategoryId()));
 	}
 
 	public void deleteByCalendarId(Long calendarId, Long memberId) {

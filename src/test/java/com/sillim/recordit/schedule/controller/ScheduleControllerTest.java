@@ -17,7 +17,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.MemberRole;
@@ -55,6 +59,7 @@ class ScheduleControllerTest extends RestDocsTest {
 	@MockBean RepetitionPatternService repetitionPatternService;
 
 	Member member;
+	CalendarCategory category;
 	Calendar calendar;
 
 	@BeforeEach
@@ -67,7 +72,8 @@ class ScheduleControllerTest extends RestDocsTest {
 						.deleted(false)
 						.memberRole(List.of(MemberRole.ROLE_USER))
 						.build();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 	}
 
 	@Test
@@ -83,16 +89,18 @@ class ScheduleControllerTest extends RestDocsTest {
 						LocalDateTime.of(2024, 2, 1, 0, 0),
 						false,
 						null,
-						"aaffbb",
 						"서울역",
 						true,
 						36.0,
 						127.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(
+						category,
 						scheduleGroup,
 						calendar,
 						LocalDateTime.of(2024, 1, 1, 0, 0),
@@ -116,6 +124,7 @@ class ScheduleControllerTest extends RestDocsTest {
 	@DisplayName("상세 일정을 조회한다.")
 	void scheduleDetails() throws Exception {
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		Schedule schedule =
 				Schedule.builder()
 						.title("title")
@@ -123,12 +132,12 @@ class ScheduleControllerTest extends RestDocsTest {
 						.isAllDay(false)
 						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
-						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
+						.category(category)
 						.scheduleGroup(scheduleGroup)
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
@@ -160,6 +169,7 @@ class ScheduleControllerTest extends RestDocsTest {
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
 		RepetitionPattern repetitionPattern =
 				RepetitionPatternFixture.WEEKLY.getRepetitionPattern(scheduleGroup);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		DayScheduleResponse dayScheduleResponse =
 				DayScheduleResponse.of(
 						Schedule.builder()
@@ -168,12 +178,12 @@ class ScheduleControllerTest extends RestDocsTest {
 								.isAllDay(false)
 								.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 								.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
-								.colorHex("aaffbb")
 								.setLocation(true)
 								.place("서울역")
 								.latitude(36.0)
 								.longitude(127.0)
 								.setAlarm(true)
+								.category(category)
 								.scheduleGroup(scheduleGroup)
 								.calendar(calendar)
 								.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
@@ -209,8 +219,9 @@ class ScheduleControllerTest extends RestDocsTest {
 	@DisplayName("특정 달의 일정을 조회한다.")
 	void scheduleListInMonth() throws Exception {
 		long calendarId = 1L;
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleGroup, calendar);
+		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(category, scheduleGroup, calendar);
 		MonthScheduleResponse monthScheduleResponse = MonthScheduleResponse.from(schedule);
 		given(scheduleQueryService.searchSchedulesInMonth(calendarId, 2024, 1, 1L))
 				.willReturn(List.of(monthScheduleResponse));
@@ -237,9 +248,11 @@ class ScheduleControllerTest extends RestDocsTest {
 	void scheduleListInDay() throws Exception {
 		long calendarId = 1L;
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		DayScheduleResponse dayScheduleResponse =
 				DayScheduleResponse.of(
 						ScheduleFixture.DEFAULT.getSchedule(
+								category,
 								scheduleGroup,
 								calendar,
 								LocalDateTime.of(2024, 1, 1, 0, 0),
@@ -283,12 +296,12 @@ class ScheduleControllerTest extends RestDocsTest {
 						LocalDateTime.of(2024, 2, 1, 0, 0),
 						false,
 						null,
-						"aaffbb",
 						"서울역",
 						true,
 						36.0,
 						127.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
 						1L);
 
@@ -316,12 +329,12 @@ class ScheduleControllerTest extends RestDocsTest {
 						LocalDateTime.of(2024, 2, 1, 0, 0),
 						false,
 						null,
-						"aaffbb",
 						"서울역",
 						true,
 						36.0,
 						127.0,
 						true,
+						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
 						1L);
 

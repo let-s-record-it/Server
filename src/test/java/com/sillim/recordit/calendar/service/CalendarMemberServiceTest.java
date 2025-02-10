@@ -9,7 +9,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.domain.CalendarMember;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.repository.CalendarMemberRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
@@ -40,7 +42,8 @@ class CalendarMemberServiceTest {
 		long calendarId = 1L;
 		long memberId = 1L;
 		Member member = spy(MemberFixture.DEFAULT.getMember());
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member, category));
 		CalendarMember expectCalendarMember = new CalendarMember(member, calendar);
 		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
 				.willReturn(Optional.of(expectCalendarMember));
@@ -71,7 +74,8 @@ class CalendarMemberServiceTest {
 		long calendarId = 1L;
 		long calendarMemberId = 1L;
 		Member member = spy(MemberFixture.DEFAULT.getMember());
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member, category));
 		CalendarMember expectCalendarMember = mock(CalendarMember.class);
 		given(expectCalendarMember.getId()).willReturn(calendarMemberId);
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
@@ -91,7 +95,8 @@ class CalendarMemberServiceTest {
 		long calendarId = 1L;
 		long ownerId = 2L;
 		Member owner = mock(Member.class);
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(owner));
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(owner);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(owner, category));
 		given(owner.equalsId(eq(ownerId))).willReturn(true);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
@@ -109,7 +114,8 @@ class CalendarMemberServiceTest {
 		long calendarId = 1L;
 		long ownerId = 2L;
 		Member owner = mock(Member.class);
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(owner));
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(owner);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(owner, category));
 		given(owner.equalsId(eq(ownerId))).willReturn(false);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 

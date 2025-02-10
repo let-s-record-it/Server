@@ -8,6 +8,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.invite.domain.InviteLink;
@@ -38,7 +40,8 @@ class InviteServiceTest {
 		long calendarId = 1L;
 		String expectInviteCode = UUID.randomUUID().toString();
 		Member member = MemberFixture.DEFAULT.getMember();
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		InviteLink inviteLink =
 				new InviteLink(expectInviteCode, LocalDateTime.now().plusDays(7), false, calendar);
 		given(inviteLinkRepository.findByCalendarIdAndExpiredIsFalse(eq(calendarId)))
@@ -55,7 +58,8 @@ class InviteServiceTest {
 		long calendarId = 1L;
 		String expectInviteCode = UUID.randomUUID().toString();
 		Member member = MemberFixture.DEFAULT.getMember();
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		InviteLink expectInviteLink =
 				new InviteLink(expectInviteCode, LocalDateTime.now().plusDays(7), false, calendar);
 		InviteLink inviteLink =
@@ -78,7 +82,8 @@ class InviteServiceTest {
 	void getInviteInfoIfExistsInviteLinkThatEqualsInviteCode() {
 		String inviteCode = UUID.randomUUID().toString();
 		Member member = spy(MemberFixture.DEFAULT.getMember());
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member, category));
 		given(member.getId()).willReturn(1L);
 		given(calendar.getId()).willReturn(1L);
 		InviteLink expectInviteLink = new InviteLink("code", LocalDateTime.now(), false, calendar);

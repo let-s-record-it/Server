@@ -1,6 +1,5 @@
 package com.sillim.recordit.calendar.domain;
 
-import com.sillim.recordit.calendar.domain.vo.CalendarColorHex;
 import com.sillim.recordit.calendar.domain.vo.CalendarTitle;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
@@ -23,25 +22,23 @@ public class Calendar {
 
 	@Embedded private CalendarTitle title;
 
-	@Embedded private CalendarColorHex colorHex;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "calendar_category_id")
+	private CalendarCategory category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
 	@Builder
-	public Calendar(String title, String colorHex, Member member) {
+	public Calendar(String title, Member member, CalendarCategory category) {
 		this.title = new CalendarTitle(title);
-		this.colorHex = new CalendarColorHex(colorHex);
 		this.member = member;
+		this.category = category;
 	}
 
 	public String getTitle() {
 		return title.getTitle();
-	}
-
-	public String getColorHex() {
-		return colorHex.getColorHex();
 	}
 
 	public boolean isOwnedBy(Long memberId) {
@@ -54,8 +51,12 @@ public class Calendar {
 		}
 	}
 
-	public void modify(String title, String colorHex) {
+	public void modify(String title, CalendarCategory category) {
 		this.title = new CalendarTitle(title);
-		this.colorHex = new CalendarColorHex(colorHex);
+		this.category = category;
+	}
+
+	public String getColorHex() {
+		return category.getColorHex();
 	}
 }
