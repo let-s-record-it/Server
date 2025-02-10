@@ -3,6 +3,8 @@ package com.sillim.recordit.task.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
@@ -29,6 +31,7 @@ public class CustomTaskRepositoryTest {
 	@Autowired TestEntityManager em;
 
 	private Member member;
+	private CalendarCategory category;
 	private Calendar calendar;
 	private TaskGroup taskGroup;
 
@@ -36,7 +39,8 @@ public class CustomTaskRepositoryTest {
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
 		em.persist(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		category = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		em.persist(calendar);
 		taskGroup = new TaskGroup(null, null);
 		em.persist(taskGroup);

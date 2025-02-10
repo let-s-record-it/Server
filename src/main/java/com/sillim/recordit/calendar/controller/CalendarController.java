@@ -77,6 +77,15 @@ public class CalendarController {
 						calendarMemberService.searchCalendarMember(calendarId, memberId)));
 	}
 
+	@DeleteMapping("/{calendarId}/members/{memberId}")
+	public ResponseEntity<Void> calendarMemberDelete(
+			@PathVariable Long calendarId,
+			@PathVariable Long memberId,
+			@CurrentMember Member member) {
+		calendarMemberService.deleteCalendarMember(calendarId, memberId, member.getId());
+		return ResponseEntity.noContent().build();
+	}
+
 	@PostMapping("/join")
 	public ResponseEntity<Void> joinInCalendar(
 			@RequestBody JoinInCalendarRequest request, @CurrentMember Member member) {

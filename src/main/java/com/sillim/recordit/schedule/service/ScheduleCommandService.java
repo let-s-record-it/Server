@@ -2,6 +2,8 @@ package com.sillim.recordit.schedule.service;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.service.ScheduleCategoryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.pushalarm.service.PushAlarmService;
@@ -37,9 +39,12 @@ public class ScheduleCommandService {
 	private final ScheduleGroupService scheduleGroupService;
 	private final RepetitionPatternService repetitionPatternService;
 	private final PushAlarmService pushAlarmService;
+	private final ScheduleCategoryService scheduleCategoryService;
 
 	public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId)
 			throws SchedulerException {
+		ScheduleCategory scheduleCategory =
+				scheduleCategoryService.searchScheduleCategory(request.categoryId());
 		ScheduleGroup scheduleGroup = scheduleGroupService.newScheduleGroup(request.isRepeated());
 		List<Schedule> schedules;
 
@@ -50,7 +55,10 @@ public class ScheduleCommandService {
 							temporalAmount ->
 									scheduleRepository.save(
 											request.toSchedule(
-													temporalAmount, calendar, scheduleGroup)),
+													temporalAmount,
+													scheduleCategory,
+													calendar,
+													scheduleGroup)),
 							request.repetition(),
 							scheduleGroup,
 							TO_SKIP_ADD_TEMPORAL);
@@ -60,6 +68,7 @@ public class ScheduleCommandService {
 					List.of(
 							scheduleRepository.save(
 									request.toSchedule(
+											scheduleCategory,
 											calendarQueryService.searchByCalendarId(calendarId),
 											scheduleGroup)));
 		}
@@ -93,6 +102,8 @@ public class ScheduleCommandService {
 		schedule.validateAuthenticatedMember(memberId);
 		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
 		calendar.validateAuthenticatedMember(memberId);
+		ScheduleCategory category =
+				scheduleCategoryService.searchScheduleCategory(request.categoryId());
 		ScheduleGroup newScheduleGroup =
 				scheduleGroupService.newScheduleGroup(request.isRepeated());
 
@@ -104,13 +115,13 @@ public class ScheduleCommandService {
 				request.isAllDay(),
 				request.startDateTime(),
 				request.endDateTime(),
-				request.colorHex(),
 				request.place(),
 				request.setLocation(),
 				request.latitude(),
 				request.longitude(),
 				request.setAlarm(),
 				request.alarmTimes(),
+				category,
 				calendar,
 				newScheduleGroup);
 		pushAlarmService.reservePushAlarmJobs(
@@ -126,7 +137,8 @@ public class ScheduleCommandService {
 			addRepeatingSchedule(
 					temporalAmount ->
 							scheduleRepository.save(
-									request.toSchedule(temporalAmount, calendar, newScheduleGroup)),
+									request.toSchedule(
+											temporalAmount, category, calendar, newScheduleGroup)),
 					request.repetition(),
 					newScheduleGroup,
 					TO_SKIP_MODIFY_TEMPORAL);
@@ -143,6 +155,8 @@ public class ScheduleCommandService {
 		schedule.validateAuthenticatedMember(memberId);
 		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
 		calendar.validateAuthenticatedMember(memberId);
+		ScheduleCategory category =
+				scheduleCategoryService.searchScheduleCategory(request.categoryId());
 		ScheduleGroup scheduleGroup = schedule.getScheduleGroup();
 
 		pushAlarmService.deletePushAlarmJobs(
@@ -157,10 +171,14 @@ public class ScheduleCommandService {
 							temporalAmount ->
 									scheduleRepository.save(
 											request.toSchedule(
-													temporalAmount, calendar, scheduleGroup)));
+													temporalAmount,
+													category,
+													calendar,
+													scheduleGroup)));
 		} else {
 			scheduleGroup.modifyNotRepeated();
-			scheduleRepository.save(request.toSchedule(Period.ZERO, calendar, scheduleGroup));
+			scheduleRepository.save(
+					request.toSchedule(Period.ZERO, category, calendar, scheduleGroup));
 		}
 
 		pushAlarmService.reservePushAlarmJobs(

@@ -1,19 +1,18 @@
 package com.sillim.recordit.calendar.fixture;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.member.domain.Member;
 
 public enum CalendarFixture {
-	DEFAULT("calendar1", "aabbff");
+	DEFAULT("calendar1");
 	private final String title;
-	private final String colorHex;
 
-	CalendarFixture(String title, String colorHex) {
+	CalendarFixture(String title) {
 		this.title = title;
-		this.colorHex = colorHex;
 	}
 
-	public Calendar getCalendar(Member member) {
-		return Calendar.builder().title(title).colorHex(colorHex).member(member).build();
+	public Calendar getCalendar(Member member, CalendarCategory category) {
+		return new Calendar(title, member, category);
 	}
 }

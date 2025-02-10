@@ -12,10 +12,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
 import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
 import com.sillim.recordit.calendar.dto.request.JoinInCalendarRequest;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarCommandService;
 import com.sillim.recordit.calendar.service.CalendarMemberService;
@@ -58,7 +60,8 @@ class CalendarControllerTest extends RestDocsTest {
 	@Test
 	@DisplayName("캘린더 목록을 조회한다.")
 	void calendarList() throws Exception {
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		given(calendarMemberService.searchCalendarsByMemberId(any())).willReturn(List.of(calendar));
 
 		ResultActions perform = mockMvc.perform(get("/api/v1/calendars"));
@@ -72,8 +75,9 @@ class CalendarControllerTest extends RestDocsTest {
 	@Test
 	@DisplayName("캘린더를 추가한다.")
 	void addCalendar() throws Exception {
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
-		CalendarAddRequest request = new CalendarAddRequest("calendar1", "aabbff");
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarAddRequest request = new CalendarAddRequest("calendar1", 1L);
 		given(calendarCommandService.addCalendar(any(CalendarAddRequest.class), any()))
 				.willReturn(calendar);
 
@@ -93,7 +97,7 @@ class CalendarControllerTest extends RestDocsTest {
 	@DisplayName("캘린더를 수정한다.")
 	void modifyCalendar() throws Exception {
 		long calendarId = 1L;
-		CalendarModifyRequest request = new CalendarModifyRequest("calendar1", "aabbff");
+		CalendarModifyRequest request = new CalendarModifyRequest("calendar1", 1L);
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -126,7 +130,8 @@ class CalendarControllerTest extends RestDocsTest {
 	@DisplayName("캘린더 멤버 목록을 조회한다.")
 	void calendarMemberList() throws Exception {
 		long calendarId = 1L;
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		CalendarMember calendarMember = new CalendarMember(member, calendar);
 		given(calendarMemberService.searchCalendarMembers(eq(calendarId)))
 				.willReturn(List.of(calendarMember));
@@ -149,7 +154,8 @@ class CalendarControllerTest extends RestDocsTest {
 	void calendarMemberDetails() throws Exception {
 		long calendarId = 1L;
 		long memberId = 1L;
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		CalendarMember calendarMember = new CalendarMember(member, calendar);
 		given(calendarMemberService.searchCalendarMember(eq(calendarId), eq(memberId)))
 				.willReturn(calendarMember);
@@ -167,6 +173,29 @@ class CalendarControllerTest extends RestDocsTest {
 				.andDo(
 						document(
 								"calendar-member-details",
+								getDocumentRequest(),
+								getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("캘린더 멤버를 삭제한다.")
+	void calendarMemberDelete() throws Exception {
+		long calendarId = 1L;
+		long memberId = 1L;
+
+		ResultActions perform =
+				mockMvc.perform(
+						delete(
+								"/api/v1/calendars/{calendarId}/members/{memberId}",
+								calendarId,
+								memberId));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(
+						document(
+								"calendar-member-delete",
 								getDocumentRequest(),
 								getDocumentResponse()));
 	}

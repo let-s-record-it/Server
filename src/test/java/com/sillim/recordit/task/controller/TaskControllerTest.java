@@ -19,6 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
@@ -56,12 +58,14 @@ public class TaskControllerTest extends RestDocsTest {
 	@MockBean TaskQueryService taskQueryService;
 
 	private Member member;
+	private CalendarCategory category;
 	private Calendar calendar;
 
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 	}
 
 	@Test

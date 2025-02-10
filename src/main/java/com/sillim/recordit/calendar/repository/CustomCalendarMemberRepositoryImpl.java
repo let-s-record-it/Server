@@ -23,6 +23,8 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 				selectFrom(calendarMember)
 						.leftJoin(calendarMember.calendar)
 						.fetchJoin()
+						.leftJoin(calendarMember.calendar.category)
+						.fetchJoin()
 						.leftJoin(calendarMember.member)
 						.fetchJoin()
 						.where(calendarMember.calendar.id.eq(calendarId))
@@ -35,6 +37,8 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 		return selectFrom(calendarMember)
 				.leftJoin(calendarMember.calendar)
 				.fetchJoin()
+				.leftJoin(calendarMember.calendar.category)
+				.fetchJoin()
 				.leftJoin(calendarMember.member)
 				.fetchJoin()
 				.where(calendarMember.calendar.id.eq(calendarId))
@@ -46,6 +50,8 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 		return getJpaQueryFactory()
 				.select(calendarMember.calendar)
 				.from(calendarMember)
+				.leftJoin(calendarMember.calendar.category)
+				.fetchJoin()
 				.where(calendarMember.member.id.eq(memberId))
 				.fetch();
 	}
