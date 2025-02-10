@@ -1,11 +1,11 @@
 package com.sillim.recordit.schedule.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.schedule.domain.vo.AlarmTime;
 import com.sillim.recordit.schedule.domain.vo.Location;
-import com.sillim.recordit.schedule.domain.vo.ScheduleColorHex;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDescription;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
 import com.sillim.recordit.schedule.domain.vo.ScheduleTitle;
@@ -47,8 +47,6 @@ public class Schedule {
 
 	@Embedded private ScheduleDuration scheduleDuration;
 
-	@Embedded private ScheduleColorHex colorHex;
-
 	@Column(nullable = false)
 	private String place;
 
@@ -59,6 +57,10 @@ public class Schedule {
 
 	@Column(nullable = false)
 	private boolean setAlarm;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "schedule_category_id")
+	private ScheduleCategory category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "calendar_id")
@@ -83,22 +85,22 @@ public class Schedule {
 			ScheduleTitle title,
 			ScheduleDescription description,
 			ScheduleDuration scheduleDuration,
-			ScheduleColorHex colorHex,
 			String place,
 			boolean setLocation,
 			Location location,
 			boolean setAlarm,
+			ScheduleCategory category,
 			Calendar calendar,
 			ScheduleGroup scheduleGroup,
 			List<AlarmTime> scheduleAlarms) {
 		this.title = title;
 		this.description = description;
 		this.scheduleDuration = scheduleDuration;
-		this.colorHex = colorHex;
 		this.place = place;
 		this.setLocation = setLocation;
 		this.location = location;
 		this.setAlarm = setAlarm;
+		this.category = category;
 		this.calendar = calendar;
 		this.scheduleGroup = scheduleGroup;
 		this.scheduleAlarms =
@@ -115,12 +117,12 @@ public class Schedule {
 			boolean isAllDay,
 			LocalDateTime startDateTime,
 			LocalDateTime endDateTime,
-			String colorHex,
 			String place,
 			boolean setLocation,
 			Double latitude,
 			Double longitude,
 			boolean setAlarm,
+			ScheduleCategory category,
 			Calendar calendar,
 			ScheduleGroup scheduleGroup,
 			List<LocalDateTime> scheduleAlarms) {
@@ -130,11 +132,11 @@ public class Schedule {
 				isAllDay
 						? ScheduleDuration.createAllDay(startDateTime, endDateTime)
 						: ScheduleDuration.createNotAllDay(startDateTime, endDateTime),
-				new ScheduleColorHex(colorHex),
 				place,
 				setLocation,
 				setLocation ? new Location(latitude, longitude) : null,
 				setAlarm,
+				category,
 				calendar,
 				scheduleGroup,
 				scheduleAlarms.stream().map(AlarmTime::create).toList());
@@ -161,7 +163,7 @@ public class Schedule {
 	}
 
 	public String getColorHex() {
-		return colorHex.getColorHex();
+		return category.getColorHex();
 	}
 
 	public Double getLatitude() {
@@ -178,13 +180,13 @@ public class Schedule {
 			boolean isAllDay,
 			LocalDateTime startDateTime,
 			LocalDateTime endDateTime,
-			String colorHex,
 			String place,
 			boolean setLocation,
 			Double latitude,
 			Double longitude,
 			boolean setAlarm,
 			List<LocalDateTime> scheduleAlarms,
+			ScheduleCategory category,
 			Calendar calendar,
 			ScheduleGroup scheduleGroup) {
 		this.title = new ScheduleTitle(title);
@@ -193,11 +195,11 @@ public class Schedule {
 				isAllDay
 						? ScheduleDuration.createAllDay(startDateTime, endDateTime)
 						: ScheduleDuration.createNotAllDay(startDateTime, endDateTime);
-		this.colorHex = new ScheduleColorHex(colorHex);
 		this.place = place;
 		this.setLocation = setLocation;
 		this.location = setLocation ? new Location(latitude, longitude) : null;
 		this.setAlarm = setAlarm;
+		this.category = category;
 		updateScheduleAlarms(scheduleAlarms);
 		this.calendar = calendar;
 		this.scheduleGroup = scheduleGroup;
