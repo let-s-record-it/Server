@@ -18,7 +18,7 @@ public class CalendarQueryService {
 
 	public Calendar searchByCalendarId(Long calendarId) {
 		return calendarRepository
-				.findById(calendarId)
+				.findByIdWithFetchCategory(calendarId)
 				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.CALENDAR_NOT_FOUND));
 	}
 

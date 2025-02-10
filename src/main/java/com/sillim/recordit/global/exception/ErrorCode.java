@@ -58,6 +58,14 @@ public enum ErrorCode {
 	CALENDAR_MEMBER_NOT_FOUND("ERR_CALENDAR_MEMBER_001", "캘린더 멤버를 찾을 수 없습니다."),
 	INVALID_CALENDAR_MEMBER_GET_REQUEST("ERR_CALENDAR_MEMBER_002", "유효하지 않은 캘린더 멤버 조회 요청입니다."),
 
+	NULL_CALENDAR_CATEGORY_NAME("ERR_CALENDAR_CATEGORY_001", "캘린더 카테고리 이름은 null일 수 없습니다."),
+	BLANK_CALENDAR_CATEGORY_NAME("ERR_CALENDAR_CATEGORY_002", "캘린더 카테고리 이름은 빈 값일 수 없습니다."),
+	INVALID_CALENDAR_CATEGORY_NAME_LENGTH(
+			"ERR_CALENDAR_CATEGORY_003", "캘린더 카테고리 이름의 길이는 10자를 넘을 수 없습니다."),
+	CALENDAR_CATEGORY_NOT_FOUND("ERR_CALENDAR_CATEGORY_004", "캘린더 카테고리를 찾을 수 없습니다."),
+	INVALID_CALENDAR_CATEGORY_GET_REQUEST(
+			"ERR_CALENDAR_CATEGORY_005", "유효하지 않은 캘린더 카테고리 조회 요청입니다."),
+
 	// monthly-goal
 	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다."),
 	DIFFERENT_YEAR_MONTH("ERR_MONTHLY_GOAL_002", "월 목표 기간 시작일과 종료일의 년,월은 같아야 합니다."),
