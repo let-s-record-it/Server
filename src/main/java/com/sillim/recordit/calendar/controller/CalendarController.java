@@ -39,7 +39,6 @@ public class CalendarController {
 	public ResponseEntity<CalendarResponse> addCalendar(
 			@RequestBody @Valid CalendarAddRequest request, @CurrentMember Member member) {
 		Calendar calendar = calendarCommandService.addCalendar(request, member.getId());
-		calendarMemberService.addCalendarMember(calendar.getId(), member.getId());
 		return ResponseEntity.created(URI.create("/api/v1/calendars/" + calendar.getId()))
 				.body(CalendarResponse.from(calendar));
 	}
