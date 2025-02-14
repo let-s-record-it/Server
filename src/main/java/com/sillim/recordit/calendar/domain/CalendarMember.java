@@ -34,6 +34,17 @@ public class CalendarMember extends BaseTime {
 
 	public CalendarMember(Member member, Calendar calendar) {
 		this.member = member;
+		setCalendar(calendar);
+	}
+
+	private void setCalendar(Calendar calendar) {
+		if (this.calendar != null) {
+			this.calendar.getCalendarMembers().remove(this);
+		}
+
 		this.calendar = calendar;
+		if (calendar != null) {
+			calendar.getCalendarMembers().add(this);
+		}
 	}
 }
