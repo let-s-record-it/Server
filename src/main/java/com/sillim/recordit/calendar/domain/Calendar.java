@@ -5,6 +5,8 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +31,13 @@ public class Calendar {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
+
+	@OneToMany(
+			mappedBy = "calendar",
+			fetch = FetchType.LAZY,
+			cascade = CascadeType.REMOVE,
+			orphanRemoval = true)
+	private List<CalendarMember> calendarMembers = new ArrayList<>();
 
 	@Builder
 	public Calendar(String title, Member member, CalendarCategory category) {
