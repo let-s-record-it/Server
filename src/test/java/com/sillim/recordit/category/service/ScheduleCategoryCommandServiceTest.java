@@ -17,8 +17,8 @@ import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
+import com.sillim.recordit.schedule.service.ScheduleCommandService;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,53 +27,27 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ScheduleCategoryServiceTest {
+class ScheduleCategoryCommandServiceTest {
 
 	@Mock ScheduleCategoryRepository scheduleCategoryRepository;
 	@Mock MemberQueryService memberQueryService;
-	@InjectMocks ScheduleCategoryService scheduleCategoryService;
-
-	@Test
-	@DisplayName("특정 멤버의 캘린더 카테고리들을 조회할 수 있다.")
-	void searchCalendarCategoriesByMemberId() {
-		long memberId = 1L;
-		Member member = MemberFixture.DEFAULT.getMember();
-		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
-		given(scheduleCategoryRepository.findByMemberId(eq(memberId)))
-				.willReturn(List.of(category));
-
-		List<ScheduleCategory> categories =
-				scheduleCategoryService.searchScheduleCategories(memberId);
-
-		assertThat(categories.get(0)).isEqualTo(category);
-	}
-
-	@Test
-	@DisplayName("특정 캘린더 카테고리를 조회할 수 있다.")
-	void searchCalendarCategory() {
-		long categoryId = 1L;
-		Member member = MemberFixture.DEFAULT.getMember();
-		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
-		given(scheduleCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
-
-		ScheduleCategory foundCategory = scheduleCategoryService.searchScheduleCategory(categoryId);
-
-		assertThat(foundCategory).isEqualTo(category);
-	}
+	@Mock ScheduleCommandService scheduleCommandService;
+	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
+	@InjectMocks
+	ScheduleCategoryCommandService scheduleCategoryCommandService;
 
 	@Test
 	@DisplayName("기본 카테고리들을 추가할 수 있다.")
-	void addDefaultCategories() {
+	void addInitialCategories() {
 		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
 		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(scheduleCategoryRepository.save(any(ScheduleCategory.class))).willReturn(category);
 
-		List<Long> categoryIds = scheduleCategoryService.addDefaultCategories(memberId);
+		List<Long> categoryIds = scheduleCategoryCommandService.addInitialCategories(memberId);
 
-		assertThat(categoryIds).hasSize(7);
+		assertThat(categoryIds).hasSize(8);
 	}
 
 	@Test
@@ -88,7 +62,7 @@ class ScheduleCategoryServiceTest {
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(scheduleCategoryRepository.save(any(ScheduleCategory.class))).willReturn(category);
 
-		Long id = scheduleCategoryService.addCategory(request, memberId);
+		Long id = scheduleCategoryCommandService.addCategory(request, memberId);
 
 		assertThat(id).isEqualTo(categoryId);
 	}
@@ -101,10 +75,10 @@ class ScheduleCategoryServiceTest {
 		ScheduleCategory category = mock(ScheduleCategory.class);
 		ScheduleCategoryModifyRequest request = new ScheduleCategoryModifyRequest("aabbff", "name");
 		given(category.isOwner(eq(memberId))).willReturn(true);
-		given(scheduleCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
+		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId)))
+				.willReturn(category);
 
-		assertThatCode(() -> scheduleCategoryService.modifyCategory(request, categoryId, memberId))
+		assertThatCode(() -> scheduleCategoryCommandService.modifyCategory(request, categoryId, memberId))
 				.doesNotThrowAnyException();
 	}
 
@@ -116,10 +90,10 @@ class ScheduleCategoryServiceTest {
 		ScheduleCategory category = mock(ScheduleCategory.class);
 		ScheduleCategoryModifyRequest request = new ScheduleCategoryModifyRequest("aabbff", "name");
 		given(category.isOwner(eq(memberId))).willReturn(false);
-		given(scheduleCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
+		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId)))
+				.willReturn(category);
 
-		assertThatCode(() -> scheduleCategoryService.modifyCategory(request, categoryId, memberId))
+		assertThatCode(() -> scheduleCategoryCommandService.modifyCategory(request, categoryId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_SCHEDULE_CATEGORY_GET_REQUEST.getDescription());
 	}
@@ -131,10 +105,10 @@ class ScheduleCategoryServiceTest {
 		long categoryId = 2L;
 		ScheduleCategory category = mock(ScheduleCategory.class);
 		given(category.isOwner(eq(memberId))).willReturn(true);
-		given(scheduleCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
+		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId)))
+				.willReturn(category);
 
-		assertThatCode(() -> scheduleCategoryService.deleteCategory(categoryId, memberId))
+		assertThatCode(() -> scheduleCategoryCommandService.deleteCategory(categoryId, memberId))
 				.doesNotThrowAnyException();
 	}
 
@@ -145,10 +119,10 @@ class ScheduleCategoryServiceTest {
 		long categoryId = 2L;
 		ScheduleCategory category = mock(ScheduleCategory.class);
 		given(category.isOwner(eq(memberId))).willReturn(false);
-		given(scheduleCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
+		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId)))
+				.willReturn(category);
 
-		assertThatCode(() -> scheduleCategoryService.deleteCategory(categoryId, memberId))
+		assertThatCode(() -> scheduleCategoryCommandService.deleteCategory(categoryId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_SCHEDULE_CATEGORY_GET_REQUEST.getDescription());
 	}

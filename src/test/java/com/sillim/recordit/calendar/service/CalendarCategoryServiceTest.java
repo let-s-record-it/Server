@@ -73,7 +73,7 @@ class CalendarCategoryServiceTest {
 
 		List<Long> categoryIds = calendarCategoryService.addDefaultCategories(memberId);
 
-		assertThat(categoryIds).hasSize(7);
+		assertThat(categoryIds).hasSize(8);
 	}
 
 	@Test
