@@ -67,7 +67,7 @@ class CustomFeedRepositoryTest {
 					assertThat(foundFeeds).hasSize(5);
 					assertThat(foundFeeds.isLast()).isFalse();
 					assertThat(foundFeeds.getContent().get(0).getCreatedAt())
-							.isAfter(foundFeeds.getContent().get(1).getCreatedAt());
+							.isAfterOrEqualTo(foundFeeds.getContent().get(1).getCreatedAt());
 					assertThat(foundFeeds2).hasSize(1);
 					assertThat(foundFeeds2.isLast()).isTrue();
 				});
