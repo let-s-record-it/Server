@@ -4,7 +4,7 @@ import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.dto.request.CalendarCategoryAddRequest;
 import com.sillim.recordit.calendar.dto.request.CalendarCategoryModifyRequest;
 import com.sillim.recordit.calendar.repository.CalendarCategoryRepository;
-import com.sillim.recordit.enums.color.DefaultColor;
+import com.sillim.recordit.enums.color.InitialColor;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
@@ -38,7 +38,7 @@ public class CalendarCategoryService {
 	@Transactional
 	public List<Long> addDefaultCategories(Long memberId) {
 		Member member = memberQueryService.findByMemberId(memberId);
-		return Arrays.stream(DefaultColor.values())
+		return Arrays.stream(InitialColor.values())
 				.map(
 						color ->
 								calendarCategoryRepository
@@ -46,6 +46,7 @@ public class CalendarCategoryService {
 												new CalendarCategory(
 														color.getColorHex(),
 														color.getName(),
+														color.isDefault(),
 														member))
 										.getId())
 				.toList();
@@ -55,7 +56,7 @@ public class CalendarCategoryService {
 	public Long addCategory(CalendarCategoryAddRequest request, Long memberId) {
 		Member member = memberQueryService.findByMemberId(memberId);
 		return calendarCategoryRepository
-				.save(new CalendarCategory(request.colorHex(), request.name(), member))
+				.save(new CalendarCategory(request.colorHex(), request.name(), false, member))
 				.getId();
 	}
 
@@ -72,7 +73,7 @@ public class CalendarCategoryService {
 	@Transactional
 	public void deleteCategory(Long categoryId, Long memberId) {
 		CalendarCategory calendarCategory = searchCalendarCategory(categoryId);
-		if (!calendarCategory.isOwner(memberId)) {
+		if (!calendarCategory.isOwner(memberId) || calendarCategory.isDefault()) {
 			throw new InvalidRequestException(ErrorCode.INVALID_CALENDAR_CATEGORY_GET_REQUEST);
 		}
 		calendarCategoryRepository.delete(calendarCategory);

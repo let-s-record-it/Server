@@ -3,7 +3,7 @@ package com.sillim.recordit.schedule.service;
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
-import com.sillim.recordit.category.service.ScheduleCategoryService;
+import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.pushalarm.service.PushAlarmService;
@@ -39,12 +39,12 @@ public class ScheduleCommandService {
 	private final ScheduleGroupService scheduleGroupService;
 	private final RepetitionPatternService repetitionPatternService;
 	private final PushAlarmService pushAlarmService;
-	private final ScheduleCategoryService scheduleCategoryService;
+	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
 
 	public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId)
 			throws SchedulerException {
 		ScheduleCategory scheduleCategory =
-				scheduleCategoryService.searchScheduleCategory(request.categoryId());
+				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		ScheduleGroup scheduleGroup = scheduleGroupService.newScheduleGroup(request.isRepeated());
 		List<Schedule> schedules;
 
@@ -103,7 +103,7 @@ public class ScheduleCommandService {
 		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
 		calendar.validateAuthenticatedMember(memberId);
 		ScheduleCategory category =
-				scheduleCategoryService.searchScheduleCategory(request.categoryId());
+				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		ScheduleGroup newScheduleGroup =
 				scheduleGroupService.newScheduleGroup(request.isRepeated());
 
@@ -156,7 +156,7 @@ public class ScheduleCommandService {
 		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
 		calendar.validateAuthenticatedMember(memberId);
 		ScheduleCategory category =
-				scheduleCategoryService.searchScheduleCategory(request.categoryId());
+				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		ScheduleGroup scheduleGroup = schedule.getScheduleGroup();
 
 		pushAlarmService.deletePushAlarmJobs(
@@ -243,5 +243,11 @@ public class ScheduleCommandService {
 				.findGroupSchedulesAfterCurrent(
 						schedule.getScheduleGroup().getId(), schedule.getStartDateTime())
 				.forEach(Schedule::delete);
+	}
+
+	public void replaceScheduleCategoriesWithDefaultCategory(Long categoryId, Long memberId) {
+		ScheduleCategory defaultCategory =
+				scheduleCategoryQueryService.searchDefaultCategory(memberId);
+		scheduleRepository.updateCategorySetDefault(defaultCategory.getId(), categoryId);
 	}
 }

@@ -16,7 +16,7 @@ import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
-import com.sillim.recordit.category.service.ScheduleCategoryService;
+import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
@@ -50,7 +50,7 @@ class ScheduleCommandServiceTest {
 	@Mock ScheduleGroupService scheduleGroupService;
 	@Mock RepetitionPatternService repetitionPatternService;
 	@Mock PushAlarmService pushAlarmService;
-	@Mock ScheduleCategoryService scheduleCategoryService;
+	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
 	@InjectMocks ScheduleCommandService scheduleCommandService;
 
 	@Test
@@ -278,7 +278,8 @@ class ScheduleCommandServiceTest {
 				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
 		given(member.equalsId(anyLong())).willReturn(true);
-		given(scheduleCategoryService.searchScheduleCategory(eq(1L))).willReturn(scheduleCategory);
+		given(scheduleCategoryQueryService.searchScheduleCategory(eq(1L)))
+				.willReturn(scheduleCategory);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
 		given(calendarQueryService.searchByCalendarId(calendarId)).willReturn(calendar);
 		given(scheduleGroupService.newScheduleGroup(true)).willReturn(scheduleGroup);
