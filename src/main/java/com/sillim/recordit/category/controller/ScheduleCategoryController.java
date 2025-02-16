@@ -3,7 +3,8 @@ package com.sillim.recordit.category.controller;
 import com.sillim.recordit.category.dto.request.ScheduleCategoryAddRequest;
 import com.sillim.recordit.category.dto.request.ScheduleCategoryModifyRequest;
 import com.sillim.recordit.category.dto.response.ScheduleCategoryListResponse;
-import com.sillim.recordit.category.service.ScheduleCategoryService;
+import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
+import com.sillim.recordit.category.service.ScheduleCategoryCommandService;
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.validation.Valid;
@@ -18,13 +19,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ScheduleCategoryController {
 
-	private final ScheduleCategoryService scheduleCategoryService;
+	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
+	private final ScheduleCategoryCommandService scheduleCategoryCommandService;
 
 	@GetMapping
 	public ResponseEntity<List<ScheduleCategoryListResponse>> calendarCategoryList(
 			@CurrentMember Member member) {
 		return ResponseEntity.ok(
-				scheduleCategoryService.searchScheduleCategories(member.getId()).stream()
+				scheduleCategoryQueryService.searchScheduleCategories(member.getId()).stream()
 						.map(ScheduleCategoryListResponse::of)
 						.toList());
 	}
@@ -32,7 +34,7 @@ public class ScheduleCategoryController {
 	@PostMapping
 	public ResponseEntity<Void> addCalendarCategory(
 			@Valid @RequestBody ScheduleCategoryAddRequest request, @CurrentMember Member member) {
-		Long id = scheduleCategoryService.addCategory(request, member.getId());
+		Long id = scheduleCategoryCommandService.addCategory(request, member.getId());
 		return ResponseEntity.created(URI.create("/api/v1/categories/" + id)).build();
 	}
 
@@ -41,14 +43,14 @@ public class ScheduleCategoryController {
 			@PathVariable Long categoryId,
 			@Valid @RequestBody ScheduleCategoryModifyRequest request,
 			@CurrentMember Member member) {
-		scheduleCategoryService.modifyCategory(request, categoryId, member.getId());
+		scheduleCategoryCommandService.modifyCategory(request, categoryId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{categoryId}")
 	public ResponseEntity<Void> deleteCalendarCategory(
 			@PathVariable Long categoryId, @CurrentMember Member member) {
-		scheduleCategoryService.deleteCategory(categoryId, member.getId());
+		scheduleCategoryCommandService.deleteCategory(categoryId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 }

@@ -22,13 +22,16 @@ public class ScheduleCategory {
 
 	@Embedded private ScheduleCategoryName name;
 
+	private boolean isDefault;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	public ScheduleCategory(String colorHex, String name, Member member) {
+	public ScheduleCategory(String colorHex, String name, boolean isDefault, Member member) {
 		this.colorHex = new ScheduleColorHex(colorHex);
 		this.name = new ScheduleCategoryName(name);
+		this.isDefault = isDefault;
 		this.member = member;
 	}
 
