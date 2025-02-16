@@ -33,8 +33,7 @@ class ScheduleCategoryCommandServiceTest {
 	@Mock MemberQueryService memberQueryService;
 	@Mock ScheduleCommandService scheduleCommandService;
 	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
-	@InjectMocks
-	ScheduleCategoryCommandService scheduleCategoryCommandService;
+	@InjectMocks ScheduleCategoryCommandService scheduleCategoryCommandService;
 
 	@Test
 	@DisplayName("기본 카테고리들을 추가할 수 있다.")
@@ -78,7 +77,10 @@ class ScheduleCategoryCommandServiceTest {
 		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId)))
 				.willReturn(category);
 
-		assertThatCode(() -> scheduleCategoryCommandService.modifyCategory(request, categoryId, memberId))
+		assertThatCode(
+						() ->
+								scheduleCategoryCommandService.modifyCategory(
+										request, categoryId, memberId))
 				.doesNotThrowAnyException();
 	}
 
@@ -93,7 +95,10 @@ class ScheduleCategoryCommandServiceTest {
 		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId)))
 				.willReturn(category);
 
-		assertThatCode(() -> scheduleCategoryCommandService.modifyCategory(request, categoryId, memberId))
+		assertThatCode(
+						() ->
+								scheduleCategoryCommandService.modifyCategory(
+										request, categoryId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_SCHEDULE_CATEGORY_GET_REQUEST.getDescription());
 	}

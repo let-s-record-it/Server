@@ -29,8 +29,7 @@ class SignupServiceTest {
 	@Mock MemberRepository memberRepository;
 	@Mock CalendarCommandService calendarCommandService;
 	@Mock CalendarCategoryService calendarCategoryService;
-	@Mock
-	ScheduleCategoryCommandService scheduleCategoryCommandService;
+	@Mock ScheduleCategoryCommandService scheduleCategoryCommandService;
 	@InjectMocks SignupService signupService;
 
 	@Test
