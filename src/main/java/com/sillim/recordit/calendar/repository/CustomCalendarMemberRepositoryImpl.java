@@ -27,6 +27,7 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 						.fetchJoin()
 						.leftJoin(calendarMember.member)
 						.fetchJoin()
+						.where(calendarMember.deleted.isFalse())
 						.where(calendarMember.calendar.id.eq(calendarId))
 						.where(calendarMember.member.id.eq(memberId))
 						.fetchOne());
@@ -41,6 +42,7 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 				.fetchJoin()
 				.leftJoin(calendarMember.member)
 				.fetchJoin()
+				.where(calendarMember.deleted.isFalse())
 				.where(calendarMember.calendar.id.eq(calendarId))
 				.fetch();
 	}
@@ -52,6 +54,8 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 				.from(calendarMember)
 				.leftJoin(calendarMember.calendar.category)
 				.fetchJoin()
+				.where(calendarMember.deleted.isFalse())
+				.where(calendarMember.calendar.deleted.isFalse())
 				.where(calendarMember.member.id.eq(memberId))
 				.fetch();
 	}

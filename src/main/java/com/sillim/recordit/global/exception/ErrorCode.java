@@ -59,7 +59,7 @@ public enum ErrorCode {
 	INVALID_CALENDAR_COLOR_HEX("ERR_CALENDAR_004", "유효하지 않은 캘린더 색상 값입니다."),
 	NULL_CALENDAR_COLOR_HEX("ERR_CALENDAR_005", "캘린더 색상 값은 null일 수 없습니다."),
 	CALENDAR_NOT_FOUND("ERR_CALENDAR_006", "요청한 캘린더를 찾을 수 없습니다."),
-	INVALID_CALENDAR_DELETE_REQUEST("ERR_CALENDAR_007", "유효하지 않은 캘린더 삭제 요청입니다."),
+	INVALID_CALENDAR_GET_REQUEST("ERR_CALENDAR_007", "유효하지 않은 캘린더 조회 요청입니다."),
 	CALENDAR_ACCESS_DENIED("ERR_CALENDAR_008", "해당 사용자는 접근할 수 없는 캘린더입니다."),
 
 	CALENDAR_MEMBER_NOT_FOUND("ERR_CALENDAR_MEMBER_001", "캘린더 멤버를 찾을 수 없습니다."),

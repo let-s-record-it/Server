@@ -17,17 +17,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class CalendarCategoryService {
 
 	private final CalendarCategoryRepository calendarCategoryRepository;
 	private final MemberQueryService memberQueryService;
 
+	@Transactional(readOnly = true)
 	public List<CalendarCategory> searchCalendarCategories(Long memberId) {
-		return calendarCategoryRepository.findByMemberId(memberId);
+		return calendarCategoryRepository.findByDeletedIsFalseAndMemberId(memberId);
 	}
 
+	@Transactional(readOnly = true)
 	public CalendarCategory searchCalendarCategory(Long categoryId) {
 		return calendarCategoryRepository
 				.findById(categoryId)
@@ -35,7 +37,6 @@ public class CalendarCategoryService {
 						() -> new RecordNotFoundException(ErrorCode.CALENDAR_CATEGORY_NOT_FOUND));
 	}
 
-	@Transactional
 	public List<Long> addDefaultCategories(Long memberId) {
 		Member member = memberQueryService.findByMemberId(memberId);
 		return Arrays.stream(InitialColor.values())
@@ -52,7 +53,6 @@ public class CalendarCategoryService {
 				.toList();
 	}
 
-	@Transactional
 	public Long addCategory(CalendarCategoryAddRequest request, Long memberId) {
 		Member member = memberQueryService.findByMemberId(memberId);
 		return calendarCategoryRepository
@@ -60,7 +60,6 @@ public class CalendarCategoryService {
 				.getId();
 	}
 
-	@Transactional
 	public void modifyCategory(
 			CalendarCategoryModifyRequest request, Long categoryId, Long memberId) {
 		CalendarCategory calendarCategory = searchCalendarCategory(categoryId);
@@ -70,12 +69,11 @@ public class CalendarCategoryService {
 		calendarCategory.modify(request.colorHex(), request.name());
 	}
 
-	@Transactional
-	public void deleteCategory(Long categoryId, Long memberId) {
+	public void removeCategory(Long categoryId, Long memberId) {
 		CalendarCategory calendarCategory = searchCalendarCategory(categoryId);
 		if (!calendarCategory.isOwner(memberId) || calendarCategory.isDefault()) {
 			throw new InvalidRequestException(ErrorCode.INVALID_CALENDAR_CATEGORY_GET_REQUEST);
 		}
-		calendarCategoryRepository.delete(calendarCategory);
+		calendarCategory.delete();
 	}
 }

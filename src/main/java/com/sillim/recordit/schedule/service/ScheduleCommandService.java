@@ -250,4 +250,8 @@ public class ScheduleCommandService {
 				scheduleCategoryQueryService.searchDefaultCategory(memberId);
 		scheduleRepository.updateCategorySetDefault(defaultCategory.getId(), categoryId);
 	}
+
+	public long removeSchedulesInCalendar(Long calendarId) {
+		return scheduleRepository.deleteSchedulesInCalendar(calendarId);
+	}
 }

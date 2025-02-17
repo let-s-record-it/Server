@@ -48,7 +48,7 @@ public class CalendarCategoryController {
 	@DeleteMapping("/{categoryId}")
 	public ResponseEntity<Void> deleteCalendarCategory(
 			@PathVariable Long categoryId, @CurrentMember Member member) {
-		calendarCategoryService.deleteCategory(categoryId, member.getId());
+		calendarCategoryService.removeCategory(categoryId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 }
