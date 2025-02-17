@@ -115,7 +115,7 @@ class CalendarControllerTest extends RestDocsTest {
 	@DisplayName("캘린더를 삭제한다.")
 	void deleteCalendar() throws Exception {
 		long calendarId = 1L;
-		willDoNothing().given(calendarCommandService).deleteByCalendarId(any(), any());
+		willDoNothing().given(calendarCommandService).removeByCalendarId(any(), any());
 
 		ResultActions perform =
 				mockMvc.perform(delete("/api/v1/calendars/{calendarId}", calendarId));
