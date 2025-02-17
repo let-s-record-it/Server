@@ -8,6 +8,7 @@ import com.sillim.recordit.schedule.dto.response.DayScheduleResponse;
 import com.sillim.recordit.schedule.dto.response.MonthScheduleResponse;
 import com.sillim.recordit.schedule.service.ScheduleCommandService;
 import com.sillim.recordit.schedule.service.ScheduleQueryService;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,16 @@ public class ScheduleController {
 			@CurrentMember Member member) {
 		return ResponseEntity.ok(
 				scheduleQueryService.searchSchedulesInDay(calendarId, date, member.getId()));
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<List<DayScheduleResponse>> searchSchedules(
+			@Size(min = 1) @RequestParam String query,
+			@PathVariable Long calendarId,
+			@CurrentMember Member member) {
+		return ResponseEntity.ok(
+				scheduleQueryService.searchSchedulesContainQuery(
+						query, calendarId, member.getId()));
 	}
 
 	@PutMapping("/{scheduleId}")
