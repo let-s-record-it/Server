@@ -24,6 +24,9 @@ public class CalendarMember extends BaseTime {
 	@Column(name = "calendar_member_id", nullable = false)
 	private Long id;
 
+	@Column(nullable = false)
+	private boolean deleted;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
@@ -33,18 +36,12 @@ public class CalendarMember extends BaseTime {
 	private Calendar calendar;
 
 	public CalendarMember(Member member, Calendar calendar) {
+		this.deleted = false;
 		this.member = member;
-		setCalendar(calendar);
+		this.calendar = calendar;
 	}
 
-	private void setCalendar(Calendar calendar) {
-		if (this.calendar != null) {
-			this.calendar.getCalendarMembers().remove(this);
-		}
-
-		this.calendar = calendar;
-		if (calendar != null) {
-			calendar.getCalendarMembers().add(this);
-		}
+	public void delete() {
+		this.deleted = true;
 	}
 }

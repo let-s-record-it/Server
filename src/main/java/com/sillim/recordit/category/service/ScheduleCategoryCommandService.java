@@ -66,6 +66,6 @@ public class ScheduleCategoryCommandService {
 			throw new InvalidRequestException(ErrorCode.INVALID_SCHEDULE_CATEGORY_GET_REQUEST);
 		}
 		scheduleCommandService.replaceScheduleCategoriesWithDefaultCategory(categoryId, memberId);
-		scheduleCategoryRepository.delete(scheduleCategory);
+		scheduleCategory.delete();
 	}
 }

@@ -19,6 +19,7 @@ import com.sillim.recordit.global.exception.calendar.InvalidCalendarException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
+import com.sillim.recordit.schedule.service.ScheduleCommandService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,7 @@ class CalendarCommandServiceTest {
 	@Mock CalendarQueryService calendarQueryService;
 	@Mock CalendarMemberService calendarMemberService;
 	@Mock CalendarCategoryService calendarCategoryService;
+	@Mock ScheduleCommandService scheduleCommandService;
 	@InjectMocks CalendarCommandService calendarCommandService;
 
 	Member member;
@@ -82,7 +84,7 @@ class CalendarCommandServiceTest {
 		given(calendar.isOwnedBy(any())).willReturn(true);
 		given(calendarQueryService.searchByCalendarId(eq(1L))).willReturn(calendar);
 
-		assertThatCode(() -> calendarCommandService.deleteByCalendarId(calendarId, memberId))
+		assertThatCode(() -> calendarCommandService.removeByCalendarId(calendarId, memberId))
 				.doesNotThrowAnyException();
 	}
 
@@ -97,8 +99,8 @@ class CalendarCommandServiceTest {
 		given(calendar.isOwnedBy(any())).willReturn(false);
 		given(calendarQueryService.searchByCalendarId(eq(1L))).willReturn(calendar);
 
-		assertThatCode(() -> calendarCommandService.deleteByCalendarId(calendarId, memberId))
+		assertThatCode(() -> calendarCommandService.removeByCalendarId(calendarId, memberId))
 				.isInstanceOf(InvalidCalendarException.class)
-				.hasMessage(ErrorCode.INVALID_CALENDAR_DELETE_REQUEST.getDescription());
+				.hasMessage(ErrorCode.INVALID_CALENDAR_GET_REQUEST.getDescription());
 	}
 }

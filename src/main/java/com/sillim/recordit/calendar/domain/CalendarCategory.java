@@ -2,6 +2,7 @@ package com.sillim.recordit.calendar.domain;
 
 import com.sillim.recordit.calendar.domain.vo.CalendarCategoryName;
 import com.sillim.recordit.calendar.domain.vo.CalendarColorHex;
+import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CalendarCategory {
+public class CalendarCategory extends BaseTime {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +23,11 @@ public class CalendarCategory {
 
 	@Embedded private CalendarCategoryName name;
 
+	@Column(nullable = false)
 	private boolean isDefault;
+
+	@Column(nullable = false)
+	private boolean deleted;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
@@ -32,6 +37,7 @@ public class CalendarCategory {
 		this.colorHex = new CalendarColorHex(colorHex);
 		this.name = new CalendarCategoryName(name);
 		this.isDefault = isDefault;
+		this.deleted = false;
 		this.member = member;
 	}
 
@@ -46,6 +52,10 @@ public class CalendarCategory {
 	public void modify(String colorHex, String name) {
 		this.colorHex = new CalendarColorHex(colorHex);
 		this.name = new CalendarCategoryName(name);
+	}
+
+	public void delete() {
+		this.deleted = true;
 	}
 
 	public boolean isOwner(Long memberId) {

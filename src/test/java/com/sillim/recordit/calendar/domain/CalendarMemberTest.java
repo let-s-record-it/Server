@@ -12,22 +12,14 @@ import org.junit.jupiter.api.Test;
 class CalendarMemberTest {
 
 	@Test
-	@DisplayName("캘린더 멤버 저장 시 캘린더에 연관관계 리스트로 저장된다.")
+	@DisplayName("캘린더 멤버를 삭제할 수 있다.")
 	void saveRelatedEntityInCalendarWhenSaveCalendarMember() {
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		CalendarMember calendarMember = new CalendarMember(member, calendar);
+		calendarMember.delete();
 
-		assertThat(calendar.getCalendarMembers()).contains(calendarMember);
-	}
-
-	@Test
-	@DisplayName("캘린더 멤버에 캘린더를 null로 저장할 수 있다.")
-	void test() {
-		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarMember calendarMember = new CalendarMember(member, null);
-
-		assertThat(calendarMember.getCalendar()).isNull();
+		assertThat(calendarMember.isDeleted()).isTrue();
 	}
 }

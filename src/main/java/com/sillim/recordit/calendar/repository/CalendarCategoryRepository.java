@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CalendarCategoryRepository extends JpaRepository<CalendarCategory, Long> {
 
-	List<CalendarCategory> findByMemberId(Long memberId);
+	List<CalendarCategory> findByDeletedIsFalseAndMemberId(Long memberId);
 }

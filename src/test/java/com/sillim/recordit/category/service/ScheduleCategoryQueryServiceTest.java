@@ -30,7 +30,7 @@ class ScheduleCategoryQueryServiceTest {
 		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
 		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
-		given(scheduleCategoryRepository.findByMemberId(eq(memberId)))
+		given(scheduleCategoryRepository.findByDeletedIsFalseAndMemberId(eq(memberId)))
 				.willReturn(List.of(category));
 
 		List<ScheduleCategory> categories =
