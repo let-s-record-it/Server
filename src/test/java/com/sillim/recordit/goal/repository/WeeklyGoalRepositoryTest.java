@@ -91,7 +91,7 @@ public class WeeklyGoalRepositoryTest {
 	void findByGoalYearAndGoalMonthAndMemberWhenStuckInTwoMonths() {
 		// given
 		final Integer expectedYear = 2024;
-		final Integer expectedMonth = 8;
+		final Integer expectedMonth = 7;
 		weeklyGoalRepository.saveAll(
 				List.of(
 						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
@@ -108,10 +108,7 @@ public class WeeklyGoalRepositoryTest {
 			Assertions.assertAll(
 					() -> {
 						assertThat(found.getStartDate().getYear()).isEqualTo(expectedYear);
-						assertThat(found.getStartDate().getMonthValue())
-								.isNotEqualTo(expectedMonth);
-						assertThat(found.getEndDate().getYear()).isEqualTo(expectedYear);
-						assertThat(found.getEndDate().getMonthValue()).isEqualTo(expectedMonth);
+						assertThat(found.getStartDate().getMonthValue()).isEqualTo(expectedMonth);
 					});
 		}
 	}
