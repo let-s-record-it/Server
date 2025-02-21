@@ -24,6 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
@@ -52,10 +54,12 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	@MockBean MonthlyGoalQueryService monthlyGoalQueryService;
 
 	private Member member;
+	private ScheduleCategory category;
 
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
+		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 	}
 
 	@Test
@@ -68,7 +72,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 						"취업할 때까지 숨 참는다.",
 						LocalDate.of(2024, 4, 1),
 						LocalDate.of(2024, 4, 30),
-						"ff83c8ef");
+						1L);
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -98,7 +102,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 						"(수정)취업할 때까지 숨 참는다.",
 						LocalDate.of(2024, 5, 1),
 						LocalDate.of(2024, 5, 31),
-						"ff123456");
+						1L);
 
 		ResultActions perform =
 				mockMvc.perform(
@@ -128,7 +132,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 						"(수정)취업할 때까지 숨 참는다.",
 						LocalDate.of(2024, 5, 1),
 						LocalDate.of(2024, 5, 31),
-						"ff123456");
+						1L);
 		willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND))
 				.given(monthlyGoalUpdateService)
 				.modify(any(MonthlyGoalUpdateRequest.class), anyLong(), any());
@@ -157,7 +161,9 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 						.mapToObj(
 								(id) -> {
 									MonthlyGoal goal =
-											spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+											spy(
+													MonthlyGoalFixture.DEFAULT.getWithMember(
+															category, member));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
@@ -202,7 +208,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	@DisplayName("특정 id의 월 목표를 상세하게 조회한다.")
 	void monthlyGoalDetailsTest() throws Exception {
 
-		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(category, member));
 		given(monthlyGoal.getId()).willReturn(1L);
 
 		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(anyLong(), any()))
