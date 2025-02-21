@@ -9,6 +9,7 @@ import static com.sillim.recordit.task.domain.QTaskGroup.taskGroup;
 import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import com.sillim.recordit.task.domain.Task;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
@@ -32,8 +33,22 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 						.fetchJoin()
 						.leftJoin(taskGroup.weeklyGoal, weeklyGoal)
 						.fetchJoin()
+						.leftJoin(task.category)
+						.fetchJoin()
+						.where(task.deleted.isFalse())
 						.where(task.id.eq(taskId).and(task.calendar.id.eq(calendarId)))
 						.fetchOne());
+	}
+
+	@Override
+	public List<Task> findTasksInMonth(Long calendarId, Integer year, Integer month) {
+		return selectFrom(task)
+				.leftJoin(task.category)
+				.fetchJoin()
+				.where(task.deleted.isFalse())
+				.where(task.calendar.id.eq(calendarId))
+				.where(task.date.year().eq(year).and(task.date.month().eq(month)))
+				.fetch();
 	}
 
 	@Override

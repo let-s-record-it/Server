@@ -23,6 +23,8 @@ public class CustomWeeklyGoalRepositoryImpl extends QuerydslRepositorySupport
 		return selectFrom(weeklyGoal)
 				.leftJoin(weeklyGoal.relatedMonthlyGoal)
 				.fetchJoin()
+				.leftJoin(weeklyGoal.category)
+				.fetchJoin()
 				.where(weeklyGoal.member.id.eq(memberId))
 				.where(containStartDateOrEndDate(year, month))
 				.where(notNextMonth(year, month))
@@ -61,6 +63,8 @@ public class CustomWeeklyGoalRepositoryImpl extends QuerydslRepositorySupport
 		return Optional.ofNullable(
 				selectFrom(weeklyGoal)
 						.leftJoin(weeklyGoal.relatedMonthlyGoal)
+						.fetchJoin()
+						.leftJoin(weeklyGoal.category)
 						.fetchJoin()
 						.where(weeklyGoal.id.eq(id))
 						.fetchOne());

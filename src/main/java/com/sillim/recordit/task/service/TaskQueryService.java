@@ -30,6 +30,14 @@ public class TaskQueryService {
 		return taskRepository.findAllByCalendarIdAndDate(calendarId, date);
 	}
 
+	public List<Task> searchTasksInMonth(
+			Long calendarId, Long memberId, Integer year, Integer month) {
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
+
+		return taskRepository.findTasksInMonth(calendarId, year, month);
+	}
+
 	public TaskDetailsResponse searchByIdAndCalendarId(
 			final Long taskId, final Long calendarId, final Long memberId) {
 

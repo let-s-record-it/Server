@@ -2,11 +2,16 @@ package com.sillim.recordit.goal.dto.response;
 
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 
-public record MonthlyGoalListResponse(Long id, String title, Boolean achieved) {
+public record MonthlyGoalListResponse(
+		Long id, String title, Long categoryId, String colorHex, Boolean achieved) {
 
 	public static MonthlyGoalListResponse from(final MonthlyGoal monthlyGoal) {
 
 		return new MonthlyGoalListResponse(
-				monthlyGoal.getId(), monthlyGoal.getTitle(), monthlyGoal.isAchieved());
+				monthlyGoal.getId(),
+				monthlyGoal.getTitle(),
+				monthlyGoal.getCategory().getId(),
+				monthlyGoal.getColorHex(),
+				monthlyGoal.isAchieved());
 	}
 }
