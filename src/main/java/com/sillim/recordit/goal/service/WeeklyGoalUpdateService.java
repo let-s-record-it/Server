@@ -1,5 +1,7 @@
 package com.sillim.recordit.goal.service;
 
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.dto.request.WeeklyGoalUpdateRequest;
@@ -19,12 +21,15 @@ public class WeeklyGoalUpdateService {
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
 	private final MemberQueryService memberQueryService;
 	private final WeeklyGoalRepository weeklyGoalRepository;
+	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
 
 	public Long addWeeklyGoal(final WeeklyGoalUpdateRequest request, final Long memberId) {
 
 		Member member = memberQueryService.findByMemberId(memberId);
+		ScheduleCategory category =
+				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		if (request.relatedMonthlyGoalId() == null) {
-			return weeklyGoalRepository.save(request.toEntity(member)).getId();
+			return weeklyGoalRepository.save(request.toEntity(category, member)).getId();
 		}
 		MonthlyGoal relatedMonthlyGoal =
 				monthlyGoalQueryService.searchByIdAndCheckAuthority(
@@ -32,7 +37,9 @@ public class WeeklyGoalUpdateService {
 		return weeklyGoalRepository
 				.save(
 						request.toEntity(
-								relatedMonthlyGoal, memberQueryService.findByMemberId(memberId)))
+								category,
+								relatedMonthlyGoal,
+								memberQueryService.findByMemberId(memberId)))
 				.getId();
 	}
 
@@ -41,6 +48,8 @@ public class WeeklyGoalUpdateService {
 
 		WeeklyGoal weeklyGoal =
 				weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
+		ScheduleCategory category =
+				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		if (request.relatedMonthlyGoalId() == null) {
 			weeklyGoal.modify(
 					request.title(),
@@ -48,7 +57,7 @@ public class WeeklyGoalUpdateService {
 					request.week(),
 					request.startDate(),
 					request.endDate(),
-					request.colorHex());
+					category);
 			return;
 		}
 		MonthlyGoal monthlyGoal =
@@ -60,7 +69,7 @@ public class WeeklyGoalUpdateService {
 				request.week(),
 				request.startDate(),
 				request.endDate(),
-				request.colorHex(),
+				category,
 				monthlyGoal);
 	}
 

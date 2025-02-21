@@ -11,6 +11,7 @@ public record TaskDetailsResponse(
 		String title,
 		String description,
 		LocalDate date,
+		Long categoryId,
 		String colorHex,
 		Long calendarId,
 		String calendarTitle,
@@ -25,6 +26,7 @@ public record TaskDetailsResponse(
 				.title(task.getTitle())
 				.description(task.getDescription())
 				.date(task.getDate())
+				.categoryId(task.getCategory().getId())
 				.colorHex(task.getColorHex())
 				.calendarId(task.getCalendar().getId())
 				.calendarTitle(task.getCalendar().getTitle())
