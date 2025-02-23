@@ -46,14 +46,32 @@ public enum ErrorCode {
 	SCHEDULE_GROUP_NOT_FOUND("ERR_SCHEDULE_019", "요청한 일정 그룹을 찾을 수 없습니다."),
 	REPETITION_PATTERN_NOT_FOUND("ERR_SCHEDULE_020", "요청한 반복 패턴을 찾을 수 없습니다."),
 
+	NULL_SCHEDULE_CATEGORY_NAME("ERR_SCHEDULE_CATEGORY_001", "일정 카테고리 이름은 null일 수 없습니다."),
+	BLANK_SCHEDULE_CATEGORY_NAME("ERR_SCHEDULE_CATEGORY_002", "일정 카테고리 이름은 빈 값일 수 없습니다."),
+	INVALID_SCHEDULE_CATEGORY_NAME_LENGTH(
+			"ERR_SCHEDULE_CATEGORY_003", "일정 카테고리 이름의 길이는 10자를 넘을 수 없습니다."),
+	SCHEDULE_CATEGORY_NOT_FOUND("ERR_SCHEDULE_CATEGORY_004", "일정 카테고리를 찾을 수 없습니다."),
+	INVALID_SCHEDULE_CATEGORY_GET_REQUEST("ERR_SCHEDULE_CATEGORY_005", "유효하지 않은 일정 카테고리 조회 요청입니다."),
+
 	NULL_CALENDAR_TITLE("ERR_CALENDAR_001", "캘린더 제목은 null일 수 없습니다."),
 	BLANK_CALENDAR_TITLE("ERR_CALENDAR_002", "캘린더 제목은 빈 값일 수 없습니다."),
 	INVALID_CALENDAR_TITLE_LENGTH("ERR_CALENDAR_003", "캘린더 제목의 길이는 30자를 넘을 수 없습니다."),
 	INVALID_CALENDAR_COLOR_HEX("ERR_CALENDAR_004", "유효하지 않은 캘린더 색상 값입니다."),
 	NULL_CALENDAR_COLOR_HEX("ERR_CALENDAR_005", "캘린더 색상 값은 null일 수 없습니다."),
 	CALENDAR_NOT_FOUND("ERR_CALENDAR_006", "요청한 캘린더를 찾을 수 없습니다."),
-	INVALID_CALENDAR_DELETE_REQUEST("ERR_CALENDAR_007", "유효하지 않은 캘린더 삭제 요청입니다."),
+	INVALID_CALENDAR_GET_REQUEST("ERR_CALENDAR_007", "유효하지 않은 캘린더 조회 요청입니다."),
 	CALENDAR_ACCESS_DENIED("ERR_CALENDAR_008", "해당 사용자는 접근할 수 없는 캘린더입니다."),
+
+	CALENDAR_MEMBER_NOT_FOUND("ERR_CALENDAR_MEMBER_001", "캘린더 멤버를 찾을 수 없습니다."),
+	INVALID_CALENDAR_MEMBER_GET_REQUEST("ERR_CALENDAR_MEMBER_002", "유효하지 않은 캘린더 멤버 조회 요청입니다."),
+
+	NULL_CALENDAR_CATEGORY_NAME("ERR_CALENDAR_CATEGORY_001", "캘린더 카테고리 이름은 null일 수 없습니다."),
+	BLANK_CALENDAR_CATEGORY_NAME("ERR_CALENDAR_CATEGORY_002", "캘린더 카테고리 이름은 빈 값일 수 없습니다."),
+	INVALID_CALENDAR_CATEGORY_NAME_LENGTH(
+			"ERR_CALENDAR_CATEGORY_003", "캘린더 카테고리 이름의 길이는 10자를 넘을 수 없습니다."),
+	CALENDAR_CATEGORY_NOT_FOUND("ERR_CALENDAR_CATEGORY_004", "캘린더 카테고리를 찾을 수 없습니다."),
+	INVALID_CALENDAR_CATEGORY_GET_REQUEST(
+			"ERR_CALENDAR_CATEGORY_005", "유효하지 않은 캘린더 카테고리 조회 요청입니다."),
 
 	// monthly-goal
 	MONTHLY_GOAL_NOT_FOUND("ERR_MONTHLY_GOAL_001", "존재하지 않는 월 목표입니다."),

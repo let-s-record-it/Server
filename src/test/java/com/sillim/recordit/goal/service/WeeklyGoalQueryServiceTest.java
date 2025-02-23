@@ -9,6 +9,8 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.spy;
 
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
@@ -36,10 +38,12 @@ public class WeeklyGoalQueryServiceTest {
 	@InjectMocks WeeklyGoalQueryService weeklyGoalQueryService;
 
 	private Member member;
+	private ScheduleCategory category;
 
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
+		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 	}
 
 	@Test
@@ -56,6 +60,7 @@ public class WeeklyGoalQueryServiceTest {
 												3,
 												LocalDate.of(2024, 8, 11),
 												LocalDate.of(2024, 8, 17),
+												category,
 												member))
 						.toList();
 		given(weeklyGoalRepository.findWeeklyGoalInMonth(eq(year), eq(month), eq(memberId)))
@@ -77,7 +82,7 @@ public class WeeklyGoalQueryServiceTest {
 	void searchByIdAndCheckAuthority() {
 		Long memberId = 1L;
 		Long weeklyGoalId = 2L;
-		WeeklyGoal expected = spy(WeeklyGoalFixture.DEFAULT.getWithMember(member));
+		WeeklyGoal expected = spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, member));
 		given(weeklyGoalRepository.findWeeklyGoalById(eq(weeklyGoalId)))
 				.willReturn(Optional.of(expected));
 		willDoNothing().given(expected).validateAuthenticatedMember(eq(memberId));
@@ -92,7 +97,7 @@ public class WeeklyGoalQueryServiceTest {
 	void searchByIdAndCheckAuthorityThrowsInvalidRequestExceptionIf() {
 		Long memberId = 1L;
 		Long weeklyGoalId = 2L;
-		WeeklyGoal expected = spy(WeeklyGoalFixture.DEFAULT.getWithMember(member));
+		WeeklyGoal expected = spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, member));
 		given(weeklyGoalRepository.findWeeklyGoalById(eq(weeklyGoalId)))
 				.willReturn(Optional.of(expected));
 		willThrow(new InvalidRequestException(ErrorCode.WEEKLY_GOAL_ACCESS_DENIED))

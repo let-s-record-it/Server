@@ -41,6 +41,7 @@ public class KakaoAuthenticationService implements AuthenticationService {
 				.oauthAccount(kakaoUserInfo.id().toString())
 				.oAuthProvider(OAuthProvider.KAKAO)
 				.name(kakaoUserInfo.kakaoAccount().profile().nickname())
+				.profileImageUrl(kakaoUserInfo.kakaoAccount().profile().profileImageUrl())
 				.build();
 	}
 }

@@ -39,6 +39,7 @@ public class GoogleAuthenticationService implements AuthenticationService {
 				.oauthAccount(googleUserInfo.sub())
 				.oAuthProvider(OAuthProvider.GOOGLE)
 				.name(googleUserInfo.name())
+				.profileImageUrl(googleUserInfo.picture())
 				.build();
 	}
 }

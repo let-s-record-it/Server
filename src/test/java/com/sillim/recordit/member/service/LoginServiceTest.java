@@ -37,6 +37,7 @@ class LoginServiceTest {
 	@Mock MemberRepository memberRepository;
 	@Mock ObjectMapper objectMapper;
 	@Mock SignupService signupService;
+	@Mock MemberDeviceService memberDeviceService;
 	@InjectMocks LoginService loginService;
 
 	@Test
@@ -51,7 +52,14 @@ class LoginServiceTest {
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
 		AuthorizationToken authorizationToken =
-				loginService.login(new LoginRequest(idToken, "accessToken", OAuthProvider.KAKAO));
+				loginService.login(
+						new LoginRequest(
+								idToken,
+								"accessToken",
+								OAuthProvider.KAKAO,
+								"id",
+								"model",
+								"token"));
 
 		assertThat(authorizationToken.accessToken()).isEqualTo(target.accessToken());
 		assertThat(authorizationToken.refreshToken()).isEqualTo(target.refreshToken());
@@ -64,7 +72,8 @@ class LoginServiceTest {
 		Member member = MemberFixture.DEFAULT.getMember();
 		String idToken = "header.payload.signature";
 		String account = "account";
-		MemberInfo memberInfo = new MemberInfo(account, OAuthProvider.KAKAO, "name");
+		MemberInfo memberInfo =
+				new MemberInfo(account, OAuthProvider.KAKAO, "name", "https://image.url");
 		given(kakaoAuthenticationService.authenticate(any(IdToken.class))).willReturn(account);
 		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.empty());
 		given(kakaoAuthenticationService.getMemberInfoByAccessToken(anyString()))
@@ -73,7 +82,14 @@ class LoginServiceTest {
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
 		AuthorizationToken authorizationToken =
-				loginService.login(new LoginRequest(idToken, "accessToken", OAuthProvider.KAKAO));
+				loginService.login(
+						new LoginRequest(
+								idToken,
+								"accessToken",
+								OAuthProvider.KAKAO,
+								"id",
+								"model",
+								"token"));
 
 		assertThat(authorizationToken.accessToken()).isEqualTo(target.accessToken());
 		assertThat(authorizationToken.refreshToken()).isEqualTo(target.refreshToken());
@@ -85,14 +101,17 @@ class LoginServiceTest {
 		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
 		Member member = MemberFixture.DEFAULT.getMember();
 		String account = "account";
-		MemberInfo memberInfo = new MemberInfo(account, OAuthProvider.NAVER, "name");
+		MemberInfo memberInfo =
+				new MemberInfo(account, OAuthProvider.NAVER, "name", "https://image.url");
 		given(naverAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
 		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.of(member));
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
 		AuthorizationToken authorizationToken =
-				loginService.login(new LoginRequest("", "accessToken", OAuthProvider.NAVER));
+				loginService.login(
+						new LoginRequest(
+								"", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
 
 		assertThat(authorizationToken.accessToken()).isEqualTo(target.accessToken());
 		assertThat(authorizationToken.refreshToken()).isEqualTo(target.refreshToken());
@@ -104,7 +123,8 @@ class LoginServiceTest {
 		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
 		Member member = MemberFixture.DEFAULT.getMember();
 		String account = "account";
-		MemberInfo memberInfo = new MemberInfo(account, OAuthProvider.NAVER, "name");
+		MemberInfo memberInfo =
+				new MemberInfo(account, OAuthProvider.NAVER, "name", "https://image.url");
 		given(naverAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
 		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.empty());
@@ -112,7 +132,9 @@ class LoginServiceTest {
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
 		AuthorizationToken authorizationToken =
-				loginService.login(new LoginRequest("", "accessToken", OAuthProvider.NAVER));
+				loginService.login(
+						new LoginRequest(
+								"", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
 
 		assertThat(authorizationToken.accessToken()).isEqualTo(target.accessToken());
 		assertThat(authorizationToken.refreshToken()).isEqualTo(target.refreshToken());

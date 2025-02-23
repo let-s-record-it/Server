@@ -9,6 +9,8 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.spy;
 
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
@@ -37,10 +39,12 @@ public class MonthlyGoalQueryServiceTest {
 	@InjectMocks MonthlyGoalQueryService monthlyGoalQueryService;
 
 	private Member member;
+	private ScheduleCategory category;
 
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
+		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 	}
 
 	@Test
@@ -48,9 +52,10 @@ public class MonthlyGoalQueryServiceTest {
 	void searchTest() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		MonthlyGoal expected = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		MonthlyGoal expected = spy(MonthlyGoalFixture.DEFAULT.getWithMember(category, member));
 		willDoNothing().given(expected).validateAuthenticatedMember(eq(memberId));
-		given(monthlyGoalRepository.findById(eq(monthlyGoalId))).willReturn(Optional.of(expected));
+		given(monthlyGoalRepository.findByIdWithFetch(eq(monthlyGoalId)))
+				.willReturn(Optional.of(expected));
 
 		MonthlyGoal found =
 				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
@@ -62,7 +67,7 @@ public class MonthlyGoalQueryServiceTest {
 	void searchTestMonthlyGoalNotFound() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		given(monthlyGoalRepository.findById(eq(monthlyGoalId)))
+		given(monthlyGoalRepository.findByIdWithFetch(eq(monthlyGoalId)))
 				.willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 
 		assertThatThrownBy(
@@ -78,11 +83,12 @@ public class MonthlyGoalQueryServiceTest {
 	void throwInvalidMonthlyGoalExceptionIfMonthlyGoalIsNotOwnedByMember() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		MonthlyGoal expected = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		MonthlyGoal expected = spy(MonthlyGoalFixture.DEFAULT.getWithMember(category, member));
 		willThrow(new InvalidRequestException(ErrorCode.MONTHLY_GOAL_ACCESS_DENIED))
 				.given(expected)
 				.validateAuthenticatedMember(eq(memberId));
-		given(monthlyGoalRepository.findById(eq(monthlyGoalId))).willReturn(Optional.of(expected));
+		given(monthlyGoalRepository.findByIdWithFetch(eq(monthlyGoalId)))
+				.willReturn(Optional.of(expected));
 
 		assertThatThrownBy(
 						() ->
@@ -105,6 +111,7 @@ public class MonthlyGoalQueryServiceTest {
 										MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
 												LocalDate.of(2024, 4, 1),
 												LocalDate.of(2024, 4, 30),
+												category,
 												member))
 						.toList();
 		given(monthlyGoalRepository.findMonthlyGoalInMonth(eq(year), eq(month), eq(memberId)))

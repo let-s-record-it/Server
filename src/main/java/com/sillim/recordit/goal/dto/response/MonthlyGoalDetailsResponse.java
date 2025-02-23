@@ -9,6 +9,7 @@ public record MonthlyGoalDetailsResponse(
 		String description,
 		LocalDate startDate,
 		LocalDate endDate,
+		Long categoryId,
 		String colorHex) {
 
 	public static MonthlyGoalDetailsResponse from(final MonthlyGoal monthlyGoal) {
@@ -19,6 +20,7 @@ public record MonthlyGoalDetailsResponse(
 				monthlyGoal.getDescription(),
 				monthlyGoal.getStartDate(),
 				monthlyGoal.getEndDate(),
+				monthlyGoal.getCategory().getId(),
 				monthlyGoal.getColorHex());
 	}
 }

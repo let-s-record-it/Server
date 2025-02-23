@@ -33,9 +33,29 @@ public class FeedQueryService {
 				feedScrapQueryService.isScraped(feedId, memberId));
 	}
 
-	public SliceResponse<FeedInListResponse> searchPaginatedRecentCreated(
+	public SliceResponse<FeedInListResponse> searchRecentCreated(Pageable pageable, Long memberId) {
+		Slice<Feed> feedSlice = feedRepository.findOrderByCreatedAtDesc(pageable);
+
+		return SliceResponse.of(
+				new SliceImpl<>(
+						feedSlice.stream()
+								.map(
+										feed ->
+												FeedInListResponse.from(
+														feed,
+														feedLikeQueryService.isLiked(
+																feed.getId(), memberId),
+														feedScrapQueryService.isScraped(
+																feed.getId(), memberId)))
+								.toList(),
+						pageable,
+						feedSlice.hasNext()));
+	}
+
+	public SliceResponse<FeedInListResponse> searchRecentCreatedByMemberId(
 			Pageable pageable, Long memberId) {
-		Slice<Feed> feedSlice = feedRepository.findPaginatedOrderByCreatedAtDesc(pageable);
+		Slice<Feed> feedSlice =
+				feedRepository.findByMemberIdOrderByCreatedAtDesc(pageable, memberId);
 
 		return SliceResponse.of(
 				new SliceImpl<>(

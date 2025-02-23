@@ -1,8 +1,8 @@
 package com.sillim.recordit.task.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.domain.BaseTime;
-import com.sillim.recordit.task.domain.vo.TaskColorHex;
 import com.sillim.recordit.task.domain.vo.TaskDescription;
 import com.sillim.recordit.task.domain.vo.TaskTitle;
 import jakarta.persistence.Column;
@@ -40,11 +40,13 @@ public class Task extends BaseTime {
 	@Column(nullable = false)
 	private LocalDate date;
 
-	@Embedded private TaskColorHex colorHex;
-
 	@Column(nullable = false)
 	@ColumnDefault("false")
 	private boolean achieved = false;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "task_category_id")
+	private ScheduleCategory category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "calendar_id", nullable = false)
@@ -62,13 +64,13 @@ public class Task extends BaseTime {
 			TaskTitle title,
 			TaskDescription description,
 			LocalDate date,
-			TaskColorHex colorHex,
+			ScheduleCategory category,
 			Calendar calendar,
 			TaskGroup taskGroup) {
 		this.title = title;
 		this.description = description;
 		this.date = date;
-		this.colorHex = colorHex;
+		this.category = category;
 		this.calendar = calendar;
 		this.taskGroup = taskGroup;
 	}
@@ -78,14 +80,14 @@ public class Task extends BaseTime {
 			String title,
 			String description,
 			LocalDate date,
-			String colorHex,
+			ScheduleCategory category,
 			Calendar calendar,
 			TaskGroup taskGroup) {
 		this(
 				new TaskTitle(title),
 				new TaskDescription(description),
 				date,
-				new TaskColorHex(colorHex),
+				category,
 				calendar,
 				taskGroup);
 	}
@@ -94,13 +96,13 @@ public class Task extends BaseTime {
 			String title,
 			String description,
 			LocalDate date,
-			String colorHex,
+			ScheduleCategory category,
 			Calendar calendar,
 			TaskGroup taskGroup) {
 		this.title = new TaskTitle(title);
 		this.description = new TaskDescription(description);
 		this.date = date;
-		this.colorHex = new TaskColorHex(colorHex);
+		this.category = category;
 		this.calendar = calendar;
 		this.taskGroup = taskGroup;
 	}
@@ -118,7 +120,7 @@ public class Task extends BaseTime {
 	}
 
 	public String getColorHex() {
-		return colorHex.getColorHex();
+		return category.getColorHex();
 	}
 
 	public boolean isRepeated() {

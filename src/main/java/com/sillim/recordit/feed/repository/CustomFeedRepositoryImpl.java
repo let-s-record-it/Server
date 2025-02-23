@@ -33,12 +33,27 @@ public class CustomFeedRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public Slice<Feed> findPaginatedOrderByCreatedAtDesc(Pageable pageable) {
+	public Slice<Feed> findOrderByCreatedAtDesc(Pageable pageable) {
 		List<Feed> feeds =
 				selectFrom(feed)
 						.leftJoin(feed.member)
 						.fetchJoin()
 						.where(feed.deleted.isFalse())
+						.orderBy(feed.createdAt.desc())
+						.offset(pageable.getOffset())
+						.limit(pageable.getPageSize() + 1)
+						.fetch();
+
+		return new SliceImpl<>(feeds, pageable, hasNext(pageable, feeds));
+	}
+
+	@Override
+	public Slice<Feed> findByMemberIdOrderByCreatedAtDesc(Pageable pageable, Long memberId) {
+		List<Feed> feeds =
+				selectFrom(feed)
+						.leftJoin(feed.member)
+						.fetchJoin()
+						.where(feed.deleted.isFalse().and(feed.member.id.eq(memberId)))
 						.orderBy(feed.createdAt.desc())
 						.offset(pageable.getOffset())
 						.limit(pageable.getPageSize() + 1)

@@ -16,7 +16,8 @@ public record FeedInListResponse(
 		boolean isLiked,
 		boolean isScraped,
 		String memberName,
-		String memberJob) {
+		String memberJob,
+		String memberProfileImageUrl) {
 
 	public static FeedInListResponse from(Feed feed, boolean isLiked, boolean isScraped) {
 		return FeedInListResponse.builder()
@@ -30,6 +31,7 @@ public record FeedInListResponse(
 				.isScraped(isScraped)
 				.memberName(feed.getMember().getName())
 				.memberJob(feed.getMember().getJob())
+				.memberProfileImageUrl(feed.getMember().getProfileImageUrl())
 				.build();
 	}
 }

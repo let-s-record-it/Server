@@ -2,6 +2,7 @@ package com.sillim.recordit.member.controller;
 
 import com.sillim.recordit.config.security.jwt.AuthorizationToken;
 import com.sillim.recordit.member.dto.request.LoginRequest;
+import com.sillim.recordit.member.dto.request.WebLoginRequest;
 import com.sillim.recordit.member.dto.response.OAuthTokenResponse;
 import com.sillim.recordit.member.service.LoginService;
 import java.io.IOException;
@@ -25,6 +26,14 @@ public class LoginController {
 	public ResponseEntity<OAuthTokenResponse> login(@RequestBody LoginRequest loginRequest)
 			throws IOException {
 		AuthorizationToken token = loginService.login(loginRequest);
+		return ResponseEntity.ok(new OAuthTokenResponse(token.accessToken(), token.refreshToken()));
+	}
+
+	@PostMapping("/web-login")
+	public ResponseEntity<OAuthTokenResponse> webLogin(
+			@RequestBody WebLoginRequest webLoginRequest) {
+		log.info("token: {}", webLoginRequest.exchangeToken());
+		AuthorizationToken token = loginService.login(webLoginRequest.exchangeToken());
 		return ResponseEntity.ok(new OAuthTokenResponse(token.accessToken(), token.refreshToken()));
 	}
 }

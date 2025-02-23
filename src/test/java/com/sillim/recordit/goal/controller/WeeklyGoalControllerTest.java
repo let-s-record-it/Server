@@ -21,6 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.dto.request.WeeklyGoalUpdateRequest;
 import com.sillim.recordit.goal.fixture.WeeklyGoalFixture;
@@ -47,10 +49,12 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 	@MockBean WeeklyGoalQueryService weeklyGoalQueryService;
 
 	private Member member;
+	private ScheduleCategory category;
 
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
+		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 	}
 
 	@Test
@@ -64,7 +68,7 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 						3,
 						LocalDate.of(2024, 8, 11),
 						LocalDate.of(2024, 8, 17),
-						"ff83c8ef",
+						1L,
 						1L);
 
 		ResultActions perform =
@@ -89,14 +93,16 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 	@DisplayName("당월의 주 목표 목록을 조회한다.")
 	void weeklyGoalList() throws Exception {
 
-		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
 
 		List<WeeklyGoal> weeklyGoals =
 				LongStream.rangeClosed(1, 3)
 						.mapToObj(
 								(id) -> {
 									WeeklyGoal goal =
-											spy(WeeklyGoalFixture.DEFAULT.getWithMember(member));
+											spy(
+													WeeklyGoalFixture.DEFAULT.getWithMember(
+															category, member));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
@@ -147,7 +153,11 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 		List<WeeklyGoal> weeklyGoals =
 				List.of(
 						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
-								5, LocalDate.of(2024, 9, 29), LocalDate.of(2024, 10, 5), member));
+								5,
+								LocalDate.of(2024, 9, 29),
+								LocalDate.of(2024, 10, 5),
+								category,
+								member));
 
 		given(weeklyGoalQueryService.searchAllWeeklyGoalByDate(anyInt(), anyInt(), any()))
 				.willReturn(weeklyGoals);
@@ -179,7 +189,7 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 	@DisplayName("특정 id의 주 목표를 상세하게 조회한다.")
 	void weeklyGoalDetailsTest() throws Exception {
 
-		WeeklyGoal weeklyGoal = spy(WeeklyGoalFixture.DEFAULT.getWithMember(member));
+		WeeklyGoal weeklyGoal = spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, member));
 		given(weeklyGoal.getId()).willReturn(1L);
 
 		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(anyLong(), any()))
@@ -219,7 +229,7 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 						4,
 						LocalDate.of(2024, 8, 18),
 						LocalDate.of(2024, 8, 24),
-						"ff123456",
+						1L,
 						1L);
 
 		ResultActions perform =

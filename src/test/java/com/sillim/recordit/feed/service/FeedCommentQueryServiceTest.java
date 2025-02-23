@@ -53,4 +53,28 @@ class FeedCommentQueryServiceTest {
 					assertThat(feedComments.isLast()).isTrue();
 				});
 	}
+
+	@Test
+	@DisplayName("오래된 순으로 pagination해서 특정 멤버의 피드 댓글 목록을 조회할 수 있다.")
+	void searchFeedCommentsPaginatedByMemberIdOrderByRecentCreated() {
+		PageRequest pageRequest = PageRequest.of(1, 10);
+		Member member = mock(Member.class);
+		Feed feed = FeedFixture.DEFAULT.getFeed(member);
+		FeedComment feedComment = spy(new FeedComment("content", feed, member));
+		long memberId = 1L;
+		given(feedComment.getId()).willReturn(1L);
+		given(
+						feedCommentRepository.findByMemberIdOrderByCreatedAtAsc(
+								eq(pageRequest), eq(memberId)))
+				.willReturn(new SliceImpl<>(List.of(feedComment), pageRequest, false));
+
+		SliceResponse<FeedCommentInListResponse> feedComments =
+				feedCommentQueryService.searchByMemberIdOldCreated(pageRequest, memberId);
+
+		assertAll(
+				() -> {
+					assertThat(feedComments.content()).hasSize(1);
+					assertThat(feedComments.isLast()).isTrue();
+				});
+	}
 }

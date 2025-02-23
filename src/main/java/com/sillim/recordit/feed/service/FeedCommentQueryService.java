@@ -46,4 +46,20 @@ public class FeedCommentQueryService {
 						pageable,
 						feedCommentSlice.hasNext()));
 	}
+
+	public SliceResponse<FeedCommentInListResponse> searchByMemberIdOldCreated(
+			Pageable pageable, Long memberId) {
+		Slice<FeedComment> feedCommentSlice =
+				feedCommentRepository.findByMemberIdOrderByCreatedAtAsc(pageable, memberId);
+		return SliceResponse.of(
+				new SliceImpl<>(
+						feedCommentSlice.stream()
+								.map(
+										feedComment ->
+												FeedCommentInListResponse.from(
+														feedComment, memberId))
+								.toList(),
+						pageable,
+						feedCommentSlice.hasNext()));
+	}
 }

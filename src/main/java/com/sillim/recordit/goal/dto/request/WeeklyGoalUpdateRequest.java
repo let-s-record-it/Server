@@ -1,6 +1,6 @@
 package com.sillim.recordit.goal.dto.request;
 
-import com.sillim.recordit.global.validation.common.ColorHexValid;
+import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.member.domain.Member;
@@ -16,10 +16,10 @@ public record WeeklyGoalUpdateRequest(
 		@NotNull @Range(min = 1, max = 6) Integer week,
 		@NotNull LocalDate startDate,
 		@NotNull LocalDate endDate,
-		@ColorHexValid String colorHex,
+		@NotNull Long categoryId,
 		Long relatedMonthlyGoalId) {
 
-	public WeeklyGoal toEntity(final Member member) {
+	public WeeklyGoal toEntity(final ScheduleCategory category, final Member member) {
 
 		return WeeklyGoal.builder()
 				.title(title)
@@ -27,12 +27,15 @@ public record WeeklyGoalUpdateRequest(
 				.week(week)
 				.startDate(startDate)
 				.endDate(endDate)
-				.colorHex(colorHex)
+				.category(category)
 				.member(member)
 				.build();
 	}
 
-	public WeeklyGoal toEntity(final MonthlyGoal relatedMonthlyGoal, final Member member) {
+	public WeeklyGoal toEntity(
+			final ScheduleCategory category,
+			final MonthlyGoal relatedMonthlyGoal,
+			final Member member) {
 
 		return WeeklyGoal.builder()
 				.title(title)
@@ -40,7 +43,7 @@ public record WeeklyGoalUpdateRequest(
 				.week(week)
 				.startDate(startDate)
 				.endDate(endDate)
-				.colorHex(colorHex)
+				.category(category)
 				.relatedMonthlyGoal(relatedMonthlyGoal)
 				.member(member)
 				.build();

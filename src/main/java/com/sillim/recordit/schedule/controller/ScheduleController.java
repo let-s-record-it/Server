@@ -8,20 +8,14 @@ import com.sillim.recordit.schedule.dto.response.DayScheduleResponse;
 import com.sillim.recordit.schedule.dto.response.MonthScheduleResponse;
 import com.sillim.recordit.schedule.service.ScheduleCommandService;
 import com.sillim.recordit.schedule.service.ScheduleQueryService;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.quartz.SchedulerException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/calendars/{calendarId}/schedules")
@@ -33,7 +27,8 @@ public class ScheduleController {
 
 	@PostMapping
 	public ResponseEntity<List<MonthScheduleResponse>> schedulesAdd(
-			@Validated @RequestBody ScheduleAddRequest request, @PathVariable Long calendarId) {
+			@Validated @RequestBody ScheduleAddRequest request, @PathVariable Long calendarId)
+			throws SchedulerException {
 		return ResponseEntity.ok(
 				scheduleCommandService.addSchedules(request, calendarId).stream()
 						.map(MonthScheduleResponse::from)
@@ -66,11 +61,22 @@ public class ScheduleController {
 				scheduleQueryService.searchSchedulesInDay(calendarId, date, member.getId()));
 	}
 
+	@GetMapping("/search")
+	public ResponseEntity<List<DayScheduleResponse>> searchSchedules(
+			@Size(min = 1) @RequestParam String query,
+			@PathVariable Long calendarId,
+			@CurrentMember Member member) {
+		return ResponseEntity.ok(
+				scheduleQueryService.searchSchedulesContainQuery(
+						query, calendarId, member.getId()));
+	}
+
 	@PutMapping("/{scheduleId}")
 	public ResponseEntity<Void> scheduleModify(
 			@PathVariable Long scheduleId,
 			@RequestBody ScheduleModifyRequest request,
-			@CurrentMember Member member) {
+			@CurrentMember Member member)
+			throws SchedulerException {
 		scheduleCommandService.modifySchedule(request, scheduleId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
@@ -79,29 +85,30 @@ public class ScheduleController {
 	public ResponseEntity<Void> schedulesModify(
 			@PathVariable Long scheduleId,
 			@RequestBody ScheduleModifyRequest request,
-			@CurrentMember Member member) {
-		scheduleCommandService.modifySchedulesInGroup(request, scheduleId, member.getId());
+			@CurrentMember Member member)
+			throws SchedulerException {
+		scheduleCommandService.modifyGroupSchedules(request, scheduleId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{scheduleId}")
 	public ResponseEntity<Void> scheduleRemoveById(
-			@PathVariable Long scheduleId, @CurrentMember Member member) {
+			@PathVariable Long scheduleId, @CurrentMember Member member) throws SchedulerException {
 		scheduleCommandService.removeSchedule(scheduleId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{scheduleId}/group")
 	public ResponseEntity<Void> schedulesRemoveInGroup(
-			@PathVariable Long scheduleId, @CurrentMember Member member) {
-		scheduleCommandService.removeSchedulesInGroup(scheduleId, member.getId());
+			@PathVariable Long scheduleId, @CurrentMember Member member) throws SchedulerException {
+		scheduleCommandService.removeGroupSchedules(scheduleId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{scheduleId}/after")
 	public ResponseEntity<Void> schedulesRemoveInGroupAfter(
 			@PathVariable Long scheduleId, @CurrentMember Member member) {
-		scheduleCommandService.removeSchedulesInGroupAfter(scheduleId, member.getId());
+		scheduleCommandService.removeGroupSchedulesAfterCurrent(scheduleId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 }

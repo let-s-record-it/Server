@@ -13,7 +13,7 @@ public class ScheduleGroupService {
 
 	private final ScheduleGroupRepository scheduleGroupRepository;
 
-	public ScheduleGroup addScheduleGroup(Boolean isRepeated) {
+	public ScheduleGroup newScheduleGroup(Boolean isRepeated) {
 		return scheduleGroupRepository.save(new ScheduleGroup(isRepeated));
 	}
 }

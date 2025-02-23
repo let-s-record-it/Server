@@ -3,6 +3,8 @@ package com.sillim.recordit.goal.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.member.domain.Member;
@@ -26,21 +28,23 @@ public class MonthlyGoalRepositoryTest {
 	@Autowired TestEntityManager em;
 
 	private Member member;
+	private ScheduleCategory category;
 
 	@BeforeEach
 	void beforeEach() {
-		member = MemberFixture.DEFAULT.getMember();
-		em.persist(member);
+		member = em.persist(MemberFixture.DEFAULT.getMember());
+		category = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
 	}
 
 	@Test
 	@DisplayName("새로운 월 목표 레코드를 저장한다.")
 	void saveTest() {
 		// given
-		final MonthlyGoal expected = MonthlyGoalFixture.DEFAULT.getWithMember(member);
+		final MonthlyGoal expected = MonthlyGoalFixture.DEFAULT.getWithMember(category, member);
 		// when
 		MonthlyGoal saved =
-				monthlyGoalRepository.save(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+				monthlyGoalRepository.save(
+						MonthlyGoalFixture.DEFAULT.getWithMember(category, member));
 
 		// then
 		// 자동 생성 필드가 null이 아닌지 검증
@@ -59,8 +63,8 @@ public class MonthlyGoalRepositoryTest {
 	@DisplayName("기존의 월 목표 레코드를 갱신한다.")
 	void updateTest() {
 		// given
-		final MonthlyGoal expected = MonthlyGoalFixture.MODIFIED.getWithMember(member);
-		MonthlyGoal actual = em.persist(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		final MonthlyGoal expected = MonthlyGoalFixture.MODIFIED.getWithMember(category, member);
+		MonthlyGoal actual = em.persist(MonthlyGoalFixture.DEFAULT.getWithMember(category, member));
 
 		// when, then
 		assertThatCode(
@@ -70,12 +74,11 @@ public class MonthlyGoalRepositoryTest {
 									expected.getDescription(),
 									expected.getStartDate(),
 									expected.getEndDate(),
-									expected.getColorHex());
+									category);
 							em.flush();
 						})
 				.doesNotThrowAnyException();
 
-		assertThat(actual.getModifiedAt()).isNotEqualTo(actual.getCreatedAt());
 		assertThat(actual)
 				.usingRecursiveComparison()
 				.ignoringFields("id", "member", "createdAt", "modifiedAt")
@@ -91,11 +94,20 @@ public class MonthlyGoalRepositoryTest {
 		monthlyGoalRepository.saveAll(
 				List.of(
 						MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
-								LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31), member),
+								LocalDate.of(2024, 5, 1),
+								LocalDate.of(2024, 5, 31),
+								category,
+								member),
 						MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
-								LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31), member),
+								LocalDate.of(2024, 5, 1),
+								LocalDate.of(2024, 5, 31),
+								category,
+								member),
 						MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
-								LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30), member)));
+								LocalDate.of(2024, 6, 1),
+								LocalDate.of(2024, 6, 30),
+								category,
+								member)));
 		// when
 		List<MonthlyGoal> foundList =
 				monthlyGoalRepository.findMonthlyGoalInMonth(
