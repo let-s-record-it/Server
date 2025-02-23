@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.Test;
 public class WeeklyGoalTest {
 
 	Member member = MemberFixture.DEFAULT.getMember();
+	ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 
 	@Test
 	@DisplayName("주 목표의 소유자를 검증할 때, 소유자라면 예외가 발생하지 않는다.")
@@ -27,7 +30,7 @@ public class WeeklyGoalTest {
 		member = mock(Member.class);
 		willReturn(true).given(member).equalsId(anyLong());
 
-		WeeklyGoal weeklyG = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		WeeklyGoal weeklyG = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
 
 		assertThatCode(
 						() -> {
@@ -43,7 +46,7 @@ public class WeeklyGoalTest {
 		member = mock(Member.class);
 		willReturn(false).given(member).equalsId(anyLong());
 
-		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
 
 		assertThatCode(
 						() -> {
@@ -56,16 +59,16 @@ public class WeeklyGoalTest {
 	@Test
 	@DisplayName("주 목표를 수정할 수 있다.")
 	void modify() {
-		WeeklyGoal expected = WeeklyGoalFixture.MODIFIED.getWithMember(member);
+		WeeklyGoal expected = WeeklyGoalFixture.MODIFIED.getWithMember(category, member);
 
-		WeeklyGoal modified = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		WeeklyGoal modified = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
 		modified.modify(
 				expected.getTitle(),
 				expected.getDescription(),
 				expected.getWeek(),
 				expected.getStartDate(),
 				expected.getEndDate(),
-				expected.getColorHex());
+				category);
 
 		assertThat(modified).usingRecursiveComparison().isEqualTo(expected);
 	}
@@ -74,9 +77,9 @@ public class WeeklyGoalTest {
 	@DisplayName("주 목표의 달성 상태를 변경할 수 있다.")
 	void changeAchieveStatusTrue() {
 
-		WeeklyGoal weeklyGoal1 = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		WeeklyGoal weeklyGoal1 = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
 		weeklyGoal1.changeAchieveStatus(true);
-		WeeklyGoal weeklyGoal2 = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		WeeklyGoal weeklyGoal2 = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
 		weeklyGoal2.changeAchieveStatus(false);
 
 		assertAll(
@@ -90,7 +93,7 @@ public class WeeklyGoalTest {
 	@DisplayName("주 목표를 삭제할 경우 deleted 플래그가 true로 변경된다.")
 	void remove() {
 
-		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(member);
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
 		weeklyGoal.remove();
 
 		assertThat(weeklyGoal.isDeleted()).isTrue();

@@ -16,8 +16,20 @@ public class JwtProvider {
 
 	private final Key secretKey;
 
+	private static final Long EXCHANGE_TOKEN_VALIDATION_SECOND = 60L * 1000;
 	private static final Long ACCESS_TOKEN_VALIDATION_SECOND = 60L * 60 * 24 * 1000;
 	private static final Long REFRESH_TOKEN_VALIDATION_SECOND = 60L * 60 * 24 * 14 * 1000;
+
+	public String generateExchangeToken(Long memberId) {
+		return buildToken(memberId)
+				.setExpiration(
+						Date.from(
+								Instant.now()
+										.plus(
+												EXCHANGE_TOKEN_VALIDATION_SECOND,
+												ChronoUnit.SECONDS)))
+				.compact();
+	}
 
 	public AuthorizationToken generateAuthorizationToken(Long memberId) {
 		return new AuthorizationToken(

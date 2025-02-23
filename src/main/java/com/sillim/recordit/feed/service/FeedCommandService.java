@@ -4,6 +4,7 @@ import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.dto.request.FeedModifyRequest;
 import com.sillim.recordit.feed.repository.FeedRepository;
+import com.sillim.recordit.gcp.service.ImageUploadService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.member.service.MemberQueryService;
@@ -20,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FeedCommandService {
 
 	private final FeedRepository feedRepository;
-	private final FeedImageUploadService feedImageUploadService;
+	private final ImageUploadService imageUploadService;
 	private final MemberQueryService memberQueryService;
 
 	public Long addFeed(FeedAddRequest request, List<MultipartFile> images, Long memberId)
@@ -29,7 +30,7 @@ public class FeedCommandService {
 				.save(
 						request.toFeed(
 								memberQueryService.findByMemberId(memberId),
-								feedImageUploadService.upload(images)))
+								imageUploadService.uploadImages(images)))
 				.getId();
 	}
 
@@ -45,7 +46,7 @@ public class FeedCommandService {
 				request.title(),
 				request.content(),
 				request.existingImageUrls(),
-				feedImageUploadService.upload(newImages));
+				imageUploadService.uploadImages(newImages));
 	}
 
 	public void removeFeed(Long feedId) {

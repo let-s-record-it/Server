@@ -13,8 +13,13 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
+import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.member.domain.Member;
@@ -43,18 +48,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class TaskCommandServiceTest {
 
 	@InjectMocks TaskCommandService taskCommandService;
-	@Mock CalendarService calendarService;
+	@Mock CalendarQueryService calendarQueryService;
 	@Mock TaskGroupService taskGroupService;
+	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
 	@Mock TaskRepository taskRepository;
 
+	private CalendarCategory calendarCategory;
+	private ScheduleCategory taskCategory;
 	private Calendar calendar;
-
 	private Member member;
 
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 	}
 
 	@Test
@@ -66,8 +75,8 @@ class TaskCommandServiceTest {
 						"회의록 작성",
 						"프로젝트 회의록 작성하기",
 						LocalDate.of(2024, 1, 1),
-						"ff40d974",
 						false,
+						1L,
 						null,
 						taskGroupRequest);
 		Long calendarId = 1L;
@@ -78,7 +87,7 @@ class TaskCommandServiceTest {
 
 		given(taskGroupService.addNonRepeatingTaskGroup(eq(taskGroupRequest), eq(memberId)))
 				.willReturn(taskGroup);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
 		taskCommandService.addTasks(request, calendarId, memberId);
 
@@ -95,8 +104,8 @@ class TaskCommandServiceTest {
 						"회의록 작성",
 						"프로젝트 회의록 작성하기",
 						LocalDate.of(2024, 1, 1),
-						"ff40d974",
 						true,
+						1L,
 						repetitionRequest,
 						taskGroupRequest);
 		Long calendarId = 1L;
@@ -110,7 +119,7 @@ class TaskCommandServiceTest {
 						taskGroupService.addRepeatingTaskGroup(
 								eq(taskGroupRequest), eq(repetitionRequest), eq(memberId)))
 				.willReturn(taskGroup);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
 		taskCommandService.addTasks(request, calendarId, memberId);
 
@@ -134,27 +143,28 @@ class TaskCommandServiceTest {
 						"(수정) 회의록 작성",
 						"(수정) 프로젝트 회의록 작성하기",
 						LocalDate.of(2024, 1, 10),
-						"ff40d974",
 						newCalendarId,
+						1L,
 						true,
 						repetitionRequest,
 						taskGroupRequest);
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
-		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willReturn(Optional.of(selectedTask));
 		willDoNothing().given(taskRepository).deleteAllByTaskGroupId(anyLong());
 
-		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
-		given(calendarService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
-		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member, calendarCategory));
+		//
+		//	given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
+		//		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
 		TaskRepetitionPattern newRepetitionPattern =
@@ -191,25 +201,25 @@ class TaskCommandServiceTest {
 						"(수정) 회의록 작성",
 						"(수정) 프로젝트 회의록 작성하기",
 						LocalDate.of(2024, 1, 10),
-						"ff40d974",
+						1L,
 						newCalendarId,
 						false,
 						null,
 						taskGroupRequest);
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
-		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willReturn(Optional.of(selectedTask));
 
-		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
-		given(calendarService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member, calendarCategory));
+		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
@@ -226,7 +236,6 @@ class TaskCommandServiceTest {
 					assertThat(selectedTask.getTitle()).isEqualTo(request.newTitle());
 					assertThat(selectedTask.getDescription()).isEqualTo(request.newDescription());
 					assertThat(selectedTask.getDate()).isEqualTo(request.date());
-					assertThat(selectedTask.getColorHex()).isEqualTo(request.newColorHex());
 					assertThat(selectedTask.getCalendar()).isEqualTo(newCalendar);
 					assertThat(selectedTask.getTaskGroup().getMonthlyGoal()).isEmpty();
 					assertThat(selectedTask.getTaskGroup().getWeeklyGoal()).isEmpty();
@@ -250,25 +259,25 @@ class TaskCommandServiceTest {
 						"(수정) 회의록 작성",
 						"(수정) 프로젝트 회의록 작성하기",
 						LocalDate.of(2024, 1, 10),
-						"ff40d974",
+						1L,
 						newCalendarId,
 						true,
 						repetitionRequest,
 						taskGroupRequest);
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
-		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willReturn(Optional.of(selectedTask));
 
-		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member));
-		given(calendarService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member, calendarCategory));
+		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
@@ -296,13 +305,13 @@ class TaskCommandServiceTest {
 		Long taskGroupId = 4L;
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
-		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willReturn(Optional.of(selectedTask));
 
@@ -320,13 +329,13 @@ class TaskCommandServiceTest {
 		Long taskGroupId = 4L;
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = spy(new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class)));
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
-		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willReturn(Optional.of(selectedTask));
 
@@ -345,11 +354,11 @@ class TaskCommandServiceTest {
 		Long memberId = 3L;
 
 		calendar = spy(calendar);
-		given(calendarService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup taskGroup = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
-		Task selectedTask = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willReturn(Optional.of(selectedTask));
 

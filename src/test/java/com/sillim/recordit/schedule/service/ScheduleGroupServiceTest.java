@@ -21,12 +21,12 @@ class ScheduleGroupServiceTest {
 
 	@Test
 	@DisplayName("스케줄 그룹을 추가할 수 있다.")
-	void addScheduleGroup() {
+	void newScheduleGroup() {
 		ScheduleGroup expectScheduleGroup = new ScheduleGroup(false);
 		given(scheduleGroupRepository.save(any(ScheduleGroup.class)))
 				.willReturn(expectScheduleGroup);
 
-		ScheduleGroup scheduleGroup = scheduleGroupService.addScheduleGroup(false);
+		ScheduleGroup scheduleGroup = scheduleGroupService.newScheduleGroup(false);
 
 		assertThat(scheduleGroup.isRepeated()).isEqualTo(false);
 	}

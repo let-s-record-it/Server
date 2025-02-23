@@ -17,6 +17,7 @@ public record FeedDetailsResponse(
 		boolean isScraped,
 		String memberName,
 		String memberJob,
+		String memberProfileImageUrl,
 		boolean isOwner) {
 
 	public static FeedDetailsResponse of(
@@ -32,6 +33,7 @@ public record FeedDetailsResponse(
 				.isScraped(isScraped)
 				.memberName(feed.getMember().getName())
 				.memberJob(feed.getMember().getJob())
+				.memberProfileImageUrl(feed.getMember().getProfileImageUrl())
 				.isOwner(feed.isOwner(memberId))
 				.build();
 	}

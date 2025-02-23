@@ -36,6 +36,22 @@ public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
+	public Slice<FeedComment> findByMemberIdOrderByCreatedAtAsc(Pageable pageable, Long memberId) {
+		List<FeedComment> feedComments =
+				selectFrom(feedComment)
+						.leftJoin(feedComment.member)
+						.fetchJoin()
+						.where(feedComment.deleted.isFalse())
+						.where(feedComment.member.id.eq(memberId))
+						.orderBy(feedComment.createdAt.asc())
+						.offset(pageable.getOffset())
+						.limit(pageable.getPageSize() + 1)
+						.fetch();
+
+		return new SliceImpl<>(feedComments, pageable, hasNext(pageable, feedComments));
+	}
+
+	@Override
 	public Optional<FeedComment> findByIdWithFetch(Long commentId) {
 		return Optional.ofNullable(
 				selectFrom(feedComment)

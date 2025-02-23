@@ -19,7 +19,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.member.domain.Member;
@@ -56,12 +60,16 @@ public class TaskControllerTest extends RestDocsTest {
 	@MockBean TaskQueryService taskQueryService;
 
 	private Member member;
+	private CalendarCategory calendarCategory;
+	private ScheduleCategory taskCategory;
 	private Calendar calendar;
 
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 	}
 
 	@Test
@@ -85,8 +93,8 @@ public class TaskControllerTest extends RestDocsTest {
 						"회의록 작성",
 						"프로젝트 회의록 작성하기",
 						LocalDate.of(2024, 1, 1),
-						"ff40d974",
 						true,
+						1L,
 						repetitionRequest,
 						taskGroupRequest);
 
@@ -122,7 +130,10 @@ public class TaskControllerTest extends RestDocsTest {
 									Task task =
 											spy(
 													TaskFixture.DEFAULT.getWithDate(
-															date, calendar, taskGroup));
+															date,
+															taskCategory,
+															calendar,
+															taskGroup));
 									given(task.getId()).willReturn(id);
 									return task;
 								})
@@ -164,7 +175,7 @@ public class TaskControllerTest extends RestDocsTest {
 		given(calendar.getId()).willReturn(calendarId);
 		TaskGroup taskGroup = new TaskGroup(null, null);
 		Long taskId = 2L;
-		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
+		Task task = spy(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
 
 		TaskDetailsResponse response = TaskDetailsResponse.from(task);
@@ -197,7 +208,7 @@ public class TaskControllerTest extends RestDocsTest {
 		given(calendar.getId()).willReturn(calendarId);
 		TaskGroup taskGroup = new TaskGroup(null, null);
 		Long taskId = 2L;
-		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
+		Task task = spy(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
 		TaskRepetitionPattern repetition = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
 
@@ -230,11 +241,12 @@ public class TaskControllerTest extends RestDocsTest {
 		calendar = spy(calendar);
 		given(calendar.getId()).willReturn(calendarId);
 		Long monthlyGoalId = 2L;
-		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		MonthlyGoal monthlyGoal =
+				spy(MonthlyGoalFixture.DEFAULT.getWithMember(taskCategory, member));
 		given(monthlyGoal.getId()).willReturn(monthlyGoalId);
 		TaskGroup taskGroup = new TaskGroup(monthlyGoal, null);
 		Long taskId = 3L;
-		Task task = spy(TaskFixture.DEFAULT.get(calendar, taskGroup));
+		Task task = spy(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
 		given(task.getId()).willReturn(taskId);
 
 		TaskDetailsResponse response = TaskDetailsResponse.from(task);
@@ -282,7 +294,7 @@ public class TaskControllerTest extends RestDocsTest {
 						"(수정) 회의록 작성",
 						"(수정) 프로젝트 회의록 작성하기",
 						LocalDate.of(2024, 7, 28),
-						"ff40d974",
+						1L,
 						3L,
 						true,
 						repetitionRequest,
@@ -323,7 +335,7 @@ public class TaskControllerTest extends RestDocsTest {
 						"(수정) 회의록 작성",
 						"(수정) 프로젝트 회의록 작성하기",
 						LocalDate.of(2024, 7, 28),
-						"ff40d974",
+						1L,
 						3L,
 						false,
 						null,
@@ -375,7 +387,7 @@ public class TaskControllerTest extends RestDocsTest {
 						"(수정) 회의록 작성",
 						"(수정) 프로젝트 회의록 작성하기",
 						LocalDate.of(2024, 7, 28),
-						"ff40d974",
+						1L,
 						3L,
 						true,
 						repetitionRequest,

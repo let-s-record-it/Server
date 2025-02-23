@@ -65,4 +65,31 @@ class CustomFeedCommentRepositoryTest {
 					assertThat(foundFeedComments2.isLast()).isTrue();
 				});
 	}
+
+	@Test
+	@DisplayName("특정 멤버의 피드 댓글을 pagination해서 created 오름차순으로 조회한다.")
+	void findPaginatedByMemberIdOrderByCreatedDesc() {
+		List<FeedComment> feedComments =
+				IntStream.range(0, 10)
+						.mapToObj(i -> em.persist(new FeedComment("content", feed, member)))
+						.toList();
+
+		Slice<FeedComment> foundFeedComments1 =
+				customFeedCommentRepository.findByMemberIdOrderByCreatedAtAsc(
+						PageRequest.of(0, 5), member.getId());
+
+		Slice<FeedComment> foundFeedComments2 =
+				customFeedCommentRepository.findByMemberIdOrderByCreatedAtAsc(
+						PageRequest.of(3, 3), member.getId());
+
+		assertAll(
+				() -> {
+					assertThat(foundFeedComments1).hasSize(5);
+					assertThat(foundFeedComments1.isLast()).isFalse();
+					assertThat(foundFeedComments1.getContent().get(0).getCreatedAt())
+							.isBefore(foundFeedComments2.getContent().get(0).getCreatedAt());
+					assertThat(foundFeedComments2).hasSize(1);
+					assertThat(foundFeedComments2.isLast()).isTrue();
+				});
+	}
 }

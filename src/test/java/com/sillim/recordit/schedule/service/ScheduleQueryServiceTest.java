@@ -9,7 +9,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.service.CalendarService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
+import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
@@ -34,7 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ScheduleQueryServiceTest {
 
 	@Mock ScheduleRepository scheduleRepository;
-	@Mock CalendarService calendarService;
+	@Mock CalendarQueryService calendarQueryService;
 	@Mock RepetitionPatternService repetitionPatternService;
 	@InjectMocks ScheduleQueryService scheduleQueryService;
 
@@ -44,6 +45,7 @@ class ScheduleQueryServiceTest {
 		long memberId = 1L;
 		Calendar calendar = mock(Calendar.class);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		ScheduleCategory scheduleCategory = mock(ScheduleCategory.class);
 		Schedule expectedSchedule =
 				Schedule.builder()
 						.title("title")
@@ -51,12 +53,12 @@ class ScheduleQueryServiceTest {
 						.isAllDay(false)
 						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
-						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
+						.category(scheduleCategory)
 						.scheduleGroup(scheduleGroup)
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
@@ -76,6 +78,7 @@ class ScheduleQueryServiceTest {
 	void searchRepeatedScheduleByScheduleId() {
 		long memberId = 1L;
 		Calendar calendar = mock(Calendar.class);
+		ScheduleCategory scheduleCategory = mock(ScheduleCategory.class);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
 		Schedule expectedSchedule =
 				Schedule.builder()
@@ -84,12 +87,12 @@ class ScheduleQueryServiceTest {
 						.isAllDay(false)
 						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
-						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
+						.category(scheduleCategory)
 						.scheduleGroup(scheduleGroup)
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
@@ -114,6 +117,7 @@ class ScheduleQueryServiceTest {
 		long memberId = 1L;
 		Calendar calendar = mock(Calendar.class);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		ScheduleCategory scheduleCategory = mock(ScheduleCategory.class);
 		Schedule expectedSchedule =
 				Schedule.builder()
 						.title("title")
@@ -121,12 +125,12 @@ class ScheduleQueryServiceTest {
 						.isAllDay(false)
 						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
-						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
+						.category(scheduleCategory)
 						.scheduleGroup(scheduleGroup)
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
@@ -145,6 +149,7 @@ class ScheduleQueryServiceTest {
 	void searchScheduleInMonth() {
 		long memberId = 1L;
 		Calendar calendar = mock(Calendar.class);
+		ScheduleCategory scheduleCategory = mock(ScheduleCategory.class);
 		Schedule expectedSchedule =
 				Schedule.builder()
 						.title("title")
@@ -152,17 +157,17 @@ class ScheduleQueryServiceTest {
 						.isAllDay(false)
 						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
-						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
+						.category(scheduleCategory)
 						.scheduleGroup(new ScheduleGroup(false))
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(calendarService.searchByCalendarId(anyLong())).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(anyLong())).willReturn(calendar);
 		given(scheduleRepository.findScheduleInMonth(anyLong(), eq(2024), eq(1)))
 				.willReturn(List.of(expectedSchedule));
 
@@ -178,6 +183,7 @@ class ScheduleQueryServiceTest {
 	void searchScheduleInDay() {
 		long memberId = 1L;
 		Calendar calendar = mock(Calendar.class);
+		ScheduleCategory scheduleCategory = mock(ScheduleCategory.class);
 		Schedule expectedSchedule =
 				Schedule.builder()
 						.title("title")
@@ -185,17 +191,17 @@ class ScheduleQueryServiceTest {
 						.isAllDay(false)
 						.startDateTime(LocalDateTime.of(2024, 1, 1, 0, 0))
 						.endDateTime(LocalDateTime.of(2024, 2, 1, 0, 0))
-						.colorHex("aaffbb")
 						.setLocation(true)
 						.place("서울역")
 						.latitude(36.0)
 						.longitude(127.0)
 						.setAlarm(true)
+						.category(scheduleCategory)
 						.scheduleGroup(new ScheduleGroup(false))
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(calendarService.searchByCalendarId(anyLong())).willReturn(calendar);
+		given(calendarQueryService.searchByCalendarId(anyLong())).willReturn(calendar);
 		given(scheduleRepository.findScheduleInDay(anyLong(), eq(LocalDate.of(2024, 1, 15))))
 				.willReturn(List.of(expectedSchedule));
 

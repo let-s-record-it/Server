@@ -1,7 +1,7 @@
 package com.sillim.recordit.calendar.domain;
 
-import com.sillim.recordit.calendar.domain.vo.CalendarColorHex;
 import com.sillim.recordit.calendar.domain.vo.CalendarTitle;
+import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Calendar {
+public class Calendar extends BaseTime {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,25 +23,27 @@ public class Calendar {
 
 	@Embedded private CalendarTitle title;
 
-	@Embedded private CalendarColorHex colorHex;
+	@Column(nullable = false)
+	private boolean deleted;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "calendar_category_id")
+	private CalendarCategory category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
 	@Builder
-	public Calendar(String title, String colorHex, Member member) {
+	public Calendar(String title, Member member, CalendarCategory category) {
 		this.title = new CalendarTitle(title);
-		this.colorHex = new CalendarColorHex(colorHex);
+		this.deleted = false;
 		this.member = member;
+		this.category = category;
 	}
 
 	public String getTitle() {
 		return title.getTitle();
-	}
-
-	public String getColorHex() {
-		return colorHex.getColorHex();
 	}
 
 	public boolean isOwnedBy(Long memberId) {
@@ -52,5 +54,18 @@ public class Calendar {
 		if (!isOwnedBy(memberId)) {
 			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
 		}
+	}
+
+	public void modify(String title, CalendarCategory category) {
+		this.title = new CalendarTitle(title);
+		this.category = category;
+	}
+
+	public void delete() {
+		this.deleted = true;
+	}
+
+	public String getColorHex() {
+		return category.getColorHex();
 	}
 }

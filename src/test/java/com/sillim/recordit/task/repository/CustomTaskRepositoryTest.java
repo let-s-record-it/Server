@@ -3,7 +3,11 @@ package com.sillim.recordit.task.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.Task;
@@ -29,6 +33,8 @@ public class CustomTaskRepositoryTest {
 	@Autowired TestEntityManager em;
 
 	private Member member;
+	private CalendarCategory calendarCategory;
+	private ScheduleCategory taskCategory;
 	private Calendar calendar;
 	private TaskGroup taskGroup;
 
@@ -36,7 +42,9 @@ public class CustomTaskRepositoryTest {
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
 		em.persist(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		taskCategory = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 		em.persist(calendar);
 		taskGroup = new TaskGroup(null, null);
 		em.persist(taskGroup);
@@ -46,7 +54,7 @@ public class CustomTaskRepositoryTest {
 	@DisplayName("해당 캘린더에 속하는 특정 id의 할 일을 조회한다.")
 	void findByIdAndCalendarId() {
 
-		Task saved = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		Task saved = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
 		em.persist(saved);
 
 		Optional<Task> found =
@@ -62,8 +70,8 @@ public class CustomTaskRepositoryTest {
 
 		List<Task> saved =
 				List.of(
-						TaskFixture.DEFAULT.get(calendar, taskGroup),
-						TaskFixture.DEFAULT.get(calendar, taskGroup));
+						TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
 		saved.forEach(em::persist);
 
 		taskRepository.deleteAllByTaskGroupId(taskGroup.getId());
@@ -79,11 +87,11 @@ public class CustomTaskRepositoryTest {
 		List<Task> saved =
 				List.of(
 						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 8, 12), calendar, taskGroup),
+								LocalDate.of(2024, 8, 12), taskCategory, calendar, taskGroup),
 						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 8, 13), calendar, taskGroup),
+								LocalDate.of(2024, 8, 13), taskCategory, calendar, taskGroup),
 						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 8, 14), calendar, taskGroup));
+								LocalDate.of(2024, 8, 14), taskCategory, calendar, taskGroup));
 		saved.forEach(em::persist);
 
 		taskRepository.deleteAllByTaskGroupIdAndDateAfterOrEqual(

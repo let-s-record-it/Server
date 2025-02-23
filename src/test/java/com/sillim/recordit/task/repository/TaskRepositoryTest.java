@@ -4,7 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.Task;
@@ -28,6 +32,8 @@ class TaskRepositoryTest {
 	@Autowired TestEntityManager em;
 
 	private Member member;
+	private CalendarCategory calendarCategory;
+	private ScheduleCategory taskCategory;
 	private Calendar calendar;
 	private TaskGroup taskGroup;
 
@@ -35,7 +41,9 @@ class TaskRepositoryTest {
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
 		em.persist(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		taskCategory = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 		em.persist(calendar);
 		taskGroup = new TaskGroup(null, null);
 		em.persist(taskGroup);
@@ -44,8 +52,9 @@ class TaskRepositoryTest {
 	@Test
 	@DisplayName("새로운 할 일 레코드를 저장한다.")
 	void saveTest() {
-		final Task expected = TaskFixture.DEFAULT.get(calendar, taskGroup);
-		Task saved = taskRepository.save(TaskFixture.DEFAULT.get(calendar, taskGroup));
+		final Task expected = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
+		Task saved =
+				taskRepository.save(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
 
 		assertThat(saved)
 				.usingRecursiveComparison()
@@ -59,13 +68,13 @@ class TaskRepositoryTest {
 		final List<Task> saved =
 				List.of(
 						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 6, 11), calendar, taskGroup),
+								LocalDate.of(2024, 6, 11), taskCategory, calendar, taskGroup),
 						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 6, 12), calendar, taskGroup),
+								LocalDate.of(2024, 6, 12), taskCategory, calendar, taskGroup),
 						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 6, 12), calendar, taskGroup),
+								LocalDate.of(2024, 6, 12), taskCategory, calendar, taskGroup),
 						TaskFixture.DEFAULT.getWithDate(
-								LocalDate.of(2024, 6, 13), calendar, taskGroup));
+								LocalDate.of(2024, 6, 13), taskCategory, calendar, taskGroup));
 		taskRepository.saveAll(saved);
 
 		List<Task> found =
@@ -81,9 +90,9 @@ class TaskRepositoryTest {
 	void findAllByCalendarIdAndTaskGroupId() {
 		List<Task> expected =
 				List.of(
-						TaskFixture.DEFAULT.get(calendar, taskGroup),
-						TaskFixture.DEFAULT.get(calendar, taskGroup),
-						TaskFixture.DEFAULT.get(calendar, taskGroup));
+						TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
 		taskRepository.saveAll(expected);
 
 		List<Task> found = taskRepository.findAllByTaskGroupId(calendar.getId(), taskGroup.getId());

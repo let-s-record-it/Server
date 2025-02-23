@@ -1,9 +1,9 @@
 package com.sillim.recordit.goal.domain;
 
+import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
-import com.sillim.recordit.goal.domain.vo.GoalColorHex;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
 import com.sillim.recordit.goal.domain.vo.MonthlyGoalPeriod;
@@ -42,7 +42,9 @@ public class MonthlyGoal extends BaseTime {
 
 	@Embedded private MonthlyGoalPeriod period;
 
-	@Embedded private GoalColorHex colorHex;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "monthly_goal_category")
+	private ScheduleCategory category;
 
 	@Column(nullable = false)
 	@ColumnDefault("false")
@@ -62,12 +64,12 @@ public class MonthlyGoal extends BaseTime {
 			final String description,
 			final LocalDate startDate,
 			final LocalDate endDate,
-			final String colorHex,
+			final ScheduleCategory category,
 			final Member member) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
 		this.period = new MonthlyGoalPeriod(startDate, endDate);
-		this.colorHex = new GoalColorHex(colorHex);
+		this.category = category;
 		this.achieved = false;
 		this.member = member;
 		this.deleted = false;
@@ -78,11 +80,11 @@ public class MonthlyGoal extends BaseTime {
 			final String newDescription,
 			final LocalDate newStartDate,
 			final LocalDate newEndDate,
-			final String newColorHex) {
+			final ScheduleCategory category) {
 		this.title = new GoalTitle(newTitle);
 		this.description = new GoalDescription(newDescription);
 		this.period = new MonthlyGoalPeriod(newStartDate, newEndDate);
-		this.colorHex = new GoalColorHex(newColorHex);
+		this.category = category;
 	}
 
 	public void changeAchieveStatus(final Boolean status) {
@@ -116,7 +118,7 @@ public class MonthlyGoal extends BaseTime {
 	}
 
 	public String getColorHex() {
-		return colorHex.getColorHex();
+		return category.getColorHex();
 	}
 
 	private boolean isOwnedBy(Long memberId) {

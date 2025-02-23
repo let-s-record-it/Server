@@ -4,7 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.fixture.TaskFixture;
@@ -15,26 +19,30 @@ import org.junit.jupiter.api.Test;
 class TaskTest {
 
 	private Member member;
+	private CalendarCategory calendarCategory;
+	private ScheduleCategory taskCategory;
 	private Calendar calendar;
 	private TaskGroup taskGroup;
 
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendar = CalendarFixture.DEFAULT.getCalendar(member);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 		taskGroup = new TaskGroup(null, null);
 	}
 
 	@Test
 	@DisplayName("할 일을 생성할 수 있다.")
 	void createTask() {
-		Task expected = TaskFixture.DEFAULT.get(calendar, taskGroup);
+		Task expected = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
 		Task task =
 				Task.builder()
 						.title(expected.getTitle())
 						.description(expected.getDescription())
 						.date(expected.getDate())
-						.colorHex(expected.getColorHex())
+						.category(taskCategory)
 						.calendar(calendar)
 						.taskGroup(taskGroup)
 						.build();

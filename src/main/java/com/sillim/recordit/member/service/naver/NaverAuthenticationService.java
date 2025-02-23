@@ -30,6 +30,7 @@ public class NaverAuthenticationService implements AuthenticationService {
 				.oauthAccount(naverUserInfo.response().id())
 				.oAuthProvider(OAuthProvider.NAVER)
 				.name(naverUserInfo.response().nickname())
+				.profileImageUrl(naverUserInfo.response().profileImage())
 				.build();
 	}
 }

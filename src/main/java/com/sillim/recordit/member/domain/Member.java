@@ -38,6 +38,9 @@ public class Member extends BaseTime {
 	private String job;
 
 	@Column(nullable = false)
+	private String profileImageUrl;
+
+	@Column(nullable = false)
 	private Boolean deleted;
 
 	@Enumerated(EnumType.STRING)
@@ -46,19 +49,26 @@ public class Member extends BaseTime {
 
 	@Builder
 	public Member(
-			Auth auth, String name, String job, Boolean deleted, List<MemberRole> memberRole) {
+			Auth auth,
+			String name,
+			String job,
+			String profileImageUrl,
+			Boolean deleted,
+			List<MemberRole> memberRole) {
 		this.auth = auth;
 		this.name = name;
 		this.job = job;
+		this.profileImageUrl = profileImageUrl;
 		this.deleted = deleted;
 		this.memberRole = memberRole;
 	}
 
-	public static Member createNoJobMember(Auth auth, String name) {
+	public static Member createNoJobMember(Auth auth, String name, String profileImageUrl) {
 		return Member.builder()
 				.auth(auth)
 				.name(name)
 				.job("")
+				.profileImageUrl(profileImageUrl)
 				.deleted(false)
 				.memberRole(List.of(MemberRole.ROLE_USER))
 				.build();
@@ -70,5 +80,14 @@ public class Member extends BaseTime {
 
 	public boolean equalsId(Long id) {
 		return this.id.equals(id);
+	}
+
+	public void modifyInfo(String name, String job) {
+		this.name = name;
+		this.job = job;
+	}
+
+	public void modifyProfileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
 	}
 }

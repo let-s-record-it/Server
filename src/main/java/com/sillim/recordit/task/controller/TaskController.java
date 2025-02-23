@@ -54,6 +54,20 @@ public class TaskController {
 						.toList());
 	}
 
+	@GetMapping("/month")
+	public ResponseEntity<List<TaskResponse>> getTaskListInMonth(
+			@PathVariable Long calendarId,
+			@RequestParam Integer year,
+			@RequestParam Integer month,
+			@CurrentMember Member member) {
+		return ResponseEntity.ok(
+				taskQueryService
+						.searchTasksInMonth(calendarId, member.getId(), year, month)
+						.stream()
+						.map(TaskResponse::from)
+						.toList());
+	}
+
 	@GetMapping("/{taskId}")
 	public ResponseEntity<TaskDetailsResponse> getTaskDetails(
 			@PathVariable Long calendarId,

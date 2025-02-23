@@ -1,6 +1,6 @@
 package com.sillim.recordit.goal.dto.request;
 
-import com.sillim.recordit.global.validation.common.ColorHexValid;
+import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.validation.constraints.NotBlank;
@@ -13,16 +13,16 @@ public record MonthlyGoalUpdateRequest(
 		@Length(max = 500) String description,
 		@NotNull LocalDate startDate,
 		@NotNull LocalDate endDate,
-		@ColorHexValid String colorHex) {
+		@NotNull Long categoryId) {
 
-	public MonthlyGoal toEntity(final Member member) {
+	public MonthlyGoal toEntity(final ScheduleCategory category, final Member member) {
 
 		return MonthlyGoal.builder()
 				.title(title)
 				.description(description)
 				.startDate(startDate)
 				.endDate(endDate)
-				.colorHex(colorHex)
+				.category(category)
 				.member(member)
 				.build();
 	}
