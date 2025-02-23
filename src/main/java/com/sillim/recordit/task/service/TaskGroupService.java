@@ -6,6 +6,7 @@ import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.dto.RelatedGoals;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
+import com.sillim.recordit.goal.service.WeeklyGoalQueryService;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPatternFactory;
 import com.sillim.recordit.task.dto.request.TaskGroupUpdateRequest;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskGroupService {
 
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
-	// TODO: WeeklyGoal 기능 구현 후 추가 필요
+	private final WeeklyGoalQueryService weeklyGoalQueryService;
 
 	private final TaskGroupRepository taskGroupRepository;
 
@@ -137,7 +138,8 @@ public class TaskGroupService {
 			return RelatedGoals.empty();
 		}
 		if (monthlyGoalId == null) {
-			WeeklyGoal weeklyGoal = null;
+			WeeklyGoal weeklyGoal =
+					weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
 			return RelatedGoals.from(weeklyGoal);
 		}
 		if (weeklyGoalId == null) {
@@ -147,7 +149,8 @@ public class TaskGroupService {
 		}
 		MonthlyGoal monthlyGoal =
 				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
-		WeeklyGoal weeklyGoal = null;
+		WeeklyGoal weeklyGoal =
+				weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
 		return RelatedGoals.of(monthlyGoal, weeklyGoal);
 	}
 }

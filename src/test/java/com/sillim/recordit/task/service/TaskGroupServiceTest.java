@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.service.MonthlyGoalQueryService;
+import com.sillim.recordit.goal.service.WeeklyGoalQueryService;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.domain.TaskRepetitionType;
 import com.sillim.recordit.task.domain.repetition.TaskRepetitionPattern;
@@ -34,6 +35,7 @@ class TaskGroupServiceTest {
 	@InjectMocks TaskGroupService taskGroupService;
 	@Mock TaskGroupRepository taskGroupRepository;
 	@Mock MonthlyGoalQueryService monthlyGoalQueryService;
+	@Mock WeeklyGoalQueryService weeklyGoalQueryService;
 
 	// TODO: WeeklyGoal 기능 구현 후 테스트 추가 필요
 

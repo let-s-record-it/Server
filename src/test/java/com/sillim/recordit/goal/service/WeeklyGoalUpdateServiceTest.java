@@ -1,6 +1,7 @@
 package com.sillim.recordit.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,9 +13,12 @@ import static org.mockito.Mockito.times;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.goal.InvalidWeeklyGoalException;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.dto.request.WeeklyGoalUpdateRequest;
+import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.fixture.WeeklyGoalFixture;
 import com.sillim.recordit.goal.repository.WeeklyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
@@ -185,13 +189,13 @@ public class WeeklyGoalUpdateServiceTest {
 	@DisplayName("id에 해당하는 주 목표의 달성 상태를 변경한다.")
 	void changeAchieveStatus() {
 		Long memberId = 1L;
-		Long monthlyGoalId = 2L;
+		Long weeklyGoalId = 2L;
 		Boolean status = true;
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId), eq(memberId)))
 				.willReturn(weeklyGoal);
 
-		weeklyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
+		weeklyGoalUpdateService.changeAchieveStatus(weeklyGoalId, status, memberId);
 
 		assertThat(weeklyGoal.isAchieved()).isTrue();
 	}
@@ -200,13 +204,68 @@ public class WeeklyGoalUpdateServiceTest {
 	@DisplayName("id에 해당하는 주 목표를 삭제한다.")
 	void removeTest() {
 		Long memberId = 1L;
-		Long monthlyGoalId = 2L;
+		Long weeklyGoalId = 2L;
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId), eq(memberId)))
 				.willReturn(weeklyGoal);
 
-		weeklyGoalUpdateService.remove(monthlyGoalId, memberId);
+		weeklyGoalUpdateService.remove(weeklyGoalId, memberId);
 
 		assertThat(weeklyGoal.isDeleted()).isTrue();
+	}
+
+	@Test
+	@DisplayName("id에 해당하는 주 목표를 월 목표와 연결한다.")
+	void linkRelatedMonthlyGoal() {
+		Long memberId = 1L;
+		Long weeklyGoalId = 2L;
+		Long relatedGoalId = 3L;
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId), eq(memberId)))
+				.willReturn(weeklyGoal);
+		MonthlyGoal relatedMonthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, member);
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(relatedGoalId), eq(memberId)))
+				.willReturn(relatedMonthlyGoal);
+
+		weeklyGoalUpdateService.linkRelatedMonthlyGoal(weeklyGoalId, relatedGoalId, memberId);
+
+		assertThat(weeklyGoal.getRelatedMonthlyGoal()).isNotEmpty();
+		assertThat(weeklyGoal.getRelatedMonthlyGoal().get())
+				.usingRecursiveComparison()
+				.isEqualTo(relatedMonthlyGoal);
+	}
+
+	@Test
+	@DisplayName("id에 해당하는 주 목표를 월 목표와 연결한다.")
+	void unlinkRelatedMonthlyGoal() {
+		Long memberId = 1L;
+		Long weeklyGoalId = 2L;
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
+		weeklyGoal.linkRelatedMonthlyGoal(
+				MonthlyGoalFixture.DEFAULT.getWithMember(category, member));
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId), eq(memberId)))
+				.willReturn(weeklyGoal);
+
+		weeklyGoalUpdateService.unlinkRelatedMonthlyGoal(weeklyGoalId, memberId);
+
+		assertThat(weeklyGoal.getRelatedMonthlyGoal()).isEmpty();
+	}
+
+	@Test
+	@DisplayName("주 목표의 연관 목표가 없는 상태에서 연결 해제를 시도할 경우, InvalidWeeklyGoalException이 발생한다.")
+	void unlinkRelatedMonthlyGoalThrowsInvalidWeeklyGoalExceptionIfRelatedGoalIsNotExists() {
+		Long memberId = 1L;
+		Long weeklyGoalId = 2L;
+		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId), eq(memberId)))
+				.willReturn(weeklyGoal);
+
+		assertThatCode(
+						() -> {
+							weeklyGoalUpdateService.unlinkRelatedMonthlyGoal(
+									weeklyGoalId, memberId);
+						})
+				.isInstanceOf(InvalidWeeklyGoalException.class)
+				.hasMessage(ErrorCode.RELATED_GOAL_NOT_FOUND.getDescription());
 	}
 }
