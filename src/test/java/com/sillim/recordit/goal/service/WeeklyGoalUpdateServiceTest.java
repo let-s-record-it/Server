@@ -10,6 +10,8 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.goal.InvalidWeeklyGoalException;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
