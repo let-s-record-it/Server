@@ -1,7 +1,5 @@
 package com.sillim.recordit.goal.service;
 
-import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.goal.InvalidWeeklyGoalException;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;

@@ -15,6 +15,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
@@ -40,10 +42,12 @@ public class GoalControllerTest extends RestDocsTest {
 	@MockBean WeeklyGoalQueryService weeklyGoalQueryService;
 
 	private Member member;
+	private ScheduleCategory category;
 
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
+		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 	}
 
 	@Test
@@ -54,7 +58,9 @@ public class GoalControllerTest extends RestDocsTest {
 						.mapToObj(
 								(id) -> {
 									MonthlyGoal goal =
-											spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+											spy(
+													MonthlyGoalFixture.DEFAULT.getWithMember(
+															category, member));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
@@ -67,7 +73,9 @@ public class GoalControllerTest extends RestDocsTest {
 						.mapToObj(
 								(id) -> {
 									WeeklyGoal goal =
-											spy(WeeklyGoalFixture.DEFAULT.getWithMember(member));
+											spy(
+													WeeklyGoalFixture.DEFAULT.getWithMember(
+															category, member));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
