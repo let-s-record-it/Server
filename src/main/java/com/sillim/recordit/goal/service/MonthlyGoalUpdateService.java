@@ -1,5 +1,7 @@
 package com.sillim.recordit.goal.service;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
@@ -18,15 +20,20 @@ public class MonthlyGoalUpdateService {
 
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
 	private final MemberQueryService memberQueryService;
+	private final CalendarQueryService calendarQueryService;
 	private final MonthlyGoalRepository monthlyGoalRepository;
 	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
 
-	public Long add(final MonthlyGoalUpdateRequest request, final Long memberId) {
+	public Long add(
+			final MonthlyGoalUpdateRequest request, final Long memberId, final Long calendarId) {
 		ScheduleCategory category =
 				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
 		Member member = memberQueryService.findByMemberId(memberId);
 
-		MonthlyGoal monthlyGoal = monthlyGoalRepository.save(request.toEntity(category, member));
+		MonthlyGoal monthlyGoal =
+				monthlyGoalRepository.save(request.toEntity(category, member, calendar));
 		return monthlyGoal.getId();
 	}
 
@@ -36,12 +43,15 @@ public class MonthlyGoalUpdateService {
 				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
 		ScheduleCategory category =
 				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
+		calendar.validateAuthenticatedMember(memberId);
 		monthlyGoal.modify(
 				request.title(),
 				request.description(),
 				request.startDate(),
 				request.endDate(),
-				category);
+				category,
+				calendar);
 	}
 
 	public void changeAchieveStatus(

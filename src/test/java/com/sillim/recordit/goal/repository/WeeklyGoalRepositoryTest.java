@@ -2,6 +2,10 @@ package com.sillim.recordit.goal.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
@@ -29,22 +33,27 @@ public class WeeklyGoalRepositoryTest {
 
 	private Member member;
 	private ScheduleCategory category;
+	private CalendarCategory calendarCategory;
+	private Calendar calendar;
 
 	@BeforeEach
 	void beforeEach() {
 		member = em.persist(MemberFixture.DEFAULT.getMember());
 		category = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
+		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member, calendarCategory));
 	}
 
 	@Test
 	@DisplayName("새로운 주 목표 레코드를 저장한다.")
 	void save() {
 		// given
-		final WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
+		final WeeklyGoal expected =
+				WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
 		// when
 		WeeklyGoal saved =
 				weeklyGoalRepository.save(
-						WeeklyGoalFixture.DEFAULT.getWithMember(category, member));
+						WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
 
 		// then
 		// 자동 생성 필드가 null이 아닌지 검증
@@ -72,23 +81,26 @@ public class WeeklyGoalRepositoryTest {
 								LocalDate.of(2024, 8, 4),
 								LocalDate.of(2024, 8, 10),
 								category,
-								member),
+								member,
+								calendar),
 						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
 								5,
 								LocalDate.of(2024, 8, 25),
 								LocalDate.of(2024, 8, 31),
 								category,
-								member),
+								member,
+								calendar),
 						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
 								1,
 								LocalDate.of(2024, 9, 1),
 								LocalDate.of(2024, 9, 7),
 								category,
-								member)));
+								member,
+								calendar)));
 		// when
 		List<WeeklyGoal> foundList =
 				weeklyGoalRepository.findWeeklyGoalInMonth(
-						expectedYear, expectedMonth, member.getId());
+						expectedYear, expectedMonth, calendar.getId());
 		// then
 		assertThat(foundList).hasSize(2);
 		for (WeeklyGoal found : foundList) {
@@ -115,17 +127,19 @@ public class WeeklyGoalRepositoryTest {
 								LocalDate.of(2024, 7, 28),
 								LocalDate.of(2024, 8, 3),
 								category,
-								member),
+								member,
+								calendar),
 						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
 								1,
 								LocalDate.of(2024, 9, 1),
 								LocalDate.of(2024, 9, 7),
 								category,
-								member)));
+								member,
+								calendar)));
 		// when
 		List<WeeklyGoal> foundList =
 				weeklyGoalRepository.findWeeklyGoalInMonth(
-						expectedYear, expectedMonth, member.getId());
+						expectedYear, expectedMonth, calendar.getId());
 		// then
 		assertThat(foundList).hasSize(1);
 		for (WeeklyGoal found : foundList) {
@@ -140,10 +154,10 @@ public class WeeklyGoalRepositoryTest {
 	@Test
 	@DisplayName("id에 해당하는 주 목표 레코드를 조회한다.")
 	void findWeeklyGoalByIdTest() {
-		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
+		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
 		WeeklyGoal saved =
 				weeklyGoalRepository.save(
-						WeeklyGoalFixture.DEFAULT.getWithMember(category, member));
+						WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
 
 		Optional<WeeklyGoal> found = weeklyGoalRepository.findWeeklyGoalById(saved.getId());
 

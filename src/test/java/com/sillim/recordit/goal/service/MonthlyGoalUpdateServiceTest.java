@@ -9,6 +9,11 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
@@ -17,7 +22,6 @@ import com.sillim.recordit.goal.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,17 +37,22 @@ public class MonthlyGoalUpdateServiceTest {
 
 	@Mock MonthlyGoalQueryService monthlyGoalQueryService;
 	@Mock MemberQueryService memberQueryService;
+	@Mock CalendarQueryService calendarQueryService;
 	@Mock MonthlyGoalRepository monthlyGoalRepository;
 	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
 	@InjectMocks MonthlyGoalUpdateService monthlyGoalUpdateService;
 
 	private Member member;
 	private ScheduleCategory category;
+	private CalendarCategory calendarCategory;
+	private Calendar calendar;
 
 	@BeforeEach
 	void beforeEach() {
-		member = MemberFixture.DEFAULT.getMember();
+		member = mock(Member.class);
 		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 	}
 
 	@Test
@@ -52,20 +61,24 @@ public class MonthlyGoalUpdateServiceTest {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
 		Long categoryId = 3L;
+		Long calendarId = 4L;
 		MonthlyGoalUpdateRequest request =
 				new MonthlyGoalUpdateRequest(
 						"취뽀하기!",
 						"취업할 때까지 숨 참는다.",
 						LocalDate.of(2024, 4, 1),
 						LocalDate.of(2024, 4, 30),
-						categoryId);
+						categoryId,
+						calendarId);
 		MonthlyGoal saved = mock(MonthlyGoal.class);
+		given(member.equalsId(eq(memberId))).willReturn(true);
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(scheduleCategoryQueryService.searchScheduleCategory(categoryId)).willReturn(category);
 		given(monthlyGoalRepository.save(any(MonthlyGoal.class))).willReturn(saved);
 		given(saved.getId()).willReturn(monthlyGoalId);
 
-		Long savedId = monthlyGoalUpdateService.add(request, memberId);
+		Long savedId = monthlyGoalUpdateService.add(request, memberId, calendarId);
 
 		assertThat(savedId).isEqualTo(monthlyGoalId);
 		then(monthlyGoalRepository).should(times(1)).save(any(MonthlyGoal.class));
@@ -77,15 +90,20 @@ public class MonthlyGoalUpdateServiceTest {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
 		Long categoryId = 3L;
+		Long calendarId = 4L;
 		MonthlyGoalUpdateRequest request =
 				new MonthlyGoalUpdateRequest(
 						"(수정)취뽀하기!",
 						"(수정)취업할 때까지 숨 참는다.",
 						LocalDate.of(2024, 5, 1),
 						LocalDate.of(2024, 5, 31),
-						categoryId);
-		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, member);
+						categoryId,
+						calendarId);
+		MonthlyGoal monthlyGoal =
+				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
+		given(member.equalsId(eq(memberId))).willReturn(true);
 		given(scheduleCategoryQueryService.searchScheduleCategory(categoryId)).willReturn(category);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
 				.willReturn(monthlyGoal);
 
@@ -106,7 +124,8 @@ public class MonthlyGoalUpdateServiceTest {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
 		Boolean status = true;
-		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, member);
+		MonthlyGoal monthlyGoal =
+				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
 		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
 				.willReturn(monthlyGoal);
 
@@ -120,7 +139,8 @@ public class MonthlyGoalUpdateServiceTest {
 	void removeTest() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, member);
+		MonthlyGoal monthlyGoal =
+				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
 		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
 				.willReturn(monthlyGoal);
 

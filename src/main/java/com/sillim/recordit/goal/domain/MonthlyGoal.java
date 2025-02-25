@@ -1,5 +1,6 @@
 package com.sillim.recordit.goal.domain;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
@@ -50,13 +51,17 @@ public class MonthlyGoal extends BaseTime {
 	@ColumnDefault("false")
 	private boolean achieved;
 
+	@Column(nullable = false)
+	@ColumnDefault("false")
+	private boolean deleted;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	@Column(nullable = false)
-	@ColumnDefault("false")
-	private boolean deleted;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "calendar_id")
+	private Calendar calendar;
 
 	@Builder
 	public MonthlyGoal(
@@ -65,14 +70,16 @@ public class MonthlyGoal extends BaseTime {
 			final LocalDate startDate,
 			final LocalDate endDate,
 			final ScheduleCategory category,
-			final Member member) {
+			final Member member,
+			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
 		this.period = new MonthlyGoalPeriod(startDate, endDate);
 		this.category = category;
 		this.achieved = false;
-		this.member = member;
 		this.deleted = false;
+		this.member = member;
+		this.calendar = calendar;
 	}
 
 	public void modify(
@@ -80,11 +87,13 @@ public class MonthlyGoal extends BaseTime {
 			final String newDescription,
 			final LocalDate newStartDate,
 			final LocalDate newEndDate,
-			final ScheduleCategory category) {
+			final ScheduleCategory category,
+			final Calendar calendar) {
 		this.title = new GoalTitle(newTitle);
 		this.description = new GoalDescription(newDescription);
 		this.period = new MonthlyGoalPeriod(newStartDate, newEndDate);
 		this.category = category;
+		this.calendar = calendar;
 	}
 
 	public void changeAchieveStatus(final Boolean status) {

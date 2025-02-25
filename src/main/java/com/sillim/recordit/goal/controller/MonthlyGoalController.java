@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/goals/months")
+@RequestMapping("/api/v1/calendars/{calendarId}/monthly-goals")
 public class MonthlyGoalController {
 
 	private final MonthlyGoalUpdateService monthlyGoalUpdateService;
@@ -36,10 +36,11 @@ public class MonthlyGoalController {
 	@PostMapping
 	public ResponseEntity<Long> monthlyGoalAdd(
 			@Validated @RequestBody final MonthlyGoalUpdateRequest request,
+			@PathVariable final Long calendarId,
 			@CurrentMember final Member member) {
 
-		Long monthlyGoalId = monthlyGoalUpdateService.add(request, member.getId());
-		return ResponseEntity.created(URI.create("/api/v1/goals/months/" + monthlyGoalId)).build();
+		Long monthlyGoalId = monthlyGoalUpdateService.add(request, member.getId(), calendarId);
+		return ResponseEntity.created(URI.create("/api/v1/monthly-goals/" + monthlyGoalId)).build();
 	}
 
 	@PutMapping("/{id}")
@@ -56,9 +57,12 @@ public class MonthlyGoalController {
 	public ResponseEntity<List<MonthlyGoalListResponse>> monthlyGoalList(
 			@RequestParam @ValidYear final Integer year,
 			@RequestParam @ValidMonth final Integer month,
+			@PathVariable final Long calendarId,
 			@CurrentMember final Member member) {
 		return ResponseEntity.ok(
-				monthlyGoalQueryService.searchAllByDate(year, month, member.getId()).stream()
+				monthlyGoalQueryService
+						.searchAllByDate(year, month, member.getId(), calendarId)
+						.stream()
 						.map(MonthlyGoalListResponse::from)
 						.toList());
 	}

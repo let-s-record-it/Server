@@ -30,8 +30,8 @@ public class MonthlyGoalQueryService {
 	}
 
 	public List<MonthlyGoal> searchAllByDate(
-			final Integer year, final Integer month, final Long memberId) {
+			final Integer year, final Integer month, final Long memberId, final Long calendarId) {
 
-		return monthlyGoalRepository.findMonthlyGoalInMonth(year, month, memberId);
+		return monthlyGoalRepository.findMonthlyGoalInMonth(year, month, memberId, calendarId);
 	}
 }

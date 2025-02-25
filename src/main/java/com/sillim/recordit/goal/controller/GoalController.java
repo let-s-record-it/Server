@@ -10,14 +10,11 @@ import com.sillim.recordit.member.domain.Member;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/goals")
+@RequestMapping("/api/v1/calendars/{calendarId}/goals")
 public class GoalController {
 
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
@@ -27,12 +24,14 @@ public class GoalController {
 	public ResponseEntity<GoalListResponse> getGoalListByDate(
 			@RequestParam final Integer year,
 			@RequestParam final Integer month,
+			@PathVariable final Long calendarId,
 			@CurrentMember final Member member) {
 
 		List<MonthlyGoal> monthlyGoals =
-				monthlyGoalQueryService.searchAllByDate(year, month, member.getId());
+				monthlyGoalQueryService.searchAllByDate(year, month, member.getId(), calendarId);
 		List<WeeklyGoal> weeklyGoals =
-				weeklyGoalQueryService.searchAllWeeklyGoalByDate(year, month, member.getId());
+				weeklyGoalQueryService.searchAllWeeklyGoalByDate(
+						year, month, member.getId(), calendarId);
 		return ResponseEntity.ok(GoalListResponse.of(monthlyGoals, weeklyGoals));
 	}
 }

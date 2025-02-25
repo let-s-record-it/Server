@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/goals/weeks")
+@RequestMapping("/api/v1/calendars/{calendarId}/weekly-goals")
 public class WeeklyGoalController {
 
 	private static final int FIRST_WEEK = 1;
@@ -39,20 +39,24 @@ public class WeeklyGoalController {
 	@PostMapping
 	public ResponseEntity<Void> addWeeklyGoal(
 			@RequestBody @Validated final WeeklyGoalUpdateRequest request,
+			@PathVariable final Long calendarId,
 			@CurrentMember final Member member) {
 
-		Long weeklyGoalId = weeklyGoalUpdateService.addWeeklyGoal(request, member.getId());
-		return ResponseEntity.created(URI.create("/api/v1/goals/weeks/" + weeklyGoalId)).build();
+		Long weeklyGoalId =
+				weeklyGoalUpdateService.addWeeklyGoal(request, member.getId(), calendarId);
+		return ResponseEntity.created(URI.create("/api/v1/weekly-goals/" + weeklyGoalId)).build();
 	}
 
 	@GetMapping
 	public ResponseEntity<List<WeeklyGoalListResponse>> getWeeklyGoalList(
 			@RequestParam final Integer year,
 			@RequestParam final Integer month,
+			@PathVariable final Long calendarId,
 			@CurrentMember final Member member) {
 
 		List<WeeklyGoal> weeklyGoals =
-				weeklyGoalQueryService.searchAllWeeklyGoalByDate(year, month, member.getId());
+				weeklyGoalQueryService.searchAllWeeklyGoalByDate(
+						year, month, member.getId(), calendarId);
 
 		Map<Integer, List<WeeklyGoal>> goalsByWeek =
 				weeklyGoals.stream()

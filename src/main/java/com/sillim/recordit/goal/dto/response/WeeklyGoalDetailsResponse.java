@@ -14,6 +14,7 @@ public record WeeklyGoalDetailsResponse(
 		LocalDate endDate,
 		Long categoryId,
 		String colorHex,
+		Long calendarId,
 		RelatedMonthlyGoalResponse relatedMonthlyGoal) {
 
 	public static WeeklyGoalDetailsResponse from(final WeeklyGoal weeklyGoal) {

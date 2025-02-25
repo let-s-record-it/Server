@@ -1,5 +1,6 @@
 package com.sillim.recordit.goal.dto.request;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.member.domain.Member;
@@ -13,9 +14,11 @@ public record MonthlyGoalUpdateRequest(
 		@Length(max = 500) String description,
 		@NotNull LocalDate startDate,
 		@NotNull LocalDate endDate,
-		@NotNull Long categoryId) {
+		@NotNull Long categoryId,
+		Long calendarId) {
 
-	public MonthlyGoal toEntity(final ScheduleCategory category, final Member member) {
+	public MonthlyGoal toEntity(
+			final ScheduleCategory category, final Member member, final Calendar calendar) {
 
 		return MonthlyGoal.builder()
 				.title(title)
@@ -24,6 +27,7 @@ public record MonthlyGoalUpdateRequest(
 				.endDate(endDate)
 				.category(category)
 				.member(member)
+				.calendar(calendar)
 				.build();
 	}
 }

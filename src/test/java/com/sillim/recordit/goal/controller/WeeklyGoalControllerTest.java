@@ -21,6 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
@@ -50,11 +54,15 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 
 	private Member member;
 	private ScheduleCategory category;
+	private CalendarCategory calendarCategory;
+	private Calendar calendar;
 
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
 		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 	}
 
 	@Test
@@ -69,11 +77,12 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 						LocalDate.of(2024, 8, 11),
 						LocalDate.of(2024, 8, 17),
 						1L,
+						1L,
 						1L);
 
 		ResultActions perform =
 				mockMvc.perform(
-						post("/api/v1/goals/weeks")
+						post("/api/v1/calendars/{calendarId}/weekly-goals", 1L)
 								.headers(authorizationHeader())
 								.contentType(MediaType.APPLICATION_JSON)
 								.content(toJson(request)));
@@ -93,7 +102,7 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 	@DisplayName("당월의 주 목표 목록을 조회한다.")
 	void weeklyGoalList() throws Exception {
 
-		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, member);
+		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
 
 		List<WeeklyGoal> weeklyGoals =
 				LongStream.rangeClosed(1, 3)
@@ -102,19 +111,21 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 									WeeklyGoal goal =
 											spy(
 													WeeklyGoalFixture.DEFAULT.getWithMember(
-															category, member));
+															category, member, calendar));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
 								})
 						.toList();
 
-		given(weeklyGoalQueryService.searchAllWeeklyGoalByDate(anyInt(), anyInt(), any()))
+		given(
+						weeklyGoalQueryService.searchAllWeeklyGoalByDate(
+								anyInt(), anyInt(), any(), anyLong()))
 				.willReturn(weeklyGoals);
 
 		ResultActions perform =
 				mockMvc.perform(
-						get("/api/v1/goals/weeks")
+						get("/api/v1/calendars/{calendarId}/weekly-goals", 1L)
 								.headers(authorizationHeader())
 								.queryParam("year", "2024")
 								.queryParam("month", "8"));
@@ -140,6 +151,8 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								getDocumentRequest(),
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
+								pathParameters(
+										parameterWithName("calendarId").description("캘린더 id")),
 								queryParameters(
 										parameterWithName("year").description("조회할 연도"),
 										parameterWithName("month").description("조회할 월"))));
@@ -157,14 +170,17 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								LocalDate.of(2024, 9, 29),
 								LocalDate.of(2024, 10, 5),
 								category,
-								member));
+								member,
+								calendar));
 
-		given(weeklyGoalQueryService.searchAllWeeklyGoalByDate(anyInt(), anyInt(), any()))
+		given(
+						weeklyGoalQueryService.searchAllWeeklyGoalByDate(
+								anyInt(), anyInt(), any(), anyLong()))
 				.willReturn(weeklyGoals);
 
 		ResultActions perform =
 				mockMvc.perform(
-						get("/api/v1/goals/weeks")
+						get("/api/v1/calendars/{calendarId}/weekly-goals", 1L)
 								.headers(authorizationHeader())
 								.queryParam("year", "2024")
 								.queryParam("month", "8"));
@@ -180,6 +196,8 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								getDocumentRequest(),
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
+								pathParameters(
+										parameterWithName("calendarId").description("캘린더 id")),
 								queryParameters(
 										parameterWithName("year").description("조회할 연도"),
 										parameterWithName("month").description("조회할 월"))));
@@ -189,14 +207,17 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 	@DisplayName("특정 id의 주 목표를 상세하게 조회한다.")
 	void weeklyGoalDetailsTest() throws Exception {
 
-		WeeklyGoal weeklyGoal = spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, member));
+		WeeklyGoal weeklyGoal =
+				spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
 		given(weeklyGoal.getId()).willReturn(1L);
 
 		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(anyLong(), any()))
 				.willReturn(weeklyGoal);
 
 		ResultActions perform =
-				mockMvc.perform(get("/api/v1/goals/weeks/{id}", 1L).headers(authorizationHeader()));
+				mockMvc.perform(
+						get("/api/v1/calendars/{calendarId}/weekly-goals/{id}", 1L, 1L)
+								.headers(authorizationHeader()));
 
 		perform.andExpect(status().isOk())
 				.andExpect(jsonPath("$.id").value(weeklyGoal.getId()))
@@ -215,7 +236,8 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								pathParameters(
-										parameterWithName("id").description("조회할 주 목표 id"))));
+										parameterWithName("id").description("조회할 주 목표 id"),
+										parameterWithName("calendarId").description("캘린더 id"))));
 	}
 
 	@Test
@@ -230,11 +252,12 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 						LocalDate.of(2024, 8, 18),
 						LocalDate.of(2024, 8, 24),
 						1L,
+						1L,
 						1L);
 
 		ResultActions perform =
 				mockMvc.perform(
-						put("/api/v1/goals/weeks/{id}", 1L)
+						put("/api/v1/calendars/{calendarId}/weekly-goals/{id}", 1L, 1L)
 								.headers(authorizationHeader())
 								.contentType(MediaType.APPLICATION_JSON)
 								.content(toJson(request)));
@@ -249,7 +272,8 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								pathParameters(
-										parameterWithName("id").description("수정할 주 목표 id"))));
+										parameterWithName("id").description("수정할 주 목표 id"),
+										parameterWithName("calendarId").description("캘린더 id"))));
 	}
 
 	@Test
@@ -258,7 +282,7 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 
 		ResultActions perform =
 				mockMvc.perform(
-						patch("/api/v1/goals/weeks/{id}/achieve", 1L)
+						patch("/api/v1/calendars/{calendarId}/weekly-goals/{id}/achieve", 1L, 1L)
 								.headers(authorizationHeader())
 								.queryParam("status", "true"));
 
@@ -272,7 +296,8 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								pathParameters(
-										parameterWithName("id").description("달성 상태를 변경할 주 목표 id")),
+										parameterWithName("id").description("달성 상태를 변경할 주 목표 id"),
+										parameterWithName("calendarId").description("캘린더 id")),
 								queryParameters(
 										parameterWithName("status")
 												.description("달성 상태(false, true)"))));
@@ -284,7 +309,8 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 
 		ResultActions perform =
 				mockMvc.perform(
-						delete("/api/v1/goals/weeks/{id}", 1L).headers(authorizationHeader()));
+						delete("/api/v1/calendars/{calendarId}/weekly-goals/{id}", 1L, 1L)
+								.headers(authorizationHeader()));
 
 		perform.andExpect(status().isNoContent());
 
@@ -296,7 +322,8 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								pathParameters(
-										parameterWithName("id").description("삭제할 주 목표 id"))));
+										parameterWithName("id").description("삭제할 주 목표 id"),
+										parameterWithName("calendarId").description("캘린더 id"))));
 	}
 
 	@Test
@@ -305,7 +332,7 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 
 		ResultActions perform =
 				mockMvc.perform(
-						patch("/api/v1/goals/weeks/{id}/link", 1L)
+						patch("/api/v1/calendars/{calendarId}/weekly-goals/{id}/link", 1L, 1L)
 								.headers(authorizationHeader())
 								.queryParam("relatedGoalId", "1"));
 
@@ -319,7 +346,8 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								pathParameters(
-										parameterWithName("id").description("연관 목표를 연결할 주 목표 id")),
+										parameterWithName("id").description("연관 목표를 연결할 주 목표 id"),
+										parameterWithName("calendarId").description("캘린더 id")),
 								queryParameters(
 										parameterWithName("relatedGoalId")
 												.description("주 목표와 연결할 월 목표 id"))));
@@ -331,7 +359,7 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 
 		ResultActions perform =
 				mockMvc.perform(
-						patch("/api/v1/goals/weeks/{id}/unlink", 1L)
+						patch("/api/v1/calendars/{calendarId}/weekly-goals/{id}/unlink", 1L, 1L)
 								.headers(authorizationHeader()));
 
 		perform.andExpect(status().isNoContent());
@@ -345,6 +373,7 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								requestHeaders(authorizationDesc()),
 								pathParameters(
 										parameterWithName("id")
-												.description("연관 목표를 연결 해제할 주 목표 id"))));
+												.description("연관 목표를 연결 해제할 주 목표 id"),
+										parameterWithName("calendarId").description("캘린더 id"))));
 	}
 }
