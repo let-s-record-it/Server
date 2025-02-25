@@ -2,8 +2,7 @@ package com.sillim.recordit.goal.controller;
 
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentRequest;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -15,6 +14,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
@@ -43,11 +46,15 @@ public class GoalControllerTest extends RestDocsTest {
 
 	private Member member;
 	private ScheduleCategory category;
+	private CalendarCategory calendarCategory;
+	private Calendar calendar;
 
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
 		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 	}
 
 	@Test
@@ -60,13 +67,13 @@ public class GoalControllerTest extends RestDocsTest {
 									MonthlyGoal goal =
 											spy(
 													MonthlyGoalFixture.DEFAULT.getWithMember(
-															category, member));
+															category, member, calendar));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
 								})
 						.toList();
-		given(monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), any()))
+		given(monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), any(), anyLong()))
 				.willReturn(monthlyGoals);
 		List<WeeklyGoal> weeklyGoals =
 				LongStream.rangeClosed(1, 2)
@@ -75,18 +82,20 @@ public class GoalControllerTest extends RestDocsTest {
 									WeeklyGoal goal =
 											spy(
 													WeeklyGoalFixture.DEFAULT.getWithMember(
-															category, member));
+															category, member, calendar));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
 								})
 						.toList();
-		given(weeklyGoalQueryService.searchAllWeeklyGoalByDate(anyInt(), anyInt(), any()))
+		given(
+						weeklyGoalQueryService.searchAllWeeklyGoalByDate(
+								anyInt(), anyInt(), any(), anyLong()))
 				.willReturn(weeklyGoals);
 
 		ResultActions perform =
 				mockMvc.perform(
-						get("/api/v1/goals")
+						get("/api/v1/calendars/{calendarId}/goals", 1L)
 								.headers(authorizationHeader())
 								.queryParam("year", "2024")
 								.queryParam("month", "4"));

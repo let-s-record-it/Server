@@ -3,6 +3,10 @@ package com.sillim.recordit.goal.dto.request;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
@@ -24,11 +28,15 @@ public class MonthlyUpdateRequestTest {
 						"취업할 때까지 숨 참는다.",
 						LocalDate.of(2024, 4, 1),
 						LocalDate.of(2024, 4, 30),
+						1L,
 						1L);
 		Member member = MemberFixture.DEFAULT.getMember();
 		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		CalendarCategory calendarCategory =
+				CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 
-		MonthlyGoal monthlyGoal = request.toEntity(category, member);
+		MonthlyGoal monthlyGoal = request.toEntity(category, member, calendar);
 		assertAll(
 				() -> {
 					assertThat(monthlyGoal.getTitle()).isEqualTo(request.title());
