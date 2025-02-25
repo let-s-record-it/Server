@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface CustomWeeklyGoalRepository {
 
-	List<WeeklyGoal> findWeeklyGoalInMonth(Integer year, Integer month, Long memberId);
+	List<WeeklyGoal> findWeeklyGoalInMonth(Integer year, Integer month, Long calendarId);
 
 	Optional<WeeklyGoal> findWeeklyGoalById(Long id);
 }

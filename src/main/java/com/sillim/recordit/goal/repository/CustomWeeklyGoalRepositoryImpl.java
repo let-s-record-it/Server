@@ -19,13 +19,13 @@ public class CustomWeeklyGoalRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public List<WeeklyGoal> findWeeklyGoalInMonth(Integer year, Integer month, Long memberId) {
+	public List<WeeklyGoal> findWeeklyGoalInMonth(Integer year, Integer month, Long calendarId) {
 		return selectFrom(weeklyGoal)
 				.leftJoin(weeklyGoal.relatedMonthlyGoal)
 				.fetchJoin()
 				.leftJoin(weeklyGoal.category)
 				.fetchJoin()
-				.where(weeklyGoal.member.id.eq(memberId))
+				.where(weeklyGoal.calendar.id.eq(calendarId))
 				.where(containStartDateOrEndDate(year, month))
 				.where(notNextMonth(year, month))
 				.where(notPrevMonth(year, month))

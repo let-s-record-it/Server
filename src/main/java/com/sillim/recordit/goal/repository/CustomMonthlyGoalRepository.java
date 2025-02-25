@@ -8,5 +8,6 @@ public interface CustomMonthlyGoalRepository {
 
 	Optional<MonthlyGoal> findByIdWithFetch(Long monthlyGoalId);
 
-	List<MonthlyGoal> findMonthlyGoalInMonth(Integer year, Integer month, Long memberId);
+	List<MonthlyGoal> findMonthlyGoalInMonth(
+			Integer year, Integer month, Long memberId, Long calendarId);
 }

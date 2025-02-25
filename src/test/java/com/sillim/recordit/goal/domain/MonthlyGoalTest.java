@@ -7,6 +7,10 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.global.exception.ErrorCode;
@@ -21,19 +25,23 @@ class MonthlyGoalTest {
 
 	Member member = MemberFixture.DEFAULT.getMember();
 	ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+	CalendarCategory calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+	Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 
 	@Test
 	@DisplayName("월 목표를 수정할 수 있다.")
 	void modify() {
-		MonthlyGoal expected = MonthlyGoalFixture.MODIFIED.getWithMember(category, member);
+		MonthlyGoal expected =
+				MonthlyGoalFixture.MODIFIED.getWithMember(category, member, calendar);
 
-		MonthlyGoal modified = MonthlyGoalFixture.DEFAULT.getWithMember(category, member);
+		MonthlyGoal modified = MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
 		modified.modify(
 				expected.getTitle(),
 				expected.getDescription(),
 				expected.getStartDate(),
 				expected.getEndDate(),
-				category);
+				category,
+				calendar);
 
 		assertThat(modified).usingRecursiveComparison().isEqualTo(expected);
 	}
@@ -42,9 +50,11 @@ class MonthlyGoalTest {
 	@DisplayName("월 목표의 달성 상태를 변경할 수 있다.")
 	void changeAchieveStatusTrue() {
 
-		MonthlyGoal monthlyGoal1 = MonthlyGoalFixture.DEFAULT.getWithMember(category, member);
+		MonthlyGoal monthlyGoal1 =
+				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
 		monthlyGoal1.changeAchieveStatus(true);
-		MonthlyGoal monthlyGoal2 = MonthlyGoalFixture.DEFAULT.getWithMember(category, member);
+		MonthlyGoal monthlyGoal2 =
+				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
 		monthlyGoal2.changeAchieveStatus(false);
 
 		assertAll(
@@ -61,7 +71,8 @@ class MonthlyGoalTest {
 		member = mock(Member.class);
 		willReturn(true).given(member).equalsId(anyLong());
 
-		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, member);
+		MonthlyGoal monthlyGoal =
+				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
 
 		assertThatCode(
 						() -> {
@@ -77,7 +88,8 @@ class MonthlyGoalTest {
 		member = mock(Member.class);
 		willReturn(false).given(member).equalsId(anyLong());
 
-		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, member);
+		MonthlyGoal monthlyGoal =
+				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
 
 		assertThatCode(
 						() -> {

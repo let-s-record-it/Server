@@ -27,10 +27,12 @@ public class CustomMonthlyGoalRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public List<MonthlyGoal> findMonthlyGoalInMonth(Integer year, Integer month, Long memberId) {
+	public List<MonthlyGoal> findMonthlyGoalInMonth(
+			Integer year, Integer month, Long memberId, Long calendarId) {
 		return selectFrom(monthlyGoal)
 				.leftJoin(monthlyGoal.category)
 				.fetchJoin()
+				.where(monthlyGoal.calendar.id.eq(calendarId))
 				.where(
 						monthlyGoal
 								.member

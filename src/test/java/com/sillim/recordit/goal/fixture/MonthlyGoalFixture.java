@@ -1,5 +1,6 @@
 package com.sillim.recordit.goal.fixture;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.member.domain.Member;
@@ -22,7 +23,7 @@ public enum MonthlyGoalFixture {
 		this.endDate = endDate;
 	}
 
-	public MonthlyGoal getWithMember(ScheduleCategory category, Member member) {
+	public MonthlyGoal getWithMember(ScheduleCategory category, Member member, Calendar calendar) {
 
 		return MonthlyGoal.builder()
 				.title(title)
@@ -31,11 +32,16 @@ public enum MonthlyGoalFixture {
 				.endDate(endDate)
 				.category(category)
 				.member(member)
+				.calendar(calendar)
 				.build();
 	}
 
 	public MonthlyGoal getWithStartDateAndEndDate(
-			LocalDate startDate, LocalDate endDate, ScheduleCategory category, Member member) {
+			LocalDate startDate,
+			LocalDate endDate,
+			ScheduleCategory category,
+			Member member,
+			Calendar calendar) {
 
 		return MonthlyGoal.builder()
 				.title(title)
@@ -44,6 +50,7 @@ public enum MonthlyGoalFixture {
 				.endDate(endDate)
 				.category(category)
 				.member(member)
+				.calendar(calendar)
 				.build();
 	}
 }

@@ -1,5 +1,6 @@
 package com.sillim.recordit.goal.domain;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
@@ -63,6 +64,10 @@ public class WeeklyGoal extends BaseTime {
 	@ColumnDefault("false")
 	private boolean deleted;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "calendar_id")
+	private Calendar calendar;
+
 	@Builder
 	public WeeklyGoal(
 			final String title,
@@ -72,7 +77,8 @@ public class WeeklyGoal extends BaseTime {
 			final LocalDate endDate,
 			final ScheduleCategory category,
 			final MonthlyGoal relatedMonthlyGoal,
-			final Member member) {
+			final Member member,
+			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
 		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
@@ -80,6 +86,7 @@ public class WeeklyGoal extends BaseTime {
 		this.achieved = false;
 		this.relatedMonthlyGoal = relatedMonthlyGoal;
 		this.member = member;
+		this.calendar = calendar;
 		this.deleted = false;
 	}
 
@@ -100,12 +107,14 @@ public class WeeklyGoal extends BaseTime {
 			final LocalDate startDate,
 			final LocalDate endDate,
 			final ScheduleCategory category,
-			final MonthlyGoal relatedMonthlyGoal) {
+			final MonthlyGoal relatedMonthlyGoal,
+			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
 		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
 		this.category = category;
 		this.relatedMonthlyGoal = relatedMonthlyGoal;
+		this.calendar = calendar;
 	}
 
 	public void modify(
@@ -114,11 +123,13 @@ public class WeeklyGoal extends BaseTime {
 			final Integer week,
 			final LocalDate startDate,
 			final LocalDate endDate,
-			final ScheduleCategory category) {
+			final ScheduleCategory category,
+			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
 		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
 		this.category = category;
+		this.calendar = calendar;
 	}
 
 	public void linkRelatedMonthlyGoal(final MonthlyGoal relatedMonthlyGoal) {
