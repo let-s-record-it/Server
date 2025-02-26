@@ -45,7 +45,7 @@ public class WeeklyGoal extends BaseTime {
 	@Embedded private WeeklyGoalPeriod period;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "weekly_goal_category")
+	@JoinColumn(name = "weekly_goal_category_id")
 	private ScheduleCategory category;
 
 	@Column(nullable = false)

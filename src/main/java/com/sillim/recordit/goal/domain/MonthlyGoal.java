@@ -44,7 +44,7 @@ public class MonthlyGoal extends BaseTime {
 	@Embedded private MonthlyGoalPeriod period;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "monthly_goal_category")
+	@JoinColumn(name = "monthly_goal_category_id")
 	private ScheduleCategory category;
 
 	@Column(nullable = false)
