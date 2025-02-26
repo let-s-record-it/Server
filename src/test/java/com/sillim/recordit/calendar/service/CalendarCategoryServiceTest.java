@@ -2,7 +2,6 @@ package com.sillim.recordit.calendar.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -39,7 +38,7 @@ class CalendarCategoryServiceTest {
 		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		given(calendarCategoryRepository.findByMemberId(eq(memberId)))
+		given(calendarCategoryRepository.findByDeletedIsFalseAndMemberId(eq(memberId)))
 				.willReturn(List.of(category));
 
 		List<CalendarCategory> categories =
@@ -126,7 +125,7 @@ class CalendarCategoryServiceTest {
 
 	@Test
 	@DisplayName("캘린더 소유자면 캘린더 카테고리를 삭제할 수 있다.")
-	void deleteCategoryIfCalendarOwner() {
+	void removeCategoryIfCalendarOwner() {
 		long memberId = 1L;
 		long categoryId = 2L;
 		CalendarCategory category = mock(CalendarCategory.class);
@@ -134,13 +133,13 @@ class CalendarCategoryServiceTest {
 		given(calendarCategoryRepository.findById(eq(categoryId)))
 				.willReturn(Optional.of(category));
 
-		assertThatCode(() -> calendarCategoryService.deleteCategory(categoryId, memberId))
+		assertThatCode(() -> calendarCategoryService.removeCategory(categoryId, memberId))
 				.doesNotThrowAnyException();
 	}
 
 	@Test
 	@DisplayName("캘린더 소유자가 아니면 캘린더 카테고리를 삭제할 때 InvalidRequestException이 발생한다.")
-	void throwInvalidRequestExceptionWhenDeleteCategoryIfNotCalendarOwner() {
+	void throwInvalidRequestExceptionWhenRemoveCategoryIfNotCalendarOwner() {
 		long memberId = 1L;
 		long categoryId = 2L;
 		CalendarCategory category = mock(CalendarCategory.class);
@@ -148,7 +147,7 @@ class CalendarCategoryServiceTest {
 		given(calendarCategoryRepository.findById(eq(categoryId)))
 				.willReturn(Optional.of(category));
 
-		assertThatCode(() -> calendarCategoryService.deleteCategory(categoryId, memberId))
+		assertThatCode(() -> calendarCategoryService.removeCategory(categoryId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_CALENDAR_CATEGORY_GET_REQUEST.getDescription());
 	}

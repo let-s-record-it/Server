@@ -55,7 +55,7 @@ public class CalendarController {
 	@DeleteMapping("/{calendarId}")
 	public ResponseEntity<Void> calendarDelete(
 			@PathVariable Long calendarId, @CurrentMember Member member) {
-		calendarCommandService.deleteByCalendarId(calendarId, member.getId());
+		calendarCommandService.removeByCalendarId(calendarId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
@@ -81,7 +81,7 @@ public class CalendarController {
 			@PathVariable Long calendarId,
 			@PathVariable Long memberId,
 			@CurrentMember Member member) {
-		calendarMemberService.deleteCalendarMember(calendarId, memberId, member.getId());
+		calendarMemberService.removeCalendarMember(calendarId, memberId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 

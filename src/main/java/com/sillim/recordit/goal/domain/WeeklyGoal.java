@@ -1,9 +1,10 @@
 package com.sillim.recordit.goal.domain;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
-import com.sillim.recordit.goal.domain.vo.GoalColorHex;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
 import com.sillim.recordit.goal.domain.vo.WeeklyGoalPeriod;
@@ -43,7 +44,9 @@ public class WeeklyGoal extends BaseTime {
 
 	@Embedded private WeeklyGoalPeriod period;
 
-	@Embedded private GoalColorHex colorHex;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "weekly_goal_category_id")
+	private ScheduleCategory category;
 
 	@Column(nullable = false)
 	@ColumnDefault("false")
@@ -61,6 +64,10 @@ public class WeeklyGoal extends BaseTime {
 	@ColumnDefault("false")
 	private boolean deleted;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "calendar_id")
+	private Calendar calendar;
+
 	@Builder
 	public WeeklyGoal(
 			final String title,
@@ -68,16 +75,18 @@ public class WeeklyGoal extends BaseTime {
 			final Integer week,
 			final LocalDate startDate,
 			final LocalDate endDate,
-			final String colorHex,
+			final ScheduleCategory category,
 			final MonthlyGoal relatedMonthlyGoal,
-			final Member member) {
+			final Member member,
+			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
 		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
-		this.colorHex = new GoalColorHex(colorHex);
+		this.category = category;
 		this.achieved = false;
 		this.relatedMonthlyGoal = relatedMonthlyGoal;
 		this.member = member;
+		this.calendar = calendar;
 		this.deleted = false;
 	}
 
@@ -97,13 +106,15 @@ public class WeeklyGoal extends BaseTime {
 			final Integer week,
 			final LocalDate startDate,
 			final LocalDate endDate,
-			final String colorHex,
-			final MonthlyGoal relatedMonthlyGoal) {
+			final ScheduleCategory category,
+			final MonthlyGoal relatedMonthlyGoal,
+			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
 		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
-		this.colorHex = new GoalColorHex(colorHex);
+		this.category = category;
 		this.relatedMonthlyGoal = relatedMonthlyGoal;
+		this.calendar = calendar;
 	}
 
 	public void modify(
@@ -112,11 +123,21 @@ public class WeeklyGoal extends BaseTime {
 			final Integer week,
 			final LocalDate startDate,
 			final LocalDate endDate,
-			final String colorHex) {
+			final ScheduleCategory category,
+			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
 		this.period = new WeeklyGoalPeriod(week, startDate, endDate);
-		this.colorHex = new GoalColorHex(colorHex);
+		this.category = category;
+		this.calendar = calendar;
+	}
+
+	public void linkRelatedMonthlyGoal(final MonthlyGoal relatedMonthlyGoal) {
+		this.relatedMonthlyGoal = relatedMonthlyGoal;
+	}
+
+	public void unlinkRelatedMonthlyGoal() {
+		this.relatedMonthlyGoal = null;
 	}
 
 	public void remove() {
@@ -144,7 +165,7 @@ public class WeeklyGoal extends BaseTime {
 	}
 
 	public String getColorHex() {
-		return colorHex.getColorHex();
+		return category.getColorHex();
 	}
 
 	public Optional<MonthlyGoal> getRelatedMonthlyGoal() {

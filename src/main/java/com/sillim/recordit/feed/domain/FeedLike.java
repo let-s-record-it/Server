@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class FeedLike {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, name = "feed_like_id")
 	private Long id;
 

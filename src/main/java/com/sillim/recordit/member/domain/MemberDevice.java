@@ -15,7 +15,7 @@ public class MemberDevice extends BaseTime {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "meber_device_id", nullable = false)
+	@Column(name = "member_device_id", nullable = false)
 	private Long id;
 
 	@Column(nullable = false)

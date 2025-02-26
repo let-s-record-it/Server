@@ -10,6 +10,7 @@ import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
 import com.sillim.recordit.schedule.service.ScheduleCommandService;
+import com.sillim.recordit.task.service.TaskCommandService;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ScheduleCategoryCommandService {
 	private final MemberQueryService memberQueryService;
 	private final ScheduleCommandService scheduleCommandService;
 	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
+	private final TaskCommandService taskCommandService;
 
 	public List<Long> addInitialCategories(Long memberId) {
 		Member member = memberQueryService.findByMemberId(memberId);
@@ -66,6 +68,7 @@ public class ScheduleCategoryCommandService {
 			throw new InvalidRequestException(ErrorCode.INVALID_SCHEDULE_CATEGORY_GET_REQUEST);
 		}
 		scheduleCommandService.replaceScheduleCategoriesWithDefaultCategory(categoryId, memberId);
-		scheduleCategoryRepository.delete(scheduleCategory);
+		taskCommandService.replaceTaskCategoriesWithDefaultCategory(categoryId, memberId);
+		scheduleCategory.delete();
 	}
 }

@@ -1,8 +1,13 @@
 package com.sillim.recordit.goal.service;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
+import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,27 +20,38 @@ public class MonthlyGoalUpdateService {
 
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
 	private final MemberQueryService memberQueryService;
+	private final CalendarQueryService calendarQueryService;
 	private final MonthlyGoalRepository monthlyGoalRepository;
+	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
 
-	public Long add(final MonthlyGoalUpdateRequest request, final Long memberId) {
+	public Long add(
+			final MonthlyGoalUpdateRequest request, final Long memberId, final Long calendarId) {
+		ScheduleCategory category =
+				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
+		Member member = memberQueryService.findByMemberId(memberId);
 
 		MonthlyGoal monthlyGoal =
-				monthlyGoalRepository.save(
-						request.toEntity(memberQueryService.findByMemberId(memberId)));
+				monthlyGoalRepository.save(request.toEntity(category, member, calendar));
 		return monthlyGoal.getId();
 	}
 
 	public void modify(
 			final MonthlyGoalUpdateRequest request, final Long monthlyGoalId, final Long memberId) {
-
 		MonthlyGoal monthlyGoal =
 				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
+		ScheduleCategory category =
+				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
+		calendar.validateAuthenticatedMember(memberId);
 		monthlyGoal.modify(
 				request.title(),
 				request.description(),
 				request.startDate(),
 				request.endDate(),
-				request.colorHex());
+				category,
+				calendar);
 	}
 
 	public void changeAchieveStatus(
@@ -47,7 +63,6 @@ public class MonthlyGoalUpdateService {
 	}
 
 	public void remove(final Long monthlyGoalId, final Long memberId) {
-
 		MonthlyGoal monthlyGoal =
 				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
 		monthlyGoal.remove();

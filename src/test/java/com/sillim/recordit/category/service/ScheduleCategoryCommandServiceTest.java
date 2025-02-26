@@ -18,6 +18,7 @@ import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
 import com.sillim.recordit.schedule.service.ScheduleCommandService;
+import com.sillim.recordit.task.service.TaskCommandService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ class ScheduleCategoryCommandServiceTest {
 	@Mock ScheduleCategoryRepository scheduleCategoryRepository;
 	@Mock MemberQueryService memberQueryService;
 	@Mock ScheduleCommandService scheduleCommandService;
+	@Mock TaskCommandService taskCommandService;
 	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
 	@InjectMocks ScheduleCategoryCommandService scheduleCategoryCommandService;
 

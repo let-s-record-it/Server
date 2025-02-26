@@ -1,5 +1,7 @@
 package com.sillim.recordit.goal.service;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
@@ -14,12 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class WeeklyGoalQueryService {
 
+	private final CalendarQueryService calendarQueryService;
 	private final WeeklyGoalRepository weeklyGoalRepository;
 
 	public List<WeeklyGoal> searchAllWeeklyGoalByDate(
-			final Integer year, final Integer month, final Long memberId) {
+			final Integer year, final Integer month, final Long memberId, final Long calendarId) {
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(memberId);
 
-		return weeklyGoalRepository.findWeeklyGoalInMonth(year, month, memberId);
+		return weeklyGoalRepository.findWeeklyGoalInMonth(year, month, calendarId);
 	}
 
 	public WeeklyGoal searchByIdAndCheckAuthority(final Long weeklyGoalId, final Long memberId) {

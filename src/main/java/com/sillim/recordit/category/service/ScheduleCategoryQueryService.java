@@ -17,7 +17,7 @@ public class ScheduleCategoryQueryService {
 	private final ScheduleCategoryRepository scheduleCategoryRepository;
 
 	public List<ScheduleCategory> searchScheduleCategories(Long memberId) {
-		return scheduleCategoryRepository.findByMemberId(memberId);
+		return scheduleCategoryRepository.findByDeletedIsFalseAndMemberId(memberId);
 	}
 
 	public ScheduleCategory searchScheduleCategory(Long categoryId) {
@@ -28,6 +28,7 @@ public class ScheduleCategoryQueryService {
 	}
 
 	public ScheduleCategory searchDefaultCategory(Long memberId) {
-		return scheduleCategoryRepository.findByMemberIdAndIsDefaultIsTrue(memberId);
+		return scheduleCategoryRepository.findByDeletedIsFalseAndMemberIdAndIsDefaultIsTrue(
+				memberId);
 	}
 }

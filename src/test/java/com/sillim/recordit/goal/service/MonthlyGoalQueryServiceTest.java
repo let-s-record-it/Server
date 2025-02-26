@@ -9,6 +9,12 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.spy;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
@@ -37,10 +43,16 @@ public class MonthlyGoalQueryServiceTest {
 	@InjectMocks MonthlyGoalQueryService monthlyGoalQueryService;
 
 	private Member member;
+	private ScheduleCategory category;
+	private CalendarCategory calendarCategory;
+	private Calendar calendar;
 
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
+		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 	}
 
 	@Test
@@ -48,9 +60,11 @@ public class MonthlyGoalQueryServiceTest {
 	void searchTest() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		MonthlyGoal expected = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		MonthlyGoal expected =
+				spy(MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
 		willDoNothing().given(expected).validateAuthenticatedMember(eq(memberId));
-		given(monthlyGoalRepository.findById(eq(monthlyGoalId))).willReturn(Optional.of(expected));
+		given(monthlyGoalRepository.findByIdWithFetch(eq(monthlyGoalId)))
+				.willReturn(Optional.of(expected));
 
 		MonthlyGoal found =
 				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
@@ -62,7 +76,7 @@ public class MonthlyGoalQueryServiceTest {
 	void searchTestMonthlyGoalNotFound() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		given(monthlyGoalRepository.findById(eq(monthlyGoalId)))
+		given(monthlyGoalRepository.findByIdWithFetch(eq(monthlyGoalId)))
 				.willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 
 		assertThatThrownBy(
@@ -78,11 +92,13 @@ public class MonthlyGoalQueryServiceTest {
 	void throwInvalidMonthlyGoalExceptionIfMonthlyGoalIsNotOwnedByMember() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		MonthlyGoal expected = spy(MonthlyGoalFixture.DEFAULT.getWithMember(member));
+		MonthlyGoal expected =
+				spy(MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
 		willThrow(new InvalidRequestException(ErrorCode.MONTHLY_GOAL_ACCESS_DENIED))
 				.given(expected)
 				.validateAuthenticatedMember(eq(memberId));
-		given(monthlyGoalRepository.findById(eq(monthlyGoalId))).willReturn(Optional.of(expected));
+		given(monthlyGoalRepository.findByIdWithFetch(eq(monthlyGoalId)))
+				.willReturn(Optional.of(expected));
 
 		assertThatThrownBy(
 						() ->
@@ -96,6 +112,7 @@ public class MonthlyGoalQueryServiceTest {
 	@DisplayName("startDate와 endDate를 기반으로 해당 월 목표들을 조회한다.")
 	void searchAllByDateTest() {
 		Long memberId = 1L;
+		Long calendarId = 2L;
 		Integer year = 2024;
 		Integer month = 4;
 		List<MonthlyGoal> monthlyGoals =
@@ -105,12 +122,17 @@ public class MonthlyGoalQueryServiceTest {
 										MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
 												LocalDate.of(2024, 4, 1),
 												LocalDate.of(2024, 4, 30),
-												member))
+												category,
+												member,
+												calendar))
 						.toList();
-		given(monthlyGoalRepository.findMonthlyGoalInMonth(eq(year), eq(month), eq(memberId)))
+		given(
+						monthlyGoalRepository.findMonthlyGoalInMonth(
+								eq(year), eq(month), eq(memberId), eq(calendarId)))
 				.willReturn(monthlyGoals);
 
-		List<MonthlyGoal> found = monthlyGoalQueryService.searchAllByDate(year, month, memberId);
+		List<MonthlyGoal> found =
+				monthlyGoalQueryService.searchAllByDate(year, month, memberId, calendarId);
 
 		assertAll(
 				() -> {

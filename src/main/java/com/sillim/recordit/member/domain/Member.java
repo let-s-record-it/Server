@@ -45,6 +45,7 @@ public class Member extends BaseTime {
 
 	@Enumerated(EnumType.STRING)
 	@ElementCollection(fetch = FetchType.EAGER)
+	@Column
 	private List<MemberRole> memberRole;
 
 	@Builder

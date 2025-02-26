@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class FeedScrap {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, name = "feed_scrap_id")
 	private Long id;
 

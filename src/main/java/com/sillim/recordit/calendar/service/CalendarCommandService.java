@@ -8,6 +8,7 @@ import com.sillim.recordit.calendar.repository.CalendarRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.calendar.InvalidCalendarException;
 import com.sillim.recordit.member.service.MemberQueryService;
+import com.sillim.recordit.schedule.service.ScheduleCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class CalendarCommandService {
 	private final CalendarQueryService calendarQueryService;
 	private final CalendarMemberService calendarMemberService;
 	private final CalendarCategoryService calendarCategoryService;
+	private final ScheduleCommandService scheduleCommandService;
 
 	public Calendar addCalendar(CalendarAddRequest request, Long memberId) {
 		CalendarCategory calendarCategory =
@@ -36,21 +38,23 @@ public class CalendarCommandService {
 
 	public void modifyCalendar(CalendarModifyRequest request, Long calendarId, Long memberId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
-
 		if (!calendar.isOwnedBy(memberId)) {
-			throw new InvalidCalendarException(ErrorCode.INVALID_CALENDAR_DELETE_REQUEST);
+			throw new InvalidCalendarException(ErrorCode.INVALID_CALENDAR_GET_REQUEST);
 		}
+
 		calendar.modify(
 				request.title(),
 				calendarCategoryService.searchCalendarCategory(request.calendarCategoryId()));
 	}
 
-	public void deleteByCalendarId(Long calendarId, Long memberId) {
+	public void removeByCalendarId(Long calendarId, Long ownerId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
-
-		if (!calendar.isOwnedBy(memberId)) {
-			throw new InvalidCalendarException(ErrorCode.INVALID_CALENDAR_DELETE_REQUEST);
+		if (!calendar.isOwnedBy(ownerId)) {
+			throw new InvalidCalendarException(ErrorCode.INVALID_CALENDAR_GET_REQUEST);
 		}
-		calendarRepository.delete(calendar);
+
+		calendarMemberService.removeCalendarMembersInCalendar(calendarId, ownerId);
+		scheduleCommandService.removeSchedulesInCalendar(calendarId);
+		calendar.delete();
 	}
 }

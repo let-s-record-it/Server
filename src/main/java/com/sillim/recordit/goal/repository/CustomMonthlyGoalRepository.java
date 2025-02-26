@@ -2,8 +2,12 @@ package com.sillim.recordit.goal.repository;
 
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomMonthlyGoalRepository {
 
-	List<MonthlyGoal> findMonthlyGoalInMonth(Integer year, Integer month, Long memberId);
+	Optional<MonthlyGoal> findByIdWithFetch(Long monthlyGoalId);
+
+	List<MonthlyGoal> findMonthlyGoalInMonth(
+			Integer year, Integer month, Long memberId, Long calendarId);
 }

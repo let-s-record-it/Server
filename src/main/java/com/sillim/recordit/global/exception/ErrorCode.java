@@ -59,7 +59,7 @@ public enum ErrorCode {
 	INVALID_CALENDAR_COLOR_HEX("ERR_CALENDAR_004", "유효하지 않은 캘린더 색상 값입니다."),
 	NULL_CALENDAR_COLOR_HEX("ERR_CALENDAR_005", "캘린더 색상 값은 null일 수 없습니다."),
 	CALENDAR_NOT_FOUND("ERR_CALENDAR_006", "요청한 캘린더를 찾을 수 없습니다."),
-	INVALID_CALENDAR_DELETE_REQUEST("ERR_CALENDAR_007", "유효하지 않은 캘린더 삭제 요청입니다."),
+	INVALID_CALENDAR_GET_REQUEST("ERR_CALENDAR_007", "유효하지 않은 캘린더 조회 요청입니다."),
 	CALENDAR_ACCESS_DENIED("ERR_CALENDAR_008", "해당 사용자는 접근할 수 없는 캘린더입니다."),
 
 	CALENDAR_MEMBER_NOT_FOUND("ERR_CALENDAR_MEMBER_001", "캘린더 멤버를 찾을 수 없습니다."),
@@ -86,6 +86,7 @@ public enum ErrorCode {
 	INVALID_DIFFERENCE_OF_DATE("ERR_WEEKLY_GOAL_003", "주 목표 기간의 시작일과 종료일은 6일 차이여야 합니다."),
 	WEEKLY_GOAL_ACCESS_DENIED("ERR_WEEKLY_GOAL_004", "해당 사용자는 접근할 수 없는 주 목표입니다."),
 	WEEK_NOT_CONTAINS_DATE("ERR_WEEKLY_GOAL_005", "해당 주차에 존재하지 않는 날짜입니다."),
+	RELATED_GOAL_NOT_FOUND("ERR_WEEKLY_GOAL_006", "해당 주 목표에 연관 목표가 존재하지 않습니다."),
 
 	// goal
 	NULL_GOAL_TITLE("ERR_GOAL_001", "목표 제목은 null일 수 없습니다."),

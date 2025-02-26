@@ -75,4 +75,23 @@ public class ScheduleQueryService {
 												.orElse(null)))
 				.toList();
 	}
+
+	public List<DayScheduleResponse> searchSchedulesContainQuery(
+			String query, Long calendarId, Long memberId) {
+		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
+		return scheduleRepository.findScheduleMatchedQuery(query, calendarId).stream()
+				.map(
+						schedule ->
+								DayScheduleResponse.of(
+										schedule,
+										schedule.getScheduleGroup().isRepeated(),
+										schedule.getScheduleAlarms().stream()
+												.map(ScheduleAlarm::getAlarmTime)
+												.toList(),
+										schedule.getScheduleGroup()
+												.getRepetitionPattern()
+												.map(RepetitionPatternResponse::from)
+												.orElse(null)))
+				.toList();
+	}
 }

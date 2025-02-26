@@ -12,7 +12,9 @@ public record WeeklyGoalDetailsResponse(
 		Integer week,
 		LocalDate startDate,
 		LocalDate endDate,
+		Long categoryId,
 		String colorHex,
+		Long calendarId,
 		RelatedMonthlyGoalResponse relatedMonthlyGoal) {
 
 	public static WeeklyGoalDetailsResponse from(final WeeklyGoal weeklyGoal) {
@@ -25,6 +27,7 @@ public record WeeklyGoalDetailsResponse(
 					.week(weeklyGoal.getWeek())
 					.startDate(weeklyGoal.getStartDate())
 					.endDate(weeklyGoal.getEndDate())
+					.categoryId(weeklyGoal.getCategory().getId())
 					.colorHex(weeklyGoal.getColorHex())
 					.build();
 		}
@@ -35,6 +38,7 @@ public record WeeklyGoalDetailsResponse(
 				.week(weeklyGoal.getWeek())
 				.startDate(weeklyGoal.getStartDate())
 				.endDate(weeklyGoal.getEndDate())
+				.categoryId(weeklyGoal.getCategory().getId())
 				.colorHex(weeklyGoal.getColorHex())
 				.relatedMonthlyGoal(
 						RelatedMonthlyGoalResponse.from(weeklyGoal.getRelatedMonthlyGoal().get()))

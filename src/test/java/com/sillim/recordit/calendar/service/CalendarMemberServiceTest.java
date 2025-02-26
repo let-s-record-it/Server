@@ -90,26 +90,29 @@ class CalendarMemberServiceTest {
 
 	@Test
 	@DisplayName("캘린더 소유자면 해당 캘린더 멤버를 삭제할 수 있다.")
-	void deleteCalendarMemberIfCalendarOwner() {
+	void removeCalendarMemberIfCalendarOwner() {
 		long memberId = 1L;
 		long calendarId = 1L;
 		long ownerId = 2L;
 		Member owner = mock(Member.class);
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(owner);
 		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(owner, category));
+		CalendarMember calendarMember = new CalendarMember(owner, calendar);
 		given(owner.equalsId(eq(ownerId))).willReturn(true);
+		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
+				.willReturn(Optional.of(calendarMember));
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
 		assertThatCode(
 						() ->
-								calendarMemberService.deleteCalendarMember(
+								calendarMemberService.removeCalendarMember(
 										calendarId, memberId, ownerId))
 				.doesNotThrowAnyException();
 	}
 
 	@Test
 	@DisplayName("캘린더 소유자가 아니면 InvalidRequestException이 발생한다.")
-	void throwInvalidRequestExceptionWhenDeleteCalendarMemberIfNotCalendarOwner() {
+	void throwInvalidRequestExceptionWhenRemoveCalendarMemberIfNotCalendarOwner() {
 		long memberId = 1L;
 		long calendarId = 1L;
 		long ownerId = 2L;
@@ -121,7 +124,7 @@ class CalendarMemberServiceTest {
 
 		assertThatCode(
 						() ->
-								calendarMemberService.deleteCalendarMember(
+								calendarMemberService.removeCalendarMember(
 										calendarId, memberId, ownerId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_CALENDAR_MEMBER_GET_REQUEST.getDescription());

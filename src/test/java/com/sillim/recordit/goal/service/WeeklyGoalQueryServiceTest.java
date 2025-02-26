@@ -7,15 +7,22 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
+import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.fixture.WeeklyGoalFixture;
 import com.sillim.recordit.goal.repository.WeeklyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
@@ -33,19 +40,27 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class WeeklyGoalQueryServiceTest {
 
 	@Mock WeeklyGoalRepository weeklyGoalRepository;
+	@Mock CalendarQueryService calendarQueryService;
 	@InjectMocks WeeklyGoalQueryService weeklyGoalQueryService;
 
 	private Member member;
+	private ScheduleCategory category;
+	private CalendarCategory calendarCategory;
+	private Calendar calendar;
 
 	@BeforeEach
 	void beforeEach() {
-		member = MemberFixture.DEFAULT.getMember();
+		member = mock(Member.class);
+		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 	}
 
 	@Test
 	@DisplayName("startDate와 endDate를 기반으로 해당 주 목표들을 조회한다.")
 	void searchAllWeeklyGoalByDate() {
 		Long memberId = 1L;
+		Long calendarId = 2L;
 		Integer year = 2024;
 		Integer month = 8;
 		List<WeeklyGoal> weeklyGoals =
@@ -56,13 +71,17 @@ public class WeeklyGoalQueryServiceTest {
 												3,
 												LocalDate.of(2024, 8, 11),
 												LocalDate.of(2024, 8, 17),
-												member))
+												category,
+												member,
+												calendar))
 						.toList();
-		given(weeklyGoalRepository.findWeeklyGoalInMonth(eq(year), eq(month), eq(memberId)))
+		given(member.equalsId(eq(memberId))).willReturn(true);
+		given(weeklyGoalRepository.findWeeklyGoalInMonth(eq(year), eq(month), eq(calendarId)))
 				.willReturn(weeklyGoals);
+		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
 		List<WeeklyGoal> found =
-				weeklyGoalQueryService.searchAllWeeklyGoalByDate(year, month, memberId);
+				weeklyGoalQueryService.searchAllWeeklyGoalByDate(year, month, memberId, calendarId);
 
 		assertAll(
 				() -> {
@@ -77,7 +96,8 @@ public class WeeklyGoalQueryServiceTest {
 	void searchByIdAndCheckAuthority() {
 		Long memberId = 1L;
 		Long weeklyGoalId = 2L;
-		WeeklyGoal expected = spy(WeeklyGoalFixture.DEFAULT.getWithMember(member));
+		WeeklyGoal expected =
+				spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
 		given(weeklyGoalRepository.findWeeklyGoalById(eq(weeklyGoalId)))
 				.willReturn(Optional.of(expected));
 		willDoNothing().given(expected).validateAuthenticatedMember(eq(memberId));
@@ -92,7 +112,8 @@ public class WeeklyGoalQueryServiceTest {
 	void searchByIdAndCheckAuthorityThrowsInvalidRequestExceptionIf() {
 		Long memberId = 1L;
 		Long weeklyGoalId = 2L;
-		WeeklyGoal expected = spy(WeeklyGoalFixture.DEFAULT.getWithMember(member));
+		WeeklyGoal expected =
+				spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
 		given(weeklyGoalRepository.findWeeklyGoalById(eq(weeklyGoalId)))
 				.willReturn(Optional.of(expected));
 		willThrow(new InvalidRequestException(ErrorCode.WEEKLY_GOAL_ACCESS_DENIED))

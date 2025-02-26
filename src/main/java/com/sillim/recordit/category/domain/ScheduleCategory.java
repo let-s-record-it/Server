@@ -1,6 +1,7 @@
 package com.sillim.recordit.category.domain;
 
 import com.sillim.recordit.category.domain.vo.ScheduleCategoryName;
+import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.schedule.domain.vo.ScheduleColorHex;
 import jakarta.persistence.*;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ScheduleCategory {
+public class ScheduleCategory extends BaseTime {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +23,11 @@ public class ScheduleCategory {
 
 	@Embedded private ScheduleCategoryName name;
 
+	@Column(nullable = false)
 	private boolean isDefault;
+
+	@Column(nullable = false)
+	private boolean deleted;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
@@ -32,6 +37,7 @@ public class ScheduleCategory {
 		this.colorHex = new ScheduleColorHex(colorHex);
 		this.name = new ScheduleCategoryName(name);
 		this.isDefault = isDefault;
+		this.deleted = false;
 		this.member = member;
 	}
 
@@ -46,6 +52,10 @@ public class ScheduleCategory {
 	public void modify(String colorHex, String name) {
 		this.colorHex = new ScheduleColorHex(colorHex);
 		this.name = new ScheduleCategoryName(name);
+	}
+
+	public void delete() {
+		this.deleted = true;
 	}
 
 	public boolean isOwner(Long memberId) {

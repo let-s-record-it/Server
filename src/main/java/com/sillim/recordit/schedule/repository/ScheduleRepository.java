@@ -9,11 +9,15 @@ import org.springframework.data.repository.query.Param;
 public interface ScheduleRepository
 		extends JpaRepository<Schedule, Long>, CustomScheduleRepository {
 
-	@Modifying
+	@Modifying(clearAutomatically = true)
 	@Query(
 			"update Schedule s set s.category.id = :defaultCategoryId where s.category.id ="
 					+ " :categoryId")
 	int updateCategorySetDefault(
 			@Param("defaultCategoryId") Long defaultCategoryId,
 			@Param("categoryId") Long categoryId);
+
+	@Modifying(clearAutomatically = true)
+	@Query("update Schedule s set s.deleted = true where s.calendar.id = :calendarId")
+	int deleteSchedulesInCalendar(@Param("calendarId") Long calendarId);
 }

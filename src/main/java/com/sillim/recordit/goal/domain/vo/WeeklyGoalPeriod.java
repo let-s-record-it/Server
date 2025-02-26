@@ -33,7 +33,6 @@ public class WeeklyGoalPeriod {
 		validateIsNotNull(week, startDate, endDate);
 		validateIsSunday(startDate);
 		validateDifferenceOfDate(startDate, endDate);
-		validateWeekContainsStartDate(week, startDate);
 		this.week = week;
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -62,26 +61,5 @@ public class WeeklyGoalPeriod {
 		if (ChronoUnit.DAYS.between(startDate, endDate) != 6) {
 			throw new InvalidPeriodException(ErrorCode.INVALID_DIFFERENCE_OF_DATE);
 		}
-	}
-
-	/* 주 목표의 시작일은 해당 주차에 포함되어 있어야 한다. */
-	private void validateWeekContainsStartDate(final Integer week, final LocalDate startDate) {
-		if (weekDoesNotContainsDate(week, startDate)) {
-			throw new InvalidPeriodException(ErrorCode.WEEK_NOT_CONTAINS_DATE);
-		}
-	}
-
-	private boolean weekDoesNotContainsDate(Integer currentWeek, LocalDate date) {
-		int year = date.getYear();
-		int month = date.getMonthValue();
-		LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
-		// 첫 주에 포함된 일 수 = 7 - (해당 월 첫날의 요일, monday: 1)
-		int totalDayOfFirstWeek = (7 - (firstDayOfMonth.getDayOfWeek().getValue() % 7));
-		int week =
-				Math.max(
-						0,
-						(int) Math.ceil((double) (date.getDayOfMonth() - totalDayOfFirstWeek) / 7)
-								+ 1);
-		return currentWeek != week;
 	}
 }

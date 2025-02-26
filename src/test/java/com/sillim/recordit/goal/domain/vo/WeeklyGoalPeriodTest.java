@@ -89,45 +89,4 @@ class WeeklyGoalPeriodTest {
 				.isInstanceOf(InvalidPeriodException.class)
 				.hasMessage(ErrorCode.INVALID_DIFFERENCE_OF_DATE.getDescription());
 	}
-
-	@Test
-	@DisplayName("주 목표의 시작일이 해당 주에 포함되지 않는다면 InvalidPeriodException이 발생한다.")
-	void validateWeekContainsStartDate() {
-
-		assertAll(
-				() -> {
-					assertThatThrownBy(
-									() ->
-											new WeeklyGoalPeriod(
-													4,
-													LocalDate.of(2023, 11, 26),
-													LocalDate.of(2023, 12, 2)))
-							.isInstanceOf(InvalidPeriodException.class)
-							.hasMessage(ErrorCode.WEEK_NOT_CONTAINS_DATE.getDescription());
-					assertThatThrownBy(
-									() ->
-											new WeeklyGoalPeriod(
-													2,
-													LocalDate.of(2023, 12, 10),
-													LocalDate.of(2023, 12, 16)))
-							.isInstanceOf(InvalidPeriodException.class)
-							.hasMessage(ErrorCode.WEEK_NOT_CONTAINS_DATE.getDescription());
-					assertThatThrownBy(
-									() ->
-											new WeeklyGoalPeriod(
-													4,
-													LocalDate.of(2023, 12, 10),
-													LocalDate.of(2023, 12, 16)))
-							.isInstanceOf(InvalidPeriodException.class)
-							.hasMessage(ErrorCode.WEEK_NOT_CONTAINS_DATE.getDescription());
-					assertThatThrownBy(
-									() ->
-											new WeeklyGoalPeriod(
-													5,
-													LocalDate.of(2023, 12, 31),
-													LocalDate.of(2024, 1, 6)))
-							.isInstanceOf(InvalidPeriodException.class)
-							.hasMessage(ErrorCode.WEEK_NOT_CONTAINS_DATE.getDescription());
-				});
-	}
 }

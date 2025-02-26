@@ -13,6 +13,7 @@ public record DayScheduleResponse(
 		boolean isAllDay,
 		LocalDateTime startDateTime,
 		LocalDateTime endDateTime,
+		Long categoryId,
 		String colorHex,
 		String place,
 		boolean setLocation,
@@ -37,6 +38,7 @@ public record DayScheduleResponse(
 				.isAllDay(schedule.isAllDay())
 				.startDateTime(schedule.getStartDateTime())
 				.endDateTime(schedule.getEndDateTime())
+				.categoryId(schedule.getCategory().getId())
 				.colorHex(schedule.getColorHex())
 				.place(schedule.getPlace())
 				.setLocation(schedule.isSetLocation())
