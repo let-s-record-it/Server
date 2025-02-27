@@ -27,14 +27,12 @@ public class WeeklyGoalQueryService {
 		return weeklyGoalRepository.findWeeklyGoalInMonth(year, month, calendarId);
 	}
 
-	public WeeklyGoal searchByIdAndCheckAuthority(final Long weeklyGoalId, final Long memberId) {
-
+	public WeeklyGoal searchByIdAndCheckAuthority(final Long weeklyGoalId) {
 		WeeklyGoal weeklyGoal =
 				weeklyGoalRepository
 						.findWeeklyGoalById(weeklyGoalId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.WEEKLY_GOAL_NOT_FOUND));
-		weeklyGoal.validateAuthenticatedMember(memberId);
 
 		return weeklyGoal;
 	}

@@ -32,4 +32,15 @@ class MemberCommandServiceTest {
 
 		then(member).should(times(1)).modifyInfo("name", "job");
 	}
+
+	@Test
+	@DisplayName("회원 탈퇴 할 수 있다.")
+	void withdrawMember() {
+		Member member = mock(Member.class);
+		BDDMockito.given(memberQueryService.findByMemberId(eq(1L))).willReturn(member);
+
+		memberCommandService.withdrawMember(1L);
+
+		then(member).should(times(1)).delete();
+	}
 }

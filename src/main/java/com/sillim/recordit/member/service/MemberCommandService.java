@@ -25,4 +25,8 @@ public class MemberCommandService {
 				.findByMemberId(memberId)
 				.modifyProfileImageUrl(imageUploadService.uploadImage(newImage));
 	}
+
+	public void withdrawMember(Long memberId) {
+		memberQueryService.findByMemberId(memberId).delete();
+	}
 }

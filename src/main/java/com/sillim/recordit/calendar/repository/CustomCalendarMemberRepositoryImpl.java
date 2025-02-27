@@ -59,4 +59,13 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 				.where(calendarMember.member.id.eq(memberId))
 				.fetch();
 	}
+
+	@Override
+	public void updateMemberIsNull(Long memberId) {
+		update(calendarMember)
+				.setNull(calendarMember.member)
+				.set(calendarMember.deleted, true)
+				.where(calendarMember.member.id.eq(memberId))
+				.execute();
+	}
 }

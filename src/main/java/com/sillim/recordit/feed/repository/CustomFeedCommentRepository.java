@@ -12,4 +12,6 @@ public interface CustomFeedCommentRepository {
 	Slice<FeedComment> findByMemberIdOrderByCreatedAtAsc(Pageable pageable, Long memberId);
 
 	Optional<FeedComment> findByIdWithFetch(Long commentId);
+
+	void updateMemberIsNull(Long memberId);
 }

@@ -54,7 +54,10 @@ class JwtAuthenticationFilterTest {
 		long memberId = 1L;
 		Member member =
 				Member.createNoJobMember(
-						new Auth("12345", OAuthProvider.KAKAO), "name", "https://image.url");
+						new Auth("12345", OAuthProvider.KAKAO),
+						"name",
+						"test@mail.com",
+						"https://image.url");
 		given(jwtValidator.getMemberIdIfValid(eq("token"))).willReturn(memberId);
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(authorizedUserMapper.toAuthorizedUser(member))

@@ -61,4 +61,13 @@ public class CustomFeedRepositoryImpl extends QuerydslRepositorySupport
 
 		return new SliceImpl<>(feeds, pageable, hasNext(pageable, feeds));
 	}
+
+	@Override
+	public void updateMemberIsNull(Long memberId) {
+		update(feed)
+				.setNull(feed.member)
+				.set(feed.deleted, true)
+				.where(feed.member.id.eq(memberId))
+				.execute();
+	}
 }

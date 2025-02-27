@@ -102,7 +102,7 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 	@DisplayName("당월의 주 목표 목록을 조회한다.")
 	void weeklyGoalList() throws Exception {
 
-		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
+		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
 
 		List<WeeklyGoal> weeklyGoals =
 				LongStream.rangeClosed(1, 3)
@@ -111,7 +111,7 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 									WeeklyGoal goal =
 											spy(
 													WeeklyGoalFixture.DEFAULT.getWithMember(
-															category, member, calendar));
+															category, calendar));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
@@ -207,12 +207,10 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 	@DisplayName("특정 id의 주 목표를 상세하게 조회한다.")
 	void weeklyGoalDetailsTest() throws Exception {
 
-		WeeklyGoal weeklyGoal =
-				spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
+		WeeklyGoal weeklyGoal = spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
 		given(weeklyGoal.getId()).willReturn(1L);
 
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(anyLong(), any()))
-				.willReturn(weeklyGoal);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(anyLong())).willReturn(weeklyGoal);
 
 		ResultActions perform =
 				mockMvc.perform(

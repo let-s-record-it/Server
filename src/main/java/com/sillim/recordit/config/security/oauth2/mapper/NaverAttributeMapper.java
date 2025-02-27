@@ -13,7 +13,7 @@ public class NaverAttributeMapper implements AttributeMapper {
 		Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 		String account = (String) response.get("id");
 		String name = (String) response.get("name");
-		String email = (String) response.getOrDefault("email", "");
+		String email = (String) response.get("email");
 		String imageUrl = (String) response.getOrDefault("profile_image", "");
 
 		return new OAuth2Request(account, OAuthProvider.NAVER, name, imageUrl, email);

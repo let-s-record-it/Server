@@ -13,6 +13,7 @@ import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
@@ -22,7 +23,6 @@ import com.sillim.recordit.goal.dto.request.MonthlyGoalUpdateRequest;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
 import com.sillim.recordit.goal.repository.MonthlyGoalRepository;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.service.MemberQueryService;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,8 +36,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class MonthlyGoalUpdateServiceTest {
 
 	@Mock MonthlyGoalQueryService monthlyGoalQueryService;
-	@Mock MemberQueryService memberQueryService;
 	@Mock CalendarQueryService calendarQueryService;
+	@Mock CalendarMemberService calendarMemberService;
 	@Mock MonthlyGoalRepository monthlyGoalRepository;
 	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
 	@InjectMocks MonthlyGoalUpdateService monthlyGoalUpdateService;
@@ -71,8 +71,6 @@ public class MonthlyGoalUpdateServiceTest {
 						categoryId,
 						calendarId);
 		MonthlyGoal saved = mock(MonthlyGoal.class);
-		given(member.equalsId(eq(memberId))).willReturn(true);
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(scheduleCategoryQueryService.searchScheduleCategory(categoryId)).willReturn(category);
 		given(monthlyGoalRepository.save(any(MonthlyGoal.class))).willReturn(saved);
@@ -99,12 +97,10 @@ public class MonthlyGoalUpdateServiceTest {
 						LocalDate.of(2024, 5, 31),
 						categoryId,
 						calendarId);
-		MonthlyGoal monthlyGoal =
-				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
-		given(member.equalsId(eq(memberId))).willReturn(true);
+		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		given(scheduleCategoryQueryService.searchScheduleCategory(categoryId)).willReturn(category);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId)))
 				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.modify(request, monthlyGoalId, memberId);
@@ -124,9 +120,8 @@ public class MonthlyGoalUpdateServiceTest {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
 		Boolean status = true;
-		MonthlyGoal monthlyGoal =
-				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
-		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
+		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId)))
 				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
@@ -139,9 +134,8 @@ public class MonthlyGoalUpdateServiceTest {
 	void removeTest() {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
-		MonthlyGoal monthlyGoal =
-				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
-		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId), eq(memberId)))
+		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId)))
 				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.remove(monthlyGoalId, memberId);

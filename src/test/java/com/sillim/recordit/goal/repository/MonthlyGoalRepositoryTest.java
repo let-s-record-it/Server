@@ -48,12 +48,11 @@ public class MonthlyGoalRepositoryTest {
 	@DisplayName("새로운 월 목표 레코드를 저장한다.")
 	void saveTest() {
 		// given
-		final MonthlyGoal expected =
-				MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
+		final MonthlyGoal expected = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		// when
 		MonthlyGoal saved =
 				monthlyGoalRepository.save(
-						MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
+						MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar));
 
 		// then
 		// 자동 생성 필드가 null이 아닌지 검증
@@ -65,17 +64,15 @@ public class MonthlyGoalRepositoryTest {
 				.usingRecursiveComparison()
 				.ignoringFields("id", "member", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
-		assertThat(saved.getMember()).usingRecursiveComparison().isEqualTo(expected.getMember());
 	}
 
 	@Test
 	@DisplayName("기존의 월 목표 레코드를 갱신한다.")
 	void updateTest() {
 		// given
-		final MonthlyGoal expected =
-				MonthlyGoalFixture.MODIFIED.getWithMember(category, member, calendar);
+		final MonthlyGoal expected = MonthlyGoalFixture.MODIFIED.getWithMember(category, calendar);
 		MonthlyGoal actual =
-				em.persist(MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
+				em.persist(MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar));
 
 		// when, then
 		assertThatCode(
@@ -126,7 +123,7 @@ public class MonthlyGoalRepositoryTest {
 		// when
 		List<MonthlyGoal> foundList =
 				monthlyGoalRepository.findMonthlyGoalInMonth(
-						expectedYear, expectedMonth, member.getId(), calendar.getId());
+						expectedYear, expectedMonth, calendar.getId());
 		// then
 		assertThat(foundList).hasSize(2);
 		for (MonthlyGoal found : foundList) {

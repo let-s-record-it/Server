@@ -3,8 +3,7 @@ package com.sillim.recordit.member.controller;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentRequest;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,5 +60,16 @@ class MemberControllerTest extends RestDocsTest {
 
 		perform.andDo(print())
 				.andDo(document("my-feed-comments", getDocumentRequest(), getDocumentResponse()));
+	}
+
+	@Test
+	@DisplayName("회원 탈퇴한다.")
+	void withdraw() throws Exception {
+		ResultActions perform = mockMvc.perform(delete("/api/v1/members/me/withdraw"));
+
+		perform.andExpect(status().isNoContent());
+
+		perform.andDo(print())
+				.andDo(document("member-withdraw", getDocumentRequest(), getDocumentResponse()));
 	}
 }

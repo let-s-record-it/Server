@@ -11,6 +11,7 @@ public enum MemberFixture {
 			new Auth("123456", OAuthProvider.KAKAO),
 			"홍길동",
 			"개발자",
+			"test@mail.com",
 			"https://image.url",
 			false,
 			List.of(MemberRole.ROLE_USER)),
@@ -19,6 +20,7 @@ public enum MemberFixture {
 	private final Auth auth;
 	private final String name;
 	private final String job;
+	private final String email;
 	private final String profileImageUrl;
 	private final Boolean deleted;
 	private final List<MemberRole> memberRole;
@@ -27,12 +29,14 @@ public enum MemberFixture {
 			Auth auth,
 			String name,
 			String job,
+			String email,
 			String profileImageUrl,
 			Boolean deleted,
 			List<MemberRole> memberRole) {
 		this.auth = auth;
 		this.name = name;
 		this.job = job;
+		this.email = email;
 		this.profileImageUrl = profileImageUrl;
 		this.deleted = deleted;
 		this.memberRole = memberRole;
@@ -43,6 +47,7 @@ public enum MemberFixture {
 				.auth(this.auth)
 				.name(this.name)
 				.job(this.job)
+				.email(this.email)
 				.profileImageUrl(this.profileImageUrl)
 				.deleted(this.deleted)
 				.memberRole(this.memberRole)
