@@ -27,8 +27,8 @@ public class CustomWeeklyGoalRepositoryImpl extends QuerydslRepositorySupport
 				.fetchJoin()
 				.where(weeklyGoal.calendar.id.eq(calendarId))
 				.where(containStartDateOrEndDate(year, month))
-				.where(notNextMonth(year, month))
-				.where(notPrevMonth(year, month))
+				.where(notNextMonth(month))
+				.where(notPrevMonth(month))
 				.fetch();
 	}
 
@@ -48,12 +48,12 @@ public class CustomWeeklyGoalRepositoryImpl extends QuerydslRepositorySupport
 								.and(weeklyGoal.period.endDate.month().eq(month)));
 	}
 
-	private BooleanExpression notNextMonth(Integer year, Integer month) {
+	private BooleanExpression notNextMonth(Integer month) {
 		return (weeklyGoal.period.endDate.month().ne(month).and(weeklyGoal.period.week.eq(1)))
 				.not();
 	}
 
-	private BooleanExpression notPrevMonth(Integer year, Integer month) {
+	private BooleanExpression notPrevMonth(Integer month) {
 		return (weeklyGoal.period.startDate.month().ne(month).and(weeklyGoal.period.week.ne(1)))
 				.not();
 	}

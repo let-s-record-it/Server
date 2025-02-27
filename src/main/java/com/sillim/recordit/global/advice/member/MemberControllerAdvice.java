@@ -3,6 +3,7 @@ package com.sillim.recordit.global.advice.member;
 import com.sillim.recordit.global.dto.response.ErrorResponse;
 import com.sillim.recordit.global.exception.member.InvalidAccessTokenException;
 import com.sillim.recordit.global.exception.member.InvalidIdTokenException;
+import com.sillim.recordit.global.exception.member.InvalidRejoinException;
 import com.sillim.recordit.global.util.LoggingUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,13 @@ public class MemberControllerAdvice {
 	public ResponseEntity<ErrorResponse> invalidAccessToken(InvalidAccessTokenException exception) {
 		LoggingUtils.exceptionLog(HttpStatus.UNAUTHORIZED, exception);
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(ErrorResponse.from(exception.getErrorCode(), exception.getMessage()));
+	}
+
+	@ExceptionHandler(InvalidRejoinException.class)
+	public ResponseEntity<ErrorResponse> invalidRejoin(InvalidRejoinException exception) {
+		LoggingUtils.exceptionLog(HttpStatus.BAD_REQUEST, exception);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 				.body(ErrorResponse.from(exception.getErrorCode(), exception.getMessage()));
 	}
 }

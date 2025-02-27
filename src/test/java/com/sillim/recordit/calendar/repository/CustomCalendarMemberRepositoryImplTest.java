@@ -70,6 +70,7 @@ class CustomCalendarMemberRepositoryImplTest {
 								new Auth("account", OAuthProvider.KAKAO),
 								"name",
 								"job",
+								"email",
 								"image",
 								false,
 								List.of()));

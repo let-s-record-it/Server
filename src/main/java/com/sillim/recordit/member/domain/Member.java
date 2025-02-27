@@ -11,6 +11,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,6 +24,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTime {
+
+	public static final int DO_NOT_REJOIN_DAYS = 14;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,11 +40,16 @@ public class Member extends BaseTime {
 	@Length(max = 20) @Column(nullable = false, length = 20)
 	private String job;
 
+	@Column(nullable = false, unique = true)
+	private String email;
+
 	@Column(nullable = false)
 	private String profileImageUrl;
 
 	@Column(nullable = false)
 	private Boolean deleted;
+
+	@Column private LocalDateTime deletedTime;
 
 	@Enumerated(EnumType.STRING)
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -53,22 +61,26 @@ public class Member extends BaseTime {
 			Auth auth,
 			String name,
 			String job,
+			String email,
 			String profileImageUrl,
 			Boolean deleted,
 			List<MemberRole> memberRole) {
 		this.auth = auth;
 		this.name = name;
 		this.job = job;
+		this.email = email;
 		this.profileImageUrl = profileImageUrl;
 		this.deleted = deleted;
 		this.memberRole = memberRole;
 	}
 
-	public static Member createNoJobMember(Auth auth, String name, String profileImageUrl) {
+	public static Member createNoJobMember(
+			Auth auth, String name, String email, String profileImageUrl) {
 		return Member.builder()
 				.auth(auth)
 				.name(name)
 				.job("")
+				.email(email)
 				.profileImageUrl(profileImageUrl)
 				.deleted(false)
 				.memberRole(List.of(MemberRole.ROLE_USER))
@@ -90,5 +102,14 @@ public class Member extends BaseTime {
 
 	public void modifyProfileImageUrl(String profileImageUrl) {
 		this.profileImageUrl = profileImageUrl;
+	}
+
+	public void delete() {
+		this.deleted = true;
+		this.deletedTime = LocalDateTime.now();
+	}
+
+	public boolean isCanRejoin() {
+		return this.deletedTime.plusDays(DO_NOT_REJOIN_DAYS).isBefore(LocalDateTime.now());
 	}
 }

@@ -242,7 +242,7 @@ public class TaskControllerTest extends RestDocsTest {
 		given(calendar.getId()).willReturn(calendarId);
 		Long monthlyGoalId = 2L;
 		MonthlyGoal monthlyGoal =
-				spy(MonthlyGoalFixture.DEFAULT.getWithMember(taskCategory, member, calendar));
+				spy(MonthlyGoalFixture.DEFAULT.getWithMember(taskCategory, calendar));
 		given(monthlyGoal.getId()).willReturn(monthlyGoalId);
 		TaskGroup taskGroup = new TaskGroup(monthlyGoal, null);
 		Long taskId = 3L;

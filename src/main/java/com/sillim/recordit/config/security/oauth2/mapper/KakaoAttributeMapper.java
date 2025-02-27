@@ -15,7 +15,7 @@ public class KakaoAttributeMapper implements AttributeMapper {
 		Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 		String name = (String) profile.getOrDefault("nickname", "");
 		String imageUrl = (String) profile.getOrDefault("profile_image_url", "");
-		String email = (String) kakaoAccount.getOrDefault("email", "");
+		String email = (String) kakaoAccount.get("email");
 		return new OAuth2Request(account, OAuthProvider.KAKAO, name, imageUrl, email);
 	}
 }

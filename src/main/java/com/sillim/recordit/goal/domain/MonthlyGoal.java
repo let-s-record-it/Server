@@ -3,12 +3,9 @@ package com.sillim.recordit.goal.domain;
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.domain.BaseTime;
-import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
 import com.sillim.recordit.goal.domain.vo.MonthlyGoalPeriod;
-import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -56,10 +53,6 @@ public class MonthlyGoal extends BaseTime {
 	private boolean deleted;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
-
-	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "calendar_id")
 	private Calendar calendar;
 
@@ -70,7 +63,6 @@ public class MonthlyGoal extends BaseTime {
 			final LocalDate startDate,
 			final LocalDate endDate,
 			final ScheduleCategory category,
-			final Member member,
 			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
@@ -78,7 +70,6 @@ public class MonthlyGoal extends BaseTime {
 		this.category = category;
 		this.achieved = false;
 		this.deleted = false;
-		this.member = member;
 		this.calendar = calendar;
 	}
 
@@ -98,12 +89,6 @@ public class MonthlyGoal extends BaseTime {
 
 	public void changeAchieveStatus(final Boolean status) {
 		this.achieved = status;
-	}
-
-	public void validateAuthenticatedMember(Long memberId) {
-		if (!isOwnedBy(memberId)) {
-			throw new InvalidRequestException(ErrorCode.MONTHLY_GOAL_ACCESS_DENIED);
-		}
 	}
 
 	public void remove() {
@@ -128,9 +113,5 @@ public class MonthlyGoal extends BaseTime {
 
 	public String getColorHex() {
 		return category.getColorHex();
-	}
-
-	private boolean isOwnedBy(Long memberId) {
-		return this.member.equalsId(memberId);
 	}
 }

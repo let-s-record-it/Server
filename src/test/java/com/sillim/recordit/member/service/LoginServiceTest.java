@@ -1,6 +1,7 @@
 package com.sillim.recordit.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -9,6 +10,8 @@ import static org.mockito.BDDMockito.given;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sillim.recordit.config.security.jwt.AuthorizationToken;
 import com.sillim.recordit.config.security.jwt.JwtProvider;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.member.InvalidRejoinException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.dto.oidc.IdToken;
@@ -38,6 +41,7 @@ class LoginServiceTest {
 	@Mock ObjectMapper objectMapper;
 	@Mock SignupService signupService;
 	@Mock MemberDeviceService memberDeviceService;
+	@Mock MemberDeleteService memberDeleteService;
 	@InjectMocks LoginService loginService;
 
 	@Test
@@ -48,7 +52,7 @@ class LoginServiceTest {
 		String idToken = "header.payload.signature";
 		String account = "account";
 		given(kakaoAuthenticationService.authenticate(any(IdToken.class))).willReturn(account);
-		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.of(member));
+		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.of(member));
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
 		AuthorizationToken authorizationToken =
@@ -73,9 +77,10 @@ class LoginServiceTest {
 		String idToken = "header.payload.signature";
 		String account = "account";
 		MemberInfo memberInfo =
-				new MemberInfo(account, OAuthProvider.KAKAO, "name", "https://image.url");
+				new MemberInfo(
+						account, OAuthProvider.KAKAO, "name", "test@mail.com", "https://image.url");
 		given(kakaoAuthenticationService.authenticate(any(IdToken.class))).willReturn(account);
-		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.empty());
+		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.empty());
 		given(kakaoAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
 		given(signupService.signup(eq(memberInfo))).willReturn(member);
@@ -102,10 +107,11 @@ class LoginServiceTest {
 		Member member = MemberFixture.DEFAULT.getMember();
 		String account = "account";
 		MemberInfo memberInfo =
-				new MemberInfo(account, OAuthProvider.NAVER, "name", "https://image.url");
+				new MemberInfo(
+						account, OAuthProvider.NAVER, "name", "test@mail.com", "https://image.url");
 		given(naverAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
-		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.of(member));
+		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.of(member));
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
 		AuthorizationToken authorizationToken =
@@ -124,10 +130,11 @@ class LoginServiceTest {
 		Member member = MemberFixture.DEFAULT.getMember();
 		String account = "account";
 		MemberInfo memberInfo =
-				new MemberInfo(account, OAuthProvider.NAVER, "name", "https://image.url");
+				new MemberInfo(
+						account, OAuthProvider.NAVER, "name", "test@mail.com", "https://image.url");
 		given(naverAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
-		given(memberRepository.findByAuthOauthAccount(eq(account))).willReturn(Optional.empty());
+		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.empty());
 		given(signupService.signup(eq(memberInfo))).willReturn(member);
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
@@ -138,5 +145,34 @@ class LoginServiceTest {
 
 		assertThat(authorizationToken.accessToken()).isEqualTo(target.accessToken());
 		assertThat(authorizationToken.refreshToken()).isEqualTo(target.refreshToken());
+	}
+
+	@Test
+	@DisplayName("탈퇴한지 14일이 안지난 유저가 로그인 요청을 하면 InvalidRejoinException이 발생한다.")
+	void throwInvalidRejoinExceptionWhenLoginIfWithdrawNotBeen14Days() {
+		Member member = MemberFixture.DEFAULT.getMember();
+		member.delete();
+		String account = "account";
+		String idToken = "header.payload.signature";
+		MemberInfo memberInfo =
+				new MemberInfo(
+						account, OAuthProvider.KAKAO, "name", "test@mail.com", "https://image.url");
+		given(kakaoAuthenticationService.authenticate(any(IdToken.class))).willReturn(account);
+		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.of(member));
+		given(kakaoAuthenticationService.getMemberInfoByAccessToken(anyString()))
+				.willReturn(memberInfo);
+
+		assertThatCode(
+						() ->
+								loginService.login(
+										new LoginRequest(
+												idToken,
+												"accessToken",
+												OAuthProvider.KAKAO,
+												"id",
+												"model",
+												"token")))
+				.isInstanceOf(InvalidRejoinException.class)
+				.hasMessage(ErrorCode.CAN_NOT_REJOIN.getDescription());
 	}
 }

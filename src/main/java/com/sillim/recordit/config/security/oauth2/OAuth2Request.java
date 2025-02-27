@@ -14,6 +14,7 @@ public record OAuth2Request(
 				.auth(new Auth(account, provider))
 				.name(name)
 				.job(job)
+				.email(email)
 				.profileImageUrl(imageUrl)
 				.memberRole(List.of(MemberRole.ROLE_USER))
 				.build();

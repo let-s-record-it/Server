@@ -60,9 +60,7 @@ public class MonthlyGoalController {
 			@PathVariable final Long calendarId,
 			@CurrentMember final Member member) {
 		return ResponseEntity.ok(
-				monthlyGoalQueryService
-						.searchAllByDate(year, month, member.getId(), calendarId)
-						.stream()
+				monthlyGoalQueryService.searchAllByDate(year, month, calendarId).stream()
 						.map(MonthlyGoalListResponse::from)
 						.toList());
 	}
@@ -73,7 +71,7 @@ public class MonthlyGoalController {
 
 		return ResponseEntity.ok(
 				MonthlyGoalDetailsResponse.from(
-						monthlyGoalQueryService.searchByIdAndCheckAuthority(id, member.getId())));
+						monthlyGoalQueryService.searchByIdAndCheckAuthority(id)));
 	}
 
 	@PatchMapping("/{id}/achieve")

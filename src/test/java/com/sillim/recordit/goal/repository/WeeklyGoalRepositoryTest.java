@@ -48,12 +48,11 @@ public class WeeklyGoalRepositoryTest {
 	@DisplayName("새로운 주 목표 레코드를 저장한다.")
 	void save() {
 		// given
-		final WeeklyGoal expected =
-				WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
+		final WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		// when
 		WeeklyGoal saved =
 				weeklyGoalRepository.save(
-						WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
+						WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
 
 		// then
 		// 자동 생성 필드가 null이 아닌지 검증
@@ -65,7 +64,6 @@ public class WeeklyGoalRepositoryTest {
 				.usingRecursiveComparison()
 				.ignoringFields("id", "member", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
-		assertThat(saved.getMember()).usingRecursiveComparison().isEqualTo(expected.getMember());
 	}
 
 	@Test
@@ -154,10 +152,10 @@ public class WeeklyGoalRepositoryTest {
 	@Test
 	@DisplayName("id에 해당하는 주 목표 레코드를 조회한다.")
 	void findWeeklyGoalByIdTest() {
-		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar);
+		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		WeeklyGoal saved =
 				weeklyGoalRepository.save(
-						WeeklyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
+						WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
 
 		Optional<WeeklyGoal> found = weeklyGoalRepository.findWeeklyGoalById(saved.getId());
 

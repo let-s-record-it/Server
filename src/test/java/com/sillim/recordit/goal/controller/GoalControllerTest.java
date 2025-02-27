@@ -67,13 +67,13 @@ public class GoalControllerTest extends RestDocsTest {
 									MonthlyGoal goal =
 											spy(
 													MonthlyGoalFixture.DEFAULT.getWithMember(
-															category, member, calendar));
+															category, calendar));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
 								})
 						.toList();
-		given(monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), any(), anyLong()))
+		given(monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), anyLong()))
 				.willReturn(monthlyGoals);
 		List<WeeklyGoal> weeklyGoals =
 				LongStream.rangeClosed(1, 2)
@@ -82,7 +82,7 @@ public class GoalControllerTest extends RestDocsTest {
 									WeeklyGoal goal =
 											spy(
 													WeeklyGoalFixture.DEFAULT.getWithMember(
-															category, member, calendar));
+															category, calendar));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;

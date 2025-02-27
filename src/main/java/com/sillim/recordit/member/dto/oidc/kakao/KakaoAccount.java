@@ -8,4 +8,5 @@ public record KakaoAccount(
 		Boolean profileNeedsAgreement,
 		Boolean profileNicknameNeedsAgreement,
 		Boolean profileImageNeedsAgreement,
+		String email,
 		KakaoProfile profile) {}

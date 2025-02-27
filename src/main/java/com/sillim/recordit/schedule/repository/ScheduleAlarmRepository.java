@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ScheduleAlarmRepository extends JpaRepository<ScheduleAlarm, Long> {
 
-	public List<ScheduleAlarm> findByScheduleId(Long scheduleId);
+	List<ScheduleAlarm> findByScheduleId(Long scheduleId);
 }

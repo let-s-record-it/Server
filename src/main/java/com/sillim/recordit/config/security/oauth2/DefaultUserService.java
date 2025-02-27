@@ -46,6 +46,7 @@ public class DefaultUserService extends DefaultOAuth2UserService {
 								oAuth2Request.account(),
 								oAuth2Request.provider(),
 								oAuth2Request.name(),
+								oAuth2Request.email(),
 								oAuth2Request.imageUrl())));
 	}
 }

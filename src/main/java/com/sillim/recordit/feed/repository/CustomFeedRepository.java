@@ -12,4 +12,6 @@ public interface CustomFeedRepository {
 	Slice<Feed> findOrderByCreatedAtDesc(Pageable pageable);
 
 	Slice<Feed> findByMemberIdOrderByCreatedAtDesc(Pageable pageable, Long memberId);
+
+	void updateMemberIsNull(Long memberId);
 }
