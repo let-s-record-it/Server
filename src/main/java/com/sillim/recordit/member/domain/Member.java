@@ -110,6 +110,6 @@ public class Member extends BaseTime {
 	}
 
 	public boolean isCanRejoin() {
-		return this.deletedTime.plusSeconds(DO_NOT_REJOIN_DAYS).isBefore(LocalDateTime.now());
+		return this.deletedTime.plusDays(DO_NOT_REJOIN_DAYS).isBefore(LocalDateTime.now());
 	}
 }
