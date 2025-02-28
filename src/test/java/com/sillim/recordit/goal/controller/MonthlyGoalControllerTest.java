@@ -174,14 +174,14 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 									MonthlyGoal goal =
 											spy(
 													MonthlyGoalFixture.DEFAULT.getWithMember(
-															category, member, calendar));
+															category, calendar));
 									given(goal.getId()).willReturn(id);
 									given(goal.isAchieved()).willReturn(id % 2 == 0);
 									return goal;
 								})
 						.toList();
 
-		given(monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), any(), anyLong()))
+		given(monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), anyLong()))
 				.willReturn(monthlyGoals);
 
 		ResultActions perform =
@@ -221,11 +221,10 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	@DisplayName("특정 id의 월 목표를 상세하게 조회한다.")
 	void monthlyGoalDetailsTest() throws Exception {
 
-		MonthlyGoal monthlyGoal =
-				spy(MonthlyGoalFixture.DEFAULT.getWithMember(category, member, calendar));
+		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar));
 		given(monthlyGoal.getId()).willReturn(1L);
 
-		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(anyLong(), any()))
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(anyLong()))
 				.willReturn(monthlyGoal);
 
 		ResultActions perform =
@@ -257,7 +256,7 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	@DisplayName("존재하지 않는 월 목표를 상세하게 조회할 경우 NOT FOUND 응답을 반환한다.")
 	void monthlyGoalDetailsNotFoundTest() throws Exception {
 
-		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(anyLong(), any()))
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(anyLong()))
 				.willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 
 		ResultActions perform =

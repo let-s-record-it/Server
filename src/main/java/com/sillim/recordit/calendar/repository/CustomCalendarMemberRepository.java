@@ -12,4 +12,6 @@ public interface CustomCalendarMemberRepository {
 	List<CalendarMember> findCalendarMembers(Long calendarId);
 
 	List<Calendar> findCalendarsByMemberId(Long memberId);
+
+	void updateMemberIsNull(Long memberId);
 }

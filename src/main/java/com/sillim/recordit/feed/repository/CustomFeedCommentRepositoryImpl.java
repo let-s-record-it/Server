@@ -61,4 +61,12 @@ public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport
 						.where(feedComment.id.eq(commentId))
 						.fetchFirst());
 	}
+
+	@Override
+	public void updateMemberIsNull(Long memberId) {
+		update(feedComment)
+				.setNull(feedComment.member)
+				.where(feedComment.member.id.eq(memberId))
+				.execute();
+	}
 }

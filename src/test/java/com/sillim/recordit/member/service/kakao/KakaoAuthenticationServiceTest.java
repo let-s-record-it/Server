@@ -84,6 +84,7 @@ class KakaoAuthenticationServiceTest {
 								false,
 								false,
 								false,
+								"test@mail.com",
 								new KakaoProfile("nickname", "image", "image", false, false)));
 		BDDMockito.given(kakaoUserInfoClient.getKakaoUserInfo(anyString()))
 				.willReturn(kakaoUserInfo);

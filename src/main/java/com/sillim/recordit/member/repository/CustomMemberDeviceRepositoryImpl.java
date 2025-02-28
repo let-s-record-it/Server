@@ -18,6 +18,7 @@ public class CustomMemberDeviceRepositoryImpl extends QuerydslRepositorySupport
 		return getJpaQueryFactory()
 				.select(memberDevice.fcmToken)
 				.from(memberDevice)
+				.where(memberDevice.member.deleted.isFalse())
 				.where(memberDevice.member.id.eq(memberId))
 				.fetch();
 	}

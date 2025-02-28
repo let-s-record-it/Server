@@ -28,7 +28,7 @@ public class GoalController {
 			@CurrentMember final Member member) {
 
 		List<MonthlyGoal> monthlyGoals =
-				monthlyGoalQueryService.searchAllByDate(year, month, member.getId(), calendarId);
+				monthlyGoalQueryService.searchAllByDate(year, month, calendarId);
 		List<WeeklyGoal> weeklyGoals =
 				weeklyGoalQueryService.searchAllWeeklyGoalByDate(
 						year, month, member.getId(), calendarId);

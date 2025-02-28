@@ -139,18 +139,17 @@ public class TaskGroupService {
 		}
 		if (monthlyGoalId == null) {
 			WeeklyGoal weeklyGoal =
-					weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
+					weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);
 			return RelatedGoals.from(weeklyGoal);
 		}
 		if (weeklyGoalId == null) {
 			MonthlyGoal monthlyGoal =
-					monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
+					monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
 			return RelatedGoals.from(monthlyGoal);
 		}
 		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId, memberId);
-		WeeklyGoal weeklyGoal =
-				weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId, memberId);
+				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
+		WeeklyGoal weeklyGoal = weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);
 		return RelatedGoals.of(monthlyGoal, weeklyGoal);
 	}
 }

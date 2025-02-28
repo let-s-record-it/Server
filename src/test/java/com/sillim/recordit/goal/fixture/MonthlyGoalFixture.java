@@ -23,7 +23,7 @@ public enum MonthlyGoalFixture {
 		this.endDate = endDate;
 	}
 
-	public MonthlyGoal getWithMember(ScheduleCategory category, Member member, Calendar calendar) {
+	public MonthlyGoal getWithMember(ScheduleCategory category, Calendar calendar) {
 
 		return MonthlyGoal.builder()
 				.title(title)
@@ -31,7 +31,6 @@ public enum MonthlyGoalFixture {
 				.startDate(startDate)
 				.endDate(endDate)
 				.category(category)
-				.member(member)
 				.calendar(calendar)
 				.build();
 	}
@@ -49,7 +48,6 @@ public enum MonthlyGoalFixture {
 				.startDate(startDate)
 				.endDate(endDate)
 				.category(category)
-				.member(member)
 				.calendar(calendar)
 				.build();
 	}

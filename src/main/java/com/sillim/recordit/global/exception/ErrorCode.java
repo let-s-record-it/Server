@@ -22,6 +22,7 @@ public enum ErrorCode {
 	JWT_INVALID_SIGNATURE("ERR_JWT_004", "JWT의 Signature가 유효하지 않습니다."),
 
 	MEMBER_NOT_FOUND("ERR_MEMBER_001", "요청한 멤버를 찾을 수 없습니다."),
+	CAN_NOT_REJOIN("ERR_MEMBER_002", "재가입 할 수 없는 멤버입니다."),
 
 	INVALID_KAKAO_TOKEN("ERR_KAKAO_001", "유효하지 않은 Kakao Access Token입니다."),
 

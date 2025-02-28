@@ -36,7 +36,7 @@ public class MonthlyUpdateRequestTest {
 				CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 
-		MonthlyGoal monthlyGoal = request.toEntity(category, member, calendar);
+		MonthlyGoal monthlyGoal = request.toEntity(category, calendar);
 		assertAll(
 				() -> {
 					assertThat(monthlyGoal.getTitle()).isEqualTo(request.title());
@@ -44,7 +44,6 @@ public class MonthlyUpdateRequestTest {
 					assertThat(monthlyGoal.getStartDate()).isEqualTo(request.startDate());
 					assertThat(monthlyGoal.getEndDate()).isEqualTo(request.endDate());
 					assertThat(monthlyGoal.isAchieved()).isEqualTo(false);
-					assertThat(monthlyGoal.getMember()).isEqualTo(member);
 				});
 	}
 }

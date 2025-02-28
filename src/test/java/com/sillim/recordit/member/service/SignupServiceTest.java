@@ -40,6 +40,7 @@ class SignupServiceTest {
 		String account = target.getAuth().getOauthAccount();
 		OAuthProvider provider = target.getAuth().getOauthProvider();
 		String name = target.getName();
+		String email = target.getEmail();
 		String profileImageUrl = target.getProfileImageUrl();
 		given(target.getId()).willReturn(memberId);
 		given(memberRepository.save(any(Member.class))).willReturn(target);
@@ -49,7 +50,8 @@ class SignupServiceTest {
 				.willReturn(Calendar.builder().title("일반").member(target).build());
 
 		Member member =
-				signupService.signup(new MemberInfo(account, provider, name, profileImageUrl));
+				signupService.signup(
+						new MemberInfo(account, provider, name, email, profileImageUrl));
 
 		assertThat(member.getAuth().getOauthAccount()).isEqualTo(account);
 		assertThat(member.getAuth().getOauthProvider()).isEqualTo(provider);

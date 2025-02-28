@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sillim.recordit.config.security.jwt.AuthorizationToken;
 import com.sillim.recordit.config.security.jwt.JwtProvider;
 import com.sillim.recordit.config.security.jwt.JwtValidator;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.member.InvalidRejoinException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.dto.oidc.IdToken;
@@ -33,6 +35,7 @@ public class LoginService {
 	private final MemberRepository memberRepository;
 	private final SignupService signupService;
 	private final MemberDeviceService memberDeviceService;
+	private final MemberDeleteService memberDeleteService;
 
 	public LoginService(
 			JwtProvider jwtProvider,
@@ -41,6 +44,7 @@ public class LoginService {
 			MemberRepository memberRepository,
 			SignupService signupService,
 			MemberDeviceService memberDeviceService,
+			MemberDeleteService memberDeleteService,
 			KakaoAuthenticationService kakaoAuthenticationService,
 			GoogleAuthenticationService googleAuthenticationService,
 			NaverAuthenticationService naverAuthenticationService) {
@@ -50,6 +54,7 @@ public class LoginService {
 		this.memberRepository = memberRepository;
 		this.signupService = signupService;
 		this.memberDeviceService = memberDeviceService;
+		this.memberDeleteService = memberDeleteService;
 		authenticationServiceMap.put(OAuthProvider.KAKAO, kakaoAuthenticationService);
 		authenticationServiceMap.put(OAuthProvider.GOOGLE, googleAuthenticationService);
 		authenticationServiceMap.put(OAuthProvider.NAVER, naverAuthenticationService);
@@ -69,18 +74,17 @@ public class LoginService {
 			return loginWithoutOidc(loginRequest, authenticationService);
 		}
 
+		String account = authenticationService.authenticate(parseToken(loginRequest.idToken()));
+		MemberInfo memberInfo =
+				authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
 		Member member =
 				memberRepository
-						.findByAuthOauthAccount(
-								authenticationService.authenticate(
-										parseToken(loginRequest.idToken())))
-						.orElseGet(
-								() ->
-										signupService.signup(
-												authenticationService.getMemberInfoByAccessToken(
-														loginRequest.accessToken())));
+						.findByAccount(account)
+						.orElseGet(() -> signupService.signup(memberInfo));
+		member = validateQuickRejoinMember(member, memberInfo);
 		memberDeviceService.addMemberDeviceIfNotExists(
 				loginRequest.deviceId(), loginRequest.model(), loginRequest.fcmToken(), member);
+
 		return jwtProvider.generateAuthorizationToken(member.getId());
 	}
 
@@ -88,11 +92,26 @@ public class LoginService {
 			LoginRequest loginRequest, AuthenticationService authenticationService) {
 		MemberInfo memberInfo =
 				authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
-		return jwtProvider.generateAuthorizationToken(
+		Member member =
 				memberRepository
-						.findByAuthOauthAccount(memberInfo.oauthAccount())
-						.orElseGet(() -> signupService.signup(memberInfo))
-						.getId());
+						.findByAccount(memberInfo.oauthAccount())
+						.orElseGet(() -> signupService.signup(memberInfo));
+		member = validateQuickRejoinMember(member, memberInfo);
+
+		return jwtProvider.generateAuthorizationToken(member.getId());
+	}
+
+	private Member validateQuickRejoinMember(Member member, MemberInfo memberInfo) {
+		if (!member.getDeleted()) {
+			return member;
+		}
+
+		if (member.isCanRejoin()) {
+			memberDeleteService.hardDeleteMember(member.getId());
+			return signupService.signup(memberInfo);
+		}
+
+		throw new InvalidRejoinException(ErrorCode.CAN_NOT_REJOIN);
 	}
 
 	private IdToken parseToken(String idToken) throws IOException {

@@ -3,10 +3,13 @@ package com.sillim.recordit.goal.repository;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface CustomWeeklyGoalRepository {
 
 	List<WeeklyGoal> findWeeklyGoalInMonth(Integer year, Integer month, Long calendarId);
 
-	Optional<WeeklyGoal> findWeeklyGoalById(Long id);
+	@Query("select wg from WeeklyGoal wg left join fetch wg.calendar where wg.id = :id")
+	Optional<WeeklyGoal> findWeeklyGoalById(@Param("id") Long id);
 }

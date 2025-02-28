@@ -9,4 +9,6 @@ public interface CustomCalendarRepository {
 	Optional<Calendar> findByIdWithFetchCategory(Long calendarId);
 
 	List<Calendar> findByMemberId(Long memberId);
+
+	void updateMemberIsNull(Long memberId);
 }

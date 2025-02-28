@@ -4,7 +4,6 @@ import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
-import com.sillim.recordit.member.domain.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -21,8 +20,7 @@ public record WeeklyGoalUpdateRequest(
 		Long calendarId,
 		Long relatedMonthlyGoalId) {
 
-	public WeeklyGoal toEntity(
-			final ScheduleCategory category, final Member member, final Calendar calendar) {
+	public WeeklyGoal toEntity(final ScheduleCategory category, final Calendar calendar) {
 
 		return WeeklyGoal.builder()
 				.title(title)
@@ -31,7 +29,6 @@ public record WeeklyGoalUpdateRequest(
 				.startDate(startDate)
 				.endDate(endDate)
 				.category(category)
-				.member(member)
 				.calendar(calendar)
 				.build();
 	}
@@ -39,7 +36,6 @@ public record WeeklyGoalUpdateRequest(
 	public WeeklyGoal toEntity(
 			final ScheduleCategory category,
 			final MonthlyGoal relatedMonthlyGoal,
-			final Member member,
 			final Calendar calendar) {
 
 		return WeeklyGoal.builder()
@@ -50,7 +46,6 @@ public record WeeklyGoalUpdateRequest(
 				.endDate(endDate)
 				.category(category)
 				.relatedMonthlyGoal(relatedMonthlyGoal)
-				.member(member)
 				.calendar(calendar)
 				.build();
 	}

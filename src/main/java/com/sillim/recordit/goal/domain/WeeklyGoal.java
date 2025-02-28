@@ -3,12 +3,9 @@ package com.sillim.recordit.goal.domain;
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.domain.BaseTime;
-import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
 import com.sillim.recordit.goal.domain.vo.WeeklyGoalPeriod;
-import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -56,10 +53,6 @@ public class WeeklyGoal extends BaseTime {
 	@JoinColumn(name = "monthly_goal_id")
 	private MonthlyGoal relatedMonthlyGoal;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
-
 	@Column(nullable = false)
 	@ColumnDefault("false")
 	private boolean deleted;
@@ -77,7 +70,6 @@ public class WeeklyGoal extends BaseTime {
 			final LocalDate endDate,
 			final ScheduleCategory category,
 			final MonthlyGoal relatedMonthlyGoal,
-			final Member member,
 			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
@@ -85,19 +77,12 @@ public class WeeklyGoal extends BaseTime {
 		this.category = category;
 		this.achieved = false;
 		this.relatedMonthlyGoal = relatedMonthlyGoal;
-		this.member = member;
 		this.calendar = calendar;
 		this.deleted = false;
 	}
 
 	public void changeAchieveStatus(final Boolean status) {
 		this.achieved = status;
-	}
-
-	public void validateAuthenticatedMember(final Long memberId) {
-		if (!isOwnedBy(memberId)) {
-			throw new InvalidRequestException(ErrorCode.WEEKLY_GOAL_ACCESS_DENIED);
-		}
 	}
 
 	public void modify(
@@ -170,9 +155,5 @@ public class WeeklyGoal extends BaseTime {
 
 	public Optional<MonthlyGoal> getRelatedMonthlyGoal() {
 		return Optional.ofNullable(relatedMonthlyGoal);
-	}
-
-	private boolean isOwnedBy(Long memberId) {
-		return this.member.equalsId(memberId);
 	}
 }

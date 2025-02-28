@@ -78,7 +78,7 @@ public class WeeklyGoalController {
 
 		return ResponseEntity.ok(
 				WeeklyGoalDetailsResponse.from(
-						weeklyGoalQueryService.searchByIdAndCheckAuthority(id, member.getId())));
+						weeklyGoalQueryService.searchByIdAndCheckAuthority(id)));
 	}
 
 	@PutMapping("/{id}")

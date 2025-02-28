@@ -7,4 +7,6 @@ public interface MemberDeviceRepository
 		extends JpaRepository<MemberDevice, Long>, CustomMemberDeviceRepository {
 
 	boolean existsByIdentifier(String identifier);
+
+	void deleteByMemberId(Long memberId);
 }

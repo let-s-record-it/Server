@@ -23,6 +23,6 @@ public class MemberQueryService {
 	}
 
 	public Optional<Member> searchByAccount(String account) {
-		return memberRepository.findByAuthOauthAccount(account);
+		return memberRepository.findByAccount(account);
 	}
 }

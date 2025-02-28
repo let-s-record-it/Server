@@ -51,4 +51,10 @@ public class MemberController {
 
 		return ResponseEntity.noContent().build();
 	}
+
+	@DeleteMapping("/me/withdraw")
+	public ResponseEntity<Void> memberWithdrawal(@CurrentMember Member member) {
+		memberCommandService.withdrawMember(member.getId());
+		return ResponseEntity.noContent().build();
+	}
 }
