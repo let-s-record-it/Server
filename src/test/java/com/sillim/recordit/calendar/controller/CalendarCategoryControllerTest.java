@@ -13,7 +13,8 @@ import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.dto.request.CalendarCategoryAddRequest;
 import com.sillim.recordit.calendar.dto.request.CalendarCategoryModifyRequest;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
-import com.sillim.recordit.calendar.service.CalendarCategoryService;
+import com.sillim.recordit.calendar.service.CalendarCategoryCommandService;
+import com.sillim.recordit.calendar.service.CalendarCategoryQueryService;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
@@ -28,14 +29,15 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(CalendarCategoryController.class)
 class CalendarCategoryControllerTest extends RestDocsTest {
 
-	@MockBean CalendarCategoryService calendarCategoryService;
+	@MockBean CalendarCategoryQueryService calendarCategoryQueryService;
+	@MockBean CalendarCategoryCommandService calendarCategoryCommandService;
 
 	@Test
 	@DisplayName("캘린더 카테고리 리스트를 조회한다.")
 	void calendarCategoryList() throws Exception {
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		given(calendarCategoryService.searchCalendarCategories(any()))
+		given(calendarCategoryQueryService.searchCalendarCategories(any()))
 				.willReturn(List.of(category));
 
 		ResultActions perform = mockMvc.perform(get("/api/v1/calendar-categories"));

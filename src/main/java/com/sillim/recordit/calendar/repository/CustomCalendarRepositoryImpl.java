@@ -39,4 +39,12 @@ public class CustomCalendarRepositoryImpl extends QuerydslRepositorySupport
 	public void updateMemberIsNull(Long memberId) {
 		update(calendar).setNull(calendar.member).where(calendar.member.id.eq(memberId)).execute();
 	}
+
+	@Override
+	public void updateCategorySetDefault(Long defaultCategoryId, Long categoryId) {
+		update(calendar)
+				.set(calendar.category.id, defaultCategoryId)
+				.where(calendar.category.id.eq(categoryId))
+				.execute();
+	}
 }

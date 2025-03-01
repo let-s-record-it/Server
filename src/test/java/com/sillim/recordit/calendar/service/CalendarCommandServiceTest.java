@@ -35,7 +35,8 @@ class CalendarCommandServiceTest {
 	@Mock MemberQueryService memberQueryService;
 	@Mock CalendarQueryService calendarQueryService;
 	@Mock CalendarMemberService calendarMemberService;
-	@Mock CalendarCategoryService calendarCategoryService;
+	@Mock CalendarCategoryQueryService calendarCategoryQueryService;
+	@Mock CalendarCategoryCommandService calendarCategoryCommandService;
 	@Mock ScheduleCommandService scheduleCommandService;
 	@InjectMocks CalendarCommandService calendarCommandService;
 

@@ -11,4 +11,6 @@ public interface CustomCalendarRepository {
 	List<Calendar> findByMemberId(Long memberId);
 
 	void updateMemberIsNull(Long memberId);
+
+	void updateCategorySetDefault(Long defaultCategoryId, Long categoryId);
 }

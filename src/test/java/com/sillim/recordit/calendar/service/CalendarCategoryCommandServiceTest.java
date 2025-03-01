@@ -17,7 +17,6 @@ import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,40 +25,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class CalendarCategoryServiceTest {
+class CalendarCategoryCommandServiceTest {
 
+	@Mock CalendarCategoryQueryService calendarCategoryQueryService;
 	@Mock CalendarCategoryRepository calendarCategoryRepository;
 	@Mock MemberQueryService memberQueryService;
-	@InjectMocks CalendarCategoryService calendarCategoryService;
-
-	@Test
-	@DisplayName("특정 멤버의 캘린더 카테고리들을 조회할 수 있다.")
-	void searchCalendarCategoriesByMemberId() {
-		long memberId = 1L;
-		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		given(calendarCategoryRepository.findByDeletedIsFalseAndMemberId(eq(memberId)))
-				.willReturn(List.of(category));
-
-		List<CalendarCategory> categories =
-				calendarCategoryService.searchCalendarCategories(memberId);
-
-		assertThat(categories.get(0)).isEqualTo(category);
-	}
-
-	@Test
-	@DisplayName("특정 캘린더 카테고리를 조회할 수 있다.")
-	void searchCalendarCategory() {
-		long categoryId = 1L;
-		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		given(calendarCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
-
-		CalendarCategory foundCategory = calendarCategoryService.searchCalendarCategory(categoryId);
-
-		assertThat(foundCategory).isEqualTo(category);
-	}
+	@Mock CalendarCommandService calendarCommandService;
+	@InjectMocks CalendarCategoryCommandService calendarCategoryCommandService;
 
 	@Test
 	@DisplayName("기본 카테고리들을 추가할 수 있다.")
@@ -70,7 +42,7 @@ class CalendarCategoryServiceTest {
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(calendarCategoryRepository.save(any(CalendarCategory.class))).willReturn(category);
 
-		List<Long> categoryIds = calendarCategoryService.addDefaultCategories(memberId);
+		List<Long> categoryIds = calendarCategoryCommandService.addDefaultCategories(memberId);
 
 		assertThat(categoryIds).hasSize(8);
 	}
@@ -87,7 +59,7 @@ class CalendarCategoryServiceTest {
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(calendarCategoryRepository.save(any(CalendarCategory.class))).willReturn(category);
 
-		Long id = calendarCategoryService.addCategory(request, memberId);
+		Long id = calendarCategoryCommandService.addCategory(request, memberId);
 
 		assertThat(id).isEqualTo(categoryId);
 	}
@@ -100,10 +72,13 @@ class CalendarCategoryServiceTest {
 		CalendarCategory category = mock(CalendarCategory.class);
 		CalendarCategoryModifyRequest request = new CalendarCategoryModifyRequest("aabbff", "name");
 		given(category.isOwner(eq(memberId))).willReturn(true);
-		given(calendarCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
+		given(calendarCategoryQueryService.searchCalendarCategory(eq(categoryId)))
+				.willReturn(category);
 
-		assertThatCode(() -> calendarCategoryService.modifyCategory(request, categoryId, memberId))
+		assertThatCode(
+						() ->
+								calendarCategoryCommandService.modifyCategory(
+										request, categoryId, memberId))
 				.doesNotThrowAnyException();
 	}
 
@@ -115,10 +90,13 @@ class CalendarCategoryServiceTest {
 		CalendarCategory category = mock(CalendarCategory.class);
 		CalendarCategoryModifyRequest request = new CalendarCategoryModifyRequest("aabbff", "name");
 		given(category.isOwner(eq(memberId))).willReturn(false);
-		given(calendarCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
+		given(calendarCategoryQueryService.searchCalendarCategory(eq(categoryId)))
+				.willReturn(category);
 
-		assertThatCode(() -> calendarCategoryService.modifyCategory(request, categoryId, memberId))
+		assertThatCode(
+						() ->
+								calendarCategoryCommandService.modifyCategory(
+										request, categoryId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_CALENDAR_CATEGORY_GET_REQUEST.getDescription());
 	}
@@ -130,10 +108,10 @@ class CalendarCategoryServiceTest {
 		long categoryId = 2L;
 		CalendarCategory category = mock(CalendarCategory.class);
 		given(category.isOwner(eq(memberId))).willReturn(true);
-		given(calendarCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
+		given(calendarCategoryQueryService.searchCalendarCategory(eq(categoryId)))
+				.willReturn(category);
 
-		assertThatCode(() -> calendarCategoryService.removeCategory(categoryId, memberId))
+		assertThatCode(() -> calendarCategoryCommandService.removeCategory(categoryId, memberId))
 				.doesNotThrowAnyException();
 	}
 
@@ -144,10 +122,10 @@ class CalendarCategoryServiceTest {
 		long categoryId = 2L;
 		CalendarCategory category = mock(CalendarCategory.class);
 		given(category.isOwner(eq(memberId))).willReturn(false);
-		given(calendarCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
+		given(calendarCategoryQueryService.searchCalendarCategory(eq(categoryId)))
+				.willReturn(category);
 
-		assertThatCode(() -> calendarCategoryService.removeCategory(categoryId, memberId))
+		assertThatCode(() -> calendarCategoryCommandService.removeCategory(categoryId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_CALENDAR_CATEGORY_GET_REQUEST.getDescription());
 	}
