@@ -22,12 +22,12 @@ public class CalendarCommandService {
 	private final MemberQueryService memberQueryService;
 	private final CalendarQueryService calendarQueryService;
 	private final CalendarMemberService calendarMemberService;
-	private final CalendarCategoryService calendarCategoryService;
+	private final CalendarCategoryQueryService calendarCategoryQueryService;
 	private final ScheduleCommandService scheduleCommandService;
 
 	public Calendar addCalendar(CalendarAddRequest request, Long memberId) {
 		CalendarCategory calendarCategory =
-				calendarCategoryService.searchCalendarCategory(request.calendarCategoryId());
+				calendarCategoryQueryService.searchCalendarCategory(request.calendarCategoryId());
 		Calendar calendar =
 				calendarRepository.save(
 						request.toCalendar(
@@ -44,7 +44,7 @@ public class CalendarCommandService {
 
 		calendar.modify(
 				request.title(),
-				calendarCategoryService.searchCalendarCategory(request.calendarCategoryId()));
+				calendarCategoryQueryService.searchCalendarCategory(request.calendarCategoryId()));
 	}
 
 	public void removeByCalendarId(Long calendarId, Long ownerId) {
@@ -56,5 +56,11 @@ public class CalendarCommandService {
 		calendarMemberService.removeCalendarMembersInCalendar(calendarId, ownerId);
 		scheduleCommandService.removeSchedulesInCalendar(calendarId);
 		calendar.delete();
+	}
+
+	public void replaceCalendarCategoriesWithDefault(Long categoryId, Long memberId) {
+		CalendarCategory defaultCategory =
+				calendarCategoryQueryService.searchDefaultCategory(memberId);
+		calendarRepository.updateCategorySetDefault(defaultCategory.getId(), categoryId);
 	}
 }

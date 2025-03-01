@@ -67,8 +67,8 @@ public class ScheduleCategoryCommandService {
 		if (!scheduleCategory.isOwner(memberId) || scheduleCategory.isDefault()) {
 			throw new InvalidRequestException(ErrorCode.INVALID_SCHEDULE_CATEGORY_GET_REQUEST);
 		}
+		scheduleCategory.delete();
 		scheduleCommandService.replaceScheduleCategoriesWithDefaultCategory(categoryId, memberId);
 		taskCommandService.replaceTaskCategoriesWithDefaultCategory(categoryId, memberId);
-		scheduleCategory.delete();
 	}
 }
