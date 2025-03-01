@@ -11,6 +11,8 @@ public interface CalendarCategoryRepository extends JpaRepository<CalendarCatego
 
 	List<CalendarCategory> findByDeletedIsFalseAndMemberId(Long memberId);
 
+	CalendarCategory findByDeletedIsFalseAndMemberIdAndIsDefaultIsTrue(Long memberId);
+
 	@Modifying(clearAutomatically = true)
 	@Query(
 			"update CalendarCategory cc set cc.member = null, cc.deleted = true where cc.member.id"

@@ -7,7 +7,6 @@ import com.sillim.recordit.calendar.repository.CalendarCategoryRepository;
 import com.sillim.recordit.enums.color.InitialColor;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
-import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
 import java.util.Arrays;
@@ -19,23 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CalendarCategoryService {
+public class CalendarCategoryCommandService {
 
 	private final CalendarCategoryRepository calendarCategoryRepository;
+	private final CalendarCategoryQueryService calendarCategoryQueryService;
 	private final MemberQueryService memberQueryService;
-
-	@Transactional(readOnly = true)
-	public List<CalendarCategory> searchCalendarCategories(Long memberId) {
-		return calendarCategoryRepository.findByDeletedIsFalseAndMemberId(memberId);
-	}
-
-	@Transactional(readOnly = true)
-	public CalendarCategory searchCalendarCategory(Long categoryId) {
-		return calendarCategoryRepository
-				.findById(categoryId)
-				.orElseThrow(
-						() -> new RecordNotFoundException(ErrorCode.CALENDAR_CATEGORY_NOT_FOUND));
-	}
+	private final CalendarCommandService calendarCommandService;
 
 	public List<Long> addDefaultCategories(Long memberId) {
 		Member member = memberQueryService.findByMemberId(memberId);
@@ -62,7 +50,8 @@ public class CalendarCategoryService {
 
 	public void modifyCategory(
 			CalendarCategoryModifyRequest request, Long categoryId, Long memberId) {
-		CalendarCategory calendarCategory = searchCalendarCategory(categoryId);
+		CalendarCategory calendarCategory =
+				calendarCategoryQueryService.searchCalendarCategory(categoryId);
 		if (!calendarCategory.isOwner(memberId)) {
 			throw new InvalidRequestException(ErrorCode.INVALID_CALENDAR_CATEGORY_GET_REQUEST);
 		}
@@ -70,10 +59,12 @@ public class CalendarCategoryService {
 	}
 
 	public void removeCategory(Long categoryId, Long memberId) {
-		CalendarCategory calendarCategory = searchCalendarCategory(categoryId);
+		CalendarCategory calendarCategory =
+				calendarCategoryQueryService.searchCalendarCategory(categoryId);
 		if (!calendarCategory.isOwner(memberId) || calendarCategory.isDefault()) {
 			throw new InvalidRequestException(ErrorCode.INVALID_CALENDAR_CATEGORY_GET_REQUEST);
 		}
 		calendarCategory.delete();
+		calendarCommandService.replaceCalendarCategoriesWithDefault(categoryId, memberId);
 	}
 }

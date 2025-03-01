@@ -7,7 +7,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.service.CalendarCategoryService;
+import com.sillim.recordit.calendar.service.CalendarCategoryCommandService;
 import com.sillim.recordit.calendar.service.CalendarCommandService;
 import com.sillim.recordit.category.service.ScheduleCategoryCommandService;
 import com.sillim.recordit.member.domain.Member;
@@ -28,7 +28,7 @@ class SignupServiceTest {
 
 	@Mock MemberRepository memberRepository;
 	@Mock CalendarCommandService calendarCommandService;
-	@Mock CalendarCategoryService calendarCategoryService;
+	@Mock CalendarCategoryCommandService calendarCategoryCommandService;
 	@Mock ScheduleCategoryCommandService scheduleCategoryCommandService;
 	@InjectMocks SignupService signupService;
 
@@ -44,7 +44,7 @@ class SignupServiceTest {
 		String profileImageUrl = target.getProfileImageUrl();
 		given(target.getId()).willReturn(memberId);
 		given(memberRepository.save(any(Member.class))).willReturn(target);
-		given(calendarCategoryService.addDefaultCategories(eq(memberId)))
+		given(calendarCategoryCommandService.addDefaultCategories(eq(memberId)))
 				.willReturn(List.of(1L, 2L, 3L, 4L));
 		given(calendarCommandService.addCalendar(any(), eq(memberId)))
 				.willReturn(Calendar.builder().title("일반").member(target).build());
