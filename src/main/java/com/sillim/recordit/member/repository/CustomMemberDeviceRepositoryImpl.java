@@ -22,4 +22,13 @@ public class CustomMemberDeviceRepositoryImpl extends QuerydslRepositorySupport
 				.where(memberDevice.member.id.eq(memberId))
 				.fetch();
 	}
+
+	@Override
+	public void updateFcmToken(String deviceId, String fcmToken, Long memberId) {
+		update(memberDevice)
+				.set(memberDevice.fcmToken, fcmToken)
+				.where(memberDevice.identifier.eq(deviceId))
+				.where(memberDevice.member.id.eq(memberId))
+				.execute();
+	}
 }
