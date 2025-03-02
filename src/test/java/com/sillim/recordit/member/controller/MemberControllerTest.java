@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sillim.recordit.feed.service.FeedCommentQueryService;
 import com.sillim.recordit.member.dto.request.ProfileModifyRequest;
 import com.sillim.recordit.member.service.MemberCommandService;
+import com.sillim.recordit.member.service.MemberDeviceService;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ class MemberControllerTest extends RestDocsTest {
 
 	@MockBean MemberCommandService memberCommandService;
 	@MockBean FeedCommentQueryService feedCommentQueryService;
+	@MockBean MemberDeviceService memberDeviceService;
 
 	@Test
 	@DisplayName("자신의 정보를 조회한다.")
