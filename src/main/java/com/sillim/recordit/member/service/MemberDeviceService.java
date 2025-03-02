@@ -17,7 +17,7 @@ public class MemberDeviceService {
 
 	public void addMemberDeviceIfNotExists(
 			String id, String model, String fcmToken, Member member) {
-		if (!memberDeviceRepository.existsByIdentifier(id)) {
+		if (!memberDeviceRepository.existsByIdentifierAndMemberId(id, member.getId())) {
 			memberDeviceRepository.save(
 					MemberDevice.builder()
 							.identifier(id)
@@ -26,6 +26,10 @@ public class MemberDeviceService {
 							.member(member)
 							.build());
 		}
+	}
+
+	public void updateFcmToken(String deviceId, String fcmToken, Long memberId) {
+		memberDeviceRepository.updateFcmToken(deviceId, fcmToken, memberId);
 	}
 
 	@Transactional(readOnly = true)

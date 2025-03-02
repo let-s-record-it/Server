@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MemberDeviceRepository
 		extends JpaRepository<MemberDevice, Long>, CustomMemberDeviceRepository {
 
-	boolean existsByIdentifier(String identifier);
+	boolean existsByIdentifierAndMemberId(String identifier, Long memberId);
 
 	void deleteByMemberId(Long memberId);
 }

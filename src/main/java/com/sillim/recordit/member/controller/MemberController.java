@@ -6,8 +6,10 @@ import com.sillim.recordit.feed.service.FeedCommentQueryService;
 import com.sillim.recordit.global.dto.response.SliceResponse;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.dto.request.ProfileModifyRequest;
+import com.sillim.recordit.member.dto.request.TokenUpdateRequest;
 import com.sillim.recordit.member.dto.response.ProfileResponse;
 import com.sillim.recordit.member.service.MemberCommandService;
+import com.sillim.recordit.member.service.MemberDeviceService;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class MemberController {
 
 	private final MemberCommandService memberCommandService;
 	private final FeedCommentQueryService feedCommentQueryService;
+	private final MemberDeviceService memberDeviceService;
 
 	@GetMapping("/me")
 	public ResponseEntity<ProfileResponse> profileDetails(@CurrentMember Member member) {
@@ -48,6 +51,14 @@ public class MemberController {
 	public ResponseEntity<Void> profileImageModify(
 			@RequestPart MultipartFile newImage, @CurrentMember Member member) throws IOException {
 		memberCommandService.modifyMemberProfileImage(newImage, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PutMapping("/me/fcmToken")
+	public ResponseEntity<Void> fcmTokenModify(
+			@RequestBody TokenUpdateRequest request, @CurrentMember Member member) {
+		memberDeviceService.updateFcmToken(request.deviceId(), request.fcmToken(), member.getId());
 
 		return ResponseEntity.noContent().build();
 	}
