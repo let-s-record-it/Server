@@ -39,9 +39,9 @@ public class WeeklyGoalRepositoryTest {
 	@BeforeEach
 	void beforeEach() {
 		member = em.persist(MemberFixture.DEFAULT.getMember());
-		category = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
 		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
 		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member, calendarCategory));
+		category = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 	}
 
 	@Test

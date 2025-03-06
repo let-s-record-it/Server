@@ -50,9 +50,9 @@ public class MonthlyGoalUpdateServiceTest {
 	@BeforeEach
 	void beforeEach() {
 		member = mock(Member.class);
-		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 
 	@Test

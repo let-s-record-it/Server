@@ -42,12 +42,12 @@ public class CustomTaskRepositoryTest {
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
 		em.persist(member);
-		taskCategory = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
 		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
 		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 		em.persist(calendar);
 		taskGroup = new TaskGroup(null, null);
 		em.persist(taskGroup);
+		taskCategory = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 	}
 
 	@Test
