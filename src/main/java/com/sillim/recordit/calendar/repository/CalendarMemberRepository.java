@@ -12,4 +12,6 @@ public interface CalendarMemberRepository
 	@Modifying(clearAutomatically = true)
 	@Query("update CalendarMember cm set cm.deleted = true where cm.calendar.id = :calendarId")
 	int deleteCalendarMembersInCalendar(@Param("calendarId") Long calendarId);
+
+	boolean existsByCalendarIdAndMemberId(Long calendarId, Long memberId);
 }

@@ -1,7 +1,7 @@
 package com.sillim.recordit.category.fixture;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
-import com.sillim.recordit.member.domain.Member;
 
 public enum ScheduleCategoryFixture {
 	DEFAULT("aaffbb", "랜덤색", true);
@@ -16,7 +16,7 @@ public enum ScheduleCategoryFixture {
 		this.isDefault = isDefault;
 	}
 
-	public ScheduleCategory getScheduleCategory(Member member) {
-		return new ScheduleCategory(colorHex, name, isDefault, member);
+	public ScheduleCategory getScheduleCategory(Calendar calendar) {
+		return new ScheduleCategory(colorHex, name, isDefault, calendar);
 	}
 }

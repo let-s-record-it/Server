@@ -245,13 +245,14 @@ public class ScheduleCommandService {
 				.forEach(Schedule::delete);
 	}
 
-	public void replaceScheduleCategoriesWithDefaultCategory(Long categoryId, Long memberId) {
+	public void replaceScheduleCategoriesWithDefaultCategory(
+			Long categoryId, Long calendarId, Long memberId) {
 		ScheduleCategory defaultCategory =
-				scheduleCategoryQueryService.searchDefaultCategory(memberId);
+				scheduleCategoryQueryService.searchDefaultCategory(calendarId, memberId);
 		scheduleRepository.updateCategorySetDefault(defaultCategory.getId(), categoryId);
 	}
 
-	public long removeSchedulesInCalendar(Long calendarId) {
-		return scheduleRepository.deleteSchedulesInCalendar(calendarId);
+	public void removeSchedulesInCalendar(Long calendarId) {
+		scheduleRepository.deleteSchedulesInCalendar(calendarId);
 	}
 }
