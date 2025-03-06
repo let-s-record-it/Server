@@ -14,6 +14,7 @@ import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.repository.CalendarRepository;
+import com.sillim.recordit.category.service.ScheduleCategoryCommandService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.calendar.InvalidCalendarException;
 import com.sillim.recordit.member.domain.Member;
@@ -38,6 +39,7 @@ class CalendarCommandServiceTest {
 	@Mock CalendarCategoryQueryService calendarCategoryQueryService;
 	@Mock CalendarCategoryCommandService calendarCategoryCommandService;
 	@Mock ScheduleCommandService scheduleCommandService;
+	@Mock ScheduleCategoryCommandService scheduleCategoryCommandService;
 	@InjectMocks CalendarCommandService calendarCommandService;
 
 	Member member;

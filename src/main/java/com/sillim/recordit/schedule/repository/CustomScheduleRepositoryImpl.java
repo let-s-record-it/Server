@@ -96,6 +96,22 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
 				.fetch();
 	}
 
+	@Override
+	public void updateCategorySetDefault(Long defaultCategoryId, Long categoryId) {
+		update(schedule)
+				.set(schedule.category.id, defaultCategoryId)
+				.where(schedule.category.id.eq(categoryId))
+				.execute();
+	}
+
+	@Override
+	public void deleteSchedulesInCalendar(Long calendarId) {
+		update(schedule)
+				.set(schedule.deleted, true)
+				.where(schedule.calendar.id.eq(calendarId))
+				.execute();
+	}
+
 	private static BooleanExpression endGoeMonth(Integer month) {
 		return schedule.scheduleDuration.endDateTime.month().goe(month);
 	}

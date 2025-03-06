@@ -61,9 +61,9 @@ class TaskCommandServiceTest {
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 
 	@Test

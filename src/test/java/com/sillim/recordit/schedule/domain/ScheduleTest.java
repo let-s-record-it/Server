@@ -36,7 +36,7 @@ class ScheduleTest {
 	@DisplayName("스케줄을 생성할 수 있다.")
 	void createSchedule() {
 		ScheduleCategory scheduleCategory =
-				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
 		ScheduleFixture fixture = ScheduleFixture.DEFAULT;
@@ -62,7 +62,7 @@ class ScheduleTest {
 	@DisplayName("위치 설정 여부가 false이면 위치 값에 null이 저장된다.")
 	void locationIsNullWhenSetLocationIsFalse() {
 		ScheduleCategory scheduleCategory =
-				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				ScheduleFixture.NOT_SET_LOCATION.getSchedule(
 						scheduleCategory, scheduleGroup, calendar);

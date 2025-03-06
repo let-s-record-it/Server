@@ -50,8 +50,8 @@ class TaskQueryServiceTest {
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		calendar = mock(Calendar.class);
+		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 
 	@Test

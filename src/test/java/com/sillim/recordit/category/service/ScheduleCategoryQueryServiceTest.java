@@ -4,6 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
+import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.category.repository.ScheduleCategoryRepository;
@@ -22,19 +27,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ScheduleCategoryQueryServiceTest {
 
 	@Mock ScheduleCategoryRepository scheduleCategoryRepository;
+	@Mock CalendarMemberService calendarMemberService;
 	@InjectMocks ScheduleCategoryQueryService scheduleCategoryQueryService;
 
 	@Test
 	@DisplayName("특정 멤버의 캘린더 카테고리들을 조회할 수 있다.")
 	void searchCalendarCategoriesByMemberId() {
-		long memberId = 1L;
+		long calendarId = 1L;
+		long memberId = 2L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
-		given(scheduleCategoryRepository.findByDeletedIsFalseAndMemberId(eq(memberId)))
+		CalendarCategory calendarCategory =
+				CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
+		given(scheduleCategoryRepository.findByDeletedIsFalseAndCalendarId(eq(calendarId)))
 				.willReturn(List.of(category));
 
 		List<ScheduleCategory> categories =
-				scheduleCategoryQueryService.searchScheduleCategories(memberId);
+				scheduleCategoryQueryService.searchScheduleCategories(calendarId, memberId);
 
 		assertThat(categories.get(0)).isEqualTo(category);
 	}
@@ -44,7 +54,10 @@ class ScheduleCategoryQueryServiceTest {
 	void searchCalendarCategory() {
 		long categoryId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		CalendarCategory calendarCategory =
+				CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		given(scheduleCategoryRepository.findById(eq(categoryId)))
 				.willReturn(Optional.of(category));
 

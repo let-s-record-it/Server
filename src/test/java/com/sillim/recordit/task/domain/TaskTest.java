@@ -28,9 +28,9 @@ class TaskTest {
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
 		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
 		taskGroup = new TaskGroup(null, null);
+		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 
 	@Test

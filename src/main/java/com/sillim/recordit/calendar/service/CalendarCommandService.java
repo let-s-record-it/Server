@@ -5,6 +5,7 @@ import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
 import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
 import com.sillim.recordit.calendar.repository.CalendarRepository;
+import com.sillim.recordit.category.service.ScheduleCategoryCommandService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.calendar.InvalidCalendarException;
 import com.sillim.recordit.member.service.MemberQueryService;
@@ -24,6 +25,7 @@ public class CalendarCommandService {
 	private final CalendarMemberService calendarMemberService;
 	private final CalendarCategoryQueryService calendarCategoryQueryService;
 	private final ScheduleCommandService scheduleCommandService;
+	private final ScheduleCategoryCommandService scheduleCategoryCommandService;
 
 	public Calendar addCalendar(CalendarAddRequest request, Long memberId) {
 		CalendarCategory calendarCategory =
@@ -33,6 +35,7 @@ public class CalendarCommandService {
 						request.toCalendar(
 								memberQueryService.findByMemberId(memberId), calendarCategory));
 		calendarMemberService.addCalendarMember(calendar.getId(), memberId);
+		scheduleCategoryCommandService.addInitialCategories(calendar.getId(), memberId);
 		return calendar;
 	}
 

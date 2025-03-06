@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.repository.query.Param;
 
 public interface CustomScheduleRepository {
 
@@ -19,4 +20,10 @@ public interface CustomScheduleRepository {
 	List<Schedule> findGroupSchedulesAfterCurrent(Long scheduleGroupId, LocalDateTime dateTime);
 
 	List<Schedule> findScheduleMatchedQuery(String query, Long calendarId);
+
+	void updateCategorySetDefault(
+			@Param("defaultCategoryId") Long defaultCategoryId,
+			@Param("categoryId") Long categoryId);
+
+	void deleteSchedulesInCalendar(@Param("calendarId") Long calendarId);
 }

@@ -97,7 +97,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						1L,
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(
 						category,
@@ -124,7 +124,7 @@ class ScheduleControllerTest extends RestDocsTest {
 	@DisplayName("상세 일정을 조회한다.")
 	void scheduleDetails() throws Exception {
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				Schedule.builder()
 						.title("title")
@@ -169,7 +169,7 @@ class ScheduleControllerTest extends RestDocsTest {
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
 		RepetitionPattern repetitionPattern =
 				RepetitionPatternFixture.WEEKLY.getRepetitionPattern(scheduleGroup);
-		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		DayScheduleResponse dayScheduleResponse =
 				DayScheduleResponse.of(
 						Schedule.builder()
@@ -219,7 +219,7 @@ class ScheduleControllerTest extends RestDocsTest {
 	@DisplayName("특정 달의 일정을 조회한다.")
 	void scheduleListInMonth() throws Exception {
 		long calendarId = 1L;
-		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(category, scheduleGroup, calendar);
 		MonthScheduleResponse monthScheduleResponse = MonthScheduleResponse.from(schedule);
@@ -248,7 +248,7 @@ class ScheduleControllerTest extends RestDocsTest {
 	void scheduleListInDay() throws Exception {
 		long calendarId = 1L;
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		DayScheduleResponse dayScheduleResponse =
 				DayScheduleResponse.of(
 						ScheduleFixture.DEFAULT.getSchedule(

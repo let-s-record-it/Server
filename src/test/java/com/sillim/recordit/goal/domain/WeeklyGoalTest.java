@@ -19,9 +19,9 @@ import org.junit.jupiter.api.Test;
 public class WeeklyGoalTest {
 
 	Member member = MemberFixture.DEFAULT.getMember();
-	ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 	CalendarCategory calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 	Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+	ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 
 	@Test
 	@DisplayName("주 목표를 수정할 수 있다.")
