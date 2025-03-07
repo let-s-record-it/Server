@@ -77,7 +77,7 @@ class ScheduleCommandServiceTest {
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)));
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		ScheduleCategory scheduleCategory =
-				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
@@ -141,7 +141,7 @@ class ScheduleCommandServiceTest {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleCategory scheduleCategory =
-				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
@@ -211,7 +211,7 @@ class ScheduleCommandServiceTest {
 		Calendar calendar1 = CalendarFixture.DEFAULT.getCalendar(member1, category1);
 		Calendar calendar2 = CalendarFixture.DEFAULT.getCalendar(member2, category2);
 		ScheduleCategory scheduleCategory =
-				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member1);
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar1);
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar1);
 		given(member1.equalsId(anyLong())).willReturn(true);
@@ -273,7 +273,7 @@ class ScheduleCommandServiceTest {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleCategory scheduleCategory =
-				spy(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+				spy(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 		Schedule schedule =
 				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
@@ -348,7 +348,7 @@ class ScheduleCommandServiceTest {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleCategory scheduleCategory =
-				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(schedule.getId()).willReturn(1L);
@@ -410,7 +410,7 @@ class ScheduleCommandServiceTest {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleCategory scheduleCategory =
-				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
 		given(member.equalsId(anyLong())).willReturn(true);
@@ -480,7 +480,7 @@ class ScheduleCommandServiceTest {
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		ScheduleCategory scheduleCategory =
-				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
 		given(member.equalsId(anyLong())).willReturn(false);
@@ -499,7 +499,7 @@ class ScheduleCommandServiceTest {
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		ScheduleCategory scheduleCategory =
-				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
 		given(member.equalsId(anyLong())).willReturn(false);

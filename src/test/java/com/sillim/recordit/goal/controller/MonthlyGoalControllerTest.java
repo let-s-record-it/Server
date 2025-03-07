@@ -65,9 +65,9 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
-		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 
 	@Test

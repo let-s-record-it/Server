@@ -53,7 +53,7 @@ class CustomScheduleRepositoryTest {
 	@DisplayName("schedule 저장 시 scheduleAlarm은 연관관계로 인해 같이 persist 된다.")
 	void saveSchedule() {
 		ScheduleCategory category =
-				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
 		ScheduleAddRequest scheduleAddRequest =
 				new ScheduleAddRequest(
@@ -83,7 +83,7 @@ class CustomScheduleRepositoryTest {
 	@DisplayName("년 월에 맞는 일정을 조회한다.")
 	void searchSchedules() {
 		ScheduleCategory category =
-				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 		ScheduleGroup scheduleGroup1 = em.persist(new ScheduleGroup(false));
 		ScheduleGroup scheduleGroup2 = em.persist(new ScheduleGroup(false));
 		ScheduleGroup scheduleGroup3 = em.persist(new ScheduleGroup(false));
@@ -139,7 +139,7 @@ class CustomScheduleRepositoryTest {
 	@DisplayName("년 월 일에 맞는 일정을 조회한다.")
 	void searchSchedulesInDay() {
 		ScheduleCategory category =
-				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 		ScheduleGroup scheduleGroup1 = em.persist(new ScheduleGroup(false));
 		ScheduleGroup scheduleGroup2 = em.persist(new ScheduleGroup(false));
 		ScheduleGroup scheduleGroup3 = em.persist(new ScheduleGroup(false));
@@ -213,7 +213,7 @@ class CustomScheduleRepositoryTest {
 	@DisplayName("schedule에서 scheduleAlarm 조회 시 lazy loading되어 조회된다.")
 	void findScheduleWithFetchLazyScheduleAlarms() {
 		ScheduleCategory category =
-				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
 		ScheduleAddRequest scheduleAddRequest =
 				new ScheduleAddRequest(
@@ -249,7 +249,7 @@ class CustomScheduleRepositoryTest {
 	@DisplayName("일정을 삭제하면 조회되지 않는다.")
 	void notSelectedWhenScheduleDeleted() {
 		ScheduleCategory category =
-				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
 		Schedule savedSchedule =
 				em.persist(ScheduleFixture.DEFAULT.getSchedule(category, scheduleGroup, calendar));
@@ -268,7 +268,7 @@ class CustomScheduleRepositoryTest {
 	@DisplayName("그룹 내 일정을 삭제하면 조회되지 않는다.")
 	void notSelectedWhenSchedulesDeletedInGroup() {
 		ScheduleCategory category =
-				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
 		em.persist(ScheduleFixture.DEFAULT.getSchedule(category, scheduleGroup, calendar));
 		em.persist(ScheduleFixture.DEFAULT.getSchedule(category, scheduleGroup, calendar));
@@ -286,7 +286,7 @@ class CustomScheduleRepositoryTest {
 	@DisplayName("그룹 내 특정 일 이후 일정을 삭제하면 모두 조회되지 않는다.")
 	void notSelectedWhenSchedulesDeletedInGroupAfter() {
 		ScheduleCategory category =
-				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member));
+				em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 		ScheduleGroup scheduleGroup = em.persist(new ScheduleGroup(false));
 		em.persist(
 				ScheduleFixture.DEFAULT.getSchedule(

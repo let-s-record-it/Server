@@ -68,6 +68,19 @@ class CalendarMemberServiceTest {
 	}
 
 	@Test
+	@DisplayName("캘린더 멤버인지 검증한다.")
+	void throwRecordNotFoundExceptionWhenCheckExistsCalendarMemberIfNotExistsCalendarMember() {
+		long calendarId = 1L;
+		long memberId = 1L;
+		given(calendarMemberRepository.existsByCalendarIdAndMemberId(eq(calendarId), eq(memberId)))
+				.willReturn(false);
+
+		assertThatCode(() -> calendarMemberService.validateCalendarMember(calendarId, memberId))
+				.isInstanceOf(RecordNotFoundException.class)
+				.hasMessage(ErrorCode.CALENDAR_MEMBER_NOT_FOUND.getDescription());
+	}
+
+	@Test
 	@DisplayName("캘린더 멤버를 추가할 수 있다.")
 	void addCalendarMember() {
 		long memberId = 1L;

@@ -1,8 +1,8 @@
 package com.sillim.recordit.category.domain;
 
+import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.vo.ScheduleCategoryName;
 import com.sillim.recordit.global.domain.BaseTime;
-import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.schedule.domain.vo.ScheduleColorHex;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -30,15 +30,15 @@ public class ScheduleCategory extends BaseTime {
 	private boolean deleted;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
+	@JoinColumn(name = "calendar_id")
+	private Calendar calendar;
 
-	public ScheduleCategory(String colorHex, String name, boolean isDefault, Member member) {
+	public ScheduleCategory(String colorHex, String name, boolean isDefault, Calendar calendar) {
 		this.colorHex = new ScheduleColorHex(colorHex);
 		this.name = new ScheduleCategoryName(name);
 		this.isDefault = isDefault;
 		this.deleted = false;
-		this.member = member;
+		this.calendar = calendar;
 	}
 
 	public String getColorHex() {
@@ -56,9 +56,5 @@ public class ScheduleCategory extends BaseTime {
 
 	public void delete() {
 		this.deleted = true;
-	}
-
-	public boolean isOwner(Long memberId) {
-		return member.getId().equals(memberId);
 	}
 }

@@ -194,9 +194,10 @@ public class TaskCommandService {
 				.forEach(temporalToTask);
 	}
 
-	public void replaceTaskCategoriesWithDefaultCategory(Long categoryId, Long memberId) {
+	public void replaceTaskCategoriesWithDefaultCategory(
+			Long categoryId, Long calendarId, Long memberId) {
 		ScheduleCategory defaultCategory =
-				scheduleCategoryQueryService.searchDefaultCategory(memberId);
+				scheduleCategoryQueryService.searchDefaultCategory(calendarId, memberId);
 		taskRepository.updateCategorySetDefault(defaultCategory.getId(), categoryId);
 	}
 }

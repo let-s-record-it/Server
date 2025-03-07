@@ -31,6 +31,13 @@ public class CalendarMemberService {
 	}
 
 	@Transactional(readOnly = true)
+	public void validateCalendarMember(Long calendarId, Long memberId) {
+		if (!calendarMemberRepository.existsByCalendarIdAndMemberId(calendarId, memberId)) {
+			throw new RecordNotFoundException(ErrorCode.CALENDAR_MEMBER_NOT_FOUND);
+		}
+	}
+
+	@Transactional(readOnly = true)
 	public List<CalendarMember> searchCalendarMembers(Long calendarId) {
 		return calendarMemberRepository.findCalendarMembers(calendarId);
 	}

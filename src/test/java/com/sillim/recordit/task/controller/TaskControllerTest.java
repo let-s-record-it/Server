@@ -69,7 +69,7 @@ public class TaskControllerTest extends RestDocsTest {
 		member = MemberFixture.DEFAULT.getMember();
 		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
-		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
+		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 
 	@Test

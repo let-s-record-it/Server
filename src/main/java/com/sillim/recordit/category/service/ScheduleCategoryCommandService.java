@@ -1,14 +1,13 @@
 package com.sillim.recordit.category.service;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
+import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.dto.request.ScheduleCategoryAddRequest;
 import com.sillim.recordit.category.dto.request.ScheduleCategoryModifyRequest;
 import com.sillim.recordit.category.repository.ScheduleCategoryRepository;
 import com.sillim.recordit.enums.color.InitialColor;
-import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.InvalidRequestException;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.service.MemberQueryService;
 import com.sillim.recordit.schedule.service.ScheduleCommandService;
 import com.sillim.recordit.task.service.TaskCommandService;
 import java.util.Arrays;
@@ -23,13 +22,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleCategoryCommandService {
 
 	private final ScheduleCategoryRepository scheduleCategoryRepository;
-	private final MemberQueryService memberQueryService;
+	private final CalendarQueryService calendarQueryService;
+	private final CalendarMemberService calendarMemberService;
 	private final ScheduleCommandService scheduleCommandService;
 	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
 	private final TaskCommandService taskCommandService;
 
-	public List<Long> addInitialCategories(Long memberId) {
-		Member member = memberQueryService.findByMemberId(memberId);
+	public List<Long> addInitialCategories(Long calendarId, Long memberId) {
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		return Arrays.stream(InitialColor.values())
 				.map(
 						color ->
@@ -39,36 +40,36 @@ public class ScheduleCategoryCommandService {
 														color.getColorHex(),
 														color.getName(),
 														color.isDefault(),
-														member))
+														calendar))
 										.getId())
 				.toList();
 	}
 
-	public Long addCategory(ScheduleCategoryAddRequest request, Long memberId) {
-		Member member = memberQueryService.findByMemberId(memberId);
+	public Long addCategory(ScheduleCategoryAddRequest request, Long calendarId, Long memberId) {
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		return scheduleCategoryRepository
-				.save(new ScheduleCategory(request.colorHex(), request.name(), false, member))
+				.save(new ScheduleCategory(request.colorHex(), request.name(), false, calendar))
 				.getId();
 	}
 
 	public void modifyCategory(
-			ScheduleCategoryModifyRequest request, Long categoryId, Long memberId) {
+			ScheduleCategoryModifyRequest request,
+			Long categoryId,
+			Long calendarId,
+			Long memberId) {
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
 		ScheduleCategory scheduleCategory =
 				scheduleCategoryQueryService.searchScheduleCategory(categoryId);
-		if (!scheduleCategory.isOwner(memberId)) {
-			throw new InvalidRequestException(ErrorCode.INVALID_SCHEDULE_CATEGORY_GET_REQUEST);
-		}
 		scheduleCategory.modify(request.colorHex(), request.name());
 	}
 
-	public void deleteCategory(Long categoryId, Long memberId) {
-		ScheduleCategory scheduleCategory =
-				scheduleCategoryQueryService.searchScheduleCategory(categoryId);
-		if (!scheduleCategory.isOwner(memberId) || scheduleCategory.isDefault()) {
-			throw new InvalidRequestException(ErrorCode.INVALID_SCHEDULE_CATEGORY_GET_REQUEST);
-		}
-		scheduleCategory.delete();
-		scheduleCommandService.replaceScheduleCategoriesWithDefaultCategory(categoryId, memberId);
-		taskCommandService.replaceTaskCategoriesWithDefaultCategory(categoryId, memberId);
+	public void deleteCategory(Long categoryId, Long calendarId, Long memberId) {
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
+		scheduleCategoryQueryService.searchScheduleCategory(categoryId).delete();
+		scheduleCommandService.replaceScheduleCategoriesWithDefaultCategory(
+				categoryId, calendarId, memberId);
+		taskCommandService.replaceTaskCategoriesWithDefaultCategory(
+				categoryId, calendarId, memberId);
 	}
 }

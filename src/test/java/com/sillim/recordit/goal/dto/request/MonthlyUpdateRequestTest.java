@@ -31,10 +31,10 @@ public class MonthlyUpdateRequestTest {
 						1L,
 						1L);
 		Member member = MemberFixture.DEFAULT.getMember();
-		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(member);
 		CalendarCategory calendarCategory =
 				CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 
 		MonthlyGoal monthlyGoal = request.toEntity(category, calendar);
 		assertAll(
