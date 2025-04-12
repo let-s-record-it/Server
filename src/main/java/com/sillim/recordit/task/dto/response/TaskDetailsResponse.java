@@ -52,6 +52,7 @@ public record TaskDetailsResponse(
 				.title(task.getTitle())
 				.description(task.getDescription())
 				.date(task.getDate())
+				.categoryId(task.getCategory().getId())
 				.colorHex(task.getColorHex())
 				.calendarId(task.getCalendar().getId())
 				.calendarTitle(task.getCalendar().getTitle())
