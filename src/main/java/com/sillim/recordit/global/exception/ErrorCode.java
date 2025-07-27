@@ -152,7 +152,8 @@ public enum ErrorCode {
 
 	FILE_GENERATE_FAIL("ERR_FILE_001", "새 파일을 생성할 수 없습니다."),
 	FILE_NOT_FOUND("ERR_FILE_002", "파일을 찾을 수 없습니다."),
-	;
+
+	FAILED_TO_ACQUIRE_REDIS_LOCK("ERR_REDIS_LOCK_001", "[RedisLock] failed to acquire lock");
 
 	private final String code;
 	@Getter private final String description;

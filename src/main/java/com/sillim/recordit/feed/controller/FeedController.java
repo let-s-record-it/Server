@@ -10,6 +10,7 @@ import com.sillim.recordit.feed.service.FeedLikeService;
 import com.sillim.recordit.feed.service.FeedQueryService;
 import com.sillim.recordit.feed.service.FeedScrapService;
 import com.sillim.recordit.global.dto.response.SliceResponse;
+import com.sillim.recordit.global.lock.RedisLockUtil;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
@@ -82,14 +83,24 @@ public class FeedController {
 
 	@PostMapping("/{feedId}/like")
 	public ResponseEntity<Void> feedLike(@PathVariable Long feedId, @CurrentMember Member member) {
-		feedLikeService.feedLike(feedId, member.getId());
+		RedisLockUtil.acquireAndRunLock(
+				feedId + ":" + member.getId(),
+				() -> {
+					feedLikeService.feedLike(feedId, member.getId());
+					return true;
+				});
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{feedId}/unlike")
 	public ResponseEntity<Void> feedUnlike(
 			@PathVariable Long feedId, @CurrentMember Member member) {
-		feedLikeService.feedUnlike(feedId, member.getId());
+		RedisLockUtil.acquireAndRunLock(
+				feedId + ":" + member.getId(),
+				() -> {
+					feedLikeService.feedUnlike(feedId, member.getId());
+					return true;
+				});
 		return ResponseEntity.noContent().build();
 	}
 

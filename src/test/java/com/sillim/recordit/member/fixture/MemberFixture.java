@@ -53,4 +53,16 @@ public enum MemberFixture {
 				.memberRole(this.memberRole)
 				.build();
 	}
+
+	public Member getMember(String email) {
+		return Member.builder()
+				.auth(this.auth)
+				.name(this.name)
+				.job(this.job)
+				.email(email)
+				.profileImageUrl(this.profileImageUrl)
+				.deleted(this.deleted)
+				.memberRole(this.memberRole)
+				.build();
+	}
 }
