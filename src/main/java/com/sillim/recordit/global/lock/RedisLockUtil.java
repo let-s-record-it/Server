@@ -13,12 +13,12 @@ public class RedisLockUtil {
 	private static LockManager lockManager;
 
 	public RedisLockUtil(LockManager lockManager) {
-		this.lockManager = lockManager;
+		RedisLockUtil.lockManager = lockManager;
 	}
 
 	public static <T> T acquireAndRunLock(String key, Supplier<T> block) {
 		if (key.isBlank()) {
-			log.error("[RedisLock] key is blank.");
+			log.error("[Redis] Key가 Blank 상태입니다.");
 			return block.get();
 		}
 
@@ -34,7 +34,7 @@ public class RedisLockUtil {
 		try {
 			return lockManager.lock(key);
 		} catch (Exception e) {
-			log.error("[RedisLock] failed to acquire lock. key: {} {}", key, e.getMessage());
+			log.error("[Redis] Lock 획득에 실패했습니다. key: {} {}", key, e.getMessage());
 			return false;
 		}
 	}
@@ -53,7 +53,7 @@ public class RedisLockUtil {
 		try {
 			return lockManager.unlock(key);
 		} catch (Exception e) {
-			log.error("[RedisLock] failed to release lock. key: {} {}", key, e.getMessage());
+			log.error("[Redis] Lock 해제에 실패했습니다. key: {} {}", key, e.getMessage());
 			return false;
 		}
 	}
