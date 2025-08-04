@@ -4,8 +4,7 @@ WORKDIR /app
 COPY . .
 
 RUN chmod +x ./gradlew
-RUN ./gradlew clean test
-RUN ./gradlew build
+RUN ./gradlew clean build
 
 FROM azul/zulu-openjdk-alpine:17-latest
 WORKDIR /app
