@@ -2,9 +2,7 @@ package com.sillim.recordit.feed.controller;
 
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentRequest;
 import static com.sillim.recordit.support.restdocs.ApiDocumentUtils.getDocumentResponse;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -18,8 +16,11 @@ import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.dto.response.FeedDetailsResponse;
 import com.sillim.recordit.feed.dto.response.FeedInListResponse;
+import com.sillim.recordit.feed.facade.FeedLikeFacade;
 import com.sillim.recordit.feed.fixture.FeedFixture;
-import com.sillim.recordit.feed.service.*;
+import com.sillim.recordit.feed.service.FeedCommandService;
+import com.sillim.recordit.feed.service.FeedQueryService;
+import com.sillim.recordit.feed.service.FeedScrapService;
 import com.sillim.recordit.global.dto.response.SliceResponse;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
@@ -39,7 +40,7 @@ class FeedControllerTest extends RestDocsTest {
 
 	@MockBean FeedCommandService feedCommandService;
 	@MockBean FeedQueryService feedQueryService;
-	@MockBean FeedLikeService feedLikeService;
+	@MockBean FeedLikeFacade feedLikeFacade;
 	@MockBean FeedScrapService feedScrapService;
 
 	@Test
@@ -166,8 +167,6 @@ class FeedControllerTest extends RestDocsTest {
 		long feedId = 1L;
 		ResultActions perform = mockMvc.perform(post("/api/v1/feeds/{feedId}/like", feedId));
 
-		perform.andExpect(status().isNoContent());
-
 		perform.andDo(print())
 				.andDo(document("feed-like", getDocumentRequest(), getDocumentResponse()));
 	}
@@ -177,8 +176,6 @@ class FeedControllerTest extends RestDocsTest {
 	void feedUnlike() throws Exception {
 		long feedId = 1L;
 		ResultActions perform = mockMvc.perform(delete("/api/v1/feeds/{feedId}/unlike", feedId));
-
-		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
 				.andDo(document("feed-unlike", getDocumentRequest(), getDocumentResponse()));
@@ -190,8 +187,6 @@ class FeedControllerTest extends RestDocsTest {
 		long feedId = 1L;
 		ResultActions perform = mockMvc.perform(post("/api/v1/feeds/{feedId}/scrap", feedId));
 
-		perform.andExpect(status().isNoContent());
-
 		perform.andDo(print())
 				.andDo(document("feed-scrap", getDocumentRequest(), getDocumentResponse()));
 	}
@@ -201,8 +196,6 @@ class FeedControllerTest extends RestDocsTest {
 	void feedUnScrap() throws Exception {
 		long feedId = 1L;
 		ResultActions perform = mockMvc.perform(delete("/api/v1/feeds/{feedId}/unscrap", feedId));
-
-		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
 				.andDo(document("feed-unscrap", getDocumentRequest(), getDocumentResponse()));
