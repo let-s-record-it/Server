@@ -45,6 +45,8 @@ public class Feed extends BaseTime {
 
 	@Embedded private FeedImages feedImages;
 
+	@Version private Long version;
+
 	public Feed(String title, String content, Member member, List<String> feedImageUrls) {
 		this.title = new FeedTitle(title);
 		this.content = new FeedContent(content);

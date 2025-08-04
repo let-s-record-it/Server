@@ -5,11 +5,14 @@ import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.dto.request.FeedModifyRequest;
 import com.sillim.recordit.feed.dto.response.FeedDetailsResponse;
 import com.sillim.recordit.feed.dto.response.FeedInListResponse;
+import com.sillim.recordit.feed.facade.FeedLikeFacade;
 import com.sillim.recordit.feed.service.FeedCommandService;
-import com.sillim.recordit.feed.service.FeedLikeService;
 import com.sillim.recordit.feed.service.FeedQueryService;
 import com.sillim.recordit.feed.service.FeedScrapService;
 import com.sillim.recordit.global.dto.response.SliceResponse;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.ApplicationException;
+import com.sillim.recordit.global.lock.RedisLockUtil;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
@@ -17,12 +20,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/api/v1/feeds")
@@ -31,8 +36,8 @@ public class FeedController {
 
 	private final FeedCommandService feedCommandService;
 	private final FeedQueryService feedQueryService;
-	private final FeedLikeService feedLikeService;
 	private final FeedScrapService feedScrapService;
+	private final FeedLikeFacade feedLikeFacade;
 
 	@PostMapping
 	public ResponseEntity<Void> feedAdd(
@@ -82,27 +87,55 @@ public class FeedController {
 
 	@PostMapping("/{feedId}/like")
 	public ResponseEntity<Void> feedLike(@PathVariable Long feedId, @CurrentMember Member member) {
-		feedLikeService.feedLike(feedId, member.getId());
+		RedisLockUtil.acquireAndRunLock(
+				"feed_like:" + feedId + ":" + member.getId(),
+				() -> {
+					try {
+						feedLikeFacade.feedLikeRetry(feedId, member.getId(), 10);
+					} catch (InterruptedException e) {
+						throw new ApplicationException(ErrorCode.INTERRUPTED);
+					}
+					return true;
+				});
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{feedId}/unlike")
 	public ResponseEntity<Void> feedUnlike(
 			@PathVariable Long feedId, @CurrentMember Member member) {
-		feedLikeService.feedUnlike(feedId, member.getId());
+		RedisLockUtil.acquireAndRunLock(
+				"feed_like:" + feedId + ":" + member.getId(),
+				() -> {
+					try {
+						feedLikeFacade.feedUnlikeRetry(feedId, member.getId(), 10);
+					} catch (InterruptedException e) {
+						throw new ApplicationException(ErrorCode.INTERRUPTED);
+					}
+					return true;
+				});
 		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/{feedId}/scrap")
 	public ResponseEntity<Void> feedScrap(@PathVariable Long feedId, @CurrentMember Member member) {
-		feedScrapService.feedScrap(feedId, member.getId());
+		RedisLockUtil.acquireAndRunLock(
+				"feed_scrap:" + feedId + ":" + member.getId(),
+				() -> {
+					feedScrapService.feedScrap(feedId, member.getId());
+					return true;
+				});
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{feedId}/unscrap")
 	public ResponseEntity<Void> feedUnScrap(
 			@PathVariable Long feedId, @CurrentMember Member member) {
-		feedScrapService.feedUnScrap(feedId, member.getId());
+		RedisLockUtil.acquireAndRunLock(
+				"feed_scrap:" + feedId + ":" + member.getId(),
+				() -> {
+					feedScrapService.feedUnScrap(feedId, member.getId());
+					return true;
+				});
 		return ResponseEntity.noContent().build();
 	}
 }
