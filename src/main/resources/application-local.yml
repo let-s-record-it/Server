@@ -79,3 +79,12 @@ client:
 logging:
   level:
     com.sillim.recordit: debug  # ref: https://blog.datalust.co/choosing-the-right-log-levels/
+
+server:
+  tomcat:
+    connection-timeout: 60s
+    accept-count: 100
+    max-connections: 8192
+    threads:
+      min-spare: 10
+      max: 200
