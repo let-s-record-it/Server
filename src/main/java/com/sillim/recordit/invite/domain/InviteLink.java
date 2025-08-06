@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(indexes = {@Index(name = "invite_code_idx", columnList = "inviteCode", unique = true)})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InviteLink extends BaseTime {
 
@@ -18,7 +19,7 @@ public class InviteLink extends BaseTime {
 	@Column(name = "invite_link_id", nullable = false)
 	private Long id;
 
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private String inviteCode;
 
 	@Column(nullable = false)
