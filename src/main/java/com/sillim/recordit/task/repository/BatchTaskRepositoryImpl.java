@@ -25,13 +25,14 @@ public class BatchTaskRepositoryImpl implements BatchTaskRepository {
 	@Override
 	public void saveAllBatch(List<Task> tasks) {
 
+		LocalDateTime now = LocalDateTime.now();
 		for (int i = 0; i < tasks.size(); i += BATCH_SIZE) {
 			List<Task> batch = tasks.subList(i, Math.min(i + BATCH_SIZE, tasks.size()));
-			executeBatch(batch);
+			executeBatch(batch, now);
 		}
 	}
 
-	private void executeBatch(List<Task> batch) {
+	private void executeBatch(List<Task> batch, LocalDateTime timestamp) {
 		jdbcTemplate.batchUpdate(
 				SQL,
 				new BatchPreparedStatementSetter() {
@@ -39,17 +40,16 @@ public class BatchTaskRepositoryImpl implements BatchTaskRepository {
 					@Override
 					public void setValues(PreparedStatement ps, int i) throws SQLException {
 						Task task = batch.get(i);
-						LocalDateTime now = LocalDateTime.now();
 						ps.setString(1, task.getTitle());
 						ps.setString(2, task.getDescription());
-						ps.setString(3, task.getDate().toString());
+						ps.setObject(3, task.getDate());
 						ps.setBoolean(4, task.isAchieved());
 						ps.setLong(5, task.getCategory().getId());
 						ps.setLong(6, task.getCalendar().getId());
 						ps.setLong(7, task.getTaskGroup().getId());
 						ps.setBoolean(8, task.isDeleted());
-						ps.setObject(9, now);
-						ps.setObject(10, now);
+						ps.setObject(9, timestamp);
+						ps.setObject(10, timestamp);
 					}
 
 					@Override
