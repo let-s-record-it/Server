@@ -12,14 +12,16 @@ import com.sillim.recordit.task.dto.request.TaskAddRequest;
 import com.sillim.recordit.task.dto.request.TaskUpdateRequest;
 import com.sillim.recordit.task.repository.TaskRepository;
 import java.time.temporal.TemporalAmount;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class TaskCommandService {
 
 	private final TaskGroupService taskGroupService;
@@ -29,20 +31,16 @@ public class TaskCommandService {
 	private final TaskRepository taskRepository;
 
 	public void addTasks(final TaskAddRequest request, final Long calendarId, final Long memberId) {
-
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 		ScheduleCategory category =
 				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
-
 		if (request.isRepeated()) {
 			TaskGroup taskGroup =
 					taskGroupService.addRepeatingTaskGroup(
 							request.taskGroup(), request.repetition(), memberId);
 			addRepeatingTasks(
-					temporalAmount ->
-							taskRepository.save(
-									request.toTask(temporalAmount, category, calendar, taskGroup)),
+					temporalAmount -> request.toTask(temporalAmount, category, calendar, taskGroup),
 					taskGroup);
 			return;
 		}
@@ -80,12 +78,7 @@ public class TaskCommandService {
 							memberId);
 			addRepeatingTasks(
 					temporalAmount ->
-							taskRepository.save(
-									request.toTask(
-											temporalAmount,
-											newCategory,
-											newCalendar,
-											newTaskGroup)),
+							request.toTask(temporalAmount, newCategory, newCalendar, newTaskGroup),
 					newTaskGroup);
 			return;
 		}
@@ -124,12 +117,7 @@ public class TaskCommandService {
 							memberId);
 			addRepeatingTasks(
 					temporalAmount ->
-							taskRepository.save(
-									request.toTask(
-											temporalAmount,
-											newCategory,
-											newCalendar,
-											newTaskGroup)),
+							request.toTask(temporalAmount, newCategory, newCalendar, newTaskGroup),
 					newTaskGroup);
 			return;
 		}
@@ -185,13 +173,18 @@ public class TaskCommandService {
 	}
 
 	private void addRepeatingTasks(
-			final Consumer<TemporalAmount> temporalToTask, final TaskGroup taskGroup) {
+			final Function<TemporalAmount, Task> temporalToTask, final TaskGroup taskGroup) {
 
-		taskGroup
-				.getRepetitionPattern()
-				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_REPETITION_NOT_FOUND))
-				.repeatingStream()
-				.forEach(temporalToTask);
+		taskRepository.saveAllBatch(
+				taskGroup
+						.getRepetitionPattern()
+						.orElseThrow(
+								() ->
+										new RecordNotFoundException(
+												ErrorCode.TASK_REPETITION_NOT_FOUND))
+						.repeatingStream()
+						.map(temporalToTask)
+						.toList());
 	}
 
 	public void replaceTaskCategoriesWithDefaultCategory(
