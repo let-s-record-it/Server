@@ -66,7 +66,8 @@ public class SecurityConfig {
 												mvc.pattern("/api/v1/login"),
 												mvc.pattern("/api/v1/invite/info/**"),
 												mvc.pattern("/api/v1/web-login"),
-												mvc.pattern("/actuator/**"))
+												mvc.pattern("/actuator/health"),
+												mvc.pattern("/actuator/prometheus"))
 										.permitAll()
 										.requestMatchers(mvc.pattern("api/**"))
 										.authenticated()
