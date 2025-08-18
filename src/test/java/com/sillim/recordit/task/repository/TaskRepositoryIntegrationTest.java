@@ -26,7 +26,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
 @DataJpaTest
-class TaskRepositoryTest {
+class TaskRepositoryIntegrationTest {
 
 	@Autowired TaskRepository taskRepository;
 	@Autowired TestEntityManager em;
@@ -50,13 +50,28 @@ class TaskRepositoryTest {
 	}
 
 	@Test
-	@DisplayName("새로운 할 일 레코드를 저장한다.")
-	void saveTest() {
+	@DisplayName("Task 객체의 모든 필드가 올바르게 저장된다")
+	void save_SaveAllFieldsCorrectly() {
 		final Task expected = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
 		Task saved =
 				taskRepository.save(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
 
 		assertThat(saved)
+				.usingRecursiveComparison()
+				.ignoringFields("id", "calendar", "taskGroup", "createdAt", "modifiedAt")
+				.isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("배치 삽입 시, Task 객체의 모든 필드가 올바르게 저장된다.")
+	void saveAllBatch_SaveAllFieldsCorrectly() {
+		final Task expected = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
+		final List<Task> tasks = List.of(expected);
+
+		taskRepository.saveAllBatch(tasks);
+
+		List<Task> saved = taskRepository.findAllByTaskGroupId(calendar.getId(), taskGroup.getId());
+		assertThat(saved.get(0))
 				.usingRecursiveComparison()
 				.ignoringFields("id", "calendar", "taskGroup", "createdAt", "modifiedAt")
 				.isEqualTo(expected);

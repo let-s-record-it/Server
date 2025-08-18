@@ -87,3 +87,12 @@ server:
     threads:
       min-spare: ${TOMCAT_THREAD_MIN_SPARE}
       max: ${TOMCAT_THREAD_MAX}
+
+management:
+  endpoint:
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
