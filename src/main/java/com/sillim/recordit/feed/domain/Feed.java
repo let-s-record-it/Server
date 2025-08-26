@@ -9,6 +9,7 @@ import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.feed.InvalidFeedLikeException;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
@@ -47,17 +48,12 @@ public class Feed extends BaseTime {
 
 	@Version private Long version;
 
-	public Feed(String title, String content, Member member, List<String> feedImageUrls) {
+	public Feed(String title, String content, Member member) {
 		this.title = new FeedTitle(title);
 		this.content = new FeedContent(content);
 		this.member = member;
 		this.likeCount = 0L;
 		this.deleted = false;
-		this.feedImages =
-				new FeedImages(
-						feedImageUrls.stream()
-								.map(feedImageUrl -> new FeedImage(feedImageUrl, this))
-								.collect(Collectors.toList()));
 	}
 
 	public String getTitle() {
@@ -73,6 +69,9 @@ public class Feed extends BaseTime {
 	}
 
 	public List<String> getFeedImageUrls() {
+		if (feedImages == null) {
+			return Collections.emptyList();
+		}
 		return feedImages.getFeedImages().stream().map(FeedImage::getImageUrl).toList();
 	}
 
