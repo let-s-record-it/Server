@@ -60,6 +60,17 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+rabbitmq:
+  queue.name: feedimage.queue
+  exchange.name: direct.exchange
+  routing.key: feedimage.key
+
 firebase:
   credentials:
     location: ${FIREBASE_KEY_LOCATION}

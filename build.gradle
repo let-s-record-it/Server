@@ -69,6 +69,8 @@ dependencies {
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.5.4'
 
+    // rabbitmq
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
     // querydsl
     implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"

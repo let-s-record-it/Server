@@ -60,6 +60,18 @@ spring:
       host: localhost
       port: 6379
 
+  rabbitmq:
+    host: 34.64.157.50
+    port: 5672
+    username: guest
+    password: guest
+
+rabbitmq:
+  queue.name: sample.queue
+  exchange.name: sample.exchange
+  routing.key: sample.key
+
+
 firebase:
   credentials:
     location: ${FIREBASE_KEY_LOCATION}
