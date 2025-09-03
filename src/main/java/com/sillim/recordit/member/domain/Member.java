@@ -34,6 +34,9 @@ public class Member extends BaseTime {
 
 	@Embedded private Auth auth;
 
+	@Column(length = 12, unique = true)
+	private String personalId;
+
 	@Length(max = 10) @Column(nullable = false, length = 10)
 	private String name;
 
@@ -47,7 +50,16 @@ public class Member extends BaseTime {
 	private String profileImageUrl;
 
 	@Column(nullable = false)
+	private Long follower;
+
+	@Column(nullable = false)
+	private Long following;
+
+	@Column(nullable = false)
 	private Boolean deleted;
+
+	@Column(nullable = false)
+	private Boolean activated;
 
 	@Column private LocalDateTime deletedTime;
 
@@ -63,14 +75,20 @@ public class Member extends BaseTime {
 			String job,
 			String email,
 			String profileImageUrl,
+			Long follower,
+			Long following,
 			Boolean deleted,
+			Boolean activated,
 			List<MemberRole> memberRole) {
 		this.auth = auth;
 		this.name = name;
 		this.job = job;
 		this.email = email;
 		this.profileImageUrl = profileImageUrl;
+		this.follower = follower;
+		this.following = following;
 		this.deleted = deleted;
+		this.activated = activated;
 		this.memberRole = memberRole;
 	}
 
@@ -82,7 +100,10 @@ public class Member extends BaseTime {
 				.job("")
 				.email(email)
 				.profileImageUrl(profileImageUrl)
+				.follower(0L)
+				.following(0L)
 				.deleted(false)
+				.activated(false)
 				.memberRole(List.of(MemberRole.ROLE_USER))
 				.build();
 	}
@@ -104,9 +125,30 @@ public class Member extends BaseTime {
 		this.profileImageUrl = profileImageUrl;
 	}
 
+	public void followed() {
+		this.follower++;
+	}
+
+	public void Unfollowed() {
+		this.follower--;
+	}
+
+	public void follow() {
+		this.following++;
+	}
+
+	public void unfollow() {
+		this.following--;
+	}
+
 	public void delete() {
 		this.deleted = true;
 		this.deletedTime = LocalDateTime.now();
+	}
+
+	public void active(String personalId) {
+		this.personalId = personalId;
+		this.activated = true;
 	}
 
 	public boolean isCanRejoin() {

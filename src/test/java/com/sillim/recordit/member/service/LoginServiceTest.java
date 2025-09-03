@@ -10,6 +10,7 @@ import static org.mockito.BDDMockito.given;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sillim.recordit.config.security.jwt.AuthorizationToken;
 import com.sillim.recordit.config.security.jwt.JwtProvider;
+import com.sillim.recordit.config.security.jwt.JwtValidator;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.member.InvalidRejoinException;
 import com.sillim.recordit.member.domain.Member;
@@ -17,6 +18,7 @@ import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.dto.oidc.IdToken;
 import com.sillim.recordit.member.dto.request.LoginRequest;
 import com.sillim.recordit.member.dto.request.MemberInfo;
+import com.sillim.recordit.member.dto.response.OAuthTokenResponse;
 import com.sillim.recordit.member.fixture.AuthorizationTokenFixture;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.repository.MemberRepository;
@@ -42,6 +44,7 @@ class LoginServiceTest {
 	@Mock SignupService signupService;
 	@Mock MemberDeviceService memberDeviceService;
 	@Mock MemberDeleteService memberDeleteService;
+	@Mock JwtValidator jwtValidator;
 	@InjectMocks LoginService loginService;
 
 	@Test
@@ -55,18 +58,36 @@ class LoginServiceTest {
 		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.of(member));
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
-		AuthorizationToken authorizationToken =
-				loginService.login(
-						new LoginRequest(
-								idToken,
-								"accessToken",
-								OAuthProvider.KAKAO,
-								"id",
-								"model",
-								"token"));
 
-		assertThat(authorizationToken.accessToken()).isEqualTo(target.accessToken());
-		assertThat(authorizationToken.refreshToken()).isEqualTo(target.refreshToken());
+		OAuthTokenResponse token = loginService.login(
+				new LoginRequest(
+						idToken,
+						"accessToken",
+						OAuthProvider.KAKAO,
+						"id",
+						"model",
+						"token"));
+
+		assertThat(token.accessToken()).isEqualTo(target.accessToken());
+		assertThat(token.refreshToken()).isEqualTo(target.refreshToken());
+	}
+
+	@Test
+	@DisplayName("웹 로그인의 경우 발급받은 토큰을 검증하여 로그인 한다.")
+	void loginByToken() {
+		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
+		Member member = MemberFixture.DEFAULT.getMember();
+		String token = "header.payload.signature";
+		long memberId = 1L;
+		given(jwtValidator.getMemberIdIfValid(eq(token))).willReturn(memberId);
+		given(memberRepository.findById(eq(memberId))).willReturn(Optional.of(member));
+		given(jwtProvider.generateAuthorizationToken(eq(memberId))).willReturn(target);
+
+
+		OAuthTokenResponse tokenResponse = loginService.login(token);
+
+		assertThat(tokenResponse.accessToken()).isEqualTo(target.accessToken());
+		assertThat(tokenResponse.refreshToken()).isEqualTo(target.refreshToken());
 	}
 
 	@Test
@@ -86,18 +107,17 @@ class LoginServiceTest {
 		given(signupService.signup(eq(memberInfo))).willReturn(member);
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
-		AuthorizationToken authorizationToken =
-				loginService.login(
-						new LoginRequest(
-								idToken,
-								"accessToken",
-								OAuthProvider.KAKAO,
-								"id",
-								"model",
-								"token"));
+		OAuthTokenResponse token = loginService.login(
+				new LoginRequest(
+						idToken,
+						"accessToken",
+						OAuthProvider.KAKAO,
+						"id",
+						"model",
+						"token"));
 
-		assertThat(authorizationToken.accessToken()).isEqualTo(target.accessToken());
-		assertThat(authorizationToken.refreshToken()).isEqualTo(target.refreshToken());
+		assertThat(token.accessToken()).isEqualTo(target.accessToken());
+		assertThat(token.refreshToken()).isEqualTo(target.refreshToken());
 	}
 
 	@Test
@@ -114,13 +134,12 @@ class LoginServiceTest {
 		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.of(member));
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
-		AuthorizationToken authorizationToken =
-				loginService.login(
-						new LoginRequest(
-								"", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
+		OAuthTokenResponse token = loginService.login(
+				new LoginRequest(
+						"", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
 
-		assertThat(authorizationToken.accessToken()).isEqualTo(target.accessToken());
-		assertThat(authorizationToken.refreshToken()).isEqualTo(target.refreshToken());
+		assertThat(token.accessToken()).isEqualTo(target.accessToken());
+		assertThat(token.refreshToken()).isEqualTo(target.refreshToken());
 	}
 
 	@Test
@@ -138,13 +157,12 @@ class LoginServiceTest {
 		given(signupService.signup(eq(memberInfo))).willReturn(member);
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
-		AuthorizationToken authorizationToken =
-				loginService.login(
-						new LoginRequest(
-								"", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
+		OAuthTokenResponse token = loginService.login(
+				new LoginRequest(
+						"", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
 
-		assertThat(authorizationToken.accessToken()).isEqualTo(target.accessToken());
-		assertThat(authorizationToken.refreshToken()).isEqualTo(target.refreshToken());
+		assertThat(token.accessToken()).isEqualTo(target.accessToken());
+		assertThat(token.refreshToken()).isEqualTo(target.refreshToken());
 	}
 
 	@Test
@@ -174,5 +192,18 @@ class LoginServiceTest {
 												"token")))
 				.isInstanceOf(InvalidRejoinException.class)
 				.hasMessage(ErrorCode.CAN_NOT_REJOIN.getDescription());
+	}
+
+	@Test
+	@DisplayName("멤버를 활성화한다.")
+	void activateMember() {
+		long memberId = 1L;
+		Member member = MemberFixture.DEFAULT.getMember();
+
+		given(memberRepository.findById(eq(memberId))).willReturn(Optional.of(member));
+
+		assertThatCode(
+				() -> loginService.activateMember("abc1234", 1L)
+		).doesNotThrowAnyException();
 	}
 }

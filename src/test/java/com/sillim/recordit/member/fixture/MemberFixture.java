@@ -13,7 +13,10 @@ public enum MemberFixture {
 			"개발자",
 			"test@mail.com",
 			"https://image.url",
+			0L,
+			0L,
 			false,
+			true,
 			List.of(MemberRole.ROLE_USER)),
 	;
 
@@ -22,7 +25,10 @@ public enum MemberFixture {
 	private final String job;
 	private final String email;
 	private final String profileImageUrl;
+	private final Long follower;
+	private final Long following;
 	private final Boolean deleted;
+	private final Boolean activated;
 	private final List<MemberRole> memberRole;
 
 	MemberFixture(
@@ -31,14 +37,20 @@ public enum MemberFixture {
 			String job,
 			String email,
 			String profileImageUrl,
+			Long follower,
+			Long following,
 			Boolean deleted,
+			Boolean activated,
 			List<MemberRole> memberRole) {
 		this.auth = auth;
 		this.name = name;
 		this.job = job;
 		this.email = email;
 		this.profileImageUrl = profileImageUrl;
+		this.follower = follower;
+		this.following = following;
 		this.deleted = deleted;
+		this.activated = activated;
 		this.memberRole = memberRole;
 	}
 
@@ -49,7 +61,10 @@ public enum MemberFixture {
 				.job(this.job)
 				.email(this.email)
 				.profileImageUrl(this.profileImageUrl)
+				.follower(this.follower)
+				.following(this.following)
 				.deleted(this.deleted)
+				.activated(this.activated)
 				.memberRole(this.memberRole)
 				.build();
 	}
@@ -61,7 +76,10 @@ public enum MemberFixture {
 				.job(this.job)
 				.email(email)
 				.profileImageUrl(this.profileImageUrl)
+				.follower(this.follower)
+				.following(this.following)
 				.deleted(this.deleted)
+				.activated(this.activated)
 				.memberRole(this.memberRole)
 				.build();
 	}
