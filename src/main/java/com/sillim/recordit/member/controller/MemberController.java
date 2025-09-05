@@ -10,6 +10,7 @@ import com.sillim.recordit.member.dto.request.TokenUpdateRequest;
 import com.sillim.recordit.member.dto.response.ProfileResponse;
 import com.sillim.recordit.member.service.MemberCommandService;
 import com.sillim.recordit.member.service.MemberDeviceService;
+import com.sillim.recordit.member.service.MemberFollowService;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class MemberController {
 	private final MemberCommandService memberCommandService;
 	private final FeedCommentQueryService feedCommentQueryService;
 	private final MemberDeviceService memberDeviceService;
+	private final MemberFollowService memberFollowService;
 
 	@GetMapping("/me")
 	public ResponseEntity<ProfileResponse> profileDetails(@CurrentMember Member member) {
@@ -37,6 +39,21 @@ public class MemberController {
 			Pageable pageable, @CurrentMember Member member) {
 		return ResponseEntity.ok(
 				feedCommentQueryService.searchByMemberIdOldCreated(pageable, member.getId()));
+	}
+
+	@PostMapping("/{memberId}/follow")
+	public ResponseEntity<Void> follow(@PathVariable Long memberId, @CurrentMember Member member) {
+		memberFollowService.follow(member.getId(), memberId);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{memberId}/unfollow")
+	public ResponseEntity<Void> unfollow(
+			@PathVariable Long memberId, @CurrentMember Member member) {
+		memberFollowService.unfollow(member.getId(), memberId);
+
+		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/me")

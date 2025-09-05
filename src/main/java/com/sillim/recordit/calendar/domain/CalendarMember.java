@@ -1,7 +1,6 @@
 package com.sillim.recordit.calendar.domain;
 
 import com.sillim.recordit.global.domain.BaseTime;
-import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,17 +27,16 @@ public class CalendarMember extends BaseTime {
 	private boolean deleted;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
-
-	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "calendar_id")
 	private Calendar calendar;
 
-	public CalendarMember(Member member, Calendar calendar) {
+	@Column(name = "member_id")
+	private Long memberId;
+
+	public CalendarMember(Calendar calendar, Long memberId) {
 		this.deleted = false;
-		this.member = member;
 		this.calendar = calendar;
+		this.memberId = memberId;
 	}
 
 	public void delete() {

@@ -42,9 +42,9 @@ class CalendarMemberServiceTest {
 		long calendarId = 1L;
 		long memberId = 1L;
 		Member member = spy(MemberFixture.DEFAULT.getMember());
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member, category));
-		CalendarMember expectCalendarMember = new CalendarMember(member, calendar);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(category, memberId));
+		CalendarMember expectCalendarMember = new CalendarMember(calendar, memberId);
 		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
 				.willReturn(Optional.of(expectCalendarMember));
 
@@ -87,11 +87,10 @@ class CalendarMemberServiceTest {
 		long calendarId = 1L;
 		long calendarMemberId = 1L;
 		Member member = spy(MemberFixture.DEFAULT.getMember());
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member, category));
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(category, memberId));
 		CalendarMember expectCalendarMember = mock(CalendarMember.class);
 		given(expectCalendarMember.getId()).willReturn(calendarMemberId);
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(calendarMemberRepository.save(any(CalendarMember.class)))
 				.willReturn(expectCalendarMember);
@@ -108,10 +107,10 @@ class CalendarMemberServiceTest {
 		long calendarId = 1L;
 		long ownerId = 2L;
 		Member owner = mock(Member.class);
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(owner);
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(owner, category));
-		CalendarMember calendarMember = new CalendarMember(owner, calendar);
-		given(owner.equalsId(eq(ownerId))).willReturn(true);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(ownerId);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(category, ownerId));
+		CalendarMember calendarMember = new CalendarMember(calendar, ownerId);
+		given(calendar.isOwnedBy(eq(ownerId))).willReturn(true);
 		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
 				.willReturn(Optional.of(calendarMember));
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
@@ -129,16 +128,14 @@ class CalendarMemberServiceTest {
 		long memberId = 1L;
 		long calendarId = 1L;
 		long ownerId = 2L;
-		Member owner = mock(Member.class);
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(owner);
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(owner, category));
-		given(owner.equalsId(eq(ownerId))).willReturn(false);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(ownerId);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(category, ownerId));
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
 		assertThatCode(
 						() ->
 								calendarMemberService.removeCalendarMember(
-										calendarId, memberId, ownerId))
+										calendarId, memberId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_CALENDAR_MEMBER_GET_REQUEST.getDescription());
 	}

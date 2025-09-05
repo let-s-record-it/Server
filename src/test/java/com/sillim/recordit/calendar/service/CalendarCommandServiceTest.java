@@ -19,7 +19,6 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.calendar.InvalidCalendarException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
-import com.sillim.recordit.member.service.MemberQueryService;
 import com.sillim.recordit.schedule.service.ScheduleCommandService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,11 +32,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CalendarCommandServiceTest {
 
 	@Mock CalendarRepository calendarRepository;
-	@Mock MemberQueryService memberQueryService;
 	@Mock CalendarQueryService calendarQueryService;
 	@Mock CalendarMemberService calendarMemberService;
 	@Mock CalendarCategoryQueryService calendarCategoryQueryService;
-	@Mock CalendarCategoryCommandService calendarCategoryCommandService;
 	@Mock ScheduleCommandService scheduleCommandService;
 	@Mock ScheduleCategoryCommandService scheduleCategoryCommandService;
 	@InjectMocks CalendarCommandService calendarCommandService;
@@ -52,10 +49,10 @@ class CalendarCommandServiceTest {
 	@Test
 	@DisplayName("캘린더를 추가할 수 있다.")
 	void addCalendar() {
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar expectedCalendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		long memberId = 1L;
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar expectedCalendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		given(calendarRepository.save(any(Calendar.class))).willReturn(expectedCalendar);
-		given(memberQueryService.findByMemberId(eq(1L))).willReturn(member);
 
 		CalendarAddRequest calendarAddRequest = new CalendarAddRequest("calendar1", 1L);
 		Calendar calendar = calendarCommandService.addCalendar(calendarAddRequest, 1L);

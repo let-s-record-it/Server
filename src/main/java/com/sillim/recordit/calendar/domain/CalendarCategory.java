@@ -3,8 +3,8 @@ package com.sillim.recordit.calendar.domain;
 import com.sillim.recordit.calendar.domain.vo.CalendarCategoryName;
 import com.sillim.recordit.calendar.domain.vo.CalendarColorHex;
 import com.sillim.recordit.global.domain.BaseTime;
-import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,16 +29,15 @@ public class CalendarCategory extends BaseTime {
 	@Column(nullable = false)
 	private boolean deleted;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
+	@Column(name = "member_id")
+	private Long memberId;
 
-	public CalendarCategory(String colorHex, String name, boolean isDefault, Member member) {
+	public CalendarCategory(String colorHex, String name, boolean isDefault, Long memberId) {
 		this.colorHex = new CalendarColorHex(colorHex);
 		this.name = new CalendarCategoryName(name);
 		this.isDefault = isDefault;
 		this.deleted = false;
-		this.member = member;
+		this.memberId = memberId;
 	}
 
 	public String getColorHex() {
@@ -59,6 +58,6 @@ public class CalendarCategory extends BaseTime {
 	}
 
 	public boolean isOwner(Long memberId) {
-		return member.getId().equals(memberId);
+		return Objects.equals(this.memberId, memberId);
 	}
 }

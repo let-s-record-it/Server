@@ -55,18 +55,18 @@ class LoginServiceTest {
 		String idToken = "header.payload.signature";
 		String account = "account";
 		given(kakaoAuthenticationService.authenticate(any(IdToken.class))).willReturn(account);
-		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.of(member));
+		given(memberRepository.findByOauthAccount(eq(account))).willReturn(Optional.of(member));
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
-
-		OAuthTokenResponse token = loginService.login(
-				new LoginRequest(
-						idToken,
-						"accessToken",
-						OAuthProvider.KAKAO,
-						"id",
-						"model",
-						"token"));
+		OAuthTokenResponse token =
+				loginService.login(
+						new LoginRequest(
+								idToken,
+								"accessToken",
+								OAuthProvider.KAKAO,
+								"id",
+								"model",
+								"token"));
 
 		assertThat(token.accessToken()).isEqualTo(target.accessToken());
 		assertThat(token.refreshToken()).isEqualTo(target.refreshToken());
@@ -82,7 +82,6 @@ class LoginServiceTest {
 		given(jwtValidator.getMemberIdIfValid(eq(token))).willReturn(memberId);
 		given(memberRepository.findById(eq(memberId))).willReturn(Optional.of(member));
 		given(jwtProvider.generateAuthorizationToken(eq(memberId))).willReturn(target);
-
 
 		OAuthTokenResponse tokenResponse = loginService.login(token);
 
@@ -101,20 +100,21 @@ class LoginServiceTest {
 				new MemberInfo(
 						account, OAuthProvider.KAKAO, "name", "test@mail.com", "https://image.url");
 		given(kakaoAuthenticationService.authenticate(any(IdToken.class))).willReturn(account);
-		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.empty());
+		given(memberRepository.findByOauthAccount(eq(account))).willReturn(Optional.empty());
 		given(kakaoAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
 		given(signupService.signup(eq(memberInfo))).willReturn(member);
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
-		OAuthTokenResponse token = loginService.login(
-				new LoginRequest(
-						idToken,
-						"accessToken",
-						OAuthProvider.KAKAO,
-						"id",
-						"model",
-						"token"));
+		OAuthTokenResponse token =
+				loginService.login(
+						new LoginRequest(
+								idToken,
+								"accessToken",
+								OAuthProvider.KAKAO,
+								"id",
+								"model",
+								"token"));
 
 		assertThat(token.accessToken()).isEqualTo(target.accessToken());
 		assertThat(token.refreshToken()).isEqualTo(target.refreshToken());
@@ -131,12 +131,13 @@ class LoginServiceTest {
 						account, OAuthProvider.NAVER, "name", "test@mail.com", "https://image.url");
 		given(naverAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
-		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.of(member));
+		given(memberRepository.findByOauthAccount(eq(account))).willReturn(Optional.of(member));
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
-		OAuthTokenResponse token = loginService.login(
-				new LoginRequest(
-						"", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
+		OAuthTokenResponse token =
+				loginService.login(
+						new LoginRequest(
+								"", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
 
 		assertThat(token.accessToken()).isEqualTo(target.accessToken());
 		assertThat(token.refreshToken()).isEqualTo(target.refreshToken());
@@ -153,13 +154,14 @@ class LoginServiceTest {
 						account, OAuthProvider.NAVER, "name", "test@mail.com", "https://image.url");
 		given(naverAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
-		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.empty());
+		given(memberRepository.findByOauthAccount(eq(account))).willReturn(Optional.empty());
 		given(signupService.signup(eq(memberInfo))).willReturn(member);
 		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
 
-		OAuthTokenResponse token = loginService.login(
-				new LoginRequest(
-						"", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
+		OAuthTokenResponse token =
+				loginService.login(
+						new LoginRequest(
+								"", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
 
 		assertThat(token.accessToken()).isEqualTo(target.accessToken());
 		assertThat(token.refreshToken()).isEqualTo(target.refreshToken());
@@ -176,7 +178,7 @@ class LoginServiceTest {
 				new MemberInfo(
 						account, OAuthProvider.KAKAO, "name", "test@mail.com", "https://image.url");
 		given(kakaoAuthenticationService.authenticate(any(IdToken.class))).willReturn(account);
-		given(memberRepository.findByAccount(eq(account))).willReturn(Optional.of(member));
+		given(memberRepository.findByOauthAccount(eq(account))).willReturn(Optional.of(member));
 		given(kakaoAuthenticationService.getMemberInfoByAccessToken(anyString()))
 				.willReturn(memberInfo);
 
@@ -202,8 +204,6 @@ class LoginServiceTest {
 
 		given(memberRepository.findById(eq(memberId))).willReturn(Optional.of(member));
 
-		assertThatCode(
-				() -> loginService.activateMember("abc1234", 1L)
-		).doesNotThrowAnyException();
+		assertThatCode(() -> loginService.activateMember("abc1234", 1L)).doesNotThrowAnyException();
 	}
 }

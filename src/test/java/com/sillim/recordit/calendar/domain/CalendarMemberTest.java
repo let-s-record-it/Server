@@ -14,10 +14,11 @@ class CalendarMemberTest {
 	@Test
 	@DisplayName("캘린더 멤버를 삭제할 수 있다.")
 	void saveRelatedEntityInCalendarWhenSaveCalendarMember() {
+		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
-		CalendarMember calendarMember = new CalendarMember(member, calendar);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
+		CalendarMember calendarMember = new CalendarMember(calendar, memberId);
 		calendarMember.delete();
 
 		assertThat(calendarMember.isDeleted()).isTrue();

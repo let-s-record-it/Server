@@ -15,8 +15,6 @@ import com.sillim.recordit.calendar.dto.request.CalendarCategoryModifyRequest;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.service.CalendarCategoryCommandService;
 import com.sillim.recordit.calendar.service.CalendarCategoryQueryService;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -35,8 +33,8 @@ class CalendarCategoryControllerTest extends RestDocsTest {
 	@Test
 	@DisplayName("캘린더 카테고리 리스트를 조회한다.")
 	void calendarCategoryList() throws Exception {
-		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		long memberId = 1L;
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		given(calendarCategoryQueryService.searchCalendarCategories(any()))
 				.willReturn(List.of(category));
 

@@ -1,7 +1,6 @@
 package com.sillim.recordit.feed.fixture;
 
 import com.sillim.recordit.feed.domain.Feed;
-import com.sillim.recordit.member.domain.Member;
 import java.util.List;
 
 public enum FeedFixture {
@@ -17,8 +16,8 @@ public enum FeedFixture {
 		this.feedImageUrls = feedImageUrls;
 	}
 
-	public Feed getFeed(Member member) {
-		return new Feed(this.title, this.content, member);
+	public Feed getFeed(Long memberId) {
+		return new Feed(this.title, this.content, memberId);
 	}
 
 	public String getTitle() {

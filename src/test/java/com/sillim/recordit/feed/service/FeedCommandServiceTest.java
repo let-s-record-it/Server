@@ -12,7 +12,6 @@ import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.feed.repository.FeedRepository;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
 import com.sillim.recordit.rabbitmq.service.MessagePublisher;
 import java.io.IOException;
@@ -48,7 +47,6 @@ class FeedCommandServiceTest {
 						"test1".getBytes(StandardCharsets.UTF_8));
 		given(feed.getId()).willReturn(1L);
 		given(feedRepository.save(any(Feed.class))).willReturn(feed);
-		given(memberQueryService.findByMemberId(eq(1L))).willReturn(member);
 
 		FeedAddRequest feedAddRequest = new FeedAddRequest("title", "content");
 		Long feedId = feedCommandService.addFeed(feedAddRequest, List.of(multipartFile), 1L);
@@ -60,8 +58,8 @@ class FeedCommandServiceTest {
 	@DisplayName("피드를 지울 수 있다.")
 	void removeFeed() {
 		long feedId = 1L;
-		Member member = MemberFixture.DEFAULT.getMember();
-		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		long memberId = 1L;
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		given(feedRepository.findById(eq(feedId))).willReturn(Optional.of(feed));
 
 		feedCommandService.removeFeed(feedId);

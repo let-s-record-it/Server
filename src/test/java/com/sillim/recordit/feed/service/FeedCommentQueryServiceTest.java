@@ -2,7 +2,6 @@ package com.sillim.recordit.feed.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -15,6 +14,7 @@ import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.feed.repository.FeedCommentRepository;
 import com.sillim.recordit.global.dto.response.SliceResponse;
 import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.service.MemberQueryService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,18 +29,20 @@ import org.springframework.data.domain.SliceImpl;
 class FeedCommentQueryServiceTest {
 
 	@Mock FeedCommentRepository feedCommentRepository;
+	@Mock MemberQueryService memberQueryService;
 	@InjectMocks FeedCommentQueryService feedCommentQueryService;
 
 	@Test
 	@DisplayName("오래된 순으로 pagination해서 피드 댓글 목록을 조회할 수 있다.")
 	void searchFeedCommentsPaginatedOrderByRecentCreated() {
+		long feedId = 1L;
+		long memberId = 1L;
 		PageRequest pageRequest = PageRequest.of(1, 10);
 		Member member = mock(Member.class);
-		Feed feed = FeedFixture.DEFAULT.getFeed(member);
-		FeedComment feedComment = spy(new FeedComment("content", feed, member));
-		long feedId = 1L;
+		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
+		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
 		given(feedComment.getId()).willReturn(1L);
-		given(member.equalsId(any())).willReturn(true);
+		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(feedCommentRepository.findPaginatedOrderByCreatedAtAsc(eq(pageRequest), eq(feedId)))
 				.willReturn(new SliceImpl<>(List.of(feedComment), pageRequest, false));
 
@@ -57,12 +59,13 @@ class FeedCommentQueryServiceTest {
 	@Test
 	@DisplayName("오래된 순으로 pagination해서 특정 멤버의 피드 댓글 목록을 조회할 수 있다.")
 	void searchFeedCommentsPaginatedByMemberIdOrderByRecentCreated() {
+		long memberId = 1L;
 		PageRequest pageRequest = PageRequest.of(1, 10);
 		Member member = mock(Member.class);
-		Feed feed = FeedFixture.DEFAULT.getFeed(member);
-		FeedComment feedComment = spy(new FeedComment("content", feed, member));
-		long memberId = 1L;
+		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
+		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
 		given(feedComment.getId()).willReturn(1L);
+		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(
 						feedCommentRepository.findByMemberIdOrderByCreatedAtAsc(
 								eq(pageRequest), eq(memberId)))

@@ -7,8 +7,6 @@ import com.sillim.recordit.calendar.repository.CalendarCategoryRepository;
 import com.sillim.recordit.enums.color.InitialColor;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.service.MemberQueryService;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +20,9 @@ public class CalendarCategoryCommandService {
 
 	private final CalendarCategoryRepository calendarCategoryRepository;
 	private final CalendarCategoryQueryService calendarCategoryQueryService;
-	private final MemberQueryService memberQueryService;
 	private final CalendarCommandService calendarCommandService;
 
 	public List<Long> addDefaultCategories(Long memberId) {
-		Member member = memberQueryService.findByMemberId(memberId);
 		return Arrays.stream(InitialColor.values())
 				.map(
 						color ->
@@ -36,15 +32,14 @@ public class CalendarCategoryCommandService {
 														color.getColorHex(),
 														color.getName(),
 														color.isDefault(),
-														member))
+														memberId))
 										.getId())
 				.toList();
 	}
 
 	public Long addCategory(CalendarCategoryAddRequest request, Long memberId) {
-		Member member = memberQueryService.findByMemberId(memberId);
 		return calendarCategoryRepository
-				.save(new CalendarCategory(request.colorHex(), request.name(), false, member))
+				.save(new CalendarCategory(request.colorHex(), request.name(), false, memberId))
 				.getId();
 	}
 

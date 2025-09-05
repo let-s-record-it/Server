@@ -75,9 +75,9 @@ public class ScheduleCommandService {
 
 		Schedule standSchedule = schedules.get(0);
 		pushAlarmService.reservePushAlarmJobs(
-				standSchedule.getCalendar().getMember().getId(),
+				standSchedule.getCalendar().getMemberId(),
 				SCHEDULE_GROUP_PREFIX
-						+ standSchedule.getCalendar().getMember().getId()
+						+ standSchedule.getCalendar().getMemberId()
 						+ "/"
 						+ scheduleGroup.getId(),
 				standSchedule.getTitle(),

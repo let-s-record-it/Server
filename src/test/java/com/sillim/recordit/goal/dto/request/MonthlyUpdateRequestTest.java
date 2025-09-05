@@ -30,10 +30,11 @@ public class MonthlyUpdateRequestTest {
 						LocalDate.of(2024, 4, 30),
 						1L,
 						1L);
+		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory calendarCategory =
-				CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+				CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 
 		MonthlyGoal monthlyGoal = request.toEntity(category, calendar);

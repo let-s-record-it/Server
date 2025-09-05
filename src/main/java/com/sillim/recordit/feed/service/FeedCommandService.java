@@ -9,7 +9,6 @@ import com.sillim.recordit.gcp.service.ImageUploadService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.global.util.FileUtils;
-import com.sillim.recordit.member.service.MemberQueryService;
 import com.sillim.recordit.rabbitmq.dto.Message;
 import com.sillim.recordit.rabbitmq.dto.MessageType;
 import com.sillim.recordit.rabbitmq.service.MessagePublisher;
@@ -28,14 +27,10 @@ public class FeedCommandService {
 
 	private final FeedRepository feedRepository;
 	private final ImageUploadService imageUploadService;
-	private final MemberQueryService memberQueryService;
 	private final MessagePublisher messagePublisher;
 
 	public Long addFeed(FeedAddRequest request, List<MultipartFile> images, Long memberId) {
-		Long feedId =
-				feedRepository
-						.save(request.toFeed(memberQueryService.findByMemberId(memberId)))
-						.getId();
+		Long feedId = feedRepository.save(request.toFeed(memberId)).getId();
 
 		messagePublisher.send(
 				new Message<>(

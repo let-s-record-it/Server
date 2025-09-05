@@ -10,8 +10,6 @@ import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.fixture.WeeklyGoalFixture;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -31,16 +29,16 @@ public class WeeklyGoalRepositoryTest {
 	@Autowired WeeklyGoalRepository weeklyGoalRepository;
 	@Autowired TestEntityManager em;
 
-	private Member member;
+	long memberId = 1L;
 	private ScheduleCategory category;
 	private CalendarCategory calendarCategory;
 	private Calendar calendar;
 
 	@BeforeEach
 	void beforeEach() {
-		member = em.persist(MemberFixture.DEFAULT.getMember());
-		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
-		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member, calendarCategory));
+		calendarCategory =
+				em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
+		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId));
 		category = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 	}
 
@@ -79,21 +77,18 @@ public class WeeklyGoalRepositoryTest {
 								LocalDate.of(2024, 8, 4),
 								LocalDate.of(2024, 8, 10),
 								category,
-								member,
 								calendar),
 						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
 								5,
 								LocalDate.of(2024, 8, 25),
 								LocalDate.of(2024, 8, 31),
 								category,
-								member,
 								calendar),
 						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
 								1,
 								LocalDate.of(2024, 9, 1),
 								LocalDate.of(2024, 9, 7),
 								category,
-								member,
 								calendar)));
 		// when
 		List<WeeklyGoal> foundList =
@@ -125,14 +120,12 @@ public class WeeklyGoalRepositoryTest {
 								LocalDate.of(2024, 7, 28),
 								LocalDate.of(2024, 8, 3),
 								category,
-								member,
 								calendar),
 						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
 								1,
 								LocalDate.of(2024, 9, 1),
 								LocalDate.of(2024, 9, 7),
 								category,
-								member,
 								calendar)));
 		// when
 		List<WeeklyGoal> foundList =

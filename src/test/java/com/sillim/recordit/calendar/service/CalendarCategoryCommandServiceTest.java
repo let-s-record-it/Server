@@ -15,7 +15,6 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
-import com.sillim.recordit.member.service.MemberQueryService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,6 @@ class CalendarCategoryCommandServiceTest {
 
 	@Mock CalendarCategoryQueryService calendarCategoryQueryService;
 	@Mock CalendarCategoryRepository calendarCategoryRepository;
-	@Mock MemberQueryService memberQueryService;
 	@Mock CalendarCommandService calendarCommandService;
 	@InjectMocks CalendarCategoryCommandService calendarCategoryCommandService;
 
@@ -38,8 +36,7 @@ class CalendarCategoryCommandServiceTest {
 	void addDefaultCategories() {
 		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		given(calendarCategoryRepository.save(any(CalendarCategory.class))).willReturn(category);
 
 		List<Long> categoryIds = calendarCategoryCommandService.addDefaultCategories(memberId);
@@ -52,11 +49,9 @@ class CalendarCategoryCommandServiceTest {
 	void addCategory() {
 		long memberId = 1L;
 		long categoryId = 2L;
-		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory category = mock(CalendarCategory.class);
 		CalendarCategoryAddRequest request = new CalendarCategoryAddRequest("aabbff", "name");
 		given(category.getId()).willReturn(categoryId);
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(calendarCategoryRepository.save(any(CalendarCategory.class))).willReturn(category);
 
 		Long id = calendarCategoryCommandService.addCategory(request, memberId);

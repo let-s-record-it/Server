@@ -36,7 +36,7 @@ class FeedScrapServiceTest {
 		long feedId = 1L;
 		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		given(feedRepository.findById(eq(feedId))).willReturn(Optional.of(feed));
 
 		feedScrapService.feedScrap(feedId, memberId);

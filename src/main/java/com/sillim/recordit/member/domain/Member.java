@@ -1,109 +1,118 @@
 package com.sillim.recordit.member.domain;
 
-import com.sillim.recordit.global.domain.BaseTime;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Getter
-@Entity
+@Node("Member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTime {
+public class Member {
 
 	public static final int DO_NOT_REJOIN_DAYS = 14;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "member_id", nullable = false)
-	private Long id;
+	@Id @GeneratedValue private Long id;
 
-	@Embedded private Auth auth;
+	private String oauthAccount;
 
-	@Column(length = 12, unique = true)
+	private OAuthProvider oauthProvider;
+
 	private String personalId;
 
-	@Length(max = 10) @Column(nullable = false, length = 10)
 	private String name;
 
-	@Length(max = 20) @Column(nullable = false, length = 20)
 	private String job;
 
-	@Column(nullable = false, unique = true)
 	private String email;
 
-	@Column(nullable = false)
 	private String profileImageUrl;
 
-	@Column(nullable = false)
-	private Long follower;
+	private Long followerCount;
 
-	@Column(nullable = false)
-	private Long following;
+	private Long followingCount;
 
-	@Column(nullable = false)
 	private Boolean deleted;
 
-	@Column(nullable = false)
 	private Boolean activated;
 
-	@Column private LocalDateTime deletedTime;
+	private LocalDateTime deletedTime;
 
-	@Enumerated(EnumType.STRING)
-	@ElementCollection(fetch = FetchType.EAGER)
-	@Column
+	private LocalDateTime createdAt;
+
+	private LocalDateTime modifiedAt;
+
 	private List<MemberRole> memberRole;
+
+	@Relationship(type = "FOLLOWS", direction = Relationship.Direction.OUTGOING)
+	private List<Member> followings;
+
+	@Relationship(type = "FOLLOWS", direction = Relationship.Direction.INCOMING)
+	private List<Member> followers;
 
 	@Builder
 	public Member(
-			Auth auth,
+			String oauthAccount,
+			OAuthProvider oauthProvider,
+			String personalId,
 			String name,
 			String job,
 			String email,
 			String profileImageUrl,
-			Long follower,
-			Long following,
+			Long followerCount,
+			Long followingCount,
 			Boolean deleted,
 			Boolean activated,
+			LocalDateTime createdAt,
+			LocalDateTime modifiedAt,
+			LocalDateTime deletedTime,
+			List<Member> followings,
 			List<MemberRole> memberRole) {
-		this.auth = auth;
+		this.oauthAccount = oauthAccount;
+		this.oauthProvider = oauthProvider;
 		this.name = name;
 		this.job = job;
 		this.email = email;
 		this.profileImageUrl = profileImageUrl;
-		this.follower = follower;
-		this.following = following;
+		this.followerCount = followerCount;
+		this.followingCount = followingCount;
 		this.deleted = deleted;
 		this.activated = activated;
 		this.memberRole = memberRole;
+		this.createdAt = createdAt;
+		this.modifiedAt = modifiedAt;
+		this.personalId = personalId;
+		this.followings = followings;
+		this.deletedTime = deletedTime;
 	}
 
 	public static Member createNoJobMember(
-			Auth auth, String name, String email, String profileImageUrl) {
+			String oauthAccount,
+			OAuthProvider oauthProvider,
+			String name,
+			String email,
+			String profileImageUrl) {
 		return Member.builder()
-				.auth(auth)
+				.oauthAccount(oauthAccount)
+				.oauthProvider(oauthProvider)
 				.name(name)
 				.job("")
 				.email(email)
 				.profileImageUrl(profileImageUrl)
-				.follower(0L)
-				.following(0L)
+				.followerCount(0L)
+				.followingCount(0L)
+				.createdAt(LocalDateTime.now())
+				.modifiedAt(LocalDateTime.now())
 				.deleted(false)
 				.activated(false)
+				.followings(List.of())
 				.memberRole(List.of(MemberRole.ROLE_USER))
 				.build();
 	}
@@ -126,19 +135,19 @@ public class Member extends BaseTime {
 	}
 
 	public void followed() {
-		this.follower++;
+		this.followerCount++;
 	}
 
-	public void Unfollowed() {
-		this.follower--;
+	public void unfollowed() {
+		this.followerCount--;
 	}
 
 	public void follow() {
-		this.following++;
+		this.followingCount++;
 	}
 
 	public void unfollow() {
-		this.following--;
+		this.followingCount--;
 	}
 
 	public void delete() {

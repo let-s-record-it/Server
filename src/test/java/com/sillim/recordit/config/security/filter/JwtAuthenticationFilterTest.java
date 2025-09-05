@@ -2,13 +2,11 @@ package com.sillim.recordit.config.security.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.config.security.jwt.JwtValidator;
-import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.AuthorizedUser;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
@@ -54,10 +52,7 @@ class JwtAuthenticationFilterTest {
 		long memberId = 1L;
 		Member member =
 				Member.createNoJobMember(
-						new Auth("12345", OAuthProvider.KAKAO),
-						"name",
-						"test@mail.com",
-						"https://image.url");
+						"12345", OAuthProvider.KAKAO, "name", "test@mail.com", "https://image.url");
 		given(jwtValidator.getMemberIdIfValid(eq("token"))).willReturn(memberId);
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(authorizedUserMapper.toAuthorizedUser(member))

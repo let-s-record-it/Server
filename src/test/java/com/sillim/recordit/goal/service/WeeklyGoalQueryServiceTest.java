@@ -38,6 +38,7 @@ public class WeeklyGoalQueryServiceTest {
 	@Mock CalendarQueryService calendarQueryService;
 	@InjectMocks WeeklyGoalQueryService weeklyGoalQueryService;
 
+	long memberId = 1L;
 	private Member member;
 	private ScheduleCategory category;
 	private CalendarCategory calendarCategory;
@@ -46,15 +47,14 @@ public class WeeklyGoalQueryServiceTest {
 	@BeforeEach
 	void beforeEach() {
 		member = mock(Member.class);
-		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 
 	@Test
 	@DisplayName("startDate와 endDate를 기반으로 해당 주 목표들을 조회한다.")
 	void searchAllWeeklyGoalByDate() {
-		Long memberId = 1L;
 		Long calendarId = 2L;
 		Integer year = 2024;
 		Integer month = 8;
@@ -67,10 +67,8 @@ public class WeeklyGoalQueryServiceTest {
 												LocalDate.of(2024, 8, 11),
 												LocalDate.of(2024, 8, 17),
 												category,
-												member,
 												calendar))
 						.toList();
-		given(member.equalsId(eq(memberId))).willReturn(true);
 		given(weeklyGoalRepository.findWeeklyGoalInMonth(eq(year), eq(month), eq(calendarId)))
 				.willReturn(weeklyGoals);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);

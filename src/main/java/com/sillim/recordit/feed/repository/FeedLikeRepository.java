@@ -13,6 +13,6 @@ public interface FeedLikeRepository extends JpaRepository<FeedLike, Long> {
 	boolean existsByFeedIdAndMemberId(Long feedId, Long memberId);
 
 	@Modifying(clearAutomatically = true)
-	@Query("update FeedLike fl set fl.member = null where fl.member.id = :memberId")
+	@Query("update FeedLike fl set fl.memberId = null where fl.memberId = :memberId")
 	void updateMemberIsNull(@Param("memberId") Long memberId);
 }

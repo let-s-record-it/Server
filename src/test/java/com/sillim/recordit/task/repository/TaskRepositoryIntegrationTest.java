@@ -9,8 +9,6 @@ import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.fixture.TaskFixture;
@@ -31,7 +29,7 @@ class TaskRepositoryIntegrationTest {
 	@Autowired TaskRepository taskRepository;
 	@Autowired TestEntityManager em;
 
-	private Member member;
+	long memberId = 1L;
 	private CalendarCategory calendarCategory;
 	private ScheduleCategory taskCategory;
 	private Calendar calendar;
@@ -39,10 +37,9 @@ class TaskRepositoryIntegrationTest {
 
 	@BeforeEach
 	void init() {
-		member = MemberFixture.DEFAULT.getMember();
-		em.persist(member);
-		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		calendarCategory =
+				em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
+		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		em.persist(calendar);
 		taskGroup = new TaskGroup(null, null);
 		em.persist(taskGroup);

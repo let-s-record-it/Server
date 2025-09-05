@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 class TaskTest {
 
+	long memberId = 1L;
 	private Member member;
 	private CalendarCategory calendarCategory;
 	private ScheduleCategory taskCategory;
@@ -27,8 +28,8 @@ class TaskTest {
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		taskGroup = new TaskGroup(null, null);
 		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}

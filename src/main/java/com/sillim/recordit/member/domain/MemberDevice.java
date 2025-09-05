@@ -27,15 +27,13 @@ public class MemberDevice extends BaseTime {
 	@Column(nullable = false)
 	private String fcmToken;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
+	private Long memberId;
 
 	@Builder
 	public MemberDevice(String identifier, String model, String fcmToken, Member member) {
 		this.identifier = identifier;
 		this.model = model;
 		this.fcmToken = fcmToken;
-		this.member = member;
+		this.memberId = member.getId();
 	}
 }

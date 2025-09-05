@@ -7,8 +7,6 @@ import static org.mockito.BDDMockito.given;
 import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.repository.CalendarCategoryRepository;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -27,8 +25,7 @@ class CalendarCategoryQueryServiceTest {
 	@DisplayName("특정 멤버의 캘린더 카테고리들을 조회할 수 있다.")
 	void searchCalendarCategoriesByMemberId() {
 		long memberId = 1L;
-		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		given(calendarCategoryRepository.findByDeletedIsFalseAndMemberId(eq(memberId)))
 				.willReturn(List.of(category));
 
@@ -42,8 +39,8 @@ class CalendarCategoryQueryServiceTest {
 	@DisplayName("특정 캘린더 카테고리를 조회할 수 있다.")
 	void searchCalendarCategory() {
 		long categoryId = 1L;
-		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
+		long memberId = 1L;
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		given(calendarCategoryRepository.findById(eq(categoryId)))
 				.willReturn(Optional.of(category));
 

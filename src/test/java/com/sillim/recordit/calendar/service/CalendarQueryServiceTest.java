@@ -32,6 +32,7 @@ class CalendarQueryServiceTest {
 	@InjectMocks CalendarQueryService calendarQueryService;
 
 	Member member;
+	long memberId = 1L;
 
 	@BeforeEach
 	void initObjects() {
@@ -41,8 +42,8 @@ class CalendarQueryServiceTest {
 	@Test
 	@DisplayName("calendar id를 통해 캘린더를 조회할 수 있다.")
 	void searchByCalendarId() {
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar expectedCalendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar expectedCalendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		given(calendarRepository.findByIdWithFetchCategory(eq(1L)))
 				.willReturn(Optional.of(expectedCalendar));
 
@@ -64,9 +65,9 @@ class CalendarQueryServiceTest {
 	@Test
 	@DisplayName("member id를 통해 캘린더 목록을 조회할 수 있다.")
 	void searchCalendarsByMemberId() {
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar expectedCalendar1 = CalendarFixture.DEFAULT.getCalendar(member, category);
-		Calendar expectedCalendar2 = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar expectedCalendar1 = CalendarFixture.DEFAULT.getCalendar(category, memberId);
+		Calendar expectedCalendar2 = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		given(calendarRepository.findByMemberId(eq(1L)))
 				.willReturn(List.of(expectedCalendar1, expectedCalendar2));
 

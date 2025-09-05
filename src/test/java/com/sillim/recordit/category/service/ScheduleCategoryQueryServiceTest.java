@@ -37,8 +37,8 @@ class ScheduleCategoryQueryServiceTest {
 		long memberId = 2L;
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory calendarCategory =
-				CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+				CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		given(scheduleCategoryRepository.findByDeletedIsFalseAndCalendarId(eq(calendarId)))
 				.willReturn(List.of(category));
@@ -53,10 +53,11 @@ class ScheduleCategoryQueryServiceTest {
 	@DisplayName("특정 캘린더 카테고리를 조회할 수 있다.")
 	void searchCalendarCategory() {
 		long categoryId = 1L;
+		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory calendarCategory =
-				CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+				CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		given(scheduleCategoryRepository.findById(eq(categoryId)))
 				.willReturn(Optional.of(category));

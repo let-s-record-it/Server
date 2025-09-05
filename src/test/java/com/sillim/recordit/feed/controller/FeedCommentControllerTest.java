@@ -67,13 +67,15 @@ class FeedCommentControllerTest extends RestDocsTest {
 	@Test
 	@DisplayName("피드 댓글을 조회한다.")
 	void feedComment() throws Exception {
-		Member member = mock(Member.class);
-		Feed feed = FeedFixture.DEFAULT.getFeed(member);
 		long feedId = 1L;
 		long feedCommentId = 1L;
-		FeedComment feedComment = spy(new FeedComment("content", feed, member));
+		long memberId = 2L;
+		Member member = mock(Member.class);
+		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
+		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
 		given(feedComment.getId()).willReturn(feedCommentId);
-		FeedCommentInListResponse response = FeedCommentInListResponse.from(feedComment, 1L);
+		FeedCommentInListResponse response =
+				FeedCommentInListResponse.from(feedComment, member, memberId);
 		given(feedCommentQueryService.searchFeedCommentById(eq(feedCommentId), any()))
 				.willReturn(response);
 
@@ -90,16 +92,19 @@ class FeedCommentControllerTest extends RestDocsTest {
 	@Test
 	@DisplayName("피드 댓글 목록을 조회한다.")
 	void feedCommentList() throws Exception {
-		Member member = mock(Member.class);
-		Feed feed = FeedFixture.DEFAULT.getFeed(member);
 		long feedId = 1L;
 		long feedCommentId = 1L;
-		FeedComment feedComment = spy(new FeedComment("content", feed, member));
+		long memberId = 1L;
+		Member member = mock(Member.class);
+		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
+		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
 		given(feedComment.getId()).willReturn(feedCommentId);
 		SliceResponse<FeedCommentInListResponse> response =
 				SliceResponse.of(
 						new SliceImpl<>(
-								List.of(FeedCommentInListResponse.from(feedComment, 1L)),
+								List.of(
+										FeedCommentInListResponse.from(
+												feedComment, member, memberId)),
 								PageRequest.of(0, 10),
 								false));
 		given(feedCommentQueryService.searchPaginatedOldCreated(any(), eq(feedId), any()))

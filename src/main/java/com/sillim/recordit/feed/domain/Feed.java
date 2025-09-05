@@ -7,10 +7,10 @@ import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.feed.InvalidFeedLikeException;
-import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -40,18 +40,17 @@ public class Feed extends BaseTime {
 	@Column(nullable = false)
 	private Long likeCount;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
+	@Column(name = "member_id")
+	private Long memberId;
 
 	@Embedded private FeedImages feedImages;
 
 	@Version private Long version;
 
-	public Feed(String title, String content, Member member) {
+	public Feed(String title, String content, Long memberId) {
 		this.title = new FeedTitle(title);
 		this.content = new FeedContent(content);
-		this.member = member;
+		this.memberId = memberId;
 		this.likeCount = 0L;
 		this.deleted = false;
 	}
@@ -90,7 +89,7 @@ public class Feed extends BaseTime {
 	}
 
 	public boolean isOwner(Long memberId) {
-		return this.member.equalsId(memberId);
+		return Objects.equals(this.memberId, memberId);
 	}
 
 	public void validateAuthenticatedUser(Long memberId) {

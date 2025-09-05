@@ -16,9 +16,9 @@ import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.dto.response.FeedDetailsResponse;
 import com.sillim.recordit.feed.dto.response.FeedInListResponse;
-import com.sillim.recordit.feed.facade.FeedLikeFacade;
 import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.feed.service.FeedCommandService;
+import com.sillim.recordit.feed.service.FeedLikeService;
 import com.sillim.recordit.feed.service.FeedQueryService;
 import com.sillim.recordit.feed.service.FeedScrapService;
 import com.sillim.recordit.global.dto.response.SliceResponse;
@@ -40,7 +40,7 @@ class FeedControllerTest extends RestDocsTest {
 
 	@MockBean FeedCommandService feedCommandService;
 	@MockBean FeedQueryService feedQueryService;
-	@MockBean FeedLikeFacade feedLikeFacade;
+	@MockBean FeedLikeService feedLikeService;
 	@MockBean FeedScrapService feedScrapService;
 
 	@Test
@@ -83,9 +83,10 @@ class FeedControllerTest extends RestDocsTest {
 	@DisplayName("상세 피드를 조회한다.")
 	void feedDetails() throws Exception {
 		long feedId = 1L;
+		long memberId = 1L;
 		Member member = mock(Member.class);
-		Feed feed = FeedFixture.DEFAULT.getFeed(member);
-		FeedDetailsResponse feedResponse = FeedDetailsResponse.of(feed, 1L, false, false);
+		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
+		FeedDetailsResponse feedResponse = FeedDetailsResponse.of(feed, member, 1L, false, false);
 		given(member.equalsId(any())).willReturn(true);
 		given(feedQueryService.searchById(any(), any())).willReturn(feedResponse);
 
@@ -100,13 +101,14 @@ class FeedControllerTest extends RestDocsTest {
 	@Test
 	@DisplayName("피드 목록을 조회한다.")
 	void feedList() throws Exception {
+		long memberId = 1L;
 		Member member = mock(Member.class);
-		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		given(feed.getId()).willReturn(1L);
 		SliceResponse<FeedInListResponse> response =
 				SliceResponse.of(
 						new SliceImpl<>(
-								List.of(FeedInListResponse.from(feed, false, false)),
+								List.of(FeedInListResponse.from(feed, member, false, false)),
 								PageRequest.of(0, 10),
 								false));
 		given(member.equalsId(any())).willReturn(true);
@@ -125,13 +127,14 @@ class FeedControllerTest extends RestDocsTest {
 	@Test
 	@DisplayName("자신의 피드 목록을 조회한다.")
 	void myFeedList() throws Exception {
+		long memberId = 1L;
 		Member member = mock(Member.class);
-		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		given(feed.getId()).willReturn(1L);
 		SliceResponse<FeedInListResponse> response =
 				SliceResponse.of(
 						new SliceImpl<>(
-								List.of(FeedInListResponse.from(feed, false, false)),
+								List.of(FeedInListResponse.from(feed, member, false, false)),
 								PageRequest.of(0, 10),
 								false));
 		given(member.equalsId(any())).willReturn(true);

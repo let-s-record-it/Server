@@ -30,13 +30,14 @@ class CustomFeedCommentRepositoryTest {
 
 	@Autowired TestEntityManager em;
 
+	long memberId = 1L;
 	Member member;
 	Feed feed;
 
 	@BeforeEach
 	void initObjects() {
-		member = em.persist(MemberFixture.DEFAULT.getMember());
-		feed = em.persist(FeedFixture.DEFAULT.getFeed(member));
+		member = MemberFixture.DEFAULT.getMember();
+		feed = em.persist(FeedFixture.DEFAULT.getFeed(memberId));
 	}
 
 	@Test
@@ -44,7 +45,7 @@ class CustomFeedCommentRepositoryTest {
 	void findPaginatedOrderByCreatedDesc() {
 		List<FeedComment> feedComments =
 				IntStream.range(0, 10)
-						.mapToObj(i -> em.persist(new FeedComment("content", feed, member)))
+						.mapToObj(i -> em.persist(new FeedComment("content", feed, memberId)))
 						.toList();
 
 		Slice<FeedComment> foundFeedComments1 =
@@ -71,16 +72,16 @@ class CustomFeedCommentRepositoryTest {
 	void findPaginatedByMemberIdOrderByCreatedDesc() {
 		List<FeedComment> feedComments =
 				IntStream.range(0, 10)
-						.mapToObj(i -> em.persist(new FeedComment("content", feed, member)))
+						.mapToObj(i -> em.persist(new FeedComment("content", feed, memberId)))
 						.toList();
 
 		Slice<FeedComment> foundFeedComments1 =
 				customFeedCommentRepository.findByMemberIdOrderByCreatedAtAsc(
-						PageRequest.of(0, 5), member.getId());
+						PageRequest.of(0, 5), memberId);
 
 		Slice<FeedComment> foundFeedComments2 =
 				customFeedCommentRepository.findByMemberIdOrderByCreatedAtAsc(
-						PageRequest.of(3, 3), member.getId());
+						PageRequest.of(3, 3), memberId);
 
 		assertAll(
 				() -> {
