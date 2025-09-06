@@ -40,7 +40,7 @@ public class FeedComment extends BaseTime {
 	@JoinColumn(name = "feed_id")
 	private Feed feed;
 
-	@Column(name = "member_id")
+	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
 	public FeedComment(String content, Feed feed, Long memberId) {

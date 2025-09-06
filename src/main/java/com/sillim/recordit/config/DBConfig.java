@@ -1,7 +1,10 @@
 package com.sillim.recordit.config;
 
 import com.sillim.recordit.config.neo4j.Neo4jRepo;
+import java.util.Map;
 import javax.sql.DataSource;
+import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -31,7 +34,13 @@ public class DBConfig {
 	@Bean(name = "jpaEntityManagerFactory")
 	public LocalContainerEntityManagerFactoryBean containerEntityManagerFactory(
 			EntityManagerFactoryBuilder builder, @Qualifier("dataSource") DataSource dataSource) {
-		return builder.dataSource(dataSource).packages("com.sillim.recordit").build();
+		return builder.dataSource(dataSource)
+				.packages("com.sillim.recordit")
+				.properties(
+						Map.of(
+								"hibernate.physical_naming_strategy",
+								CamelCaseToUnderscoresNamingStrategy.class.getName()))
+				.build();
 	}
 
 	@Bean(name = "jpaTransactionManager")
@@ -41,5 +50,10 @@ public class DBConfig {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
 		transactionManager.setEntityManagerFactory(mfBean.getObject());
 		return transactionManager;
+	}
+
+	@Bean
+	public PhysicalNamingStrategy physicalNamingStrategy() {
+		return new CamelCaseToUnderscoresNamingStrategy();
 	}
 }

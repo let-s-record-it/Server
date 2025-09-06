@@ -29,7 +29,7 @@ public class CalendarCategory extends BaseTime {
 	@Column(nullable = false)
 	private boolean deleted;
 
-	@Column(name = "member_id")
+	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
 	public CalendarCategory(String colorHex, String name, boolean isDefault, Long memberId) {

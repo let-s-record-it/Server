@@ -24,7 +24,7 @@ public class FeedLike {
 	@JoinColumn(name = "feed_id")
 	private Feed feed;
 
-	@Column(name = "member_id")
+	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
 	public FeedLike(Feed feed, Long memberId) {

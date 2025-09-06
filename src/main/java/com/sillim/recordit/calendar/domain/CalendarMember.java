@@ -30,7 +30,7 @@ public class CalendarMember extends BaseTime {
 	@JoinColumn(name = "calendar_id")
 	private Calendar calendar;
 
-	@Column(name = "member_id")
+	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
 	public CalendarMember(Calendar calendar, Long memberId) {
