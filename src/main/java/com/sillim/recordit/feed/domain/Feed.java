@@ -40,7 +40,7 @@ public class Feed extends BaseTime {
 	@Column(nullable = false)
 	private Long likeCount;
 
-	@Column(name = "member_id")
+	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
 	@Embedded private FeedImages feedImages;
