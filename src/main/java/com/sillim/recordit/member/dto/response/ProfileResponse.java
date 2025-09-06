@@ -9,10 +9,11 @@ public record ProfileResponse(
 		String personalId,
 		String email,
 		String profileImageUrl,
-		Long follower,
-		Long following) {
+		Long followerCount,
+		Long followingCount,
+		boolean isFollowing) {
 
-	public static ProfileResponse of(Member member) {
+	public static ProfileResponse of(Member member, boolean isFollowing) {
 		return new ProfileResponse(
 				member.getId(),
 				member.getName(),
@@ -21,6 +22,7 @@ public record ProfileResponse(
 				member.getEmail(),
 				member.getProfileImageUrl(),
 				member.getFollowerCount(),
-				member.getFollowingCount());
+				member.getFollowingCount(),
+				isFollowing);
 	}
 }

@@ -1,11 +1,9 @@
 package com.sillim.recordit.member.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
@@ -14,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Getter
 @Node("Member")
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
@@ -52,10 +51,7 @@ public class Member {
 	private List<MemberRole> memberRole;
 
 	@Relationship(type = "FOLLOWS", direction = Relationship.Direction.OUTGOING)
-	private List<Member> followings;
-
-	@Relationship(type = "FOLLOWS", direction = Relationship.Direction.INCOMING)
-	private List<Member> followers;
+	private List<Member> followings = new ArrayList<>();
 
 	@Builder
 	public Member(
@@ -134,20 +130,24 @@ public class Member {
 		this.profileImageUrl = profileImageUrl;
 	}
 
-	public void followed() {
+	public void follow(Member followed) {
+		this.followings.add(followed);
+		this.followingCount++;
+		followed.followed();
+	}
+
+	public void unfollow(Member followed) {
+		this.followings.remove(followed);
+		this.followingCount--;
+		followed.unfollowed();
+	}
+
+	private void followed() {
 		this.followerCount++;
 	}
 
-	public void unfollowed() {
+	private void unfollowed() {
 		this.followerCount--;
-	}
-
-	public void follow() {
-		this.followingCount++;
-	}
-
-	public void unfollow() {
-		this.followingCount--;
 	}
 
 	public void delete() {

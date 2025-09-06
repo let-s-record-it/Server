@@ -1,8 +1,7 @@
 package com.sillim.recordit.member.service;
 
-import com.sillim.recordit.member.domain.Follow;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.repository.FollowRepository;
+import com.sillim.recordit.member.repository.MemberRepository;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.StaleObjectStateException;
@@ -18,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberFollowService {
 
 	private final MemberQueryService memberQueryService;
-	private final FollowRepository followRepository;
+	private final MemberRepository memberRepository;
 
 	@Retryable(
 			retryFor = {
@@ -32,9 +31,8 @@ public class MemberFollowService {
 		Member follower = memberQueryService.findByMemberId(followerId);
 		Member followed = memberQueryService.findByMemberId(followedId);
 
-		follower.follow();
-		followed.followed();
-		followRepository.save(new Follow(follower, followed));
+		follower.follow(followed);
+		memberRepository.save(follower);
 	}
 
 	@Retryable(
@@ -49,8 +47,9 @@ public class MemberFollowService {
 		Member follower = memberQueryService.findByMemberId(followerId);
 		Member followed = memberQueryService.findByMemberId(followedId);
 
-		follower.unfollow();
-		followed.unfollowed();
-		followRepository.deleteByFollowerIdAndFollowedId(followerId, followedId);
+		follower.unfollow(followed);
+		memberRepository.save(follower);
+		memberRepository.save(followed);
+		//		memberRepository.deleteFollowRelation(followerId, followedId);
 	}
 }
