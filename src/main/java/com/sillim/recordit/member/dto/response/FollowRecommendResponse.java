@@ -7,12 +7,12 @@ package com.sillim.recordit.member.dto.response;
  * @param weightCount: 추천 후보를 팔로우하는 Member 수
  * @param commonFollowCount: 추천 후보와 공통으로 팔로우하는 수
  */
-public record FollowRecommendResponse(Long internalId,
-                                      String personalId,
-                                      String name,
-                                      String profileImageUrl,
-                                      String weightRepPersonalId,
-                                      String weightRepName,
-                                      Long weightCount,
-                                      Long commonFollowCount) {
-}
+public record FollowRecommendResponse(
+		Long internalId,
+		String personalId,
+		String name,
+		String profileImageUrl,
+		String weightRepPersonalId,
+		String weightRepName,
+		Long weightCount,
+		Long commonFollowCount) {}

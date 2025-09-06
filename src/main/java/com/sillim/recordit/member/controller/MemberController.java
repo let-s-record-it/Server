@@ -63,8 +63,10 @@ public class MemberController {
 	}
 
 	@GetMapping("/me/recommends/members")
-	public ResponseEntity<List<FollowRecommendResponse>> recommendMemberList(@CurrentMember Member member) {
-		List<FollowRecommendResponse> body = memberRecommender.recommendFollows(member.getPersonalId());
+	public ResponseEntity<List<FollowRecommendResponse>> recommendMemberList(
+			@CurrentMember Member member) {
+		List<FollowRecommendResponse> body =
+				memberRecommender.recommendFollows(member.getPersonalId());
 		body.forEach(m -> log.info("result: {}", m.personalId()));
 		return ResponseEntity.ok(body);
 	}
