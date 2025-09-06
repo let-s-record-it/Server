@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
-import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.service.MemberDeviceService;
@@ -44,10 +43,7 @@ class PushAlarmServiceTest {
 		String body = "body";
 		Member member =
 				Member.createNoJobMember(
-						new Auth("12345", OAuthProvider.KAKAO),
-						"name",
-						"test@mail.com",
-						"https://image.url");
+						"12345", OAuthProvider.KAKAO, "name", "test@mail.com", "https://image.url");
 		List<LocalDateTime> alarmTimes = List.of(LocalDateTime.of(2024, 1, 1, 0, 0));
 		given(memberDeviceService.searchFcmTokensByMemberId(eq(memberId)))
 				.willReturn(List.of("token"));

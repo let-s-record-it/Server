@@ -6,6 +6,7 @@ import com.sillim.recordit.invite.dto.response.InviteInfoResponse;
 import com.sillim.recordit.invite.dto.response.InviteLinkResponse;
 import com.sillim.recordit.invite.service.InviteService;
 import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.service.MemberQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class InviteController {
 
 	private final InviteService inviteService;
+	private final MemberQueryService memberQueryService;
 
 	@GetMapping("/{calenderId}")
 	public ResponseEntity<InviteLinkResponse> getInviteLink(@PathVariable Long calenderId) {
@@ -30,7 +32,7 @@ public class InviteController {
 	public ResponseEntity<InviteInfoResponse> getInviteInfo(@PathVariable String inviteCode) {
 		InviteLink inviteLink = inviteService.searchInviteInfo(inviteCode);
 		Calendar calendar = inviteLink.getCalendar();
-		Member member = calendar.getMember();
+		Member member = memberQueryService.findByMemberId(calendar.getMemberId());
 		return ResponseEntity.ok(
 				new InviteInfoResponse(
 						calendar.getId(), calendar.getTitle(), member.getId(), member.getName()));

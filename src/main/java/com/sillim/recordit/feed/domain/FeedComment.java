@@ -4,7 +4,6 @@ import com.sillim.recordit.feed.domain.vo.FeedCommentContent;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
-import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,15 +40,14 @@ public class FeedComment extends BaseTime {
 	@JoinColumn(name = "feed_id")
 	private Feed feed;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
+	@Column(name = "member_id")
+	private Long memberId;
 
-	public FeedComment(String content, Feed feed, Member member) {
+	public FeedComment(String content, Feed feed, Long memberId) {
 		this.content = new FeedCommentContent(content);
 		this.deleted = false;
 		this.feed = feed;
-		this.member = member;
+		this.memberId = memberId;
 	}
 
 	public String getContent() {
@@ -56,7 +55,7 @@ public class FeedComment extends BaseTime {
 	}
 
 	public boolean isOwner(Long memberId) {
-		return this.member.equalsId(memberId);
+		return Objects.equals(this.memberId, memberId);
 	}
 
 	public void validateAuthenticatedUser(Long memberId) {

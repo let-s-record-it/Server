@@ -4,10 +4,9 @@ import com.sillim.recordit.calendar.domain.vo.CalendarTitle;
 import com.sillim.recordit.global.domain.BaseTime;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
-import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
+import java.util.Objects;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,15 +29,13 @@ public class Calendar extends BaseTime {
 	@JoinColumn(name = "calendar_category_id")
 	private CalendarCategory category;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
+	@Column(name = "member_id")
+	private Long memberId;
 
-	@Builder
-	public Calendar(String title, Member member, CalendarCategory category) {
+	public Calendar(String title, CalendarCategory category, Long memberId) {
 		this.title = new CalendarTitle(title);
 		this.deleted = false;
-		this.member = member;
+		this.memberId = memberId;
 		this.category = category;
 	}
 
@@ -47,7 +44,7 @@ public class Calendar extends BaseTime {
 	}
 
 	public boolean isOwnedBy(Long memberId) {
-		return this.member.equalsId(memberId);
+		return Objects.equals(this.memberId, memberId);
 	}
 
 	public void validateAuthenticatedMember(Long memberId) {

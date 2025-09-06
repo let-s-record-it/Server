@@ -49,8 +49,8 @@ class ScheduleCategoryCommandServiceTest {
 		long memberId = 2L;
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory calendarCategory =
-				CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+				CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(scheduleCategoryRepository.save(any(ScheduleCategory.class))).willReturn(category);
@@ -70,8 +70,8 @@ class ScheduleCategoryCommandServiceTest {
 		ScheduleCategory category = mock(ScheduleCategory.class);
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory calendarCategory =
-				CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+				CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		ScheduleCategoryAddRequest request = new ScheduleCategoryAddRequest("aabbff", "name");
 		given(category.getId()).willReturn(categoryId);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);

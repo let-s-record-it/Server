@@ -9,8 +9,6 @@ import com.sillim.recordit.feed.domain.FeedImage;
 import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.feed.InvalidFeedImageCountException;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -21,8 +19,8 @@ class FeedImagesTest {
 	@Test
 	@DisplayName("피드 이미지 개수가 10개 이하면 저장된다.")
 	void saveWhenFeedImageCount10OrUnder() {
-		Member member = MemberFixture.DEFAULT.getMember();
-		Feed feed = FeedFixture.DEFAULT.getFeed(member);
+		long memberId = 1L;
+		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 		List<FeedImage> feedImageList = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			feedImageList.add(new FeedImage("https://image.url", feed));
@@ -41,8 +39,8 @@ class FeedImagesTest {
 	@Test
 	@DisplayName("피드 이미지 개수가 11개 이상이면 InvalidFeedImageCountExceptoin이 발생한다.")
 	void throwInvalidFeedImageCountExceptionIfFeedImageCountExceed10() {
-		Member member = MemberFixture.DEFAULT.getMember();
-		Feed feed = FeedFixture.DEFAULT.getFeed(member);
+		long memberId = 1L;
+		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 		List<FeedImage> feedImageList = new ArrayList<>();
 		for (int i = 0; i < 11; i++) {
 			feedImageList.add(new FeedImage("https://image.url", feed));
@@ -56,8 +54,8 @@ class FeedImagesTest {
 	@Test
 	@DisplayName("이미 존재하는 이미지를 제외하고 다 삭제 후 새 이미지를 저장한다.")
 	void removeExcludeExistingImageAndSaveNewIamges() {
-		Member member = MemberFixture.DEFAULT.getMember();
-		Feed feed = FeedFixture.DEFAULT.getFeed(member);
+		long memberId = 1L;
+		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 
 		FeedImages feedImages =
 				new FeedImages(

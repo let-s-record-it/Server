@@ -54,6 +54,7 @@ class TaskCommandServiceTest {
 	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
 	@Mock TaskRepository taskRepository;
 
+	long memberId = 1L;
 	private CalendarCategory calendarCategory;
 	private ScheduleCategory taskCategory;
 	private Calendar calendar;
@@ -62,8 +63,8 @@ class TaskCommandServiceTest {
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 
@@ -162,7 +163,7 @@ class TaskCommandServiceTest {
 				.willReturn(Optional.of(selectedTask));
 		willDoNothing().given(taskRepository).deleteAllByTaskGroupId(anyLong());
 
-		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member, calendarCategory));
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId));
 		//
 		//	given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		//		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
@@ -219,7 +220,7 @@ class TaskCommandServiceTest {
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willReturn(Optional.of(selectedTask));
 
-		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member, calendarCategory));
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId));
 		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
@@ -277,7 +278,7 @@ class TaskCommandServiceTest {
 		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
 				.willReturn(Optional.of(selectedTask));
 
-		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(member, calendarCategory));
+		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId));
 		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
 		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 

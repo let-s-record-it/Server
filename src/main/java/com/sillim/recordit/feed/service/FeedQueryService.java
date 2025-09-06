@@ -7,6 +7,7 @@ import com.sillim.recordit.feed.repository.FeedRepository;
 import com.sillim.recordit.global.dto.response.SliceResponse;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
+import com.sillim.recordit.member.service.MemberQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -22,12 +23,16 @@ public class FeedQueryService {
 	private final FeedRepository feedRepository;
 	private final FeedLikeQueryService feedLikeQueryService;
 	private final FeedScrapQueryService feedScrapQueryService;
+	private final MemberQueryService memberQueryService;
 
 	public FeedDetailsResponse searchById(Long feedId, Long memberId) {
-		return FeedDetailsResponse.of(
+		Feed feed =
 				feedRepository
 						.findByIdWithFetchJoin(feedId)
-						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND)),
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
+		return FeedDetailsResponse.of(
+				feed,
+				memberQueryService.findByMemberId(feed.getMemberId()),
 				memberId,
 				feedLikeQueryService.isLiked(feedId, memberId),
 				feedScrapQueryService.isScraped(feedId, memberId));
@@ -43,6 +48,8 @@ public class FeedQueryService {
 										feed ->
 												FeedInListResponse.from(
 														feed,
+														memberQueryService.findByMemberId(
+																feed.getMemberId()),
 														feedLikeQueryService.isLiked(
 																feed.getId(), memberId),
 														feedScrapQueryService.isScraped(
@@ -64,6 +71,8 @@ public class FeedQueryService {
 										feed ->
 												FeedInListResponse.from(
 														feed,
+														memberQueryService.findByMemberId(
+																feed.getMemberId()),
 														feedLikeQueryService.isLiked(
 																feed.getId(), memberId),
 														feedScrapQueryService.isScraped(

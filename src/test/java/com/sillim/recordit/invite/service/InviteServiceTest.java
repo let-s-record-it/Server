@@ -38,10 +38,11 @@ class InviteServiceTest {
 	@Test
 	void getInviteLinkIfExistsValidInviteCode() {
 		long calendarId = 1L;
+		long memberId = 1L;
 		String expectInviteCode = UUID.randomUUID().toString();
 		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		InviteLink inviteLink =
 				new InviteLink(expectInviteCode, LocalDateTime.now().plusDays(7), false, calendar);
 		given(inviteLinkRepository.findByCalendarIdAndExpiredIsFalse(eq(calendarId)))
@@ -56,10 +57,11 @@ class InviteServiceTest {
 	@Test
 	void generateInviteLinkIfNotExistsValidInviteCode() {
 		long calendarId = 1L;
+		long memberId = 1L;
 		String expectInviteCode = UUID.randomUUID().toString();
 		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		InviteLink expectInviteLink =
 				new InviteLink(expectInviteCode, LocalDateTime.now().plusDays(7), false, calendar);
 		InviteLink inviteLink =
@@ -80,10 +82,11 @@ class InviteServiceTest {
 	@DisplayName("초대 코드가 같은 초대 정보가 있다면 가져온다.")
 	@Test
 	void getInviteInfoIfExistsInviteLinkThatEqualsInviteCode() {
+		long memberId = 1L;
 		String inviteCode = UUID.randomUUID().toString();
 		Member member = spy(MemberFixture.DEFAULT.getMember());
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member, category));
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(category, memberId));
 		given(member.getId()).willReturn(1L);
 		given(calendar.getId()).willReturn(1L);
 		InviteLink expectInviteLink = new InviteLink("code", LocalDateTime.now(), false, calendar);
@@ -97,8 +100,7 @@ class InviteServiceTest {
 		assertAll(
 				() -> {
 					assertThat(inviteLink.getCalendar().getId()).isEqualTo(calendar.getId());
-					assertThat(inviteLink.getCalendar().getMember().getId())
-							.isEqualTo(member.getId());
+					assertThat(inviteLink.getCalendar().getMemberId()).isEqualTo(member.getId());
 				});
 	}
 }

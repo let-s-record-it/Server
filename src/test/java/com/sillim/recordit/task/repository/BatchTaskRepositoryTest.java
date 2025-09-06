@@ -40,6 +40,7 @@ class BatchTaskRepositoryTest {
 	BatchTaskRepository batchTaskRepository;
 	@Mock JdbcTemplate jdbcTemplate;
 
+	long memberId = 1L;
 	private Member member;
 	private CalendarCategory calendarCategory;
 	private ScheduleCategory taskCategory;
@@ -49,8 +50,8 @@ class BatchTaskRepositoryTest {
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		taskGroup = new TaskGroup(null, null);
 		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		batchTaskRepository = new BatchTaskRepositoryImpl(jdbcTemplate);

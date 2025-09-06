@@ -5,12 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.fixture.FeedFixture;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +27,12 @@ class CustomFeedRepositoryTest {
 
 	@Autowired TestEntityManager em;
 
-	Member member;
-
-	@BeforeEach
-	void initObjects() {
-		member = em.persist(MemberFixture.DEFAULT.getMember());
-	}
+	long memberId = 1L;
 
 	@Test
 	@DisplayName("피드 id로 피드를 조회한다.")
 	void findById() {
-		Feed feed = em.persist(FeedFixture.DEFAULT.getFeed(member));
+		Feed feed = em.persist(FeedFixture.DEFAULT.getFeed(memberId));
 
 		Optional<Feed> foundFeed = customFeedRepository.findByIdWithFetchJoin(feed.getId());
 
@@ -53,7 +45,7 @@ class CustomFeedRepositoryTest {
 	void findPaginatedOrderByCreatedDesc() {
 		List<Feed> feeds =
 				IntStream.range(0, 10)
-						.mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(member)))
+						.mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(memberId)))
 						.toList();
 
 		Slice<Feed> foundFeeds =
@@ -78,16 +70,16 @@ class CustomFeedRepositoryTest {
 	void findByMemberIdPaginatedOrderByCreatedDesc() {
 		List<Feed> feeds =
 				IntStream.range(0, 10)
-						.mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(member)))
+						.mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(memberId)))
 						.toList();
 
 		Slice<Feed> foundFeeds =
 				customFeedRepository.findByMemberIdOrderByCreatedAtDesc(
-						PageRequest.of(0, 5), member.getId());
+						PageRequest.of(0, 5), memberId);
 
 		Slice<Feed> foundFeeds2 =
 				customFeedRepository.findByMemberIdOrderByCreatedAtDesc(
-						PageRequest.of(3, 3), member.getId());
+						PageRequest.of(3, 3), memberId);
 
 		assertAll(
 				() -> {

@@ -1,46 +1,46 @@
 package com.sillim.recordit.feed.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 
 import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.response.FeedDetailsResponse;
-import com.sillim.recordit.feed.facade.FeedLikeFacade;
 import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.feed.repository.FeedRepository;
 import com.sillim.recordit.global.lock.RedisLockUtil;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.repository.MemberRepository;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @SpringBootTest
 class MultipleFeedLikeServiceTest {
 
-	@Autowired MemberRepository memberRepository;
+	@MockBean MemberRepository memberRepository;
 	@Autowired FeedRepository feedRepository;
 
 	@Autowired FeedLikeService feedLikeService;
-	@Autowired FeedLikeFacade feedLikeFacade;
 	@Autowired FeedQueryService feedQueryService;
 
 	@Test
 	@DisplayName("좋아요를 빠르게 여러 번 눌러도 한 번만 적용된다.")
 	void multipleFeedLike() throws InterruptedException {
-		Member member;
+		long memberId = 1L;
 		Feed feed;
-
-		member = memberRepository.save(MemberFixture.DEFAULT.getMember("like@mail.com"));
-		feed = feedRepository.save(FeedFixture.DEFAULT.getFeed(member));
+		Member member = Mockito.mock(Member.class);
+		given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+		feed = feedRepository.save(FeedFixture.DEFAULT.getFeed(memberId));
 
 		int threadCount = 100;
 		ExecutorService executorService = Executors.newFixedThreadPool(32);
@@ -48,14 +48,14 @@ class MultipleFeedLikeServiceTest {
 
 		for (int i = 0; i < threadCount; i++) {
 			long feedId = feed.getId();
-			String key = "like:" + feedId + ":" + member.getId();
+			String key = "like:" + feedId + ":" + memberId;
 			executorService.submit(
 					() -> {
 						try {
 							RedisLockUtil.acquireAndRunLock(
 									key,
 									() -> {
-										feedLikeService.feedLike(feedId, member.getId());
+										feedLikeService.feedLike(feedId, memberId);
 										return true;
 									});
 						} finally {
@@ -66,8 +66,7 @@ class MultipleFeedLikeServiceTest {
 
 		latch.await();
 
-		FeedDetailsResponse feedResponse =
-				feedQueryService.searchById(feed.getId(), member.getId());
+		FeedDetailsResponse feedResponse = feedQueryService.searchById(feed.getId(), memberId);
 
 		assertThat(feedResponse.likeCount()).isEqualTo(1);
 	}
@@ -75,13 +74,10 @@ class MultipleFeedLikeServiceTest {
 	@Test
 	@DisplayName("좋아요 개수 동시성 문제 체크")
 	void multipleFeedLikeByPeople() throws InterruptedException {
-		List<Member> members = new ArrayList<>();
 		Feed feed;
-		for (int i = 1; i <= 100; i++) {
-			members.add(
-					memberRepository.save(MemberFixture.DEFAULT.getMember(i + "member@mail.com")));
-		}
-		feed = feedRepository.save(FeedFixture.DEFAULT.getFeed(members.get(0)));
+		Member member = Mockito.mock(Member.class);
+		given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
+		feed = feedRepository.save(FeedFixture.DEFAULT.getFeed(1L));
 
 		int threadCount = 100;
 		ExecutorService executorService = Executors.newFixedThreadPool(32);
@@ -89,13 +85,11 @@ class MultipleFeedLikeServiceTest {
 
 		for (int i = 0; i < threadCount; i++) {
 			long feedId = feed.getId();
-			long memberId = members.get(i).getId();
+			long memberId = i + 1L;
 			executorService.submit(
 					() -> {
 						try {
-							feedLikeFacade.feedLikeRetry(feedId, memberId, 20);
-						} catch (InterruptedException e) {
-							throw new RuntimeException(e);
+							feedLikeService.feedLike(feedId, memberId);
 						} finally {
 							latch.countDown();
 						}
@@ -104,8 +98,7 @@ class MultipleFeedLikeServiceTest {
 
 		latch.await();
 
-		FeedDetailsResponse feedResponse =
-				feedQueryService.searchById(feed.getId(), members.get(0).getId());
+		FeedDetailsResponse feedResponse = feedQueryService.searchById(feed.getId(), 1L);
 
 		assertThat(feedResponse.likeCount()).isEqualTo(100);
 	}

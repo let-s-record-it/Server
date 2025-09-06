@@ -8,8 +8,6 @@ import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
@@ -38,15 +36,14 @@ class CustomScheduleRepositoryTest {
 	@Autowired ScheduleRepository scheduleRepository;
 	@Autowired TestEntityManager em;
 
-	Member member;
+	long memberId = 1L;
 	CalendarCategory category;
 	Calendar calendar;
 
 	@BeforeEach
 	void setEntities() {
-		member = em.persist(MemberFixture.DEFAULT.getMember());
-		category = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
-		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member, category));
+		category = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
+		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(category, memberId));
 	}
 
 	@Test

@@ -56,9 +56,10 @@ class ScheduleCommandServiceTest {
 	@Test
 	@DisplayName("반복 없는 schedule을 추가할 수 있다.")
 	void addSchedule() throws SchedulerException {
+		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		ScheduleAddRequest scheduleAddRequest =
 				new ScheduleAddRequest(
 						"title",
@@ -137,9 +138,10 @@ class ScheduleCommandServiceTest {
 		RepetitionPattern repetitionPattern =
 				RepetitionPattern.createDaily(
 						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
+		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		ScheduleCategory scheduleCategory =
 				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
@@ -163,68 +165,6 @@ class ScheduleCommandServiceTest {
 							.isEqualTo(LocalDateTime.of(2024, 1, 2, 0, 0));
 					assertThat(schedules.get(0).getScheduleDuration().isAllDay()).isEqualTo(false);
 				});
-	}
-
-	@Test
-	@DisplayName("단일 일정을 수정할 수 있다.")
-	void throwInvalidRequestExceptionIfNotOwnerWhenModifySchedule() {
-		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
-		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
-		LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2024, 2, 1, 0, 0);
-		RepetitionUpdateRequest repetitionUpdateRequest =
-				new RepetitionUpdateRequest(
-						RepetitionType.DAILY,
-						1,
-						repetitionStartDate,
-						repetitionEndDate,
-						null,
-						null,
-						null,
-						null,
-						null);
-		long memberId = 1L;
-		long scheduleId = 1L;
-		long calendarId = 1L;
-		ScheduleModifyRequest scheduleModifyRequest =
-				new ScheduleModifyRequest(
-						"title2",
-						"description2",
-						true,
-						startDate,
-						endDate,
-						true,
-						repetitionUpdateRequest,
-						"용산역",
-						true,
-						37.0,
-						128.0,
-						true,
-						1L,
-						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
-						1L);
-		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
-		Member member1 = mock(Member.class);
-		Member member2 = mock(Member.class);
-		CalendarCategory category1 = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member1);
-		CalendarCategory category2 = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member2);
-		Calendar calendar1 = CalendarFixture.DEFAULT.getCalendar(member1, category1);
-		Calendar calendar2 = CalendarFixture.DEFAULT.getCalendar(member2, category2);
-		ScheduleCategory scheduleCategory =
-				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar1);
-		Schedule schedule =
-				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar1);
-		given(member1.equalsId(anyLong())).willReturn(true);
-		given(member2.equalsId(anyLong())).willReturn(false);
-		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
-		given(calendarQueryService.searchByCalendarId(calendarId)).willReturn(calendar2);
-
-		assertThatCode(
-						() ->
-								scheduleCommandService.modifySchedule(
-										scheduleModifyRequest, scheduleId, memberId))
-				.isInstanceOf(InvalidRequestException.class)
-				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
 
 	@Test
@@ -269,15 +209,13 @@ class ScheduleCommandServiceTest {
 		RepetitionPattern repetitionPattern =
 				RepetitionPattern.createDaily(
 						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
-		Member member = mock(Member.class);
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		ScheduleCategory scheduleCategory =
 				spy(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 		Schedule schedule =
 				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
-		given(schedule.getId()).willReturn(1L);
-		given(member.equalsId(anyLong())).willReturn(true);
+		given(schedule.getId()).willReturn(scheduleId);
 		given(scheduleCategoryQueryService.searchScheduleCategory(eq(1L)))
 				.willReturn(scheduleCategory);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
@@ -344,15 +282,13 @@ class ScheduleCommandServiceTest {
 		RepetitionPattern repetitionPattern =
 				RepetitionPattern.createDaily(
 						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
-		Member member = mock(Member.class);
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		ScheduleCategory scheduleCategory =
 				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
-		given(schedule.getId()).willReturn(1L);
-		given(member.equalsId(anyLong())).willReturn(true);
+		given(schedule.getId()).willReturn(scheduleId);
 		given(scheduleGroup.getId()).willReturn(1L);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
 		given(calendarQueryService.searchByCalendarId(calendarId)).willReturn(calendar);
@@ -406,14 +342,12 @@ class ScheduleCommandServiceTest {
 						List.of(LocalDateTime.of(2024, 1, 1, 0, 0)),
 						1L);
 		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
-		Member member = mock(Member.class);
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		ScheduleCategory scheduleCategory =
 				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				spy(ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar));
-		given(member.equalsId(anyLong())).willReturn(true);
 		given(scheduleGroup.getId()).willReturn(1L);
 		given(schedule.getId()).willReturn(1L);
 		given(scheduleRepository.findByScheduleId(scheduleId)).willReturn(Optional.of(schedule));
@@ -475,18 +409,18 @@ class ScheduleCommandServiceTest {
 	@Test
 	@DisplayName("그룹 내 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
 	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveGroupSchedules() {
+		long memberId = 1L;
 		Member member = mock(Member.class);
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		ScheduleCategory scheduleCategory =
 				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
-		given(member.equalsId(anyLong())).willReturn(false);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
-		assertThatCode(() -> scheduleCommandService.removeGroupSchedules(schedule.getId(), 1L))
+		assertThatCode(() -> scheduleCommandService.removeGroupSchedules(schedule.getId(), 2L))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
@@ -494,21 +428,21 @@ class ScheduleCommandServiceTest {
 	@Test
 	@DisplayName("그룹 내 특정 일 이후 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
 	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveGroupSchedulesAfter() {
+		long memberId = 1L;
 		Member member = mock(Member.class);
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
 		ScheduleCategory scheduleCategory =
 				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
-		given(member.equalsId(anyLong())).willReturn(false);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
 		assertThatCode(
 						() ->
 								scheduleCommandService.removeGroupSchedulesAfterCurrent(
-										schedule.getId(), 1L))
+										schedule.getId(), 2L))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}

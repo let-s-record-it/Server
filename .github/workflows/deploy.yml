@@ -11,6 +11,19 @@ jobs:
   setup-build-publish-deploy:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    services:
+      neo4j:
+        image: neo4j:5.24
+        ports:
+          - 7687:7687
+          - 7474:7474
+        env:
+          NEO4J_AUTH: neo4j/verysecret
+        options: >-
+          --health-cmd "cypher-shell -u neo4j -p verysecret 'RETURN 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -33,6 +46,10 @@ jobs:
 
       - name: Test with Gradle Wrapper
         run: ./gradlew clean spotlessCheck test
+        env:
+          NEO4J_URI: bolt://localhost:7687
+          NEO4J_USER: neo4j
+          NEO4J_PASSWORD: verysecret
 
       - name: Build with Gradle Wrapper
         run: ./gradlew build

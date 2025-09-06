@@ -42,6 +42,7 @@ public class MonthlyGoalUpdateServiceTest {
 	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
 	@InjectMocks MonthlyGoalUpdateService monthlyGoalUpdateService;
 
+	long memberId = 1L;
 	private Member member;
 	private ScheduleCategory category;
 	private CalendarCategory calendarCategory;
@@ -50,8 +51,8 @@ public class MonthlyGoalUpdateServiceTest {
 	@BeforeEach
 	void beforeEach() {
 		member = mock(Member.class);
-		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 

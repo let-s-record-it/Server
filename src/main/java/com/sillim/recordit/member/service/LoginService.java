@@ -5,6 +5,7 @@ import com.sillim.recordit.config.security.jwt.AuthorizationToken;
 import com.sillim.recordit.config.security.jwt.JwtProvider;
 import com.sillim.recordit.config.security.jwt.JwtValidator;
 import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.global.exception.member.InvalidRejoinException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
@@ -13,6 +14,7 @@ import com.sillim.recordit.member.dto.oidc.IdTokenHeader;
 import com.sillim.recordit.member.dto.oidc.IdTokenPayload;
 import com.sillim.recordit.member.dto.request.LoginRequest;
 import com.sillim.recordit.member.dto.request.MemberInfo;
+import com.sillim.recordit.member.dto.response.OAuthTokenResponse;
 import com.sillim.recordit.member.repository.MemberRepository;
 import com.sillim.recordit.member.service.google.GoogleAuthenticationService;
 import com.sillim.recordit.member.service.kakao.KakaoAuthenticationService;
@@ -21,10 +23,12 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class LoginService {
 
 	private final Map<OAuthProvider, AuthenticationService> authenticationServiceMap =
@@ -60,13 +64,19 @@ public class LoginService {
 		authenticationServiceMap.put(OAuthProvider.NAVER, naverAuthenticationService);
 	}
 
-	public AuthorizationToken login(String exchangeToken) {
-		return jwtProvider.generateAuthorizationToken(
-				jwtValidator.getMemberIdIfValid(exchangeToken));
+	public OAuthTokenResponse login(String exchangeToken) {
+		Long memberId = jwtValidator.getMemberIdIfValid(exchangeToken);
+		AuthorizationToken token = jwtProvider.generateAuthorizationToken(memberId);
+		Optional<Member> member = memberRepository.findById(memberId);
+		boolean activated = false;
+		if (member.isPresent()) {
+			activated = member.get().getActivated();
+		}
+
+		return new OAuthTokenResponse(token.accessToken(), token.refreshToken(), activated);
 	}
 
-	@Transactional
-	public AuthorizationToken login(LoginRequest loginRequest) throws IOException {
+	public OAuthTokenResponse login(LoginRequest loginRequest) throws IOException {
 		AuthenticationService authenticationService =
 				authenticationServiceMap.get(loginRequest.provider());
 
@@ -79,26 +89,40 @@ public class LoginService {
 				authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
 		Member member =
 				memberRepository
-						.findByAccount(account)
+						.findByOauthAccount(account)
 						.orElseGet(() -> signupService.signup(memberInfo));
 		member = validateQuickRejoinMember(member, memberInfo);
 		memberDeviceService.addMemberDeviceIfNotExists(
 				loginRequest.deviceId(), loginRequest.model(), loginRequest.fcmToken(), member);
 
-		return jwtProvider.generateAuthorizationToken(member.getId());
+		AuthorizationToken token = jwtProvider.generateAuthorizationToken(member.getId());
+		return new OAuthTokenResponse(
+				token.accessToken(), token.refreshToken(), member.getActivated());
 	}
 
-	private AuthorizationToken loginWithoutOidc(
+	public void activateMember(String personalId, Long memberId) {
+		Member member =
+				memberRepository
+						.findById(memberId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+		member.active(personalId);
+		memberRepository.save(member);
+	}
+
+	private OAuthTokenResponse loginWithoutOidc(
 			LoginRequest loginRequest, AuthenticationService authenticationService) {
 		MemberInfo memberInfo =
 				authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
 		Member member =
 				memberRepository
-						.findByAccount(memberInfo.oauthAccount())
+						.findByOauthAccount(memberInfo.oauthAccount())
 						.orElseGet(() -> signupService.signup(memberInfo));
 		member = validateQuickRejoinMember(member, memberInfo);
 
-		return jwtProvider.generateAuthorizationToken(member.getId());
+		AuthorizationToken token = jwtProvider.generateAuthorizationToken(member.getId());
+		return new OAuthTokenResponse(
+				token.accessToken(), token.refreshToken(), member.getActivated());
 	}
 
 	private Member validateQuickRejoinMember(Member member, MemberInfo memberInfo) {

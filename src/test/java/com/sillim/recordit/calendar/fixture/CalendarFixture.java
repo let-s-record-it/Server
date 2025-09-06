@@ -2,7 +2,6 @@ package com.sillim.recordit.calendar.fixture;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarCategory;
-import com.sillim.recordit.member.domain.Member;
 
 public enum CalendarFixture {
 	DEFAULT("calendar1");
@@ -12,7 +11,7 @@ public enum CalendarFixture {
 		this.title = title;
 	}
 
-	public Calendar getCalendar(Member member, CalendarCategory category) {
-		return new Calendar(title, member, category);
+	public Calendar getCalendar(CalendarCategory category, Long memberId) {
+		return new Calendar(title, category, memberId);
 	}
 }

@@ -1,7 +1,6 @@
 package com.sillim.recordit.calendar.fixture;
 
 import com.sillim.recordit.calendar.domain.CalendarCategory;
-import com.sillim.recordit.member.domain.Member;
 
 public enum CalendarCategoryFixture {
 	DEFAULT("aaffbb", "랜덤색", true);
@@ -16,7 +15,7 @@ public enum CalendarCategoryFixture {
 		this.isDefault = isDefault;
 	}
 
-	public CalendarCategory getCalendarCategory(Member member) {
-		return new CalendarCategory(colorHex, name, isDefault, member);
+	public CalendarCategory getCalendarCategory(Long memberId) {
+		return new CalendarCategory(colorHex, name, isDefault, memberId);
 	}
 }

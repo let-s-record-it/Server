@@ -18,9 +18,11 @@ import org.junit.jupiter.api.Test;
 
 public class WeeklyGoalTest {
 
+	long memberId = 1L;
 	Member member = MemberFixture.DEFAULT.getMember();
-	CalendarCategory calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-	Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+	CalendarCategory calendarCategory =
+			CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+	Calendar calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 	ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 
 	@Test

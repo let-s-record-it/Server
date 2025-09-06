@@ -8,10 +8,6 @@ import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
-import com.sillim.recordit.member.domain.Auth;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.domain.OAuthProvider;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,48 +30,37 @@ class CustomCalendarMemberRepositoryImplTest {
 
 	Calendar calendar;
 	CalendarCategory category;
-	Member member;
+	long memberId = 1L;
 
 	@BeforeEach
 	void initObjects() {
-		member = em.persist(MemberFixture.DEFAULT.getMember());
-		category = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
-		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member, category));
+		category = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
+		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(category, memberId));
 	}
 
 	@Test
 	@DisplayName("캘린더 멤버를 조회한다.")
 	void findCalendarMember() {
-		em.persist(new CalendarMember(member, calendar));
+		em.persist(new CalendarMember(calendar, memberId));
 
 		Optional<CalendarMember> foundCalendarMember =
-				customCalendarMemberRepository.findCalendarMember(calendar.getId(), member.getId());
+				customCalendarMemberRepository.findCalendarMember(calendar.getId(), memberId);
 
 		assertAll(
 				() -> {
 					assertThat(foundCalendarMember).isNotEmpty();
 					assertThat(foundCalendarMember.get().getCalendar().getId())
 							.isEqualTo(calendar.getId());
-					assertThat(foundCalendarMember.get().getMember().getId())
-							.isEqualTo(member.getId());
+					assertThat(foundCalendarMember.get().getMemberId()).isEqualTo(memberId);
 				});
 	}
 
 	@Test
 	@DisplayName("캘린더 멤버들을 조회한다.")
 	void findCalendarMembers() {
-		Member member2 =
-				em.persist(
-						new Member(
-								new Auth("account", OAuthProvider.KAKAO),
-								"name",
-								"job",
-								"email",
-								"image",
-								false,
-								List.of()));
-		em.persist(new CalendarMember(member, calendar));
-		em.persist(new CalendarMember(member2, calendar));
+		long member2Id = 2L;
+		em.persist(new CalendarMember(calendar, memberId));
+		em.persist(new CalendarMember(calendar, member2Id));
 
 		List<CalendarMember> calendarMembers =
 				customCalendarMemberRepository.findCalendarMembers(calendar.getId());
@@ -87,13 +72,12 @@ class CustomCalendarMemberRepositoryImplTest {
 	@DisplayName("특정 멤버의 캘린더들을 조회한다.")
 	void findCalendarsByMemberId() {
 		CalendarCategory category =
-				em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
-		Calendar calendar2 = em.persist(CalendarFixture.DEFAULT.getCalendar(member, category));
-		em.persist(new CalendarMember(member, calendar));
-		em.persist(new CalendarMember(member, calendar2));
+				em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
+		Calendar calendar2 = em.persist(CalendarFixture.DEFAULT.getCalendar(category, memberId));
+		em.persist(new CalendarMember(calendar, memberId));
+		em.persist(new CalendarMember(calendar2, memberId));
 
-		List<Calendar> calendars =
-				customCalendarMemberRepository.findCalendarsByMemberId(member.getId());
+		List<Calendar> calendars = customCalendarMemberRepository.findCalendarsByMemberId(memberId);
 
 		assertThat(calendars).hasSize(2);
 	}

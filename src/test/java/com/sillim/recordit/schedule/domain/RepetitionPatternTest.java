@@ -6,10 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
-import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.domain.MemberRole;
-import com.sillim.recordit.member.domain.OAuthProvider;
+import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.schedule.fixture.RepetitionPatternFixture;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAmount;
@@ -25,14 +23,7 @@ class RepetitionPatternTest {
 
 	@BeforeEach
 	void initObjects() {
-		member =
-				Member.builder()
-						.auth(new Auth("1234567", OAuthProvider.KAKAO))
-						.name("name")
-						.job("job")
-						.deleted(false)
-						.memberRole(List.of(MemberRole.ROLE_USER))
-						.build();
+		member = MemberFixture.DEFAULT.getMember();
 		scheduleGroup = new ScheduleGroup(false);
 	}
 

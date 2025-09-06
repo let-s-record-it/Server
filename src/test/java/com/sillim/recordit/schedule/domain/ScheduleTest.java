@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 class ScheduleTest {
 
+	long memberId = 1L;
 	Member member;
 	Calendar calendar;
 	CalendarCategory category;
@@ -27,8 +28,8 @@ class ScheduleTest {
 	@BeforeEach
 	void initObjects() {
 		member = MemberFixture.DEFAULT.getMember();
-		category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		scheduleGroup = new ScheduleGroup(false);
 	}
 
