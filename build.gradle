@@ -46,6 +46,7 @@ dependencies {
     // database
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'

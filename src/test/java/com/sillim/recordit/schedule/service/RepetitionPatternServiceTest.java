@@ -5,17 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.domain.MemberRole;
-import com.sillim.recordit.member.domain.OAuthProvider;
+import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.RepetitionType;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import com.sillim.recordit.schedule.dto.request.RepetitionUpdateRequest;
 import com.sillim.recordit.schedule.repository.RepetitionPatternRepository;
 import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,14 +31,7 @@ class RepetitionPatternServiceTest {
 
 	@BeforeEach
 	void initObjects() {
-		member =
-				Member.builder()
-						.auth(new Auth("1234567", OAuthProvider.KAKAO))
-						.name("name")
-						.job("job")
-						.deleted(false)
-						.memberRole(List.of(MemberRole.ROLE_USER))
-						.build();
+		member = MemberFixture.DEFAULT.getMember();
 	}
 
 	@Test

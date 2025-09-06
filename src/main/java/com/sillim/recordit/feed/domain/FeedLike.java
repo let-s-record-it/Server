@@ -1,6 +1,5 @@
 package com.sillim.recordit.feed.domain;
 
-import com.sillim.recordit.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,12 +24,11 @@ public class FeedLike {
 	@JoinColumn(name = "feed_id")
 	private Feed feed;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
+	@Column(name = "member_id")
+	private Long memberId;
 
-	public FeedLike(Feed feed, Member member) {
+	public FeedLike(Feed feed, Long memberId) {
 		this.feed = feed;
-		this.member = member;
+		this.memberId = memberId;
 	}
 }

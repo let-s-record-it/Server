@@ -22,10 +22,8 @@ import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
-import com.sillim.recordit.member.domain.Auth;
 import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.domain.MemberRole;
-import com.sillim.recordit.member.domain.OAuthProvider;
+import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
@@ -58,22 +56,16 @@ class ScheduleControllerTest extends RestDocsTest {
 	@MockBean ScheduleQueryService scheduleQueryService;
 	@MockBean RepetitionPatternService repetitionPatternService;
 
+	long memberId = 1L;
 	Member member;
 	CalendarCategory category;
 	Calendar calendar;
 
 	@BeforeEach
 	void initObjects() {
-		member =
-				Member.builder()
-						.auth(new Auth("1234567", OAuthProvider.KAKAO))
-						.name("name")
-						.job("job")
-						.deleted(false)
-						.memberRole(List.of(MemberRole.ROLE_USER))
-						.build();
-		category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		member = MemberFixture.DEFAULT.getMember();
+		category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 	}
 
 	@Test

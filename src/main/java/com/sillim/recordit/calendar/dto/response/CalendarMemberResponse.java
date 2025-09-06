@@ -6,8 +6,7 @@ import com.sillim.recordit.member.domain.Member;
 public record CalendarMemberResponse(
 		Long id, Long memberId, String memberName, String memberProfileImageUrl) {
 
-	public static CalendarMemberResponse of(CalendarMember calendarMember) {
-		Member member = calendarMember.getMember();
+	public static CalendarMemberResponse of(CalendarMember calendarMember, Member member) {
 		return new CalendarMemberResponse(
 				calendarMember.getId(),
 				member.getId(),

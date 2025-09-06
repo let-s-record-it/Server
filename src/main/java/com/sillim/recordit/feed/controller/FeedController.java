@@ -5,13 +5,11 @@ import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.dto.request.FeedModifyRequest;
 import com.sillim.recordit.feed.dto.response.FeedDetailsResponse;
 import com.sillim.recordit.feed.dto.response.FeedInListResponse;
-import com.sillim.recordit.feed.facade.FeedLikeFacade;
 import com.sillim.recordit.feed.service.FeedCommandService;
+import com.sillim.recordit.feed.service.FeedLikeService;
 import com.sillim.recordit.feed.service.FeedQueryService;
 import com.sillim.recordit.feed.service.FeedScrapService;
 import com.sillim.recordit.global.dto.response.SliceResponse;
-import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.ApplicationException;
 import com.sillim.recordit.global.lock.RedisLockUtil;
 import com.sillim.recordit.member.domain.Member;
 import jakarta.validation.Valid;
@@ -37,14 +35,13 @@ public class FeedController {
 	private final FeedCommandService feedCommandService;
 	private final FeedQueryService feedQueryService;
 	private final FeedScrapService feedScrapService;
-	private final FeedLikeFacade feedLikeFacade;
+	private final FeedLikeService feedLikeService;
 
 	@PostMapping
 	public ResponseEntity<Void> feedAdd(
 			@Validated @RequestPart FeedAddRequest feedAddRequest,
 			@Valid @Size(max = 10) @RequestPart(required = false) List<MultipartFile> images,
-			@CurrentMember Member member)
-			throws IOException {
+			@CurrentMember Member member) {
 		Long feedId = feedCommandService.addFeed(feedAddRequest, images, member.getId());
 		return ResponseEntity.created(URI.create("/api/v1/feeds/" + feedId)).build();
 	}
@@ -90,11 +87,7 @@ public class FeedController {
 		RedisLockUtil.acquireAndRunLock(
 				"feed_like:" + feedId + ":" + member.getId(),
 				() -> {
-					try {
-						feedLikeFacade.feedLikeRetry(feedId, member.getId(), 10);
-					} catch (InterruptedException e) {
-						throw new ApplicationException(ErrorCode.INTERRUPTED);
-					}
+					feedLikeService.feedLike(feedId, member.getId());
 					return true;
 				});
 		return ResponseEntity.noContent().build();
@@ -106,11 +99,7 @@ public class FeedController {
 		RedisLockUtil.acquireAndRunLock(
 				"feed_like:" + feedId + ":" + member.getId(),
 				() -> {
-					try {
-						feedLikeFacade.feedUnlikeRetry(feedId, member.getId(), 10);
-					} catch (InterruptedException e) {
-						throw new ApplicationException(ErrorCode.INTERRUPTED);
-					}
+					feedLikeService.feedUnlike(feedId, member.getId());
 					return true;
 				});
 		return ResponseEntity.noContent().build();

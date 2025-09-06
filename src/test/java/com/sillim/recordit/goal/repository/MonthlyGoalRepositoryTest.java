@@ -11,8 +11,6 @@ import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.MonthlyGoal;
 import com.sillim.recordit.goal.fixture.MonthlyGoalFixture;
-import com.sillim.recordit.member.domain.Member;
-import com.sillim.recordit.member.fixture.MemberFixture;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -31,16 +29,16 @@ public class MonthlyGoalRepositoryTest {
 	@Autowired MonthlyGoalRepository monthlyGoalRepository;
 	@Autowired TestEntityManager em;
 
-	private Member member;
+	long memberId = 1L;
 	private ScheduleCategory category;
 	private CalendarCategory calendarCategory;
 	private Calendar calendar;
 
 	@BeforeEach
 	void beforeEach() {
-		member = em.persist(MemberFixture.DEFAULT.getMember());
-		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(member));
-		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(member, calendarCategory));
+		calendarCategory =
+				em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
+		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId));
 		category = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 	}
 
@@ -106,19 +104,16 @@ public class MonthlyGoalRepositoryTest {
 								LocalDate.of(2024, 5, 1),
 								LocalDate.of(2024, 5, 31),
 								category,
-								member,
 								calendar),
 						MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
 								LocalDate.of(2024, 5, 1),
 								LocalDate.of(2024, 5, 31),
 								category,
-								member,
 								calendar),
 						MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
 								LocalDate.of(2024, 6, 1),
 								LocalDate.of(2024, 6, 30),
 								category,
-								member,
 								calendar)));
 		// when
 		List<MonthlyGoal> foundList =

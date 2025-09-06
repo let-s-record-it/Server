@@ -1,20 +1,26 @@
 package com.sillim.recordit.member.controller;
 
-import com.sillim.recordit.config.security.jwt.AuthorizationToken;
+import com.sillim.recordit.config.security.authenticate.CurrentMember;
+import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.dto.request.LoginRequest;
 import com.sillim.recordit.member.dto.request.WebLoginRequest;
 import com.sillim.recordit.member.dto.response.OAuthTokenResponse;
 import com.sillim.recordit.member.service.LoginService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -25,15 +31,21 @@ public class LoginController {
 	@PostMapping("/login")
 	public ResponseEntity<OAuthTokenResponse> login(@RequestBody LoginRequest loginRequest)
 			throws IOException {
-		AuthorizationToken token = loginService.login(loginRequest);
-		return ResponseEntity.ok(new OAuthTokenResponse(token.accessToken(), token.refreshToken()));
+		return ResponseEntity.ok(loginService.login(loginRequest));
 	}
 
 	@PostMapping("/web-login")
 	public ResponseEntity<OAuthTokenResponse> webLogin(
 			@RequestBody WebLoginRequest webLoginRequest) {
-		log.info("token: {}", webLoginRequest.exchangeToken());
-		AuthorizationToken token = loginService.login(webLoginRequest.exchangeToken());
-		return ResponseEntity.ok(new OAuthTokenResponse(token.accessToken(), token.refreshToken()));
+		return ResponseEntity.ok(loginService.login(webLoginRequest.exchangeToken()));
+	}
+
+	@PostMapping("/activate")
+	public ResponseEntity<Void> activateMember(
+			@RequestBody @Valid @NotBlank @Size(max = 10) String personalId,
+			@CurrentMember Member member) {
+		loginService.activateMember(personalId, member.getId());
+
+		return ResponseEntity.noContent().build();
 	}
 }

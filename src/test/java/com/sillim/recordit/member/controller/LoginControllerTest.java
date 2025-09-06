@@ -10,9 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sillim.recordit.config.security.jwt.AuthorizationToken;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.dto.request.LoginRequest;
+import com.sillim.recordit.member.dto.response.OAuthTokenResponse;
 import com.sillim.recordit.member.service.LoginService;
 import com.sillim.recordit.support.restdocs.RestDocsTest;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +35,7 @@ class LoginControllerTest extends RestDocsTest {
 		LoginRequest loginRequest =
 				new LoginRequest(
 						"idToken", accessToken, OAuthProvider.KAKAO, "id", "model", "token");
-		AuthorizationToken token = new AuthorizationToken(accessToken, refreshToken);
+		OAuthTokenResponse token = new OAuthTokenResponse(accessToken, refreshToken, false);
 		given(loginService.login(loginRequest)).willReturn(token);
 
 		ResultActions perform =

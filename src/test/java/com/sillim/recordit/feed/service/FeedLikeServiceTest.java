@@ -36,7 +36,7 @@ class FeedLikeServiceTest {
 		long feedId = 1L;
 		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		given(feedRepository.findById(eq(feedId))).willReturn(Optional.of(feed));
 
 		feedLikeService.feedLike(feedId, memberId);
@@ -51,7 +51,7 @@ class FeedLikeServiceTest {
 		long feedId = 1L;
 		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		willDoNothing().given(feed).unlike();
 		given(feedRepository.findById(eq(feedId))).willReturn(Optional.of(feed));
 

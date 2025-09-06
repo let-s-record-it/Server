@@ -13,6 +13,6 @@ public interface FeedScrapRepository extends JpaRepository<FeedScrap, Long> {
 	boolean existsByFeedIdAndMemberId(Long feedId, Long memberId);
 
 	@Modifying(clearAutomatically = true)
-	@Query("update FeedScrap fs set fs.member = null where fs.member.id = :memberId")
+	@Query("update FeedScrap fs set fs.memberId = null where fs.memberId = :memberId")
 	void updateMemberIsNull(@Param("memberId") Long memberId);
 }

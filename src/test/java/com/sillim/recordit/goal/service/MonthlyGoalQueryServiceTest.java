@@ -39,6 +39,7 @@ public class MonthlyGoalQueryServiceTest {
 	@Mock MonthlyGoalRepository monthlyGoalRepository;
 	@InjectMocks MonthlyGoalQueryService monthlyGoalQueryService;
 
+	long memberId = 1L;
 	private Member member;
 	private ScheduleCategory category;
 	private CalendarCategory calendarCategory;
@@ -47,8 +48,8 @@ public class MonthlyGoalQueryServiceTest {
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 
@@ -90,7 +91,6 @@ public class MonthlyGoalQueryServiceTest {
 												LocalDate.of(2024, 4, 1),
 												LocalDate.of(2024, 4, 30),
 												category,
-												member,
 												calendar))
 						.toList();
 		given(monthlyGoalRepository.findMonthlyGoalInMonth(eq(year), eq(month), eq(calendarId)))

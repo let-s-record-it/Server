@@ -31,13 +31,13 @@ public class CustomCalendarRepositoryImpl extends QuerydslRepositorySupport
 				.leftJoin(calendar.category)
 				.fetchJoin()
 				.where(calendar.deleted.isFalse())
-				.where(calendar.member.id.eq(memberId))
+				.where(calendar.memberId.eq(memberId))
 				.fetch();
 	}
 
 	@Override
 	public void updateMemberIsNull(Long memberId) {
-		update(calendar).setNull(calendar.member).where(calendar.member.id.eq(memberId)).execute();
+		update(calendar).setNull(calendar.memberId).where(calendar.memberId.eq(memberId)).execute();
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package com.sillim.recordit.goal.fixture;
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
-import com.sillim.recordit.member.domain.Member;
 import java.time.LocalDate;
 
 public enum WeeklyGoalFixture {
@@ -57,7 +56,6 @@ public enum WeeklyGoalFixture {
 			LocalDate startDate,
 			LocalDate endDate,
 			ScheduleCategory category,
-			Member member,
 			Calendar calendar) {
 
 		return WeeklyGoal.builder()

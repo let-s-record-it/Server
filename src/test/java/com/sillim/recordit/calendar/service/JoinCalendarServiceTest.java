@@ -35,8 +35,9 @@ class JoinCalendarServiceTest {
 	@DisplayName("캘린더가 삭제되어 있으면 InvalidRequestException이 발생한다.")
 	void throwInvalidRequestExceptionWhenJoinInCalendarIfCalendarIsDeleted() {
 		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(member, category);
+		long memberId = 1L;
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		calendar.delete();
 		String inviteCode = "code";
 		InviteLink inviteLink = new InviteLink(inviteCode, LocalDateTime.now(), false, calendar);
@@ -54,8 +55,9 @@ class JoinCalendarServiceTest {
 		long joinMemberId = 2L;
 		long calendarMemberId = 3L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(member, category));
+		long memberId = 1L;
+		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(category, memberId));
 		String inviteCode = "code";
 		InviteLink inviteLink = new InviteLink(inviteCode, LocalDateTime.now(), false, calendar);
 		given(calendar.getId()).willReturn(calendarId);

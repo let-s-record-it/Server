@@ -59,6 +59,7 @@ public class TaskControllerTest extends RestDocsTest {
 	@MockBean TaskCommandService taskCommandService;
 	@MockBean TaskQueryService taskQueryService;
 
+	long memberId = 1L;
 	private Member member;
 	private CalendarCategory calendarCategory;
 	private ScheduleCategory taskCategory;
@@ -67,8 +68,8 @@ public class TaskControllerTest extends RestDocsTest {
 	@BeforeEach
 	void init() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		taskCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 

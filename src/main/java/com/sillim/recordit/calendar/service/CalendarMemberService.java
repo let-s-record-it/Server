@@ -2,11 +2,11 @@ package com.sillim.recordit.calendar.service;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarMember;
+import com.sillim.recordit.calendar.dto.response.CalendarMemberResponse;
 import com.sillim.recordit.calendar.repository.CalendarMemberRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
-import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +38,15 @@ public class CalendarMemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<CalendarMember> searchCalendarMembers(Long calendarId) {
-		return calendarMemberRepository.findCalendarMembers(calendarId);
+	public List<CalendarMemberResponse> searchCalendarMembers(Long calendarId) {
+		return calendarMemberRepository.findCalendarMembers(calendarId).stream()
+				.map(
+						calendarMember ->
+								CalendarMemberResponse.of(
+										calendarMember,
+										memberQueryService.findByMemberId(
+												calendarMember.getMemberId())))
+				.toList();
 	}
 
 	@Transactional(readOnly = true)
@@ -49,8 +56,7 @@ public class CalendarMemberService {
 
 	public Long addCalendarMember(Long calendarId, Long memberId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
-		Member member = memberQueryService.findByMemberId(memberId);
-		return calendarMemberRepository.save(new CalendarMember(member, calendar)).getId();
+		return calendarMemberRepository.save(new CalendarMember(calendar, memberId)).getId();
 	}
 
 	public void removeCalendarMember(Long calendarId, Long memberId, Long ownerId) {

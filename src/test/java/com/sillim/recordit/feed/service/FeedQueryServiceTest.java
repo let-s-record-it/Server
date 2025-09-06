@@ -16,6 +16,7 @@ import com.sillim.recordit.feed.repository.FeedRepository;
 import com.sillim.recordit.global.dto.response.SliceResponse;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
+import com.sillim.recordit.member.service.MemberQueryService;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,7 @@ class FeedQueryServiceTest {
 	@Mock FeedRepository feedRepository;
 	@Mock FeedLikeQueryService feedLikeQueryService;
 	@Mock FeedScrapQueryService feedScrapQueryService;
+	@Mock MemberQueryService memberQueryService;
 	@InjectMocks FeedQueryService feedQueryService;
 
 	@Test
@@ -41,9 +43,9 @@ class FeedQueryServiceTest {
 		long feedId = 1L;
 		long memberId = 1L;
 		Member member = mock(Member.class);
-		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
-		given(member.equalsId(memberId)).willReturn(true);
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		given(feed.getId()).willReturn(feedId);
+		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(feedRepository.findByIdWithFetchJoin(eq(feedId))).willReturn(Optional.of(feed));
 
 		FeedDetailsResponse feedResponse = feedQueryService.searchById(feedId, memberId);
@@ -54,10 +56,12 @@ class FeedQueryServiceTest {
 	@Test
 	@DisplayName("최신 순으로 pagination해서 피드 목록을 조회할 수 있다.")
 	void searchFeedPaginatedOrderByRecentCreated() {
+		long memberId = 1L;
 		PageRequest pageRequest = PageRequest.of(1, 10);
 		Member member = MemberFixture.DEFAULT.getMember();
-		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		given(feed.getId()).willReturn(1L);
+		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(feedRepository.findOrderByCreatedAtDesc(eq(pageRequest)))
 				.willReturn(new SliceImpl<>(List.of(feed), pageRequest, false));
 		given(feedLikeQueryService.isLiked(any(), any())).willReturn(true);
@@ -76,10 +80,12 @@ class FeedQueryServiceTest {
 	@Test
 	@DisplayName("최신 순으로 pagination해서 특정 Member의 피드 목록을 조회할 수 있다.")
 	void searchFeedByMemberIdPaginatedOrderByRecentCreated() {
+		long memberId = 1L;
 		PageRequest pageRequest = PageRequest.of(1, 10);
 		Member member = MemberFixture.DEFAULT.getMember();
-		Feed feed = spy(FeedFixture.DEFAULT.getFeed(member));
+		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		given(feed.getId()).willReturn(1L);
+		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 		given(feedRepository.findByMemberIdOrderByCreatedAtDesc(eq(pageRequest), eq(1L)))
 				.willReturn(new SliceImpl<>(List.of(feed), pageRequest, false));
 		given(feedLikeQueryService.isLiked(any(), any())).willReturn(true);

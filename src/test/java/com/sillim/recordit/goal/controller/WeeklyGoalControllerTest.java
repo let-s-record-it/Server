@@ -56,12 +56,13 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 	private ScheduleCategory category;
 	private CalendarCategory calendarCategory;
 	private Calendar calendar;
+	long memberId = 1L;
 
 	@BeforeEach
 	void beforeEach() {
 		member = MemberFixture.DEFAULT.getMember();
-		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(member);
-		calendar = CalendarFixture.DEFAULT.getCalendar(member, calendarCategory);
+		calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 	}
 
@@ -170,7 +171,6 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 								LocalDate.of(2024, 9, 29),
 								LocalDate.of(2024, 10, 5),
 								category,
-								member,
 								calendar));
 
 		given(

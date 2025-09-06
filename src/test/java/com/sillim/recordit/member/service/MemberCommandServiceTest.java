@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.dto.request.ProfileModifyRequest;
+import com.sillim.recordit.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class MemberCommandServiceTest {
 
 	@Mock MemberQueryService memberQueryService;
+	@Mock MemberRepository memberRepository;
 	@InjectMocks MemberCommandService memberCommandService;
 
 	@Test

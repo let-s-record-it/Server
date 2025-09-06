@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 
@@ -41,12 +40,11 @@ class FeedCommentCommandServiceTest {
 		long feedId = 1L;
 		long feedCommentId = 1L;
 		long memberId = 1L;
-		Feed feed = FeedFixture.DEFAULT.getFeed(MemberFixture.DEFAULT.getMember());
+		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 		Member commentWriter = MemberFixture.DEFAULT.getMember();
-		FeedComment feedComment = spy(new FeedComment("content", feed, commentWriter));
+		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
 		given(feedComment.getId()).willReturn(feedCommentId);
 		given(feedRepository.findById(feedId)).willReturn(Optional.of(feed));
-		given(memberQueryService.findByMemberId(feedId)).willReturn(commentWriter);
 		given(feedCommentRepository.save(any(FeedComment.class))).willReturn(feedComment);
 
 		Long savedFeedCommentId =
@@ -60,12 +58,10 @@ class FeedCommentCommandServiceTest {
 	void removeFeedComment() {
 		long feedCommentId = 1L;
 		long memberId = 1L;
-		Feed feed = FeedFixture.DEFAULT.getFeed(MemberFixture.DEFAULT.getMember());
-		Member commentWriter = mock(Member.class);
-		FeedComment feedComment = spy(new FeedComment("content", feed, commentWriter));
+		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
+		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
 		given(feedCommentRepository.findByIdWithFetch(eq(feedCommentId)))
 				.willReturn(Optional.of(feedComment));
-		given(commentWriter.equalsId(memberId)).willReturn(true);
 
 		feedCommentCommandService.removeFeedComment(feedCommentId, memberId);
 

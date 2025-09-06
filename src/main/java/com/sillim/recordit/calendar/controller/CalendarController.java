@@ -1,6 +1,7 @@
 package com.sillim.recordit.calendar.controller;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
 import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
 import com.sillim.recordit.calendar.dto.request.JoinInCalendarRequest;
@@ -11,6 +12,7 @@ import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.calendar.service.JoinCalendarService;
 import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.service.MemberQueryService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -25,6 +27,7 @@ public class CalendarController {
 
 	private final CalendarCommandService calendarCommandService;
 	private final CalendarMemberService calendarMemberService;
+	private final MemberQueryService memberQueryService;
 	private final JoinCalendarService joinCalendarService;
 
 	@GetMapping
@@ -62,18 +65,16 @@ public class CalendarController {
 	@GetMapping("/{calendarId}/members")
 	public ResponseEntity<List<CalendarMemberResponse>> calendarMemberList(
 			@PathVariable Long calendarId) {
-		return ResponseEntity.ok(
-				calendarMemberService.searchCalendarMembers(calendarId).stream()
-						.map(CalendarMemberResponse::of)
-						.toList());
+		return ResponseEntity.ok(calendarMemberService.searchCalendarMembers(calendarId));
 	}
 
 	@GetMapping("/{calendarId}/members/{memberId}")
 	public ResponseEntity<CalendarMemberResponse> calendarMemberDetails(
 			@PathVariable Long calendarId, @PathVariable Long memberId) {
-		return ResponseEntity.ok(
-				CalendarMemberResponse.of(
-						calendarMemberService.searchCalendarMember(calendarId, memberId)));
+		CalendarMember calendarMember =
+				calendarMemberService.searchCalendarMember(calendarId, memberId);
+		Member member = memberQueryService.findByMemberId(memberId);
+		return ResponseEntity.ok(CalendarMemberResponse.of(calendarMember, member));
 	}
 
 	@DeleteMapping("/{calendarId}/members/{memberId}")

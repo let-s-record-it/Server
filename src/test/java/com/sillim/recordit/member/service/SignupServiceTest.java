@@ -37,8 +37,8 @@ class SignupServiceTest {
 	void signupMember() {
 		long memberId = 1L;
 		Member target = spy(MemberFixture.DEFAULT.getMember());
-		String account = target.getAuth().getOauthAccount();
-		OAuthProvider provider = target.getAuth().getOauthProvider();
+		String account = target.getOauthAccount();
+		OAuthProvider provider = target.getOauthProvider();
 		String name = target.getName();
 		String email = target.getEmail();
 		String profileImageUrl = target.getProfileImageUrl();
@@ -47,14 +47,14 @@ class SignupServiceTest {
 		given(calendarCategoryCommandService.addDefaultCategories(eq(memberId)))
 				.willReturn(List.of(1L, 2L, 3L, 4L));
 		given(calendarCommandService.addCalendar(any(), eq(memberId)))
-				.willReturn(Calendar.builder().title("일반").member(target).build());
+				.willReturn(new Calendar("일반", null, memberId));
 
 		Member member =
 				signupService.signup(
 						new MemberInfo(account, provider, name, email, profileImageUrl));
 
-		assertThat(member.getAuth().getOauthAccount()).isEqualTo(account);
-		assertThat(member.getAuth().getOauthProvider()).isEqualTo(provider);
+		assertThat(member.getOauthAccount()).isEqualTo(account);
+		assertThat(member.getOauthProvider()).isEqualTo(provider);
 		assertThat(member.getName()).isEqualTo(name);
 		assertThat(member.getProfileImageUrl()).isEqualTo(profileImageUrl);
 	}
