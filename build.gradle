@@ -127,10 +127,10 @@ spotless {
 
     java {
         // don't need to set target, it is inferred from java
+        eclipse().configFile("config/formatter/java-style.xml")
         importOrder()
         removeUnusedImports()
         cleanthat()
-        googleJavaFormat().aosp().reflowLongStrings().skipJavadocFormatting()
         formatAnnotations()
         indentWithTabs()
         trimTrailingWhitespace()
