@@ -2,6 +2,7 @@ package com.sillim.recordit.config.security;
 
 import com.sillim.recordit.config.security.filter.AuthExceptionTranslationFilter;
 import com.sillim.recordit.config.security.filter.JwtAuthenticationFilter;
+import com.sillim.recordit.config.security.handler.JwtAuthenticationEntryPoint;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final AuthExceptionTranslationFilter authExceptionTranslationFilter;
 	private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService;
 	private final AuthenticationSuccessHandler successHandler;
@@ -76,6 +78,8 @@ public class SecurityConfig {
 				.sessionManagement(
 						configurer ->
 								configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(
+						config -> config.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				.addFilterBefore(
 						jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(authExceptionTranslationFilter, JwtAuthenticationFilter.class)
