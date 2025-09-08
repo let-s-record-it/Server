@@ -50,7 +50,8 @@ class AuthenticationExceptionHandlerTest {
 	@DisplayName("ApplicationException 처리 시 response가 commit되어 있다면 출력되지 않는다.")
 	void notWriteIfApplicationExceptionResponseCommitted() throws IOException {
 		MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
-		ApplicationException exception = new ApplicationException(ErrorCode.UNHANDLED_EXCEPTION);
+		AuthenticationException exception =
+				new InsufficientAuthenticationException("인증이 필요한 URI입니다.");
 		httpServletResponse.setCommitted(true);
 
 		authenticationExceptionHandler.handle(httpServletResponse, exception);
