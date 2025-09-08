@@ -16,6 +16,9 @@ public enum ErrorCode {
 	ID_TOKEN_INVALID_KEY("ERR_OIDC_003", "App Key가 유효하지 않습니다."),
 	ID_TOKEN_INVALID_SIGNATURE("ERR_OIDC_004", "ID Token의 Signature가 유효하지 않습니다."),
 
+	AUTHENTICATION_REQUIRED("ERR_AUTH_001", "해당 리소스에 접근하기 위한 인증이 필요합니다."),
+	AUTHENTICATION_FAILED("ERR_AUTH_999", "인증에 실패했습니다."),
+
 	JWT_MALFORMED("ERR_JWT_001", "JWT가 손상되었습니다."),
 	JWT_EXPIRED("ERR_JWT_002", "JWT가 만료되었습니다."),
 	JWT_UNSUPPORTED("ERR_JWT_003", "지원되지 않는 JWT 형식입니다."),
