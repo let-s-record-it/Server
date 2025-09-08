@@ -20,8 +20,7 @@ public class WeeklyGoalTest {
 
 	long memberId = 1L;
 	Member member = MemberFixture.DEFAULT.getMember();
-	CalendarCategory calendarCategory =
-			CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+	CalendarCategory calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 	Calendar calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 	ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 
@@ -31,14 +30,8 @@ public class WeeklyGoalTest {
 		WeeklyGoal expected = WeeklyGoalFixture.MODIFIED.getWithMember(category, calendar);
 
 		WeeklyGoal modified = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		modified.modify(
-				expected.getTitle(),
-				expected.getDescription(),
-				expected.getWeek(),
-				expected.getStartDate(),
-				expected.getEndDate(),
-				category,
-				calendar);
+		modified.modify(expected.getTitle(), expected.getDescription(), expected.getWeek(), expected.getStartDate(),
+				expected.getEndDate(), category, calendar);
 
 		assertThat(modified).usingRecursiveComparison().isEqualTo(expected);
 	}
@@ -52,11 +45,10 @@ public class WeeklyGoalTest {
 		WeeklyGoal weeklyGoal2 = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		weeklyGoal2.changeAchieveStatus(false);
 
-		assertAll(
-				() -> {
-					assertThat(weeklyGoal1.isAchieved()).isTrue();
-					assertThat(weeklyGoal2.isAchieved()).isFalse();
-				});
+		assertAll(() -> {
+			assertThat(weeklyGoal1.isAchieved()).isTrue();
+			assertThat(weeklyGoal2.isAchieved()).isFalse();
+		});
 	}
 
 	@Test
@@ -74,14 +66,11 @@ public class WeeklyGoalTest {
 	void linkRelatedMonthlyGoal() {
 
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		MonthlyGoal relatedMonthlyGoal =
-				MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
+		MonthlyGoal relatedMonthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		weeklyGoal.linkRelatedMonthlyGoal(relatedMonthlyGoal);
 
 		assertThat(weeklyGoal.getRelatedMonthlyGoal()).isNotEmpty();
-		assertThat(weeklyGoal.getRelatedMonthlyGoal().get())
-				.usingRecursiveComparison()
-				.isEqualTo(relatedMonthlyGoal);
+		assertThat(weeklyGoal.getRelatedMonthlyGoal().get()).usingRecursiveComparison().isEqualTo(relatedMonthlyGoal);
 	}
 
 	@Test
@@ -89,8 +78,7 @@ public class WeeklyGoalTest {
 	void unlinkRelatedMonthlyGoal() {
 
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		MonthlyGoal relatedMonthlyGoal =
-				MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
+		MonthlyGoal relatedMonthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		weeklyGoal.linkRelatedMonthlyGoal(relatedMonthlyGoal);
 
 		weeklyGoal.unlinkRelatedMonthlyGoal();

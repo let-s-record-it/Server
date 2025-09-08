@@ -11,4 +11,5 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @AuthenticationPrincipal(expression = "member")
-public @interface CurrentMember {}
+public @interface CurrentMember {
+}

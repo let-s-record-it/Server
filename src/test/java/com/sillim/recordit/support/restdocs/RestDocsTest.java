@@ -43,29 +43,25 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @WebMvcTest
 public abstract class RestDocsTest {
 
-	@Autowired private ObjectMapper objectMapper;
+	@Autowired
+	private ObjectMapper objectMapper;
 
-	@MockBean AuthenticationExceptionHandler handler;
-	@MockBean AuthExceptionTranslationFilter exceptionTranslationFilter;
-	@MockBean JwtAuthenticationFilter jwtAuthenticationFilter;
+	@MockBean
+	AuthenticationExceptionHandler handler;
+	@MockBean
+	AuthExceptionTranslationFilter exceptionTranslationFilter;
+	@MockBean
+	JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	protected MockMvc mockMvc;
 
 	@BeforeEach
-	public void setMockMvc(
-			WebApplicationContext context, RestDocumentationContextProvider provider) {
-		mockMvc =
-				MockMvcBuilders.webAppContextSetup(context)
-						.apply(
-								documentationConfiguration(provider)
-										.uris()
-										.withScheme("https")
-										.withHost("dev.recordit.store"))
-						.apply(springSecurity(new MockAuthenticationFilter()))
-						.addFilter(new CharacterEncodingFilter("UTF-8", true))
-						.alwaysDo(print())
-						.alwaysDo(document("api/v1"))
-						.build();
+	public void setMockMvc(WebApplicationContext context, RestDocumentationContextProvider provider) {
+		mockMvc = MockMvcBuilders.webAppContextSetup(context)
+				.apply(documentationConfiguration(provider).uris().withScheme("https").withHost("dev.recordit.store"))
+				.apply(springSecurity(new MockAuthenticationFilter()))
+				.addFilter(new CharacterEncodingFilter("UTF-8", true)).alwaysDo(print()).alwaysDo(document("api/v1"))
+				.build();
 	}
 
 	protected String toJson(Object value) throws JsonProcessingException {
@@ -74,14 +70,14 @@ public abstract class RestDocsTest {
 
 	/** Authorization Header만 단독으로 필요한 경우 */
 	protected HttpHeaders authorizationHeader() {
-		return new HttpHeaders(
-				new LinkedMultiValueMap<>(Map.of("Authorization", List.of("Bearer AccessToken"))));
+		return new HttpHeaders(new LinkedMultiValueMap<>(Map.of("Authorization", List.of("Bearer AccessToken"))));
 	}
 
 	/**
 	 * Authorization Header와 다른 Header를 함께 사용하는 경우
 	 *
-	 * @param headers 추가적으로 사용할 Header
+	 * @param headers
+	 *            추가적으로 사용할 Header
 	 */
 	protected HttpHeaders withAuthorizationHeader(Map<String, List<String>> headers) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<>(headers);

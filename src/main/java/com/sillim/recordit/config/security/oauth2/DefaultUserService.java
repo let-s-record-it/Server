@@ -26,27 +26,18 @@ public class DefaultUserService extends DefaultOAuth2UserService {
 
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-		OAuthProvider provider =
-				OAuthProvider.valueOf(
-						userRequest.getClientRegistration().getClientName().toUpperCase());
+		OAuthProvider provider = OAuthProvider
+				.valueOf(userRequest.getClientRegistration().getClientName().toUpperCase());
 		OAuth2User oAuth2User = super.loadUser(userRequest);
-		OAuth2Request oAuth2Request =
-				attributeMapperFactory
-						.getAttributeMapper(provider)
-						.mapToDto(oAuth2User.getAttributes());
+		OAuth2Request oAuth2Request = attributeMapperFactory.getAttributeMapper(provider)
+				.mapToDto(oAuth2User.getAttributes());
 
 		Optional<Member> member = memberQueryService.searchByAccount(oAuth2Request.account());
 		if (member.isPresent()) {
 			return loginMemberMapper.toLoginMember(member.get());
 		}
 
-		return loginMemberMapper.toLoginMember(
-				signupService.signup(
-						new MemberInfo(
-								oAuth2Request.account(),
-								oAuth2Request.provider(),
-								oAuth2Request.name(),
-								oAuth2Request.email(),
-								oAuth2Request.imageUrl())));
+		return loginMemberMapper.toLoginMember(signupService.signup(new MemberInfo(oAuth2Request.account(),
+				oAuth2Request.provider(), oAuth2Request.name(), oAuth2Request.email(), oAuth2Request.imageUrl())));
 	}
 }

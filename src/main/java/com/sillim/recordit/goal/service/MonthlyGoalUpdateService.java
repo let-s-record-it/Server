@@ -23,10 +23,8 @@ public class MonthlyGoalUpdateService {
 	private final MonthlyGoalRepository monthlyGoalRepository;
 	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
 
-	public Long add(
-			final MonthlyGoalUpdateRequest request, final Long memberId, final Long calendarId) {
-		ScheduleCategory category =
-				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+	public Long add(final MonthlyGoalUpdateRequest request, final Long memberId, final Long calendarId) {
+		ScheduleCategory category = scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		validateExistsCalendarMember(calendar.getId(), memberId);
 
@@ -34,35 +32,24 @@ public class MonthlyGoalUpdateService {
 		return monthlyGoal.getId();
 	}
 
-	public void modify(
-			final MonthlyGoalUpdateRequest request, final Long monthlyGoalId, final Long memberId) {
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
+	public void modify(final MonthlyGoalUpdateRequest request, final Long monthlyGoalId, final Long memberId) {
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
 		validateExistsCalendarMember(monthlyGoal.getCalendar().getId(), memberId);
-		ScheduleCategory category =
-				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+		ScheduleCategory category = scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
 		validateExistsCalendarMember(calendar.getId(), memberId);
-		monthlyGoal.modify(
-				request.title(),
-				request.description(),
-				request.startDate(),
-				request.endDate(),
-				category,
+		monthlyGoal.modify(request.title(), request.description(), request.startDate(), request.endDate(), category,
 				calendar);
 	}
 
-	public void changeAchieveStatus(
-			final Long monthlyGoalId, final Boolean status, final Long memberId) {
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
+	public void changeAchieveStatus(final Long monthlyGoalId, final Boolean status, final Long memberId) {
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
 		validateExistsCalendarMember(monthlyGoal.getCalendar().getId(), memberId);
 		monthlyGoal.changeAchieveStatus(status);
 	}
 
 	public void remove(final Long monthlyGoalId, final Long memberId) {
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
 		validateExistsCalendarMember(monthlyGoal.getCalendar().getId(), memberId);
 		monthlyGoal.remove();
 	}

@@ -18,30 +18,25 @@ class WeekdayBitTest {
 		WeekdayBit weekdayBit1 = new WeekdayBit(Integer.parseInt("0000000", 2));
 		WeekdayBit weekdayBit2 = new WeekdayBit(Integer.parseInt("1111111", 2));
 
-		assertAll(
-				() -> {
-					assertThat(weekdayBit1)
-							.isEqualTo(new WeekdayBit(Integer.parseInt("0000000", 2)));
-					assertThat(weekdayBit1).isEqualTo(new WeekdayBit(0));
-					assertThat(weekdayBit2)
-							.isEqualTo(new WeekdayBit(Integer.parseInt("1111111", 2)));
-					assertThat(weekdayBit2).isEqualTo(new WeekdayBit(127));
-				});
+		assertAll(() -> {
+			assertThat(weekdayBit1).isEqualTo(new WeekdayBit(Integer.parseInt("0000000", 2)));
+			assertThat(weekdayBit1).isEqualTo(new WeekdayBit(0));
+			assertThat(weekdayBit2).isEqualTo(new WeekdayBit(Integer.parseInt("1111111", 2)));
+			assertThat(weekdayBit2).isEqualTo(new WeekdayBit(127));
+		});
 	}
 
 	@Test
 	@DisplayName("WeekdayBit가 0미만일 경우 InvalidWeekdayBitException 예외가 발생한다.")
 	void throwInvalidWeekdayBitExceptionIfWeekdayBitIs1Under() {
-		assertThatCode(() -> new WeekdayBit(-1))
-				.isInstanceOf(InvalidWeekdayBitException.class)
+		assertThatCode(() -> new WeekdayBit(-1)).isInstanceOf(InvalidWeekdayBitException.class)
 				.hasMessage(ErrorCode.WEEKDAY_BIT_OUT_OF_RANGE.getDescription());
 	}
 
 	@Test
 	@DisplayName("WeekdayBit가 127초과일 경우 InvalidWeekdayBitException 예외가 발생한다.")
 	void throwInvalidWeekdayBitExceptionWhen127OverWeekdayBit() {
-		assertThatCode(() -> new WeekdayBit(128))
-				.isInstanceOf(InvalidWeekdayBitException.class)
+		assertThatCode(() -> new WeekdayBit(128)).isInstanceOf(InvalidWeekdayBitException.class)
 				.hasMessage(ErrorCode.WEEKDAY_BIT_OUT_OF_RANGE.getDescription());
 	}
 

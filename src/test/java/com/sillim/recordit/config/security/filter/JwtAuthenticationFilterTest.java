@@ -31,10 +31,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @ExtendWith(MockitoExtension.class)
 class JwtAuthenticationFilterTest {
 
-	@Mock JwtValidator jwtValidator;
-	@Mock MemberQueryService memberQueryService;
-	@Mock AuthorizedUserMapper authorizedUserMapper;
-	@InjectMocks JwtAuthenticationFilter jwtAuthenticationFilter;
+	@Mock
+	JwtValidator jwtValidator;
+	@Mock
+	MemberQueryService memberQueryService;
+	@Mock
+	AuthorizedUserMapper authorizedUserMapper;
+	@InjectMocks
+	JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@BeforeEach
 	void initSecurityContext() {
@@ -50,19 +54,15 @@ class JwtAuthenticationFilterTest {
 		String token = "Bearer token";
 		httpServletRequest.addHeader(HttpHeaders.AUTHORIZATION, token);
 		long memberId = 1L;
-		Member member =
-				Member.createNoJobMember(
-						"12345", OAuthProvider.KAKAO, "name", "test@mail.com", "https://image.url");
+		Member member = Member.createNoJobMember("12345", OAuthProvider.KAKAO, "name", "test@mail.com",
+				"https://image.url");
 		given(jwtValidator.getMemberIdIfValid(eq("token"))).willReturn(memberId);
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		given(authorizedUserMapper.toAuthorizedUser(member))
-				.willReturn(new AuthorizedUser(member, null, null));
+		given(authorizedUserMapper.toAuthorizedUser(member)).willReturn(new AuthorizedUser(member, null, null));
 
-		jwtAuthenticationFilter.doFilterInternal(
-				httpServletRequest, httpServletResponse, mockFilterChain);
+		jwtAuthenticationFilter.doFilterInternal(httpServletRequest, httpServletResponse, mockFilterChain);
 
-		assertThat(SecurityContextHolder.getContext().getAuthentication().isAuthenticated())
-				.isTrue();
+		assertThat(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()).isTrue();
 	}
 
 	@Test
@@ -74,8 +74,7 @@ class JwtAuthenticationFilterTest {
 		String token = "Basic token";
 		httpServletRequest.addHeader(HttpHeaders.AUTHORIZATION, token);
 
-		jwtAuthenticationFilter.doFilterInternal(
-				httpServletRequest, httpServletResponse, mockFilterChain);
+		jwtAuthenticationFilter.doFilterInternal(httpServletRequest, httpServletResponse, mockFilterChain);
 
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
 	}
@@ -87,8 +86,7 @@ class JwtAuthenticationFilterTest {
 		MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
 		FilterChain mockFilterChain = mock(FilterChain.class);
 
-		jwtAuthenticationFilter.doFilterInternal(
-				httpServletRequest, httpServletResponse, mockFilterChain);
+		jwtAuthenticationFilter.doFilterInternal(httpServletRequest, httpServletResponse, mockFilterChain);
 
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
 	}
@@ -103,10 +101,7 @@ class JwtAuthenticationFilterTest {
 		httpServletRequest.addHeader(HttpHeaders.AUTHORIZATION, token);
 		given(jwtValidator.getMemberIdIfValid(eq("token"))).willThrow(MalformedJwtException.class);
 
-		assertThatThrownBy(
-						() ->
-								jwtAuthenticationFilter.doFilterInternal(
-										httpServletRequest, httpServletResponse, mockFilterChain))
-				.isInstanceOf(MalformedJwtException.class);
+		assertThatThrownBy(() -> jwtAuthenticationFilter.doFilterInternal(httpServletRequest, httpServletResponse,
+				mockFilterChain)).isInstanceOf(MalformedJwtException.class);
 	}
 }

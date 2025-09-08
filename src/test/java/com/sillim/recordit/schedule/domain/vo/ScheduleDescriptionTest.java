@@ -16,18 +16,16 @@ class ScheduleDescriptionTest {
 	void validIfDescriptionLengthIs500OrUnder() {
 		ScheduleDescription scheduleDescription = new ScheduleDescription("123");
 
-		assertAll(
-				() -> {
-					assertThat(scheduleDescription).isEqualTo(new ScheduleDescription("123"));
-					assertThat(scheduleDescription.getDescription()).isEqualTo("123");
-				});
+		assertAll(() -> {
+			assertThat(scheduleDescription).isEqualTo(new ScheduleDescription("123"));
+			assertThat(scheduleDescription.getDescription()).isEqualTo("123");
+		});
 	}
 
 	@Test
 	@DisplayName("설명이 null이면 InvalidDescriptionException이 발생한다.")
 	void throwInvalidDescriptionExceptionIfDescriptionIsNull() {
-		assertThatCode(() -> new ScheduleDescription(null))
-				.isInstanceOf(InvalidDescriptionException.class)
+		assertThatCode(() -> new ScheduleDescription(null)).isInstanceOf(InvalidDescriptionException.class)
 				.hasMessage(ErrorCode.NULL_SCHEDULE_DESCRIPTION.getDescription());
 	}
 

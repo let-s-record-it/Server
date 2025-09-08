@@ -20,11 +20,10 @@ class FeedTest {
 		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 		FeedFixture feedFixture = FeedFixture.DEFAULT;
 
-		assertAll(
-				() -> {
-					assertThat(feed.getTitle()).isEqualTo(feedFixture.getTitle());
-					assertThat(feed.getContent()).isEqualTo(feedFixture.getContent());
-				});
+		assertAll(() -> {
+			assertThat(feed.getTitle()).isEqualTo(feedFixture.getTitle());
+			assertThat(feed.getContent()).isEqualTo(feedFixture.getContent());
+		});
 	}
 
 	@Test
@@ -57,8 +56,7 @@ class FeedTest {
 		long memberId = 1L;
 		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 
-		assertThatCode(feed::unlike)
-				.isInstanceOf(InvalidFeedLikeException.class)
+		assertThatCode(feed::unlike).isInstanceOf(InvalidFeedLikeException.class)
 				.hasMessage(ErrorCode.INVALID_FEED_UNLIKE.getDescription());
 	}
 
@@ -68,8 +66,7 @@ class FeedTest {
 		long memberId = 1L;
 		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 
-		assertThatCode(() -> feed.validateAuthenticatedUser(2L))
-				.isInstanceOf(InvalidRequestException.class)
+		assertThatCode(() -> feed.validateAuthenticatedUser(2L)).isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
 }

@@ -34,11 +34,14 @@ public class MonthlyGoal extends BaseTime {
 	@Column(name = "monthly_goal_id")
 	private Long id;
 
-	@Embedded private GoalTitle title;
+	@Embedded
+	private GoalTitle title;
 
-	@Embedded private GoalDescription description;
+	@Embedded
+	private GoalDescription description;
 
-	@Embedded private MonthlyGoalPeriod period;
+	@Embedded
+	private MonthlyGoalPeriod period;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "monthly_goal_category_id")
@@ -57,13 +60,8 @@ public class MonthlyGoal extends BaseTime {
 	private Calendar calendar;
 
 	@Builder
-	public MonthlyGoal(
-			final String title,
-			final String description,
-			final LocalDate startDate,
-			final LocalDate endDate,
-			final ScheduleCategory category,
-			final Calendar calendar) {
+	public MonthlyGoal(final String title, final String description, final LocalDate startDate, final LocalDate endDate,
+			final ScheduleCategory category, final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
 		this.period = new MonthlyGoalPeriod(startDate, endDate);
@@ -73,13 +71,8 @@ public class MonthlyGoal extends BaseTime {
 		this.calendar = calendar;
 	}
 
-	public void modify(
-			final String newTitle,
-			final String newDescription,
-			final LocalDate newStartDate,
-			final LocalDate newEndDate,
-			final ScheduleCategory category,
-			final Calendar calendar) {
+	public void modify(final String newTitle, final String newDescription, final LocalDate newStartDate,
+			final LocalDate newEndDate, final ScheduleCategory category, final Calendar calendar) {
 		this.title = new GoalTitle(newTitle);
 		this.description = new GoalDescription(newDescription);
 		this.period = new MonthlyGoalPeriod(newStartDate, newEndDate);

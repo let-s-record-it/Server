@@ -23,54 +23,31 @@ public class FeedCommentQueryService {
 	private final MemberQueryService memberQueryService;
 
 	public FeedCommentInListResponse searchFeedCommentById(Long commentId, Long memberId) {
-		FeedComment feedComment =
-				feedCommentRepository
-						.findByIdWithFetch(commentId)
-						.orElseThrow(
-								() ->
-										new RecordNotFoundException(
-												ErrorCode.FEED_COMMENT_NOT_FOUND));
-		return FeedCommentInListResponse.from(
-				feedComment,
-				memberQueryService.findByMemberId(feedComment.getMemberId()),
+		FeedComment feedComment = feedCommentRepository.findByIdWithFetch(commentId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_COMMENT_NOT_FOUND));
+		return FeedCommentInListResponse.from(feedComment, memberQueryService.findByMemberId(feedComment.getMemberId()),
 				memberId);
 	}
 
-	public SliceResponse<FeedCommentInListResponse> searchPaginatedOldCreated(
-			Pageable pageable, Long feedId, Long memberId) {
-		Slice<FeedComment> feedCommentSlice =
-				feedCommentRepository.findPaginatedOrderByCreatedAtAsc(pageable, feedId);
-		return SliceResponse.of(
-				new SliceImpl<>(
-						feedCommentSlice.stream()
-								.map(
-										feedComment ->
-												FeedCommentInListResponse.from(
-														feedComment,
-														memberQueryService.findByMemberId(
-																feedComment.getMemberId()),
-														memberId))
-								.toList(),
-						pageable,
-						feedCommentSlice.hasNext()));
+	public SliceResponse<FeedCommentInListResponse> searchPaginatedOldCreated(Pageable pageable, Long feedId,
+			Long memberId) {
+		Slice<FeedComment> feedCommentSlice = feedCommentRepository.findPaginatedOrderByCreatedAtAsc(pageable, feedId);
+		return SliceResponse.of(new SliceImpl<>(
+				feedCommentSlice.stream()
+						.map(feedComment -> FeedCommentInListResponse.from(feedComment,
+								memberQueryService.findByMemberId(feedComment.getMemberId()), memberId))
+						.toList(),
+				pageable, feedCommentSlice.hasNext()));
 	}
 
-	public SliceResponse<FeedCommentInListResponse> searchByMemberIdOldCreated(
-			Pageable pageable, Long memberId) {
-		Slice<FeedComment> feedCommentSlice =
-				feedCommentRepository.findByMemberIdOrderByCreatedAtAsc(pageable, memberId);
-		return SliceResponse.of(
-				new SliceImpl<>(
-						feedCommentSlice.stream()
-								.map(
-										feedComment ->
-												FeedCommentInListResponse.from(
-														feedComment,
-														memberQueryService.findByMemberId(
-																feedComment.getMemberId()),
-														memberId))
-								.toList(),
-						pageable,
-						feedCommentSlice.hasNext()));
+	public SliceResponse<FeedCommentInListResponse> searchByMemberIdOldCreated(Pageable pageable, Long memberId) {
+		Slice<FeedComment> feedCommentSlice = feedCommentRepository.findByMemberIdOrderByCreatedAtAsc(pageable,
+				memberId);
+		return SliceResponse.of(new SliceImpl<>(
+				feedCommentSlice.stream()
+						.map(feedComment -> FeedCommentInListResponse.from(feedComment,
+								memberQueryService.findByMemberId(feedComment.getMemberId()), memberId))
+						.toList(),
+				pageable, feedCommentSlice.hasNext()));
 	}
 }

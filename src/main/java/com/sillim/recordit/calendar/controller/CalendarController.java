@@ -32,63 +32,54 @@ public class CalendarController {
 
 	@GetMapping
 	public ResponseEntity<List<CalendarResponse>> calendarList(@CurrentMember Member member) {
-		return ResponseEntity.ok(
-				calendarMemberService.searchCalendarsByMemberId(member.getId()).stream()
-						.map(CalendarResponse::from)
-						.toList());
+		return ResponseEntity.ok(calendarMemberService.searchCalendarsByMemberId(member.getId()).stream()
+				.map(CalendarResponse::from).toList());
 	}
 
 	@PostMapping
-	public ResponseEntity<CalendarResponse> addCalendar(
-			@RequestBody @Valid CalendarAddRequest request, @CurrentMember Member member) {
+	public ResponseEntity<CalendarResponse> addCalendar(@RequestBody @Valid CalendarAddRequest request,
+			@CurrentMember Member member) {
 		Calendar calendar = calendarCommandService.addCalendar(request, member.getId());
 		return ResponseEntity.created(URI.create("/api/v1/calendars/" + calendar.getId()))
 				.body(CalendarResponse.from(calendar));
 	}
 
 	@PutMapping("/{calendarId}")
-	public ResponseEntity<Void> calendarModify(
-			@RequestBody @Valid CalendarModifyRequest request,
-			@PathVariable Long calendarId,
-			@CurrentMember Member member) {
+	public ResponseEntity<Void> calendarModify(@RequestBody @Valid CalendarModifyRequest request,
+			@PathVariable Long calendarId, @CurrentMember Member member) {
 		calendarCommandService.modifyCalendar(request, calendarId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{calendarId}")
-	public ResponseEntity<Void> calendarDelete(
-			@PathVariable Long calendarId, @CurrentMember Member member) {
+	public ResponseEntity<Void> calendarDelete(@PathVariable Long calendarId, @CurrentMember Member member) {
 		calendarCommandService.removeByCalendarId(calendarId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/{calendarId}/members")
-	public ResponseEntity<List<CalendarMemberResponse>> calendarMemberList(
-			@PathVariable Long calendarId) {
+	public ResponseEntity<List<CalendarMemberResponse>> calendarMemberList(@PathVariable Long calendarId) {
 		return ResponseEntity.ok(calendarMemberService.searchCalendarMembers(calendarId));
 	}
 
 	@GetMapping("/{calendarId}/members/{memberId}")
-	public ResponseEntity<CalendarMemberResponse> calendarMemberDetails(
-			@PathVariable Long calendarId, @PathVariable Long memberId) {
-		CalendarMember calendarMember =
-				calendarMemberService.searchCalendarMember(calendarId, memberId);
+	public ResponseEntity<CalendarMemberResponse> calendarMemberDetails(@PathVariable Long calendarId,
+			@PathVariable Long memberId) {
+		CalendarMember calendarMember = calendarMemberService.searchCalendarMember(calendarId, memberId);
 		Member member = memberQueryService.findByMemberId(memberId);
 		return ResponseEntity.ok(CalendarMemberResponse.of(calendarMember, member));
 	}
 
 	@DeleteMapping("/{calendarId}/members/{memberId}")
-	public ResponseEntity<Void> calendarMemberDelete(
-			@PathVariable Long calendarId,
-			@PathVariable Long memberId,
+	public ResponseEntity<Void> calendarMemberDelete(@PathVariable Long calendarId, @PathVariable Long memberId,
 			@CurrentMember Member member) {
 		calendarMemberService.removeCalendarMember(calendarId, memberId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/join")
-	public ResponseEntity<Void> joinInCalendar(
-			@RequestBody JoinInCalendarRequest request, @CurrentMember Member member) {
+	public ResponseEntity<Void> joinInCalendar(@RequestBody JoinInCalendarRequest request,
+			@CurrentMember Member member) {
 		joinCalendarService.joinInCalendar(request.inviteCode(), member.getId());
 		return ResponseEntity.created(URI.create("")).build();
 	}

@@ -22,10 +22,8 @@ public class FirebaseConfig {
 	@PostConstruct
 	public void initialize() throws IOException {
 		InputStream keyFile = ResourceUtils.getURL(keyfilePath).openStream();
-		FirebaseOptions options =
-				FirebaseOptions.builder()
-						.setCredentials(GoogleCredentials.fromStream(keyFile))
-						.build();
+		FirebaseOptions options = FirebaseOptions.builder().setCredentials(GoogleCredentials.fromStream(keyFile))
+				.build();
 
 		List<FirebaseApp> apps = FirebaseApp.getApps();
 		if (apps == null || apps.isEmpty()) {

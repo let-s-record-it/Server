@@ -22,10 +22,9 @@ public class SignupService {
 	@Transactional
 	public Member signup(MemberInfo memberInfo) {
 		Member member = memberRepository.save(memberInfo.toMember());
-		List<Long> categoryIds =
-				calendarCategoryCommandService.addDefaultCategories(member.getId());
-		calendarCommandService.addCalendar(
-				CalendarAddRequest.createGeneralCalendar(categoryIds.get(0)), member.getId());
+		List<Long> categoryIds = calendarCategoryCommandService.addDefaultCategories(member.getId());
+		calendarCommandService.addCalendar(CalendarAddRequest.createGeneralCalendar(categoryIds.get(0)),
+				member.getId());
 		return member;
 	}
 }

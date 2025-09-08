@@ -34,9 +34,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class WeeklyGoalQueryServiceTest {
 
-	@Mock WeeklyGoalRepository weeklyGoalRepository;
-	@Mock CalendarQueryService calendarQueryService;
-	@InjectMocks WeeklyGoalQueryService weeklyGoalQueryService;
+	@Mock
+	WeeklyGoalRepository weeklyGoalRepository;
+	@Mock
+	CalendarQueryService calendarQueryService;
+	@InjectMocks
+	WeeklyGoalQueryService weeklyGoalQueryService;
 
 	long memberId = 1L;
 	private Member member;
@@ -58,30 +61,20 @@ public class WeeklyGoalQueryServiceTest {
 		Long calendarId = 2L;
 		Integer year = 2024;
 		Integer month = 8;
-		List<WeeklyGoal> weeklyGoals =
-				LongStream.rangeClosed(1, 3)
-						.mapToObj(
-								(id) ->
-										WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
-												3,
-												LocalDate.of(2024, 8, 11),
-												LocalDate.of(2024, 8, 17),
-												category,
-												calendar))
-						.toList();
-		given(weeklyGoalRepository.findWeeklyGoalInMonth(eq(year), eq(month), eq(calendarId)))
-				.willReturn(weeklyGoals);
+		List<WeeklyGoal> weeklyGoals = LongStream.rangeClosed(1, 3)
+				.mapToObj((id) -> WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(3,
+						LocalDate.of(2024, 8, 11), LocalDate.of(2024, 8, 17), category, calendar))
+				.toList();
+		given(weeklyGoalRepository.findWeeklyGoalInMonth(eq(year), eq(month), eq(calendarId))).willReturn(weeklyGoals);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
-		List<WeeklyGoal> found =
-				weeklyGoalQueryService.searchAllWeeklyGoalByDate(year, month, memberId, calendarId);
+		List<WeeklyGoal> found = weeklyGoalQueryService.searchAllWeeklyGoalByDate(year, month, memberId, calendarId);
 
-		assertAll(
-				() -> {
-					assertThat(found).hasSize(weeklyGoals.size());
-					found.forEach(wg -> assertThat(wg.getStartDate()).hasYear(year));
-					found.forEach(wg -> assertThat(wg.getStartDate()).hasMonth(Month.of(month)));
-				});
+		assertAll(() -> {
+			assertThat(found).hasSize(weeklyGoals.size());
+			found.forEach(wg -> assertThat(wg.getStartDate()).hasYear(year));
+			found.forEach(wg -> assertThat(wg.getStartDate()).hasMonth(Month.of(month)));
+		});
 	}
 
 	@Test
@@ -89,8 +82,7 @@ public class WeeklyGoalQueryServiceTest {
 	void searchByIdAndCheckAuthority() {
 		Long weeklyGoalId = 2L;
 		WeeklyGoal expected = spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
-		given(weeklyGoalRepository.findWeeklyGoalById(eq(weeklyGoalId)))
-				.willReturn(Optional.of(expected));
+		given(weeklyGoalRepository.findWeeklyGoalById(eq(weeklyGoalId))).willReturn(Optional.of(expected));
 
 		WeeklyGoal found = weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);
 		assertThat(found).usingRecursiveComparison().isEqualTo(expected);

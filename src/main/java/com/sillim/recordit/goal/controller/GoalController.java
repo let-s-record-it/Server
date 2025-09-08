@@ -21,17 +21,13 @@ public class GoalController {
 	private final WeeklyGoalQueryService weeklyGoalQueryService;
 
 	@GetMapping
-	public ResponseEntity<GoalListResponse> getGoalListByDate(
-			@RequestParam final Integer year,
-			@RequestParam final Integer month,
-			@PathVariable final Long calendarId,
+	public ResponseEntity<GoalListResponse> getGoalListByDate(@RequestParam final Integer year,
+			@RequestParam final Integer month, @PathVariable final Long calendarId,
 			@CurrentMember final Member member) {
 
-		List<MonthlyGoal> monthlyGoals =
-				monthlyGoalQueryService.searchAllByDate(year, month, calendarId);
-		List<WeeklyGoal> weeklyGoals =
-				weeklyGoalQueryService.searchAllWeeklyGoalByDate(
-						year, month, member.getId(), calendarId);
+		List<MonthlyGoal> monthlyGoals = monthlyGoalQueryService.searchAllByDate(year, month, calendarId);
+		List<WeeklyGoal> weeklyGoals = weeklyGoalQueryService.searchAllWeeklyGoalByDate(year, month, member.getId(),
+				calendarId);
 		return ResponseEntity.ok(GoalListResponse.of(monthlyGoals, weeklyGoals));
 	}
 }

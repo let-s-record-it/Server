@@ -15,11 +15,10 @@ import org.springframework.stereotype.Repository;
 public class BatchTaskRepositoryImpl implements BatchTaskRepository {
 
 	private static final int BATCH_SIZE = 1000;
-	private static final String SQL =
-			"""
-					INSERT INTO TASK (title, description, date, achieved, task_category_id, calendar_id, task_group_id, deleted, created_at, modified_at)
-					VALUES (?,?,?,?,?,?,?,?,?,?)
-					""";
+	private static final String SQL = """
+			INSERT INTO TASK (title, description, date, achieved, task_category_id, calendar_id, task_group_id, deleted, created_at, modified_at)
+			VALUES (?,?,?,?,?,?,?,?,?,?)
+			""";
 	private final JdbcTemplate jdbcTemplate;
 
 	@Override
@@ -33,29 +32,27 @@ public class BatchTaskRepositoryImpl implements BatchTaskRepository {
 	}
 
 	private void executeBatch(List<Task> batch, LocalDateTime timestamp) {
-		jdbcTemplate.batchUpdate(
-				SQL,
-				new BatchPreparedStatementSetter() {
+		jdbcTemplate.batchUpdate(SQL, new BatchPreparedStatementSetter() {
 
-					@Override
-					public void setValues(PreparedStatement ps, int i) throws SQLException {
-						Task task = batch.get(i);
-						ps.setString(1, task.getTitle());
-						ps.setString(2, task.getDescription());
-						ps.setObject(3, task.getDate());
-						ps.setBoolean(4, task.isAchieved());
-						ps.setLong(5, task.getCategory().getId());
-						ps.setLong(6, task.getCalendar().getId());
-						ps.setLong(7, task.getTaskGroup().getId());
-						ps.setBoolean(8, task.isDeleted());
-						ps.setObject(9, timestamp);
-						ps.setObject(10, timestamp);
-					}
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				Task task = batch.get(i);
+				ps.setString(1, task.getTitle());
+				ps.setString(2, task.getDescription());
+				ps.setObject(3, task.getDate());
+				ps.setBoolean(4, task.isAchieved());
+				ps.setLong(5, task.getCategory().getId());
+				ps.setLong(6, task.getCalendar().getId());
+				ps.setLong(7, task.getTaskGroup().getId());
+				ps.setBoolean(8, task.isDeleted());
+				ps.setObject(9, timestamp);
+				ps.setObject(10, timestamp);
+			}
 
-					@Override
-					public int getBatchSize() {
-						return batch.size();
-					}
-				});
+			@Override
+			public int getBatchSize() {
+				return batch.size();
+			}
+		});
 	}
 }

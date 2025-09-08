@@ -13,9 +13,7 @@ public record IdTokenHeader(String kid, String typ, String alg) {
 		OidcPublicKey publicKey = publicKeys.getPublicKey(this.kid);
 
 		try {
-			Jwts.parserBuilder()
-					.setSigningKey(RsaKeyUtils.getKeyByRsa(publicKey.n(), publicKey.e()))
-					.build()
+			Jwts.parserBuilder().setSigningKey(RsaKeyUtils.getKeyByRsa(publicKey.n(), publicKey.e())).build()
 					.parseClaimsJws(idToken);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			throw new InvalidIdTokenException(ErrorCode.ID_TOKEN_INVALID_SIGNATURE);

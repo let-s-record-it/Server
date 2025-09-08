@@ -31,11 +31,16 @@ import org.springframework.data.domain.SliceImpl;
 @ExtendWith(MockitoExtension.class)
 class FeedQueryServiceTest {
 
-	@Mock FeedRepository feedRepository;
-	@Mock FeedLikeQueryService feedLikeQueryService;
-	@Mock FeedScrapQueryService feedScrapQueryService;
-	@Mock MemberQueryService memberQueryService;
-	@InjectMocks FeedQueryService feedQueryService;
+	@Mock
+	FeedRepository feedRepository;
+	@Mock
+	FeedLikeQueryService feedLikeQueryService;
+	@Mock
+	FeedScrapQueryService feedScrapQueryService;
+	@Mock
+	MemberQueryService memberQueryService;
+	@InjectMocks
+	FeedQueryService feedQueryService;
 
 	@Test
 	@DisplayName("피드 id를 통해 피드를 조회할 수 있다.")
@@ -67,14 +72,12 @@ class FeedQueryServiceTest {
 		given(feedLikeQueryService.isLiked(any(), any())).willReturn(true);
 		given(feedScrapQueryService.isScraped(any(), any())).willReturn(true);
 
-		SliceResponse<FeedInListResponse> feeds =
-				feedQueryService.searchRecentCreated(pageRequest, 1L);
+		SliceResponse<FeedInListResponse> feeds = feedQueryService.searchRecentCreated(pageRequest, 1L);
 
-		assertAll(
-				() -> {
-					assertThat(feeds.content()).hasSize(1);
-					assertThat(feeds.isLast()).isTrue();
-				});
+		assertAll(() -> {
+			assertThat(feeds.content()).hasSize(1);
+			assertThat(feeds.isLast()).isTrue();
+		});
 	}
 
 	@Test
@@ -91,13 +94,11 @@ class FeedQueryServiceTest {
 		given(feedLikeQueryService.isLiked(any(), any())).willReturn(true);
 		given(feedScrapQueryService.isScraped(any(), any())).willReturn(true);
 
-		SliceResponse<FeedInListResponse> feeds =
-				feedQueryService.searchRecentCreatedByMemberId(pageRequest, 1L);
+		SliceResponse<FeedInListResponse> feeds = feedQueryService.searchRecentCreatedByMemberId(pageRequest, 1L);
 
-		assertAll(
-				() -> {
-					assertThat(feeds.content()).hasSize(1);
-					assertThat(feeds.isLast()).isTrue();
-				});
+		assertAll(() -> {
+			assertThat(feeds.content()).hasSize(1);
+			assertThat(feeds.isLast()).isTrue();
+		});
 	}
 }

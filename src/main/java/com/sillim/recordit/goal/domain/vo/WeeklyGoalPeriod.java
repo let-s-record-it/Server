@@ -28,8 +28,7 @@ public class WeeklyGoalPeriod {
 	@Column(nullable = false)
 	private final LocalDate endDate;
 
-	public WeeklyGoalPeriod(
-			final Integer week, final LocalDate startDate, final LocalDate endDate) {
+	public WeeklyGoalPeriod(final Integer week, final LocalDate startDate, final LocalDate endDate) {
 		validateIsNotNull(week, startDate, endDate);
 		validateIsSunday(startDate);
 		validateDifferenceOfDate(startDate, endDate);
@@ -38,8 +37,7 @@ public class WeeklyGoalPeriod {
 		this.endDate = endDate;
 	}
 
-	private void validateIsNotNull(
-			final Integer week, final LocalDate startDate, final LocalDate endDate) {
+	private void validateIsNotNull(final Integer week, final LocalDate startDate, final LocalDate endDate) {
 
 		if (Objects.isNull(week) || Objects.isNull(startDate) || Objects.isNull(endDate)) {
 			throw new InvalidPeriodException(ErrorCode.NULL_GOAL_PERIOD);
@@ -49,8 +47,7 @@ public class WeeklyGoalPeriod {
 	/* 주 목표의 시작일은 일요일 또는 월요일이어야 한다. */
 	private void validateIsSunday(final LocalDate startDate) {
 
-		if (!(startDate.getDayOfWeek() == DayOfWeek.SUNDAY
-				|| startDate.getDayOfWeek() == DayOfWeek.MONDAY)) {
+		if (!(startDate.getDayOfWeek() == DayOfWeek.SUNDAY || startDate.getDayOfWeek() == DayOfWeek.MONDAY)) {
 			throw new InvalidPeriodException(ErrorCode.INVALID_START_DAY_OF_WEEK);
 		}
 	}

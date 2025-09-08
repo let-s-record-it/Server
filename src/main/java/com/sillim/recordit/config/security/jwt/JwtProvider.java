@@ -22,41 +22,27 @@ public class JwtProvider {
 
 	public String generateExchangeToken(Long memberId) {
 		return buildToken(memberId)
-				.setExpiration(
-						Date.from(
-								Instant.now()
-										.plus(
-												EXCHANGE_TOKEN_VALIDATION_SECOND,
-												ChronoUnit.SECONDS)))
+				.setExpiration(Date.from(Instant.now().plus(EXCHANGE_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
 				.compact();
 	}
 
 	public AuthorizationToken generateAuthorizationToken(Long memberId) {
-		return new AuthorizationToken(
-				generateAccessToken(memberId), generateRefreshToken(memberId));
+		return new AuthorizationToken(generateAccessToken(memberId), generateRefreshToken(memberId));
 	}
 
 	private String generateAccessToken(Long memberId) {
 		return buildToken(memberId)
-				.setExpiration(
-						Date.from(
-								Instant.now()
-										.plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
+				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
 				.compact();
 	}
 
 	private String generateRefreshToken(Long memberId) {
 		return buildToken(memberId)
-				.setExpiration(
-						Date.from(
-								Instant.now()
-										.plus(REFRESH_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
+				.setExpiration(Date.from(Instant.now().plus(REFRESH_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
 				.compact();
 	}
 
 	private JwtBuilder buildToken(Long memberId) {
-		return Jwts.builder()
-				.setSubject(String.valueOf(memberId))
-				.signWith(secretKey, SignatureAlgorithm.HS512);
+		return Jwts.builder().setSubject(String.valueOf(memberId)).signWith(secretKey, SignatureAlgorithm.HS512);
 	}
 }

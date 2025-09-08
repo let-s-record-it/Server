@@ -25,7 +25,8 @@ class CustomFeedRepositoryTest {
 	@Qualifier("customFeedRepositoryImpl") @Autowired
 	CustomFeedRepository customFeedRepository;
 
-	@Autowired TestEntityManager em;
+	@Autowired
+	TestEntityManager em;
 
 	long memberId = 1L;
 
@@ -43,52 +44,41 @@ class CustomFeedRepositoryTest {
 	@Test
 	@DisplayName("피드를 pagination해서 created 내림차순으로 조회한다.")
 	void findPaginatedOrderByCreatedDesc() {
-		List<Feed> feeds =
-				IntStream.range(0, 10)
-						.mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(memberId)))
-						.toList();
+		List<Feed> feeds = IntStream.range(0, 10).mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(memberId)))
+				.toList();
 
-		Slice<Feed> foundFeeds =
-				customFeedRepository.findOrderByCreatedAtDesc(PageRequest.of(0, 5));
+		Slice<Feed> foundFeeds = customFeedRepository.findOrderByCreatedAtDesc(PageRequest.of(0, 5));
 
-		Slice<Feed> foundFeeds2 =
-				customFeedRepository.findOrderByCreatedAtDesc(PageRequest.of(3, 3));
+		Slice<Feed> foundFeeds2 = customFeedRepository.findOrderByCreatedAtDesc(PageRequest.of(3, 3));
 
-		assertAll(
-				() -> {
-					assertThat(foundFeeds).hasSize(5);
-					assertThat(foundFeeds.isLast()).isFalse();
-					assertThat(foundFeeds.getContent().get(0).getCreatedAt())
-							.isAfterOrEqualTo(foundFeeds.getContent().get(1).getCreatedAt());
-					assertThat(foundFeeds2).hasSize(1);
-					assertThat(foundFeeds2.isLast()).isTrue();
-				});
+		assertAll(() -> {
+			assertThat(foundFeeds).hasSize(5);
+			assertThat(foundFeeds.isLast()).isFalse();
+			assertThat(foundFeeds.getContent().get(0).getCreatedAt())
+					.isAfterOrEqualTo(foundFeeds.getContent().get(1).getCreatedAt());
+			assertThat(foundFeeds2).hasSize(1);
+			assertThat(foundFeeds2.isLast()).isTrue();
+		});
 	}
 
 	@Test
 	@DisplayName("특정 멤버의 피드를 pagination해서 created 내림차순으로 조회한다.")
 	void findByMemberIdPaginatedOrderByCreatedDesc() {
-		List<Feed> feeds =
-				IntStream.range(0, 10)
-						.mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(memberId)))
-						.toList();
+		List<Feed> feeds = IntStream.range(0, 10).mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(memberId)))
+				.toList();
 
-		Slice<Feed> foundFeeds =
-				customFeedRepository.findByMemberIdOrderByCreatedAtDesc(
-						PageRequest.of(0, 5), memberId);
+		Slice<Feed> foundFeeds = customFeedRepository.findByMemberIdOrderByCreatedAtDesc(PageRequest.of(0, 5),
+				memberId);
 
-		Slice<Feed> foundFeeds2 =
-				customFeedRepository.findByMemberIdOrderByCreatedAtDesc(
-						PageRequest.of(3, 3), memberId);
+		Slice<Feed> foundFeeds2 = customFeedRepository.findByMemberIdOrderByCreatedAtDesc(PageRequest.of(3, 3),
+				memberId);
 
-		assertAll(
-				() -> {
-					assertThat(foundFeeds).hasSize(5);
-					assertThat(foundFeeds.isLast()).isFalse();
-					assertThat(foundFeeds.getContent().get(0).getId())
-							.isEqualTo(feeds.get(9).getId());
-					assertThat(foundFeeds2).hasSize(1);
-					assertThat(foundFeeds2.isLast()).isTrue();
-				});
+		assertAll(() -> {
+			assertThat(foundFeeds).hasSize(5);
+			assertThat(foundFeeds.isLast()).isFalse();
+			assertThat(foundFeeds.getContent().get(0).getId()).isEqualTo(feeds.get(9).getId());
+			assertThat(foundFeeds2).hasSize(1);
+			assertThat(foundFeeds2.isLast()).isTrue();
+		});
 	}
 }

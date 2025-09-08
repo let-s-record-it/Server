@@ -9,22 +9,10 @@ import java.util.stream.Stream;
 
 public class MockTaskRepetitionPattern extends TaskRepetitionPattern {
 
-	public MockTaskRepetitionPattern(
-			final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate,
-			final LocalDate repetitionEndDate,
-			final TaskGroup taskGroup) {
-		super(
-				TaskRepetitionType.DAILY,
-				repetitionPeriod,
-				repetitionStartDate,
-				repetitionEndDate,
-				null,
-				null,
-				null,
-				null,
-				null,
-				taskGroup);
+	public MockTaskRepetitionPattern(final Integer repetitionPeriod, final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate, final TaskGroup taskGroup) {
+		super(TaskRepetitionType.DAILY, repetitionPeriod, repetitionStartDate, repetitionEndDate, null, null, null,
+				null, null, taskGroup);
 	}
 
 	@Override

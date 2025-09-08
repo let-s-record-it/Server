@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Repository
-public @interface Neo4jRepo {}
+public @interface Neo4jRepo {
+}

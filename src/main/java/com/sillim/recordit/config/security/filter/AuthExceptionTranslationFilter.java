@@ -18,8 +18,7 @@ public class AuthExceptionTranslationFilter extends OncePerRequestFilter {
 	private final AuthenticationExceptionHandler authenticationExceptionHandler;
 
 	@Override
-	protected void doFilterInternal(
-			HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
 			doFilter(request, response, filterChain);

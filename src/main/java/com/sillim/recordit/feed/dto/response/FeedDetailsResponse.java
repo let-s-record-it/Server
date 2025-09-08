@@ -7,35 +7,14 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record FeedDetailsResponse(
-		Long id,
-		String title,
-		String content,
-		LocalDateTime createdAt,
-		List<String> feedImageUrls,
-		long likeCount,
-		boolean isLiked,
-		boolean isScraped,
-		String memberName,
-		String memberJob,
-		String memberProfileImageUrl,
-		boolean isOwner) {
+public record FeedDetailsResponse(Long id, String title, String content, LocalDateTime createdAt,
+		List<String> feedImageUrls, long likeCount, boolean isLiked, boolean isScraped, String memberName,
+		String memberJob, String memberProfileImageUrl, boolean isOwner) {
 
-	public static FeedDetailsResponse of(
-			Feed feed, Member owner, Long memberId, boolean isLiked, boolean isScraped) {
-		return FeedDetailsResponse.builder()
-				.id(feed.getId())
-				.title(feed.getTitle())
-				.content(feed.getContent())
-				.createdAt(feed.getCreatedAt())
-				.feedImageUrls(feed.getFeedImageUrls())
-				.likeCount(feed.getLikeCount())
-				.isLiked(isLiked)
-				.isScraped(isScraped)
-				.memberName(owner.getName())
-				.memberJob(owner.getJob())
-				.memberProfileImageUrl(owner.getProfileImageUrl())
-				.isOwner(feed.isOwner(memberId))
-				.build();
+	public static FeedDetailsResponse of(Feed feed, Member owner, Long memberId, boolean isLiked, boolean isScraped) {
+		return FeedDetailsResponse.builder().id(feed.getId()).title(feed.getTitle()).content(feed.getContent())
+				.createdAt(feed.getCreatedAt()).feedImageUrls(feed.getFeedImageUrls()).likeCount(feed.getLikeCount())
+				.isLiked(isLiked).isScraped(isScraped).memberName(owner.getName()).memberJob(owner.getJob())
+				.memberProfileImageUrl(owner.getProfileImageUrl()).isOwner(feed.isOwner(memberId)).build();
 	}
 }

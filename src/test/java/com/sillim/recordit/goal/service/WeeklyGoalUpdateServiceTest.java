@@ -40,13 +40,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class WeeklyGoalUpdateServiceTest {
 
-	@Mock WeeklyGoalQueryService weeklyGoalQueryService;
-	@Mock MonthlyGoalQueryService monthlyGoalQueryService;
-	@Mock CalendarMemberService calendarMemberService;
-	@Mock CalendarQueryService calendarQueryService;
-	@Mock WeeklyGoalRepository weeklyGoalRepository;
-	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
-	@InjectMocks WeeklyGoalUpdateService weeklyGoalUpdateService;
+	@Mock
+	WeeklyGoalQueryService weeklyGoalQueryService;
+	@Mock
+	MonthlyGoalQueryService monthlyGoalQueryService;
+	@Mock
+	CalendarMemberService calendarMemberService;
+	@Mock
+	CalendarQueryService calendarQueryService;
+	@Mock
+	WeeklyGoalRepository weeklyGoalRepository;
+	@Mock
+	ScheduleCategoryQueryService scheduleCategoryQueryService;
+	@InjectMocks
+	WeeklyGoalUpdateService weeklyGoalUpdateService;
 
 	long memberId = 1L;
 	private Member member;
@@ -69,20 +76,11 @@ public class WeeklyGoalUpdateServiceTest {
 		Long weeklyGoalId = 2L;
 		Long categoryId = 3L;
 		Long calendarId = 4L;
-		WeeklyGoalUpdateRequest request =
-				new WeeklyGoalUpdateRequest(
-						"취뽀하기!",
-						"취업할 때까지 숨 참는다.",
-						3,
-						LocalDate.of(2024, 8, 11),
-						LocalDate.of(2024, 8, 17),
-						categoryId,
-						calendarId,
-						null);
+		WeeklyGoalUpdateRequest request = new WeeklyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 3,
+				LocalDate.of(2024, 8, 11), LocalDate.of(2024, 8, 17), categoryId, calendarId, null);
 		WeeklyGoal saved = mock(WeeklyGoal.class);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId)))
-				.willReturn(category);
+		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId))).willReturn(category);
 		given(weeklyGoalRepository.save(any(WeeklyGoal.class))).willReturn(saved);
 		given(saved.getId()).willReturn(weeklyGoalId);
 
@@ -100,20 +98,11 @@ public class WeeklyGoalUpdateServiceTest {
 		Long relatedMonthlyGoalId = 3L;
 		Long categoryId = 4L;
 		Long calendarId = 5L;
-		WeeklyGoalUpdateRequest request =
-				new WeeklyGoalUpdateRequest(
-						"취뽀하기!",
-						"취업할 때까지 숨 참는다.",
-						3,
-						LocalDate.of(2024, 8, 11),
-						LocalDate.of(2024, 8, 17),
-						categoryId,
-						calendarId,
-						relatedMonthlyGoalId);
+		WeeklyGoalUpdateRequest request = new WeeklyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 3,
+				LocalDate.of(2024, 8, 11), LocalDate.of(2024, 8, 17), categoryId, calendarId, relatedMonthlyGoalId);
 		WeeklyGoal saved = mock(WeeklyGoal.class);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId)))
-				.willReturn(category);
+		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId))).willReturn(category);
 		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(relatedMonthlyGoalId))
 				.willReturn(mock(MonthlyGoal.class));
 		given(weeklyGoalRepository.save(any(WeeklyGoal.class))).willReturn(saved);
@@ -132,34 +121,23 @@ public class WeeklyGoalUpdateServiceTest {
 		Long weeklyGoalId = 2L;
 		Long categoryId = 3L;
 		Long calendarId = 4L;
-		WeeklyGoalUpdateRequest request =
-				new WeeklyGoalUpdateRequest(
-						"취뽀하기!",
-						"취업할 때까지 숨 참는다.",
-						3,
-						LocalDate.of(2024, 8, 11),
-						LocalDate.of(2024, 8, 17),
-						categoryId,
-						calendarId,
-						null);
+		WeeklyGoalUpdateRequest request = new WeeklyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 3,
+				LocalDate.of(2024, 8, 11), LocalDate.of(2024, 8, 17), categoryId, calendarId, null);
 		WeeklyGoal modified = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId)))
-				.willReturn(modified);
-		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId)))
-				.willReturn(category);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId))).willReturn(modified);
+		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId))).willReturn(category);
 
 		weeklyGoalUpdateService.modifyWeeklyGoal(request, weeklyGoalId, memberId);
 
-		assertAll(
-				() -> {
-					assertThat(modified.getTitle()).isEqualTo(request.title());
-					assertThat(modified.getDescription()).isEqualTo(request.description());
-					assertThat(modified.getWeek()).isEqualTo(request.week());
-					assertThat(modified.getStartDate()).isEqualTo(request.startDate());
-					assertThat(modified.getEndDate()).isEqualTo(request.endDate());
-					assertThat(modified.getRelatedMonthlyGoal()).isEmpty();
-				});
+		assertAll(() -> {
+			assertThat(modified.getTitle()).isEqualTo(request.title());
+			assertThat(modified.getDescription()).isEqualTo(request.description());
+			assertThat(modified.getWeek()).isEqualTo(request.week());
+			assertThat(modified.getStartDate()).isEqualTo(request.startDate());
+			assertThat(modified.getEndDate()).isEqualTo(request.endDate());
+			assertThat(modified.getRelatedMonthlyGoal()).isEmpty();
+		});
 	}
 
 	@Test
@@ -170,37 +148,26 @@ public class WeeklyGoalUpdateServiceTest {
 		Long relatedMonthlyGoalId = 3L;
 		Long categoryId = 4L;
 		Long calendarId = 5L;
-		WeeklyGoalUpdateRequest request =
-				new WeeklyGoalUpdateRequest(
-						"취뽀하기!",
-						"취업할 때까지 숨 참는다.",
-						3,
-						LocalDate.of(2024, 8, 11),
-						LocalDate.of(2024, 8, 17),
-						categoryId,
-						calendarId,
-						relatedMonthlyGoalId);
+		WeeklyGoalUpdateRequest request = new WeeklyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 3,
+				LocalDate.of(2024, 8, 11), LocalDate.of(2024, 8, 17), categoryId, calendarId, relatedMonthlyGoalId);
 		WeeklyGoal modified = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId)))
-				.willReturn(modified);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId))).willReturn(modified);
 		MonthlyGoal relatedMonthlyGoal = mock(MonthlyGoal.class);
 		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(relatedMonthlyGoalId)))
 				.willReturn(relatedMonthlyGoal);
-		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId)))
-				.willReturn(category);
+		given(scheduleCategoryQueryService.searchScheduleCategory(eq(categoryId))).willReturn(category);
 
 		weeklyGoalUpdateService.modifyWeeklyGoal(request, weeklyGoalId, memberId);
 
-		assertAll(
-				() -> {
-					assertThat(modified.getTitle()).isEqualTo(request.title());
-					assertThat(modified.getDescription()).isEqualTo(request.description());
-					assertThat(modified.getWeek()).isEqualTo(request.week());
-					assertThat(modified.getStartDate()).isEqualTo(request.startDate());
-					assertThat(modified.getEndDate()).isEqualTo(request.endDate());
-					assertThat(modified.getRelatedMonthlyGoal()).isNotEmpty();
-				});
+		assertAll(() -> {
+			assertThat(modified.getTitle()).isEqualTo(request.title());
+			assertThat(modified.getDescription()).isEqualTo(request.description());
+			assertThat(modified.getWeek()).isEqualTo(request.week());
+			assertThat(modified.getStartDate()).isEqualTo(request.startDate());
+			assertThat(modified.getEndDate()).isEqualTo(request.endDate());
+			assertThat(modified.getRelatedMonthlyGoal()).isNotEmpty();
+		});
 	}
 
 	@Test
@@ -210,8 +177,7 @@ public class WeeklyGoalUpdateServiceTest {
 		Long weeklyGoalId = 2L;
 		Boolean status = true;
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId)))
-				.willReturn(weeklyGoal);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId))).willReturn(weeklyGoal);
 
 		weeklyGoalUpdateService.changeAchieveStatus(weeklyGoalId, status, memberId);
 
@@ -224,8 +190,7 @@ public class WeeklyGoalUpdateServiceTest {
 		Long memberId = 1L;
 		Long weeklyGoalId = 2L;
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId)))
-				.willReturn(weeklyGoal);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId))).willReturn(weeklyGoal);
 
 		weeklyGoalUpdateService.remove(weeklyGoalId, memberId);
 
@@ -239,19 +204,14 @@ public class WeeklyGoalUpdateServiceTest {
 		Long weeklyGoalId = 2L;
 		Long relatedGoalId = 3L;
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId)))
-				.willReturn(weeklyGoal);
-		MonthlyGoal relatedMonthlyGoal =
-				MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(relatedGoalId)))
-				.willReturn(relatedMonthlyGoal);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId))).willReturn(weeklyGoal);
+		MonthlyGoal relatedMonthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(relatedGoalId))).willReturn(relatedMonthlyGoal);
 
 		weeklyGoalUpdateService.linkRelatedMonthlyGoal(weeklyGoalId, relatedGoalId, memberId);
 
 		assertThat(weeklyGoal.getRelatedMonthlyGoal()).isNotEmpty();
-		assertThat(weeklyGoal.getRelatedMonthlyGoal().get())
-				.usingRecursiveComparison()
-				.isEqualTo(relatedMonthlyGoal);
+		assertThat(weeklyGoal.getRelatedMonthlyGoal().get()).usingRecursiveComparison().isEqualTo(relatedMonthlyGoal);
 	}
 
 	@Test
@@ -260,10 +220,8 @@ public class WeeklyGoalUpdateServiceTest {
 		Long memberId = 1L;
 		Long weeklyGoalId = 2L;
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		weeklyGoal.linkRelatedMonthlyGoal(
-				MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar));
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId)))
-				.willReturn(weeklyGoal);
+		weeklyGoal.linkRelatedMonthlyGoal(MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar));
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId))).willReturn(weeklyGoal);
 
 		weeklyGoalUpdateService.unlinkRelatedMonthlyGoal(weeklyGoalId, memberId);
 
@@ -276,15 +234,10 @@ public class WeeklyGoalUpdateServiceTest {
 		Long memberId = 1L;
 		Long weeklyGoalId = 2L;
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId)))
-				.willReturn(weeklyGoal);
+		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(eq(weeklyGoalId))).willReturn(weeklyGoal);
 
-		assertThatCode(
-						() -> {
-							weeklyGoalUpdateService.unlinkRelatedMonthlyGoal(
-									weeklyGoalId, memberId);
-						})
-				.isInstanceOf(InvalidWeeklyGoalException.class)
-				.hasMessage(ErrorCode.RELATED_GOAL_NOT_FOUND.getDescription());
+		assertThatCode(() -> {
+			weeklyGoalUpdateService.unlinkRelatedMonthlyGoal(weeklyGoalId, memberId);
+		}).isInstanceOf(InvalidWeeklyGoalException.class).hasMessage(ErrorCode.RELATED_GOAL_NOT_FOUND.getDescription());
 	}
 }

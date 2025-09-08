@@ -19,9 +19,11 @@ public class ScheduleCategory extends BaseTime {
 	@Column(name = "schedule_category_id", nullable = false)
 	private Long id;
 
-	@Embedded private ScheduleColorHex colorHex;
+	@Embedded
+	private ScheduleColorHex colorHex;
 
-	@Embedded private ScheduleCategoryName name;
+	@Embedded
+	private ScheduleCategoryName name;
 
 	@Column(nullable = false)
 	private boolean isDefault;

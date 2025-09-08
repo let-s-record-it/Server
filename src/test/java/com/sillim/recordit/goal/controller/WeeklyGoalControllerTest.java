@@ -49,8 +49,10 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(WeeklyGoalController.class)
 public class WeeklyGoalControllerTest extends RestDocsTest {
 
-	@MockBean WeeklyGoalUpdateService weeklyGoalUpdateService;
-	@MockBean WeeklyGoalQueryService weeklyGoalQueryService;
+	@MockBean
+	WeeklyGoalUpdateService weeklyGoalUpdateService;
+	@MockBean
+	WeeklyGoalQueryService weeklyGoalQueryService;
 
 	private Member member;
 	private ScheduleCategory category;
@@ -70,33 +72,16 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 	@DisplayName("새로운 주 목표를 추가한다.")
 	void weeklyGoalAddTest() throws Exception {
 
-		WeeklyGoalUpdateRequest request =
-				new WeeklyGoalUpdateRequest(
-						"취뽀하기!",
-						"취업할 때까지 숨 참는다.",
-						3,
-						LocalDate.of(2024, 8, 11),
-						LocalDate.of(2024, 8, 17),
-						1L,
-						1L,
-						1L);
+		WeeklyGoalUpdateRequest request = new WeeklyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.", 3,
+				LocalDate.of(2024, 8, 11), LocalDate.of(2024, 8, 17), 1L, 1L, 1L);
 
-		ResultActions perform =
-				mockMvc.perform(
-						post("/api/v1/calendars/{calendarId}/weekly-goals", 1L)
-								.headers(authorizationHeader())
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(request)));
+		ResultActions perform = mockMvc.perform(post("/api/v1/calendars/{calendarId}/weekly-goals", 1L)
+				.headers(authorizationHeader()).contentType(MediaType.APPLICATION_JSON).content(toJson(request)));
 
 		perform.andExpect(status().isCreated());
 
-		perform.andDo(print())
-				.andDo(
-						document(
-								"weekly-goal-add",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc())));
+		perform.andDo(print()).andDo(document("weekly-goal-add", getDocumentRequest(), getDocumentResponse(),
+				requestHeaders(authorizationDesc())));
 	}
 
 	@Test
@@ -105,34 +90,20 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 
 		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
 
-		List<WeeklyGoal> weeklyGoals =
-				LongStream.rangeClosed(1, 3)
-						.mapToObj(
-								(id) -> {
-									WeeklyGoal goal =
-											spy(
-													WeeklyGoalFixture.DEFAULT.getWithMember(
-															category, calendar));
-									given(goal.getId()).willReturn(id);
-									given(goal.isAchieved()).willReturn(id % 2 == 0);
-									return goal;
-								})
-						.toList();
+		List<WeeklyGoal> weeklyGoals = LongStream.rangeClosed(1, 3).mapToObj((id) -> {
+			WeeklyGoal goal = spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
+			given(goal.getId()).willReturn(id);
+			given(goal.isAchieved()).willReturn(id % 2 == 0);
+			return goal;
+		}).toList();
 
-		given(
-						weeklyGoalQueryService.searchAllWeeklyGoalByDate(
-								anyInt(), anyInt(), any(), anyLong()))
+		given(weeklyGoalQueryService.searchAllWeeklyGoalByDate(anyInt(), anyInt(), any(), anyLong()))
 				.willReturn(weeklyGoals);
 
-		ResultActions perform =
-				mockMvc.perform(
-						get("/api/v1/calendars/{calendarId}/weekly-goals", 1L)
-								.headers(authorizationHeader())
-								.queryParam("year", "2024")
-								.queryParam("month", "8"));
+		ResultActions perform = mockMvc.perform(get("/api/v1/calendars/{calendarId}/weekly-goals", 1L)
+				.headers(authorizationHeader()).queryParam("year", "2024").queryParam("month", "8"));
 
-		perform.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(1))
+		perform.andExpect(status().isOk()).andExpect(jsonPath("$.size()").value(1))
 				.andExpect(jsonPath("$.[0].week").value(expected.getWeek()))
 				.andExpect(jsonPath("$.[0].weeklyGoals.size()").value(3))
 				.andExpect(jsonPath("$.[0].weeklyGoals[0].id").value(1))
@@ -146,17 +117,11 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 				.andExpect(jsonPath("$.[0].weeklyGoals[2].achieved").value(false));
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"weekly-goal-list",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc()),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 id")),
-								queryParameters(
-										parameterWithName("year").description("조회할 연도"),
-										parameterWithName("month").description("조회할 월"))));
+				.andDo(document("weekly-goal-list", getDocumentRequest(), getDocumentResponse(),
+						requestHeaders(authorizationDesc()),
+						pathParameters(parameterWithName("calendarId").description("캘린더 id")),
+						queryParameters(parameterWithName("year").description("조회할 연도"),
+								parameterWithName("month").description("조회할 월"))));
 	}
 
 	@Test
@@ -164,43 +129,24 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 	void weeklyGoalListWhenStuckInTwoMonths() throws Exception {
 
 		Integer expectedWeek = 1;
-		List<WeeklyGoal> weeklyGoals =
-				List.of(
-						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
-								5,
-								LocalDate.of(2024, 9, 29),
-								LocalDate.of(2024, 10, 5),
-								category,
-								calendar));
+		List<WeeklyGoal> weeklyGoals = List.of(WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(5,
+				LocalDate.of(2024, 9, 29), LocalDate.of(2024, 10, 5), category, calendar));
 
-		given(
-						weeklyGoalQueryService.searchAllWeeklyGoalByDate(
-								anyInt(), anyInt(), any(), anyLong()))
+		given(weeklyGoalQueryService.searchAllWeeklyGoalByDate(anyInt(), anyInt(), any(), anyLong()))
 				.willReturn(weeklyGoals);
 
-		ResultActions perform =
-				mockMvc.perform(
-						get("/api/v1/calendars/{calendarId}/weekly-goals", 1L)
-								.headers(authorizationHeader())
-								.queryParam("year", "2024")
-								.queryParam("month", "8"));
+		ResultActions perform = mockMvc.perform(get("/api/v1/calendars/{calendarId}/weekly-goals", 1L)
+				.headers(authorizationHeader()).queryParam("year", "2024").queryParam("month", "8"));
 
-		perform.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(1))
+		perform.andExpect(status().isOk()).andExpect(jsonPath("$.size()").value(1))
 				.andExpect(jsonPath("$.[0].week").value(expectedWeek));
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"weekly-goal-list-when-stuck-in-two-months",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc()),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 id")),
-								queryParameters(
-										parameterWithName("year").description("조회할 연도"),
-										parameterWithName("month").description("조회할 월"))));
+				.andDo(document("weekly-goal-list-when-stuck-in-two-months", getDocumentRequest(),
+						getDocumentResponse(), requestHeaders(authorizationDesc()),
+						pathParameters(parameterWithName("calendarId").description("캘린더 id")),
+						queryParameters(parameterWithName("year").description("조회할 연도"),
+								parameterWithName("month").description("조회할 월"))));
 	}
 
 	@Test
@@ -212,13 +158,10 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 
 		given(weeklyGoalQueryService.searchByIdAndCheckAuthority(anyLong())).willReturn(weeklyGoal);
 
-		ResultActions perform =
-				mockMvc.perform(
-						get("/api/v1/calendars/{calendarId}/weekly-goals/{id}", 1L, 1L)
-								.headers(authorizationHeader()));
+		ResultActions perform = mockMvc.perform(
+				get("/api/v1/calendars/{calendarId}/weekly-goals/{id}", 1L, 1L).headers(authorizationHeader()));
 
-		perform.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(weeklyGoal.getId()))
+		perform.andExpect(status().isOk()).andExpect(jsonPath("$.id").value(weeklyGoal.getId()))
 				.andExpect(jsonPath("$.title").value(weeklyGoal.getTitle()))
 				.andExpect(jsonPath("$.week").value(weeklyGoal.getWeek()))
 				.andExpect(jsonPath("$.startDate").value(weeklyGoal.getStartDate().toString()))
@@ -226,152 +169,90 @@ public class WeeklyGoalControllerTest extends RestDocsTest {
 				.andExpect(jsonPath("$.description").value(weeklyGoal.getDescription()))
 				.andExpect(jsonPath("$.colorHex").value(weeklyGoal.getColorHex()));
 
-		perform.andDo(print())
-				.andDo(
-						document(
-								"weekly-goal-details",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc()),
-								pathParameters(
-										parameterWithName("id").description("조회할 주 목표 id"),
-										parameterWithName("calendarId").description("캘린더 id"))));
+		perform.andDo(print()).andDo(document("weekly-goal-details", getDocumentRequest(), getDocumentResponse(),
+				requestHeaders(authorizationDesc()), pathParameters(parameterWithName("id").description("조회할 주 목표 id"),
+						parameterWithName("calendarId").description("캘린더 id"))));
 	}
 
 	@Test
 	@DisplayName("id에 해당하는 주 목표를 수정한다.")
 	void modifyWeeklyGoal() throws Exception {
 
-		WeeklyGoalUpdateRequest request =
-				new WeeklyGoalUpdateRequest(
-						"취뽀하기!(수정)",
-						"취업할 때까지 숨 참는다.(수정)",
-						4,
-						LocalDate.of(2024, 8, 18),
-						LocalDate.of(2024, 8, 24),
-						1L,
-						1L,
-						1L);
+		WeeklyGoalUpdateRequest request = new WeeklyGoalUpdateRequest("취뽀하기!(수정)", "취업할 때까지 숨 참는다.(수정)", 4,
+				LocalDate.of(2024, 8, 18), LocalDate.of(2024, 8, 24), 1L, 1L, 1L);
 
-		ResultActions perform =
-				mockMvc.perform(
-						put("/api/v1/calendars/{calendarId}/weekly-goals/{id}", 1L, 1L)
-								.headers(authorizationHeader())
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(request)));
+		ResultActions perform = mockMvc.perform(put("/api/v1/calendars/{calendarId}/weekly-goals/{id}", 1L, 1L)
+				.headers(authorizationHeader()).contentType(MediaType.APPLICATION_JSON).content(toJson(request)));
 
 		perform.andExpect(status().isNoContent());
 
-		perform.andDo(print())
-				.andDo(
-						document(
-								"weekly-goal-modify",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc()),
-								pathParameters(
-										parameterWithName("id").description("수정할 주 목표 id"),
-										parameterWithName("calendarId").description("캘린더 id"))));
+		perform.andDo(print()).andDo(document("weekly-goal-modify", getDocumentRequest(), getDocumentResponse(),
+				requestHeaders(authorizationDesc()), pathParameters(parameterWithName("id").description("수정할 주 목표 id"),
+						parameterWithName("calendarId").description("캘린더 id"))));
 	}
 
 	@Test
 	@DisplayName("id에 해당하는 주 목표의 달성 상태를 변경한다.")
 	void weeklyGoalChangeAchieveStatus() throws Exception {
 
-		ResultActions perform =
-				mockMvc.perform(
-						patch("/api/v1/calendars/{calendarId}/weekly-goals/{id}/achieve", 1L, 1L)
-								.headers(authorizationHeader())
-								.queryParam("status", "true"));
+		ResultActions perform = mockMvc
+				.perform(patch("/api/v1/calendars/{calendarId}/weekly-goals/{id}/achieve", 1L, 1L)
+						.headers(authorizationHeader()).queryParam("status", "true"));
 
 		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"weekly-goal-change-achieve-status",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc()),
-								pathParameters(
-										parameterWithName("id").description("달성 상태를 변경할 주 목표 id"),
-										parameterWithName("calendarId").description("캘린더 id")),
-								queryParameters(
-										parameterWithName("status")
-												.description("달성 상태(false, true)"))));
+				.andDo(document("weekly-goal-change-achieve-status", getDocumentRequest(), getDocumentResponse(),
+						requestHeaders(authorizationDesc()),
+						pathParameters(parameterWithName("id").description("달성 상태를 변경할 주 목표 id"),
+								parameterWithName("calendarId").description("캘린더 id")),
+						queryParameters(parameterWithName("status").description("달성 상태(false, true)"))));
 	}
 
 	@Test
 	@DisplayName("id에 해당하는 주 목표를 삭제한다.")
 	void removeWeeklyGoal() throws Exception {
 
-		ResultActions perform =
-				mockMvc.perform(
-						delete("/api/v1/calendars/{calendarId}/weekly-goals/{id}", 1L, 1L)
-								.headers(authorizationHeader()));
+		ResultActions perform = mockMvc.perform(
+				delete("/api/v1/calendars/{calendarId}/weekly-goals/{id}", 1L, 1L).headers(authorizationHeader()));
 
 		perform.andExpect(status().isNoContent());
 
-		perform.andDo(print())
-				.andDo(
-						document(
-								"weekly-goal-remove",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc()),
-								pathParameters(
-										parameterWithName("id").description("삭제할 주 목표 id"),
-										parameterWithName("calendarId").description("캘린더 id"))));
+		perform.andDo(print()).andDo(document("weekly-goal-remove", getDocumentRequest(), getDocumentResponse(),
+				requestHeaders(authorizationDesc()), pathParameters(parameterWithName("id").description("삭제할 주 목표 id"),
+						parameterWithName("calendarId").description("캘린더 id"))));
 	}
 
 	@Test
 	@DisplayName("id에 해당하는 주 목표를 월 목표와 연결한다.")
 	void linkRelatedGoal() throws Exception {
 
-		ResultActions perform =
-				mockMvc.perform(
-						patch("/api/v1/calendars/{calendarId}/weekly-goals/{id}/link", 1L, 1L)
-								.headers(authorizationHeader())
-								.queryParam("relatedGoalId", "1"));
+		ResultActions perform = mockMvc.perform(patch("/api/v1/calendars/{calendarId}/weekly-goals/{id}/link", 1L, 1L)
+				.headers(authorizationHeader()).queryParam("relatedGoalId", "1"));
 
 		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"weekly-goal-link-related-goal",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc()),
-								pathParameters(
-										parameterWithName("id").description("연관 목표를 연결할 주 목표 id"),
-										parameterWithName("calendarId").description("캘린더 id")),
-								queryParameters(
-										parameterWithName("relatedGoalId")
-												.description("주 목표와 연결할 월 목표 id"))));
+				.andDo(document("weekly-goal-link-related-goal", getDocumentRequest(), getDocumentResponse(),
+						requestHeaders(authorizationDesc()),
+						pathParameters(parameterWithName("id").description("연관 목표를 연결할 주 목표 id"),
+								parameterWithName("calendarId").description("캘린더 id")),
+						queryParameters(parameterWithName("relatedGoalId").description("주 목표와 연결할 월 목표 id"))));
 	}
 
 	@Test
 	@DisplayName("id에 해당하는 주 목표와 연관 목표의 연결을 해제할 수 있다.")
 	void unlinkRelatedGoal() throws Exception {
 
-		ResultActions perform =
-				mockMvc.perform(
-						patch("/api/v1/calendars/{calendarId}/weekly-goals/{id}/unlink", 1L, 1L)
-								.headers(authorizationHeader()));
+		ResultActions perform = mockMvc.perform(patch("/api/v1/calendars/{calendarId}/weekly-goals/{id}/unlink", 1L, 1L)
+				.headers(authorizationHeader()));
 
 		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"weekly-goal-unlink-related-goal",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								requestHeaders(authorizationDesc()),
-								pathParameters(
-										parameterWithName("id")
-												.description("연관 목표를 연결 해제할 주 목표 id"),
-										parameterWithName("calendarId").description("캘린더 id"))));
+				.andDo(document("weekly-goal-unlink-related-goal", getDocumentRequest(), getDocumentResponse(),
+						requestHeaders(authorizationDesc()),
+						pathParameters(parameterWithName("id").description("연관 목표를 연결 해제할 주 목표 id"),
+								parameterWithName("calendarId").description("캘린더 id"))));
 	}
 }

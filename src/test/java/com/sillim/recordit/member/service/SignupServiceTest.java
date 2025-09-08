@@ -26,11 +26,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class SignupServiceTest {
 
-	@Mock MemberRepository memberRepository;
-	@Mock CalendarCommandService calendarCommandService;
-	@Mock CalendarCategoryCommandService calendarCategoryCommandService;
-	@Mock ScheduleCategoryCommandService scheduleCategoryCommandService;
-	@InjectMocks SignupService signupService;
+	@Mock
+	MemberRepository memberRepository;
+	@Mock
+	CalendarCommandService calendarCommandService;
+	@Mock
+	CalendarCategoryCommandService calendarCategoryCommandService;
+	@Mock
+	ScheduleCategoryCommandService scheduleCategoryCommandService;
+	@InjectMocks
+	SignupService signupService;
 
 	@Test
 	@DisplayName("멤버 데이터를 저장하여 회원가입 시킨다.")
@@ -44,14 +49,10 @@ class SignupServiceTest {
 		String profileImageUrl = target.getProfileImageUrl();
 		given(target.getId()).willReturn(memberId);
 		given(memberRepository.save(any(Member.class))).willReturn(target);
-		given(calendarCategoryCommandService.addDefaultCategories(eq(memberId)))
-				.willReturn(List.of(1L, 2L, 3L, 4L));
-		given(calendarCommandService.addCalendar(any(), eq(memberId)))
-				.willReturn(new Calendar("일반", null, memberId));
+		given(calendarCategoryCommandService.addDefaultCategories(eq(memberId))).willReturn(List.of(1L, 2L, 3L, 4L));
+		given(calendarCommandService.addCalendar(any(), eq(memberId))).willReturn(new Calendar("일반", null, memberId));
 
-		Member member =
-				signupService.signup(
-						new MemberInfo(account, provider, name, email, profileImageUrl));
+		Member member = signupService.signup(new MemberInfo(account, provider, name, email, profileImageUrl));
 
 		assertThat(member.getOauthAccount()).isEqualTo(account);
 		assertThat(member.getOauthProvider()).isEqualTo(provider);

@@ -22,9 +22,6 @@ public class GCSConfig {
 	public Storage storage() throws IOException {
 		InputStream keyFile = ResourceUtils.getURL(keyFileName).openStream();
 
-		return StorageOptions.newBuilder()
-				.setCredentials(GoogleCredentials.fromStream(keyFile))
-				.build()
-				.getService();
+		return StorageOptions.newBuilder().setCredentials(GoogleCredentials.fromStream(keyFile)).build().getService();
 	}
 }

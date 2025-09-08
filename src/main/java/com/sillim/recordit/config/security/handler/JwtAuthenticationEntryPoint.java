@@ -15,11 +15,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	private final AuthenticationExceptionHandler authenticationExceptionHandler;
 
 	@Override
-	public void commence(
-			HttpServletRequest request,
-			HttpServletResponse response,
-			AuthenticationException authException)
-			throws IOException {
+	public void commence(HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException authException) throws IOException {
 
 		authenticationExceptionHandler.handle(response, authException);
 	}

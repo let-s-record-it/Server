@@ -35,12 +35,11 @@ class YearValidatorTest {
 		Integer year1 = 1900;
 		Integer year2 = LocalDate.now().getYear();
 		Integer year3 = LocalDate.now().getYear() + 25;
-		assertAll(
-				() -> {
-					assertThat(validator.isValid(year1, context)).isTrue();
-					assertThat(validator.isValid(year2, context)).isTrue();
-					assertThat(validator.isValid(year3, context)).isTrue();
-				});
+		assertAll(() -> {
+			assertThat(validator.isValid(year1, context)).isTrue();
+			assertThat(validator.isValid(year2, context)).isTrue();
+			assertThat(validator.isValid(year3, context)).isTrue();
+		});
 	}
 
 	@Test

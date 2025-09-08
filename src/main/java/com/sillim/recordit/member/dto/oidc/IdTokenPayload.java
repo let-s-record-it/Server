@@ -35,7 +35,6 @@ public record IdTokenPayload(String iss, String aud, Long exp, String sub) {
 	}
 
 	private boolean isValidTime(LocalDateTime standTime) {
-		return LocalDateTime.ofInstant(Instant.ofEpochSecond(exp), ZoneId.systemDefault())
-				.isBefore(standTime);
+		return LocalDateTime.ofInstant(Instant.ofEpochSecond(exp), ZoneId.systemDefault()).isBefore(standTime);
 	}
 }

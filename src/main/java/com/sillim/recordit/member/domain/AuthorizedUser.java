@@ -11,9 +11,7 @@ public class AuthorizedUser implements OAuth2User {
 	private final Map<String, Object> attributes;
 	private final Collection<? extends GrantedAuthority> authorities;
 
-	public AuthorizedUser(
-			Member member,
-			Map<String, Object> attributes,
+	public AuthorizedUser(Member member, Map<String, Object> attributes,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.member = member;
 		this.attributes = attributes;

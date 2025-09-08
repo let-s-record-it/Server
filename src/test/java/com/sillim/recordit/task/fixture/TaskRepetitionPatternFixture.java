@@ -9,87 +9,21 @@ import com.sillim.recordit.task.domain.repetition.TaskRepetitionPatternFactory;
 import java.time.LocalDate;
 
 public enum TaskRepetitionPatternFixture {
-	DAILY(
-			TaskRepetitionType.DAILY,
-			1,
-			LocalDate.of(2024, 1, 1),
-			LocalDate.of(2024, 3, 31),
-			null,
-			null,
-			null,
-			null,
-			null),
-	WEEKLY(
-			TaskRepetitionType.WEEKLY,
-			1,
-			LocalDate.of(2024, 1, 1),
-			LocalDate.of(2024, 3, 31),
-			null,
-			null,
-			null,
-			null,
-			Integer.parseInt("1110100", 2)), // 수 금 토 일
-	MONTHLY_WITH_DATE(
-			TaskRepetitionType.MONTHLY_WITH_DATE,
-			1,
-			LocalDate.of(2024, 1, 12),
-			LocalDate.of(2024, 3, 31),
-			null,
-			12,
-			null,
-			null,
-			null),
-	MONTHLY_WITH_WEEKDAY(
-			TaskRepetitionType.MONTHLY_WITH_WEEKDAY,
-			1,
-			LocalDate.of(2024, 1, 12),
-			LocalDate.of(2024, 3, 31),
-			null,
-			null,
-			WeekNumber.SECOND,
-			Weekday.FRI,
-			null),
-	MONTHLY_WITH_LAST_DAY(
-			TaskRepetitionType.MONTHLY_WITH_LAST_DAY,
-			1,
-			LocalDate.of(2024, 1, 31),
-			LocalDate.of(2024, 3, 31),
-			null,
-			null,
-			null,
-			null,
-			null),
-	YEARLY_WITH_DATE(
-			TaskRepetitionType.YEARLY_WITH_DATE,
-			1,
-			LocalDate.of(2024, 2, 12),
-			LocalDate.of(2025, 3, 31),
-			2,
-			12,
-			null,
-			null,
-			null),
-	YEARLY_WITH_WEEKDAY(
-			TaskRepetitionType.YEARLY_WITH_WEEKDAY,
-			1,
-			LocalDate.of(2024, 2, 12),
-			LocalDate.of(2025, 3, 31),
-			2,
-			null,
-			WeekNumber.SECOND,
-			Weekday.MON,
-			null),
-	YEARLY_WITH_LAST_DAY(
-			TaskRepetitionType.YEARLY_WITH_LAST_DAY,
-			1,
-			LocalDate.of(2024, 2, 29),
-			LocalDate.of(2025, 3, 31),
-			2,
-			null,
-			null,
-			null,
-			null),
-	;
+	DAILY(TaskRepetitionType.DAILY, 1, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31), null, null, null, null,
+			null), WEEKLY(TaskRepetitionType.WEEKLY, 1, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31), null, null,
+					null, null, Integer.parseInt("1110100", 2)), // 수 금 토 일
+	MONTHLY_WITH_DATE(TaskRepetitionType.MONTHLY_WITH_DATE, 1, LocalDate.of(2024, 1, 12), LocalDate.of(2024, 3, 31),
+			null, 12, null, null, null), MONTHLY_WITH_WEEKDAY(TaskRepetitionType.MONTHLY_WITH_WEEKDAY, 1,
+					LocalDate.of(2024, 1, 12), LocalDate.of(2024, 3, 31), null, null, WeekNumber.SECOND, Weekday.FRI,
+					null), MONTHLY_WITH_LAST_DAY(TaskRepetitionType.MONTHLY_WITH_LAST_DAY, 1, LocalDate.of(2024, 1, 31),
+							LocalDate.of(2024, 3, 31), null, null, null, null,
+							null), YEARLY_WITH_DATE(TaskRepetitionType.YEARLY_WITH_DATE, 1, LocalDate.of(2024, 2, 12),
+									LocalDate.of(2025, 3, 31), 2, 12, null, null, null), YEARLY_WITH_WEEKDAY(
+											TaskRepetitionType.YEARLY_WITH_WEEKDAY, 1, LocalDate.of(2024, 2, 12),
+											LocalDate.of(2025, 3, 31), 2, null, WeekNumber.SECOND, Weekday.MON,
+											null), YEARLY_WITH_LAST_DAY(TaskRepetitionType.YEARLY_WITH_LAST_DAY, 1,
+													LocalDate.of(2024, 2, 29), LocalDate.of(2025, 3, 31), 2, null, null,
+													null, null),;
 
 	private final TaskRepetitionType repetitionType;
 	private final Integer repetitionPeriod;
@@ -101,16 +35,9 @@ public enum TaskRepetitionPatternFixture {
 	private final Weekday weekday;
 	private final Integer weekdayBit;
 
-	TaskRepetitionPatternFixture(
-			TaskRepetitionType repetitionType,
-			Integer repetitionPeriod,
-			LocalDate repetitionStartDate,
-			LocalDate repetitionEndDate,
-			Integer monthOfYear,
-			Integer dayOfMonth,
-			WeekNumber weekNumber,
-			Weekday weekday,
-			Integer weekdayBit) {
+	TaskRepetitionPatternFixture(TaskRepetitionType repetitionType, Integer repetitionPeriod,
+			LocalDate repetitionStartDate, LocalDate repetitionEndDate, Integer monthOfYear, Integer dayOfMonth,
+			WeekNumber weekNumber, Weekday weekday, Integer weekdayBit) {
 		this.repetitionType = repetitionType;
 		this.repetitionPeriod = repetitionPeriod;
 		this.repetitionStartDate = repetitionStartDate;
@@ -123,31 +50,13 @@ public enum TaskRepetitionPatternFixture {
 	}
 
 	public TaskRepetitionPattern get(TaskGroup taskGroup) {
-		return TaskRepetitionPatternFactory.create(
-				repetitionType,
-				repetitionPeriod,
-				repetitionStartDate,
-				repetitionEndDate,
-				monthOfYear,
-				dayOfMonth,
-				weekNumber,
-				weekday,
-				weekdayBit,
-				taskGroup);
+		return TaskRepetitionPatternFactory.create(repetitionType, repetitionPeriod, repetitionStartDate,
+				repetitionEndDate, monthOfYear, dayOfMonth, weekNumber, weekday, weekdayBit, taskGroup);
 	}
 
-	public TaskRepetitionPattern getWithDate(
-			LocalDate repetitionStartDate, LocalDate repetitionEndDate, TaskGroup taskGroup) {
-		return TaskRepetitionPatternFactory.create(
-				repetitionType,
-				repetitionPeriod,
-				repetitionStartDate,
-				repetitionEndDate,
-				monthOfYear,
-				dayOfMonth,
-				weekNumber,
-				weekday,
-				weekdayBit,
-				taskGroup);
+	public TaskRepetitionPattern getWithDate(LocalDate repetitionStartDate, LocalDate repetitionEndDate,
+			TaskGroup taskGroup) {
+		return TaskRepetitionPatternFactory.create(repetitionType, repetitionPeriod, repetitionStartDate,
+				repetitionEndDate, monthOfYear, dayOfMonth, weekNumber, weekday, weekdayBit, taskGroup);
 	}
 }

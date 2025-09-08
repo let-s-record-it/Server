@@ -20,8 +20,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class MemberQueryServiceTest {
 
-	@Mock MemberRepository memberRepository;
-	@InjectMocks MemberQueryService memberQueryService;
+	@Mock
+	MemberRepository memberRepository;
+	@InjectMocks
+	MemberQueryService memberQueryService;
 
 	@Test
 	@DisplayName("멤버 ID를 통해 멤버를 조회한다.")
@@ -42,8 +44,7 @@ class MemberQueryServiceTest {
 		Long id = target.getId();
 		given(memberRepository.findById(id)).willReturn(Optional.empty());
 
-		assertThatThrownBy(() -> memberQueryService.findByMemberId(id))
-				.isInstanceOf(RecordNotFoundException.class)
+		assertThatThrownBy(() -> memberQueryService.findByMemberId(id)).isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.MEMBER_NOT_FOUND.getDescription());
 	}
 }

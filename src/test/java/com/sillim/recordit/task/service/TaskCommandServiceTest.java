@@ -48,11 +48,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class TaskCommandServiceTest {
 
-	@InjectMocks TaskCommandService taskCommandService;
-	@Mock CalendarQueryService calendarQueryService;
-	@Mock TaskGroupService taskGroupService;
-	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
-	@Mock TaskRepository taskRepository;
+	@InjectMocks
+	TaskCommandService taskCommandService;
+	@Mock
+	CalendarQueryService calendarQueryService;
+	@Mock
+	TaskGroupService taskGroupService;
+	@Mock
+	ScheduleCategoryQueryService scheduleCategoryQueryService;
+	@Mock
+	TaskRepository taskRepository;
 
 	long memberId = 1L;
 	private CalendarCategory calendarCategory;
@@ -72,23 +77,15 @@ class TaskCommandServiceTest {
 	@DisplayName("반복 없는 task를 추가할 수 있다.")
 	void addNonRepeatingTaskTest() {
 		TaskGroupUpdateRequest taskGroupRequest = mock(TaskGroupUpdateRequest.class);
-		TaskAddRequest request =
-				new TaskAddRequest(
-						"회의록 작성",
-						"프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 1, 1),
-						false,
-						1L,
-						null,
-						taskGroupRequest);
+		TaskAddRequest request = new TaskAddRequest("회의록 작성", "프로젝트 회의록 작성하기", LocalDate.of(2024, 1, 1), false, 1L,
+				null, taskGroupRequest);
 		Long calendarId = 1L;
 		Long memberId = 1L;
 		TaskGroup taskGroup = new TaskGroup(null, null);
 		calendar = spy(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
-		given(taskGroupService.addNonRepeatingTaskGroup(eq(taskGroupRequest), eq(memberId)))
-				.willReturn(taskGroup);
+		given(taskGroupService.addNonRepeatingTaskGroup(eq(taskGroupRequest), eq(memberId))).willReturn(taskGroup);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
 		taskCommandService.addTasks(request, calendarId, memberId);
@@ -101,15 +98,8 @@ class TaskCommandServiceTest {
 	void addRepeatingTaskTest() {
 		TaskGroupUpdateRequest taskGroupRequest = mock(TaskGroupUpdateRequest.class);
 		TaskRepetitionUpdateRequest repetitionRequest = mock(TaskRepetitionUpdateRequest.class);
-		TaskAddRequest request =
-				new TaskAddRequest(
-						"회의록 작성",
-						"프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 1, 1),
-						true,
-						1L,
-						repetitionRequest,
-						taskGroupRequest);
+		TaskAddRequest request = new TaskAddRequest("회의록 작성", "프로젝트 회의록 작성하기", LocalDate.of(2024, 1, 1), true, 1L,
+				repetitionRequest, taskGroupRequest);
 		Long calendarId = 1L;
 		Long memberId = 1L;
 		TaskGroup taskGroup = new TaskGroup(null, null);
@@ -117,9 +107,7 @@ class TaskCommandServiceTest {
 		calendar = spy(calendar);
 		willDoNothing().given(calendar).validateAuthenticatedMember(anyLong());
 
-		given(
-						taskGroupService.addRepeatingTaskGroup(
-								eq(taskGroupRequest), eq(repetitionRequest), eq(memberId)))
+		given(taskGroupService.addRepeatingTaskGroup(eq(taskGroupRequest), eq(repetitionRequest), eq(memberId)))
 				.willReturn(taskGroup);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
@@ -140,16 +128,8 @@ class TaskCommandServiceTest {
 		TaskRepetitionUpdateRequest repetitionRequest = mock(TaskRepetitionUpdateRequest.class);
 		given(repetitionRequest.repetitionStartDate()).willReturn(LocalDate.of(2024, 1, 1));
 		TaskGroupUpdateRequest taskGroupRequest = mock(TaskGroupUpdateRequest.class);
-		TaskUpdateRequest request =
-				new TaskUpdateRequest(
-						"(수정) 회의록 작성",
-						"(수정) 프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 1, 10),
-						newCalendarId,
-						1L,
-						true,
-						repetitionRequest,
-						taskGroupRequest);
+		TaskUpdateRequest request = new TaskUpdateRequest("(수정) 회의록 작성", "(수정) 프로젝트 회의록 작성하기",
+				LocalDate.of(2024, 1, 10), newCalendarId, 1L, true, repetitionRequest, taskGroupRequest);
 
 		calendar = spy(calendar);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
@@ -159,30 +139,22 @@ class TaskCommandServiceTest {
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
 		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
-		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
-				.willReturn(Optional.of(selectedTask));
+		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong())).willReturn(Optional.of(selectedTask));
 		willDoNothing().given(taskRepository).deleteAllByTaskGroupId(anyLong());
 
 		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId));
 		//
-		//	given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
-		//		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
+		// given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
+		// willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
-		TaskRepetitionPattern newRepetitionPattern =
-				TaskRepetitionPatternFixture.DAILY.get(taskGroup);
+		TaskRepetitionPattern newRepetitionPattern = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
 		newTaskGroup.setRepetitionPattern(newRepetitionPattern);
 
-		given(
-						taskGroupService.modifyTaskGroupAndMakeRepeatable(
-								anyLong(),
-								any(TaskGroupUpdateRequest.class),
-								any(TaskRepetitionUpdateRequest.class),
-								anyLong()))
-				.willReturn(newTaskGroup);
+		given(taskGroupService.modifyTaskGroupAndMakeRepeatable(anyLong(), any(TaskGroupUpdateRequest.class),
+				any(TaskRepetitionUpdateRequest.class), anyLong())).willReturn(newTaskGroup);
 
-		taskCommandService.resetTaskGroupAndAddNewTasks(
-				request, calendarId, selectedTaskId, memberId);
+		taskCommandService.resetTaskGroupAndAddNewTasks(request, calendarId, selectedTaskId, memberId);
 
 		then(taskRepository).should(times(1)).deleteAllByTaskGroupId(anyLong());
 		then(taskRepository).should(times(1)).saveAllBatch(anyList());
@@ -198,16 +170,8 @@ class TaskCommandServiceTest {
 		Long newCalendarId = 5L;
 
 		TaskGroupUpdateRequest taskGroupRequest = mock(TaskGroupUpdateRequest.class);
-		TaskUpdateRequest request =
-				new TaskUpdateRequest(
-						"(수정) 회의록 작성",
-						"(수정) 프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 1, 10),
-						1L,
-						newCalendarId,
-						false,
-						null,
-						taskGroupRequest);
+		TaskUpdateRequest request = new TaskUpdateRequest("(수정) 회의록 작성", "(수정) 프로젝트 회의록 작성하기",
+				LocalDate.of(2024, 1, 10), 1L, newCalendarId, false, null, taskGroupRequest);
 
 		calendar = spy(calendar);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
@@ -217,8 +181,7 @@ class TaskCommandServiceTest {
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
 		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
-		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
-				.willReturn(Optional.of(selectedTask));
+		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong())).willReturn(Optional.of(selectedTask));
 
 		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId));
 		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
@@ -226,22 +189,19 @@ class TaskCommandServiceTest {
 
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
 
-		given(
-						taskGroupService.modifyTaskGroup(
-								anyLong(), any(TaskGroupUpdateRequest.class), anyLong()))
+		given(taskGroupService.modifyTaskGroup(anyLong(), any(TaskGroupUpdateRequest.class), anyLong()))
 				.willReturn(newTaskGroup);
 
 		taskCommandService.modifyOne(request, calendarId, selectedTaskId, memberId);
 
-		assertAll(
-				() -> {
-					assertThat(selectedTask.getTitle()).isEqualTo(request.newTitle());
-					assertThat(selectedTask.getDescription()).isEqualTo(request.newDescription());
-					assertThat(selectedTask.getDate()).isEqualTo(request.date());
-					assertThat(selectedTask.getCalendar()).isEqualTo(newCalendar);
-					assertThat(selectedTask.getTaskGroup().getMonthlyGoal()).isEmpty();
-					assertThat(selectedTask.getTaskGroup().getWeeklyGoal()).isEmpty();
-				});
+		assertAll(() -> {
+			assertThat(selectedTask.getTitle()).isEqualTo(request.newTitle());
+			assertThat(selectedTask.getDescription()).isEqualTo(request.newDescription());
+			assertThat(selectedTask.getDate()).isEqualTo(request.date());
+			assertThat(selectedTask.getCalendar()).isEqualTo(newCalendar);
+			assertThat(selectedTask.getTaskGroup().getMonthlyGoal()).isEmpty();
+			assertThat(selectedTask.getTaskGroup().getWeeklyGoal()).isEmpty();
+		});
 	}
 
 	@Test
@@ -256,16 +216,8 @@ class TaskCommandServiceTest {
 		TaskRepetitionUpdateRequest repetitionRequest = mock(TaskRepetitionUpdateRequest.class);
 		given(repetitionRequest.repetitionStartDate()).willReturn(LocalDate.of(2024, 1, 1));
 		TaskGroupUpdateRequest taskGroupRequest = mock(TaskGroupUpdateRequest.class);
-		TaskUpdateRequest request =
-				new TaskUpdateRequest(
-						"(수정) 회의록 작성",
-						"(수정) 프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 1, 10),
-						1L,
-						newCalendarId,
-						true,
-						repetitionRequest,
-						taskGroupRequest);
+		TaskUpdateRequest request = new TaskUpdateRequest("(수정) 회의록 작성", "(수정) 프로젝트 회의록 작성하기",
+				LocalDate.of(2024, 1, 10), 1L, newCalendarId, true, repetitionRequest, taskGroupRequest);
 
 		calendar = spy(calendar);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
@@ -275,8 +227,7 @@ class TaskCommandServiceTest {
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
 		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
-		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
-				.willReturn(Optional.of(selectedTask));
+		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong())).willReturn(Optional.of(selectedTask));
 
 		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId));
 		given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
@@ -285,13 +236,8 @@ class TaskCommandServiceTest {
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
 		newTaskGroup.setRepetitionPattern(TaskRepetitionPatternFixture.DAILY.get(taskGroup));
 
-		given(
-						taskGroupService.modifyTaskGroupAndMakeRepeatable(
-								anyLong(),
-								any(TaskGroupUpdateRequest.class),
-								any(TaskRepetitionUpdateRequest.class),
-								anyLong()))
-				.willReturn(newTaskGroup);
+		given(taskGroupService.modifyTaskGroupAndMakeRepeatable(anyLong(), any(TaskGroupUpdateRequest.class),
+				any(TaskRepetitionUpdateRequest.class), anyLong())).willReturn(newTaskGroup);
 
 		taskCommandService.modifyOne(request, calendarId, selectedTaskId, memberId);
 
@@ -314,8 +260,7 @@ class TaskCommandServiceTest {
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
 		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
-		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
-				.willReturn(Optional.of(selectedTask));
+		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong())).willReturn(Optional.of(selectedTask));
 
 		taskCommandService.removeAll(calendarId, selectedTaskId, memberId);
 
@@ -338,14 +283,12 @@ class TaskCommandServiceTest {
 		given(taskGroup.getId()).willReturn(taskGroupId);
 
 		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
-		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
-				.willReturn(Optional.of(selectedTask));
+		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong())).willReturn(Optional.of(selectedTask));
 
 		taskCommandService.removeAllAfterDate(calendarId, selectedTaskId, memberId);
 
-		then(taskRepository)
-				.should(times(1))
-				.deleteAllByTaskGroupIdAndDateAfterOrEqual(anyLong(), any(LocalDate.class));
+		then(taskRepository).should(times(1)).deleteAllByTaskGroupIdAndDateAfterOrEqual(anyLong(),
+				any(LocalDate.class));
 	}
 
 	@Test
@@ -361,8 +304,7 @@ class TaskCommandServiceTest {
 
 		TaskGroup taskGroup = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
 		Task selectedTask = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
-		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong()))
-				.willReturn(Optional.of(selectedTask));
+		given(taskRepository.findByIdAndCalendarId(anyLong(), anyLong())).willReturn(Optional.of(selectedTask));
 
 		taskCommandService.removeOne(calendarId, selectedTaskId, memberId);
 

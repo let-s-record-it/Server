@@ -28,35 +28,26 @@ public class FeedCommentController {
 	private final FeedCommentQueryService feedCommentQueryService;
 
 	@PostMapping
-	public ResponseEntity<Void> feedCommentAdd(
-			@RequestBody FeedCommentAddRequest request,
-			@PathVariable Long feedId,
+	public ResponseEntity<Void> feedCommentAdd(@RequestBody FeedCommentAddRequest request, @PathVariable Long feedId,
 			@CurrentMember Member member) {
-		Long feedCommentId =
-				feedCommentCommandService.addFeedComment(request, feedId, member.getId());
-		return ResponseEntity.created(
-						URI.create("/api/v1/feeds/" + feedId + "/comments/" + feedCommentId))
-				.build();
+		Long feedCommentId = feedCommentCommandService.addFeedComment(request, feedId, member.getId());
+		return ResponseEntity.created(URI.create("/api/v1/feeds/" + feedId + "/comments/" + feedCommentId)).build();
 	}
 
 	@GetMapping("/{commentId}")
-	public ResponseEntity<FeedCommentInListResponse> feedComment(
-			@PathVariable Long commentId, @CurrentMember Member member) {
-		return ResponseEntity.ok(
-				feedCommentQueryService.searchFeedCommentById(commentId, member.getId()));
+	public ResponseEntity<FeedCommentInListResponse> feedComment(@PathVariable Long commentId,
+			@CurrentMember Member member) {
+		return ResponseEntity.ok(feedCommentQueryService.searchFeedCommentById(commentId, member.getId()));
 	}
 
 	@GetMapping
-	public ResponseEntity<SliceResponse<FeedCommentInListResponse>> feedCommentList(
-			@PathVariable Long feedId, Pageable pageable, @CurrentMember Member member) {
-		return ResponseEntity.ok(
-				feedCommentQueryService.searchPaginatedOldCreated(
-						pageable, feedId, member.getId()));
+	public ResponseEntity<SliceResponse<FeedCommentInListResponse>> feedCommentList(@PathVariable Long feedId,
+			Pageable pageable, @CurrentMember Member member) {
+		return ResponseEntity.ok(feedCommentQueryService.searchPaginatedOldCreated(pageable, feedId, member.getId()));
 	}
 
 	@DeleteMapping("/{commentId}")
-	public ResponseEntity<Void> feedRemove(
-			@PathVariable Long commentId, @CurrentMember Member member) {
+	public ResponseEntity<Void> feedRemove(@PathVariable Long commentId, @CurrentMember Member member) {
 		feedCommentCommandService.removeFeedComment(commentId, member.getId());
 		return ResponseEntity.noContent().build();
 	}

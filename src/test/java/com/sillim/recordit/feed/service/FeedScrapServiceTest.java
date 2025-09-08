@@ -25,10 +25,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FeedScrapServiceTest {
 
-	@Mock FeedScrapRepository feedScrapRepository;
-	@Mock FeedRepository feedRepository;
-	@Mock MemberQueryService memberQueryService;
-	@InjectMocks FeedScrapService feedScrapService;
+	@Mock
+	FeedScrapRepository feedScrapRepository;
+	@Mock
+	FeedRepository feedRepository;
+	@Mock
+	MemberQueryService memberQueryService;
+	@InjectMocks
+	FeedScrapService feedScrapService;
 
 	@Test
 	@DisplayName("피드에 스크랩을 할 수 있다.")
@@ -52,8 +56,6 @@ class FeedScrapServiceTest {
 
 		feedScrapService.feedUnScrap(feedId, memberId);
 
-		then(feedScrapRepository)
-				.should(times(1))
-				.deleteByFeedIdAndMemberId(eq(feedId), eq(memberId));
+		then(feedScrapRepository).should(times(1)).deleteByFeedIdAndMemberId(eq(feedId), eq(memberId));
 	}
 }

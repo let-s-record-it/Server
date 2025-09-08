@@ -26,59 +26,29 @@ public class FeedQueryService {
 	private final MemberQueryService memberQueryService;
 
 	public FeedDetailsResponse searchById(Long feedId, Long memberId) {
-		Feed feed =
-				feedRepository
-						.findByIdWithFetchJoin(feedId)
-						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
-		return FeedDetailsResponse.of(
-				feed,
-				memberQueryService.findByMemberId(feed.getMemberId()),
-				memberId,
-				feedLikeQueryService.isLiked(feedId, memberId),
-				feedScrapQueryService.isScraped(feedId, memberId));
+		Feed feed = feedRepository.findByIdWithFetchJoin(feedId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
+		return FeedDetailsResponse.of(feed, memberQueryService.findByMemberId(feed.getMemberId()), memberId,
+				feedLikeQueryService.isLiked(feedId, memberId), feedScrapQueryService.isScraped(feedId, memberId));
 	}
 
 	public SliceResponse<FeedInListResponse> searchRecentCreated(Pageable pageable, Long memberId) {
 		Slice<Feed> feedSlice = feedRepository.findOrderByCreatedAtDesc(pageable);
 
-		return SliceResponse.of(
-				new SliceImpl<>(
-						feedSlice.stream()
-								.map(
-										feed ->
-												FeedInListResponse.from(
-														feed,
-														memberQueryService.findByMemberId(
-																feed.getMemberId()),
-														feedLikeQueryService.isLiked(
-																feed.getId(), memberId),
-														feedScrapQueryService.isScraped(
-																feed.getId(), memberId)))
-								.toList(),
-						pageable,
-						feedSlice.hasNext()));
+		return SliceResponse.of(new SliceImpl<>(feedSlice.stream()
+				.map(feed -> FeedInListResponse.from(feed, memberQueryService.findByMemberId(feed.getMemberId()),
+						feedLikeQueryService.isLiked(feed.getId(), memberId),
+						feedScrapQueryService.isScraped(feed.getId(), memberId)))
+				.toList(), pageable, feedSlice.hasNext()));
 	}
 
-	public SliceResponse<FeedInListResponse> searchRecentCreatedByMemberId(
-			Pageable pageable, Long memberId) {
-		Slice<Feed> feedSlice =
-				feedRepository.findByMemberIdOrderByCreatedAtDesc(pageable, memberId);
+	public SliceResponse<FeedInListResponse> searchRecentCreatedByMemberId(Pageable pageable, Long memberId) {
+		Slice<Feed> feedSlice = feedRepository.findByMemberIdOrderByCreatedAtDesc(pageable, memberId);
 
-		return SliceResponse.of(
-				new SliceImpl<>(
-						feedSlice.stream()
-								.map(
-										feed ->
-												FeedInListResponse.from(
-														feed,
-														memberQueryService.findByMemberId(
-																feed.getMemberId()),
-														feedLikeQueryService.isLiked(
-																feed.getId(), memberId),
-														feedScrapQueryService.isScraped(
-																feed.getId(), memberId)))
-								.toList(),
-						pageable,
-						feedSlice.hasNext()));
+		return SliceResponse.of(new SliceImpl<>(feedSlice.stream()
+				.map(feed -> FeedInListResponse.from(feed, memberQueryService.findByMemberId(feed.getMemberId()),
+						feedLikeQueryService.isLiked(feed.getId(), memberId),
+						feedScrapQueryService.isScraped(feed.getId(), memberId)))
+				.toList(), pageable, feedSlice.hasNext()));
 	}
 }

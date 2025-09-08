@@ -9,8 +9,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class CustomMonthlyGoalRepositoryImpl extends QuerydslRepositorySupport
-		implements CustomMonthlyGoalRepository {
+public class CustomMonthlyGoalRepositoryImpl extends QuerydslRepositorySupport implements CustomMonthlyGoalRepository {
 
 	public CustomMonthlyGoalRepositoryImpl() {
 		super(MonthlyGoal.class);
@@ -18,31 +17,15 @@ public class CustomMonthlyGoalRepositoryImpl extends QuerydslRepositorySupport
 
 	@Override
 	public Optional<MonthlyGoal> findByIdWithFetch(Long monthlyGoalId) {
-		return Optional.ofNullable(
-				selectFrom(monthlyGoal)
-						.leftJoin(monthlyGoal.category)
-						.fetchJoin()
-						.leftJoin(monthlyGoal.calendar)
-						.fetchJoin()
-						.where(monthlyGoal.id.eq(monthlyGoalId))
-						.fetchOne());
+		return Optional.ofNullable(selectFrom(monthlyGoal).leftJoin(monthlyGoal.category).fetchJoin()
+				.leftJoin(monthlyGoal.calendar).fetchJoin().where(monthlyGoal.id.eq(monthlyGoalId)).fetchOne());
 	}
 
 	@Override
 	public List<MonthlyGoal> findMonthlyGoalInMonth(Integer year, Integer month, Long calendarId) {
-		return selectFrom(monthlyGoal)
-				.leftJoin(monthlyGoal.category)
-				.fetchJoin()
-				.leftJoin(monthlyGoal.calendar)
-				.fetchJoin()
-				.where(monthlyGoal.calendar.id.eq(calendarId))
-				.where(
-						monthlyGoal
-								.period
-								.startDate
-								.year()
-								.eq(year)
-								.and(monthlyGoal.period.startDate.month().eq(month)))
+		return selectFrom(monthlyGoal).leftJoin(monthlyGoal.category).fetchJoin().leftJoin(monthlyGoal.calendar)
+				.fetchJoin().where(monthlyGoal.calendar.id.eq(calendarId))
+				.where(monthlyGoal.period.startDate.year().eq(year).and(monthlyGoal.period.startDate.month().eq(month)))
 				.fetch();
 	}
 }

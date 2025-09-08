@@ -15,8 +15,10 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 class KakaoOidcClientTest {
 
-	@Autowired CacheManager cacheManager;
-	@Autowired KakaoOidcClient kakaoOidcClient;
+	@Autowired
+	CacheManager cacheManager;
+	@Autowired
+	KakaoOidcClient kakaoOidcClient;
 
 	@Test
 	@DisplayName("Kakao PublicKeys를 조회한다.")
@@ -30,9 +32,8 @@ class KakaoOidcClientTest {
 	@DisplayName("Kakao PublicKeys 요청 시 캐싱된 것을 먼저 불러온다.")
 	void findKakaoPublicKeysThatCached() {
 		kakaoOidcClient.getOidcPublicKeys();
-		Optional<OidcPublicKeys> cachedPublicKeys =
-				Optional.ofNullable(cacheManager.getCache("publicKeys"))
-						.map(cache -> cache.get("kakao", OidcPublicKeys.class));
+		Optional<OidcPublicKeys> cachedPublicKeys = Optional.ofNullable(cacheManager.getCache("publicKeys"))
+				.map(cache -> cache.get("kakao", OidcPublicKeys.class));
 
 		OidcPublicKeys oidcPublicKeys = kakaoOidcClient.getOidcPublicKeys();
 

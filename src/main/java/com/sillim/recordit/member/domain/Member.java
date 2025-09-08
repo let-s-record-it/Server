@@ -18,7 +18,9 @@ public class Member {
 
 	public static final int DO_NOT_REJOIN_DAYS = 14;
 
-	@Id @GeneratedValue private Long id;
+	@Id
+	@GeneratedValue
+	private Long id;
 
 	private String oauthAccount;
 
@@ -54,23 +56,10 @@ public class Member {
 	private List<Member> followings = new ArrayList<>();
 
 	@Builder
-	public Member(
-			String oauthAccount,
-			OAuthProvider oauthProvider,
-			String personalId,
-			String name,
-			String job,
-			String email,
-			String profileImageUrl,
-			Long followerCount,
-			Long followingCount,
-			Boolean deleted,
-			Boolean activated,
-			LocalDateTime createdAt,
-			LocalDateTime modifiedAt,
-			LocalDateTime deletedTime,
-			List<Member> followings,
-			List<MemberRole> memberRole) {
+	public Member(String oauthAccount, OAuthProvider oauthProvider, String personalId, String name, String job,
+			String email, String profileImageUrl, Long followerCount, Long followingCount, Boolean deleted,
+			Boolean activated, LocalDateTime createdAt, LocalDateTime modifiedAt, LocalDateTime deletedTime,
+			List<Member> followings, List<MemberRole> memberRole) {
 		this.oauthAccount = oauthAccount;
 		this.oauthProvider = oauthProvider;
 		this.name = name;
@@ -89,28 +78,12 @@ public class Member {
 		this.deletedTime = deletedTime;
 	}
 
-	public static Member createNoJobMember(
-			String oauthAccount,
-			OAuthProvider oauthProvider,
-			String name,
-			String email,
+	public static Member createNoJobMember(String oauthAccount, OAuthProvider oauthProvider, String name, String email,
 			String profileImageUrl) {
-		return Member.builder()
-				.oauthAccount(oauthAccount)
-				.oauthProvider(oauthProvider)
-				.name(name)
-				.job("")
-				.email(email)
-				.profileImageUrl(profileImageUrl)
-				.followerCount(0L)
-				.followingCount(0L)
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.deleted(false)
-				.activated(false)
-				.followings(List.of())
-				.memberRole(List.of(MemberRole.ROLE_USER))
-				.build();
+		return Member.builder().oauthAccount(oauthAccount).oauthProvider(oauthProvider).name(name).job("").email(email)
+				.profileImageUrl(profileImageUrl).followerCount(0L).followingCount(0L).createdAt(LocalDateTime.now())
+				.modifiedAt(LocalDateTime.now()).deleted(false).activated(false).followings(List.of())
+				.memberRole(List.of(MemberRole.ROLE_USER)).build();
 	}
 
 	public List<SimpleGrantedAuthority> getAuthorities() {

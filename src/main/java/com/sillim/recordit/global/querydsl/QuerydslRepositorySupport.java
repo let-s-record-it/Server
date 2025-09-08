@@ -36,13 +36,10 @@ public abstract class QuerydslRepositorySupport {
 	public void setEntityManager(EntityManager entityManager) {
 		this.entityManager = entityManager;
 
-		EntityPath<?> path =
-				SimpleEntityPathResolver.INSTANCE.createPath(
-						JpaEntityInformationSupport.getEntityInformation(entityClass, entityManager)
-								.getJavaType());
+		EntityPath<?> path = SimpleEntityPathResolver.INSTANCE
+				.createPath(JpaEntityInformationSupport.getEntityInformation(entityClass, entityManager).getJavaType());
 
-		this.querydsl =
-				new Querydsl(entityManager, new PathBuilder<>(path.getType(), path.getMetadata()));
+		this.querydsl = new Querydsl(entityManager, new PathBuilder<>(path.getType(), path.getMetadata()));
 		this.jpaQueryFactory = new JPAQueryFactory(entityManager);
 	}
 
@@ -54,9 +51,7 @@ public abstract class QuerydslRepositorySupport {
 		return this.jpaQueryFactory.update(from);
 	}
 
-	protected <T> Page<T> applyPagination(
-			Pageable pageable,
-			Function<JPAQueryFactory, JPAQuery<T>> contentQuery,
+	protected <T> Page<T> applyPagination(Pageable pageable, Function<JPAQueryFactory, JPAQuery<T>> contentQuery,
 			Function<JPAQueryFactory, JPAQuery<Long>> countQuery) {
 		JPAQuery<T> jpaContentQuery = contentQuery.apply(jpaQueryFactory);
 

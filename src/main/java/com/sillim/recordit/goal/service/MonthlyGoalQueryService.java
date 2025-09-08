@@ -18,18 +18,12 @@ public class MonthlyGoalQueryService {
 
 	public MonthlyGoal searchByIdAndCheckAuthority(final Long monthlyGoalId) {
 
-		MonthlyGoal monthlyGoal =
-				monthlyGoalRepository
-						.findByIdWithFetch(monthlyGoalId)
-						.orElseThrow(
-								() ->
-										new RecordNotFoundException(
-												ErrorCode.MONTHLY_GOAL_NOT_FOUND));
+		MonthlyGoal monthlyGoal = monthlyGoalRepository.findByIdWithFetch(monthlyGoalId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 		return monthlyGoal;
 	}
 
-	public List<MonthlyGoal> searchAllByDate(
-			final Integer year, final Integer month, final Long calendarId) {
+	public List<MonthlyGoal> searchAllByDate(final Integer year, final Integer month, final Long calendarId) {
 
 		return monthlyGoalRepository.findMonthlyGoalInMonth(year, month, calendarId);
 	}

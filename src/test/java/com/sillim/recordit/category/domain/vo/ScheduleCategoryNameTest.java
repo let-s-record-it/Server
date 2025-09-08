@@ -23,16 +23,14 @@ class ScheduleCategoryNameTest {
 	@Test
 	@DisplayName("일정 카테고리 이름이 null이면 InvalidCategoryNameException이 발생한다.")
 	void throwInvalidCategoryNameExceptionWhenCreateCalendarCategoryNameIfNameIsNull() {
-		assertThatCode(() -> new ScheduleCategoryName(null))
-				.isInstanceOf(InvalidCategoryNameException.class)
+		assertThatCode(() -> new ScheduleCategoryName(null)).isInstanceOf(InvalidCategoryNameException.class)
 				.hasMessage(ErrorCode.NULL_SCHEDULE_CATEGORY_NAME.getDescription());
 	}
 
 	@Test
 	@DisplayName("일정 카테고리 이름이 공백이면 InvalidCategoryNameException이 발생한다.")
 	void throwInvalidCategoryNameExceptionWhenCreateCalendarCategoryNameIfNameIsBlank() {
-		assertThatCode(() -> new ScheduleCategoryName(" "))
-				.isInstanceOf(InvalidCategoryNameException.class)
+		assertThatCode(() -> new ScheduleCategoryName(" ")).isInstanceOf(InvalidCategoryNameException.class)
 				.hasMessage(ErrorCode.BLANK_SCHEDULE_CATEGORY_NAME.getDescription());
 	}
 
@@ -40,8 +38,7 @@ class ScheduleCategoryNameTest {
 	@DisplayName("일정 카테고리 이름이 10자를 넘으면 InvalidCategoryNameException이 발생한다.")
 	void throwInvalidCategoryNameExceptionWhenCreateCalendarCategoryNameIfLengthOver10() {
 
-		assertThatCode(() -> new ScheduleCategoryName("이름이름이름이름이름이"))
-				.isInstanceOf(InvalidCategoryNameException.class)
+		assertThatCode(() -> new ScheduleCategoryName("이름이름이름이름이름이")).isInstanceOf(InvalidCategoryNameException.class)
 				.hasMessage(ErrorCode.INVALID_SCHEDULE_CATEGORY_NAME_LENGTH.getDescription());
 	}
 }

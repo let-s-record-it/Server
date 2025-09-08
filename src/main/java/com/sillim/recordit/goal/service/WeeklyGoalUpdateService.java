@@ -27,57 +27,36 @@ public class WeeklyGoalUpdateService {
 	private final WeeklyGoalRepository weeklyGoalRepository;
 	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
 
-	public Long addWeeklyGoal(
-			final WeeklyGoalUpdateRequest request, final Long memberId, final Long calendarId) {
+	public Long addWeeklyGoal(final WeeklyGoalUpdateRequest request, final Long memberId, final Long calendarId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		validateExistsCalendarMember(calendarId, memberId);
 
-		ScheduleCategory category =
-				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+		ScheduleCategory category = scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		if (request.relatedMonthlyGoalId() == null) {
 			return weeklyGoalRepository.save(request.toEntity(category, calendar)).getId();
 		}
-		MonthlyGoal relatedMonthlyGoal =
-				monthlyGoalQueryService.searchByIdAndCheckAuthority(request.relatedMonthlyGoalId());
-		return weeklyGoalRepository
-				.save(request.toEntity(category, relatedMonthlyGoal, calendar))
-				.getId();
+		MonthlyGoal relatedMonthlyGoal = monthlyGoalQueryService
+				.searchByIdAndCheckAuthority(request.relatedMonthlyGoalId());
+		return weeklyGoalRepository.save(request.toEntity(category, relatedMonthlyGoal, calendar)).getId();
 	}
 
-	public void modifyWeeklyGoal(
-			final WeeklyGoalUpdateRequest request, final Long weeklyGoalId, final Long memberId) {
+	public void modifyWeeklyGoal(final WeeklyGoalUpdateRequest request, final Long weeklyGoalId, final Long memberId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
 		validateExistsCalendarMember(calendar.getId(), memberId);
 		WeeklyGoal weeklyGoal = weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);
-		ScheduleCategory category =
-				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+		ScheduleCategory category = scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 
 		if (request.relatedMonthlyGoalId() == null) {
-			weeklyGoal.modify(
-					request.title(),
-					request.description(),
-					request.week(),
-					request.startDate(),
-					request.endDate(),
-					category,
-					calendar);
+			weeklyGoal.modify(request.title(), request.description(), request.week(), request.startDate(),
+					request.endDate(), category, calendar);
 			return;
 		}
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService.searchByIdAndCheckAuthority(request.relatedMonthlyGoalId());
-		weeklyGoal.modify(
-				request.title(),
-				request.description(),
-				request.week(),
-				request.startDate(),
-				request.endDate(),
-				category,
-				monthlyGoal,
-				calendar);
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.searchByIdAndCheckAuthority(request.relatedMonthlyGoalId());
+		weeklyGoal.modify(request.title(), request.description(), request.week(), request.startDate(),
+				request.endDate(), category, monthlyGoal, calendar);
 	}
 
-	public void changeAchieveStatus(
-			final Long weeklyGoalId, final Boolean status, final Long memberId) {
+	public void changeAchieveStatus(final Long weeklyGoalId, final Boolean status, final Long memberId) {
 		WeeklyGoal weeklyGoal = weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);
 		validateExistsCalendarMember(weeklyGoal.getCalendar().getId(), memberId);
 
@@ -90,12 +69,10 @@ public class WeeklyGoalUpdateService {
 		weeklyGoal.remove();
 	}
 
-	public void linkRelatedMonthlyGoal(
-			final Long weeklyGoalId, final Long monthlyGoalId, final Long memberId) {
+	public void linkRelatedMonthlyGoal(final Long weeklyGoalId, final Long monthlyGoalId, final Long memberId) {
 		WeeklyGoal weeklyGoal = weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);
 		validateExistsCalendarMember(weeklyGoal.getCalendar().getId(), memberId);
-		MonthlyGoal monthlyGoal =
-				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
+		MonthlyGoal monthlyGoal = monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
 		weeklyGoal.linkRelatedMonthlyGoal(monthlyGoal);
 	}
 

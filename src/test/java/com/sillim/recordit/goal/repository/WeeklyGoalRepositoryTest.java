@@ -26,8 +26,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @DataJpaTest
 public class WeeklyGoalRepositoryTest {
 
-	@Autowired WeeklyGoalRepository weeklyGoalRepository;
-	@Autowired TestEntityManager em;
+	@Autowired
+	WeeklyGoalRepository weeklyGoalRepository;
+	@Autowired
+	TestEntityManager em;
 
 	long memberId = 1L;
 	private ScheduleCategory category;
@@ -36,8 +38,7 @@ public class WeeklyGoalRepositoryTest {
 
 	@BeforeEach
 	void beforeEach() {
-		calendarCategory =
-				em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
+		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
 		calendar = em.persist(CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId));
 		category = em.persist(ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar));
 	}
@@ -48,9 +49,7 @@ public class WeeklyGoalRepositoryTest {
 		// given
 		final WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		// when
-		WeeklyGoal saved =
-				weeklyGoalRepository.save(
-						WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
+		WeeklyGoal saved = weeklyGoalRepository.save(WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
 
 		// then
 		// 자동 생성 필드가 null이 아닌지 검증
@@ -58,9 +57,7 @@ public class WeeklyGoalRepositoryTest {
 		assertThat(saved.getCreatedAt()).isNotNull();
 		assertThat(saved.getModifiedAt()).isNotNull();
 
-		assertThat(saved)
-				.usingRecursiveComparison()
-				.ignoringFields("id", "member", "createdAt", "modifiedAt")
+		assertThat(saved).usingRecursiveComparison().ignoringFields("id", "member", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
 	}
 
@@ -70,40 +67,25 @@ public class WeeklyGoalRepositoryTest {
 		// given
 		final Integer expectedYear = 2024;
 		final Integer expectedMonth = 8;
-		weeklyGoalRepository.saveAll(
-				List.of(
-						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
-								2,
-								LocalDate.of(2024, 8, 4),
-								LocalDate.of(2024, 8, 10),
-								category,
-								calendar),
-						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
-								5,
-								LocalDate.of(2024, 8, 25),
-								LocalDate.of(2024, 8, 31),
-								category,
-								calendar),
-						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
-								1,
-								LocalDate.of(2024, 9, 1),
-								LocalDate.of(2024, 9, 7),
-								category,
-								calendar)));
+		weeklyGoalRepository.saveAll(List.of(
+				WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(2, LocalDate.of(2024, 8, 4),
+						LocalDate.of(2024, 8, 10), category, calendar),
+				WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(5, LocalDate.of(2024, 8, 25),
+						LocalDate.of(2024, 8, 31), category, calendar),
+				WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(1, LocalDate.of(2024, 9, 1),
+						LocalDate.of(2024, 9, 7), category, calendar)));
 		// when
-		List<WeeklyGoal> foundList =
-				weeklyGoalRepository.findWeeklyGoalInMonth(
-						expectedYear, expectedMonth, calendar.getId());
+		List<WeeklyGoal> foundList = weeklyGoalRepository.findWeeklyGoalInMonth(expectedYear, expectedMonth,
+				calendar.getId());
 		// then
 		assertThat(foundList).hasSize(2);
 		for (WeeklyGoal found : foundList) {
-			Assertions.assertAll(
-					() -> {
-						assertThat(found.getStartDate().getYear()).isEqualTo(expectedYear);
-						assertThat(found.getStartDate().getMonthValue()).isEqualTo(expectedMonth);
-						assertThat(found.getEndDate().getYear()).isEqualTo(expectedYear);
-						assertThat(found.getEndDate().getMonthValue()).isEqualTo(expectedMonth);
-					});
+			Assertions.assertAll(() -> {
+				assertThat(found.getStartDate().getYear()).isEqualTo(expectedYear);
+				assertThat(found.getStartDate().getMonthValue()).isEqualTo(expectedMonth);
+				assertThat(found.getEndDate().getYear()).isEqualTo(expectedYear);
+				assertThat(found.getEndDate().getMonthValue()).isEqualTo(expectedMonth);
+			});
 		}
 	}
 
@@ -113,32 +95,21 @@ public class WeeklyGoalRepositoryTest {
 		// given
 		final Integer expectedYear = 2024;
 		final Integer expectedMonth = 7;
-		weeklyGoalRepository.saveAll(
-				List.of(
-						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
-								5,
-								LocalDate.of(2024, 7, 28),
-								LocalDate.of(2024, 8, 3),
-								category,
-								calendar),
-						WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(
-								1,
-								LocalDate.of(2024, 9, 1),
-								LocalDate.of(2024, 9, 7),
-								category,
-								calendar)));
+		weeklyGoalRepository.saveAll(List.of(
+				WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(5, LocalDate.of(2024, 7, 28),
+						LocalDate.of(2024, 8, 3), category, calendar),
+				WeeklyGoalFixture.DEFAULT.getWithWeekAndStartDateAndEndDate(1, LocalDate.of(2024, 9, 1),
+						LocalDate.of(2024, 9, 7), category, calendar)));
 		// when
-		List<WeeklyGoal> foundList =
-				weeklyGoalRepository.findWeeklyGoalInMonth(
-						expectedYear, expectedMonth, calendar.getId());
+		List<WeeklyGoal> foundList = weeklyGoalRepository.findWeeklyGoalInMonth(expectedYear, expectedMonth,
+				calendar.getId());
 		// then
 		assertThat(foundList).hasSize(1);
 		for (WeeklyGoal found : foundList) {
-			Assertions.assertAll(
-					() -> {
-						assertThat(found.getStartDate().getYear()).isEqualTo(expectedYear);
-						assertThat(found.getStartDate().getMonthValue()).isEqualTo(expectedMonth);
-					});
+			Assertions.assertAll(() -> {
+				assertThat(found.getStartDate().getYear()).isEqualTo(expectedYear);
+				assertThat(found.getStartDate().getMonthValue()).isEqualTo(expectedMonth);
+			});
 		}
 	}
 
@@ -146,16 +117,12 @@ public class WeeklyGoalRepositoryTest {
 	@DisplayName("id에 해당하는 주 목표 레코드를 조회한다.")
 	void findWeeklyGoalByIdTest() {
 		WeeklyGoal expected = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		WeeklyGoal saved =
-				weeklyGoalRepository.save(
-						WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
+		WeeklyGoal saved = weeklyGoalRepository.save(WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
 
 		Optional<WeeklyGoal> found = weeklyGoalRepository.findWeeklyGoalById(saved.getId());
 
 		assertThat(found).isNotEmpty();
-		assertThat(found.get())
-				.usingRecursiveComparison()
-				.ignoringFields("id", "member", "createdAt", "modifiedAt")
+		assertThat(found.get()).usingRecursiveComparison().ignoringFields("id", "member", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
 	}
 }

@@ -32,45 +32,27 @@ public class FeedCommandService {
 	public Long addFeed(FeedAddRequest request, List<MultipartFile> images, Long memberId) {
 		Long feedId = feedRepository.save(request.toFeed(memberId)).getId();
 
-		messagePublisher.send(
-				new Message<>(
-						MessageType.IMAGES.name(),
-						images.stream()
-								.map(
-										image -> {
-											try {
-												return new FeedImageMessage(
-														feedId,
-														generateImageName(image),
-														image.getContentType(),
-														image.getBytes());
-											} catch (IOException e) {
-												throw new RuntimeException(e);
-											}
-										}),
-						MessageType.IMAGES));
+		messagePublisher.send(new Message<>(MessageType.IMAGES.name(), images.stream().map(image -> {
+			try {
+				return new FeedImageMessage(feedId, generateImageName(image), image.getContentType(), image.getBytes());
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}), MessageType.IMAGES));
 		return feedId;
 	}
 
-	public void modifyFeed(
-			FeedModifyRequest request, List<MultipartFile> newImages, Long feedId, Long memberId)
+	public void modifyFeed(FeedModifyRequest request, List<MultipartFile> newImages, Long feedId, Long memberId)
 			throws IOException {
-		Feed feed =
-				feedRepository
-						.findById(feedId)
-						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
+		Feed feed = feedRepository.findById(feedId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
 		feed.validateAuthenticatedUser(memberId);
-		feed.modify(
-				request.title(),
-				request.content(),
-				request.existingImageUrls(),
+		feed.modify(request.title(), request.content(), request.existingImageUrls(),
 				imageUploadService.uploadImages(newImages));
 	}
 
 	public void removeFeed(Long feedId) {
-		feedRepository
-				.findById(feedId)
-				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND))
+		feedRepository.findById(feedId).orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND))
 				.delete();
 	}
 

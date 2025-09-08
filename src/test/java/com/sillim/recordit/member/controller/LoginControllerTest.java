@@ -25,30 +25,25 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(LoginController.class)
 class LoginControllerTest extends RestDocsTest {
 
-	@MockBean LoginService loginService;
+	@MockBean
+	LoginService loginService;
 
 	@Test
 	@DisplayName("인가 받은 토큰으로 로그인을 한다.")
 	void loginWithToken() throws Exception {
 		String accessToken = "accessToken";
 		String refreshToken = "refreshToken";
-		LoginRequest loginRequest =
-				new LoginRequest(
-						"idToken", accessToken, OAuthProvider.KAKAO, "id", "model", "token");
+		LoginRequest loginRequest = new LoginRequest("idToken", accessToken, OAuthProvider.KAKAO, "id", "model",
+				"token");
 		OAuthTokenResponse token = new OAuthTokenResponse(accessToken, refreshToken, false);
 		given(loginService.login(loginRequest)).willReturn(token);
 
-		ResultActions perform =
-				mockMvc.perform(
-						post("/api/v1/login")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(loginRequest)));
+		ResultActions perform = mockMvc
+				.perform(post("/api/v1/login").contentType(MediaType.APPLICATION_JSON).content(toJson(loginRequest)));
 
-		perform.andExpect(status().isOk())
-				.andExpect(jsonPath("$.accessToken").value(accessToken))
+		perform.andExpect(status().isOk()).andExpect(jsonPath("$.accessToken").value(accessToken))
 				.andExpect(jsonPath("$.refreshToken").value(refreshToken));
 
-		perform.andDo(print())
-				.andDo(document("login-with-token", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print()).andDo(document("login-with-token", getDocumentRequest(), getDocumentResponse()));
 	}
 }

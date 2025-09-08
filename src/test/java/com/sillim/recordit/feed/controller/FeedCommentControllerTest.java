@@ -39,8 +39,10 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(FeedCommentController.class)
 class FeedCommentControllerTest extends RestDocsTest {
 
-	@MockBean FeedCommentCommandService feedCommentCommandService;
-	@MockBean FeedCommentQueryService feedCommentQueryService;
+	@MockBean
+	FeedCommentCommandService feedCommentCommandService;
+	@MockBean
+	FeedCommentQueryService feedCommentQueryService;
 
 	@Test
 	@DisplayName("피드 댓글을 생성한다.")
@@ -48,20 +50,14 @@ class FeedCommentControllerTest extends RestDocsTest {
 		long feedId = 1L;
 		long feedCommentId = 1L;
 		FeedCommentAddRequest request = new FeedCommentAddRequest("content");
-		given(feedCommentCommandService.addFeedComment(eq(request), anyLong(), any()))
-				.willReturn(feedCommentId);
+		given(feedCommentCommandService.addFeedComment(eq(request), anyLong(), any())).willReturn(feedCommentId);
 
-		ResultActions perform =
-				mockMvc.perform(
-						post("/api/v1/feeds/{feedId}/comments", feedId)
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(request)));
+		ResultActions perform = mockMvc.perform(post("/api/v1/feeds/{feedId}/comments", feedId)
+				.contentType(MediaType.APPLICATION_JSON).content(toJson(request)));
 
-		perform.andExpect(status().isCreated())
-				.andExpect(header().string("Location", "/api/v1/feeds/1/comments/1"));
+		perform.andExpect(status().isCreated()).andExpect(header().string("Location", "/api/v1/feeds/1/comments/1"));
 
-		perform.andDo(print())
-				.andDo(document("feed-comment-add", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print()).andDo(document("feed-comment-add", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -74,19 +70,15 @@ class FeedCommentControllerTest extends RestDocsTest {
 		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
 		given(feedComment.getId()).willReturn(feedCommentId);
-		FeedCommentInListResponse response =
-				FeedCommentInListResponse.from(feedComment, member, memberId);
-		given(feedCommentQueryService.searchFeedCommentById(eq(feedCommentId), any()))
-				.willReturn(response);
+		FeedCommentInListResponse response = FeedCommentInListResponse.from(feedComment, member, memberId);
+		given(feedCommentQueryService.searchFeedCommentById(eq(feedCommentId), any())).willReturn(response);
 
-		ResultActions perform =
-				mockMvc.perform(
-						get("/api/v1/feeds/{feedId}/comments/{commentId}", feedId, feedCommentId));
+		ResultActions perform = mockMvc
+				.perform(get("/api/v1/feeds/{feedId}/comments/{commentId}", feedId, feedCommentId));
 
 		perform.andExpect(status().isOk());
 
-		perform.andDo(print())
-				.andDo(document("feed-comment-one", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print()).andDo(document("feed-comment-one", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -99,44 +91,27 @@ class FeedCommentControllerTest extends RestDocsTest {
 		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
 		given(feedComment.getId()).willReturn(feedCommentId);
-		SliceResponse<FeedCommentInListResponse> response =
-				SliceResponse.of(
-						new SliceImpl<>(
-								List.of(
-										FeedCommentInListResponse.from(
-												feedComment, member, memberId)),
-								PageRequest.of(0, 10),
-								false));
-		given(feedCommentQueryService.searchPaginatedOldCreated(any(), eq(feedId), any()))
-				.willReturn(response);
+		SliceResponse<FeedCommentInListResponse> response = SliceResponse.of(new SliceImpl<>(
+				List.of(FeedCommentInListResponse.from(feedComment, member, memberId)), PageRequest.of(0, 10), false));
+		given(feedCommentQueryService.searchPaginatedOldCreated(any(), eq(feedId), any())).willReturn(response);
 
-		ResultActions perform =
-				mockMvc.perform(
-						get("/api/v1/feeds/{feedId}/comments", feedId)
-								.queryParam("page", "0")
-								.queryParam("size", "10"));
+		ResultActions perform = mockMvc.perform(
+				get("/api/v1/feeds/{feedId}/comments", feedId).queryParam("page", "0").queryParam("size", "10"));
 
 		perform.andExpect(status().isOk());
 
-		perform.andDo(print())
-				.andDo(document("feed-comment-list", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print()).andDo(document("feed-comment-list", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
 	@DisplayName("피드 댓글을 삭제한다.")
 	void feedRemove() throws Exception {
 		long feedCommentId = 1L;
-		ResultActions perform =
-				mockMvc.perform(
-						delete("/api/v1/feeds/{feedId}/comments/{commentId}", 1L, feedCommentId));
+		ResultActions perform = mockMvc
+				.perform(delete("/api/v1/feeds/{feedId}/comments/{commentId}", 1L, feedCommentId));
 
 		perform.andExpect(status().isNoContent());
 
-		perform.andDo(print())
-				.andDo(
-						document(
-								"feed-comment-remove",
-								getDocumentRequest(),
-								getDocumentResponse()));
+		perform.andDo(print()).andDo(document("feed-comment-remove", getDocumentRequest(), getDocumentResponse()));
 	}
 }

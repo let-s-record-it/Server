@@ -24,15 +24,12 @@ public class ScheduleCategoryQueryService {
 	}
 
 	public ScheduleCategory searchScheduleCategory(Long categoryId) {
-		return scheduleCategoryRepository
-				.findById(categoryId)
-				.orElseThrow(
-						() -> new RecordNotFoundException(ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND));
+		return scheduleCategoryRepository.findById(categoryId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND));
 	}
 
 	public ScheduleCategory searchDefaultCategory(Long calendarId, Long memberId) {
 		calendarMemberService.validateCalendarMember(calendarId, memberId);
-		return scheduleCategoryRepository.findByDeletedIsFalseAndCalendarIdAndIsDefaultIsTrue(
-				calendarId);
+		return scheduleCategoryRepository.findByDeletedIsFalseAndCalendarIdAndIsDefaultIsTrue(calendarId);
 	}
 }

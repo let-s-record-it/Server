@@ -24,10 +24,8 @@ public class CalendarMemberService {
 
 	@Transactional(readOnly = true)
 	public CalendarMember searchCalendarMember(Long calendarId, Long memberId) {
-		return calendarMemberRepository
-				.findCalendarMember(calendarId, memberId)
-				.orElseThrow(
-						() -> new RecordNotFoundException(ErrorCode.CALENDAR_MEMBER_NOT_FOUND));
+		return calendarMemberRepository.findCalendarMember(calendarId, memberId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.CALENDAR_MEMBER_NOT_FOUND));
 	}
 
 	@Transactional(readOnly = true)
@@ -40,12 +38,8 @@ public class CalendarMemberService {
 	@Transactional(readOnly = true)
 	public List<CalendarMemberResponse> searchCalendarMembers(Long calendarId) {
 		return calendarMemberRepository.findCalendarMembers(calendarId).stream()
-				.map(
-						calendarMember ->
-								CalendarMemberResponse.of(
-										calendarMember,
-										memberQueryService.findByMemberId(
-												calendarMember.getMemberId())))
+				.map(calendarMember -> CalendarMemberResponse.of(calendarMember,
+						memberQueryService.findByMemberId(calendarMember.getMemberId())))
 				.toList();
 	}
 

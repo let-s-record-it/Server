@@ -24,29 +24,19 @@ public class CalendarCategoryCommandService {
 
 	public List<Long> addDefaultCategories(Long memberId) {
 		return Arrays.stream(InitialColor.values())
-				.map(
-						color ->
-								calendarCategoryRepository
-										.save(
-												new CalendarCategory(
-														color.getColorHex(),
-														color.getName(),
-														color.isDefault(),
-														memberId))
-										.getId())
+				.map(color -> calendarCategoryRepository
+						.save(new CalendarCategory(color.getColorHex(), color.getName(), color.isDefault(), memberId))
+						.getId())
 				.toList();
 	}
 
 	public Long addCategory(CalendarCategoryAddRequest request, Long memberId) {
 		return calendarCategoryRepository
-				.save(new CalendarCategory(request.colorHex(), request.name(), false, memberId))
-				.getId();
+				.save(new CalendarCategory(request.colorHex(), request.name(), false, memberId)).getId();
 	}
 
-	public void modifyCategory(
-			CalendarCategoryModifyRequest request, Long categoryId, Long memberId) {
-		CalendarCategory calendarCategory =
-				calendarCategoryQueryService.searchCalendarCategory(categoryId);
+	public void modifyCategory(CalendarCategoryModifyRequest request, Long categoryId, Long memberId) {
+		CalendarCategory calendarCategory = calendarCategoryQueryService.searchCalendarCategory(categoryId);
 		if (!calendarCategory.isOwner(memberId)) {
 			throw new InvalidRequestException(ErrorCode.INVALID_CALENDAR_CATEGORY_GET_REQUEST);
 		}
@@ -54,8 +44,7 @@ public class CalendarCategoryCommandService {
 	}
 
 	public void removeCategory(Long categoryId, Long memberId) {
-		CalendarCategory calendarCategory =
-				calendarCategoryQueryService.searchCalendarCategory(categoryId);
+		CalendarCategory calendarCategory = calendarCategoryQueryService.searchCalendarCategory(categoryId);
 		if (!calendarCategory.isOwner(memberId) || calendarCategory.isDefault()) {
 			throw new InvalidRequestException(ErrorCode.INVALID_CALENDAR_CATEGORY_GET_REQUEST);
 		}

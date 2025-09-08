@@ -28,10 +28,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FeedCommentCommandServiceTest {
 
-	@Mock FeedCommentRepository feedCommentRepository;
-	@Mock FeedRepository feedRepository;
-	@Mock MemberQueryService memberQueryService;
-	@InjectMocks FeedCommentCommandService feedCommentCommandService;
+	@Mock
+	FeedCommentRepository feedCommentRepository;
+	@Mock
+	FeedRepository feedRepository;
+	@Mock
+	MemberQueryService memberQueryService;
+	@InjectMocks
+	FeedCommentCommandService feedCommentCommandService;
 
 	@Test
 	@DisplayName("피드 댓글을 추가할 수 있다.")
@@ -47,8 +51,7 @@ class FeedCommentCommandServiceTest {
 		given(feedRepository.findById(feedId)).willReturn(Optional.of(feed));
 		given(feedCommentRepository.save(any(FeedComment.class))).willReturn(feedComment);
 
-		Long savedFeedCommentId =
-				feedCommentCommandService.addFeedComment(request, feedId, memberId);
+		Long savedFeedCommentId = feedCommentCommandService.addFeedComment(request, feedId, memberId);
 
 		assertThat(savedFeedCommentId).isEqualTo(feedCommentId);
 	}
@@ -60,8 +63,7 @@ class FeedCommentCommandServiceTest {
 		long memberId = 1L;
 		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
-		given(feedCommentRepository.findByIdWithFetch(eq(feedCommentId)))
-				.willReturn(Optional.of(feedComment));
+		given(feedCommentRepository.findByIdWithFetch(eq(feedCommentId))).willReturn(Optional.of(feedComment));
 
 		feedCommentCommandService.removeFeedComment(feedCommentId, memberId);
 

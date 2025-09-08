@@ -21,12 +21,18 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(MemberController.class)
 class MemberControllerTest extends RestDocsTest {
 
-	@MockBean MemberCommandService memberCommandService;
-	@MockBean FeedCommentQueryService feedCommentQueryService;
-	@MockBean MemberDeviceService memberDeviceService;
-	@MockBean MemberFollowService memberFollowService;
-	@MockBean MemberQueryService memberQueryService;
-	@MockBean MemberRecommender memberRecommender;
+	@MockBean
+	MemberCommandService memberCommandService;
+	@MockBean
+	FeedCommentQueryService feedCommentQueryService;
+	@MockBean
+	MemberDeviceService memberDeviceService;
+	@MockBean
+	MemberFollowService memberFollowService;
+	@MockBean
+	MemberQueryService memberQueryService;
+	@MockBean
+	MemberRecommender memberRecommender;
 
 	@Test
 	@DisplayName("자신의 정보를 조회한다.")
@@ -35,24 +41,19 @@ class MemberControllerTest extends RestDocsTest {
 
 		perform.andExpect(status().isOk());
 
-		perform.andDo(print())
-				.andDo(document("my-profile", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print()).andDo(document("my-profile", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
 	@DisplayName("프로필 정보를 수정한다.")
 	void profileModify() throws Exception {
 		ProfileModifyRequest request = new ProfileModifyRequest("name", "job");
-		ResultActions perform =
-				mockMvc.perform(
-						put("/api/v1/members/me")
-								.content(toJson(request))
-								.contentType(MediaType.APPLICATION_JSON));
+		ResultActions perform = mockMvc
+				.perform(put("/api/v1/members/me").content(toJson(request)).contentType(MediaType.APPLICATION_JSON));
 
 		perform.andExpect(status().isNoContent());
 
-		perform.andDo(print())
-				.andDo(document("profile-modify", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print()).andDo(document("profile-modify", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -62,8 +63,7 @@ class MemberControllerTest extends RestDocsTest {
 
 		perform.andExpect(status().isOk());
 
-		perform.andDo(print())
-				.andDo(document("my-feed-comments", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print()).andDo(document("my-feed-comments", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -73,7 +73,6 @@ class MemberControllerTest extends RestDocsTest {
 
 		perform.andExpect(status().isNoContent());
 
-		perform.andDo(print())
-				.andDo(document("member-withdraw", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print()).andDo(document("member-withdraw", getDocumentRequest(), getDocumentResponse()));
 	}
 }

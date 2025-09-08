@@ -20,14 +20,11 @@ public class CalendarCategoryQueryService {
 	}
 
 	public CalendarCategory searchCalendarCategory(Long categoryId) {
-		return calendarCategoryRepository
-				.findById(categoryId)
-				.orElseThrow(
-						() -> new RecordNotFoundException(ErrorCode.CALENDAR_CATEGORY_NOT_FOUND));
+		return calendarCategoryRepository.findById(categoryId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.CALENDAR_CATEGORY_NOT_FOUND));
 	}
 
 	public CalendarCategory searchDefaultCategory(Long memberId) {
-		return calendarCategoryRepository.findByDeletedIsFalseAndMemberIdAndIsDefaultIsTrue(
-				memberId);
+		return calendarCategoryRepository.findByDeletedIsFalseAndMemberIdAndIsDefaultIsTrue(memberId);
 	}
 }

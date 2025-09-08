@@ -7,7 +7,8 @@ import com.sillim.recordit.member.domain.MemberDevice;
 import java.util.List;
 
 public class CustomMemberDeviceRepositoryImpl extends QuerydslRepositorySupport
-		implements CustomMemberDeviceRepository {
+		implements
+			CustomMemberDeviceRepository {
 
 	public CustomMemberDeviceRepositoryImpl() {
 		super(MemberDevice.class);
@@ -15,20 +16,16 @@ public class CustomMemberDeviceRepositoryImpl extends QuerydslRepositorySupport
 
 	@Override
 	public List<String> findFcmTokensByMemberId(Long memberId) {
-		return getJpaQueryFactory()
-				.select(memberDevice.fcmToken)
-				.from(memberDevice)
-				//				.where(memberDevice.member.deleted.isFalse())
-				//				.where(memberDevice.eq(memberId))
+		return getJpaQueryFactory().select(memberDevice.fcmToken).from(memberDevice)
+				// .where(memberDevice.member.deleted.isFalse())
+				// .where(memberDevice.eq(memberId))
 				.fetch();
 	}
 
 	@Override
 	public void updateFcmToken(String deviceId, String fcmToken, Long memberId) {
-		update(memberDevice)
-				.set(memberDevice.fcmToken, fcmToken)
-				.where(memberDevice.identifier.eq(deviceId))
-				//				.where(memberDevice.member.id.eq(memberId))
+		update(memberDevice).set(memberDevice.fcmToken, fcmToken).where(memberDevice.identifier.eq(deviceId))
+				// .where(memberDevice.member.id.eq(memberId))
 				.execute();
 	}
 }

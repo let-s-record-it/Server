@@ -40,33 +40,25 @@ public class MemberController {
 	}
 
 	@GetMapping("/me/comments")
-	public ResponseEntity<SliceResponse<FeedCommentInListResponse>> myCommentList(
-			Pageable pageable, @CurrentMember Member member) {
-		return ResponseEntity.ok(
-				feedCommentQueryService.searchByMemberIdOldCreated(pageable, member.getId()));
+	public ResponseEntity<SliceResponse<FeedCommentInListResponse>> myCommentList(Pageable pageable,
+			@CurrentMember Member member) {
+		return ResponseEntity.ok(feedCommentQueryService.searchByMemberIdOldCreated(pageable, member.getId()));
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<List<MemberListResponse>> searchMemberList(
-			@RequestParam String personalId) {
+	public ResponseEntity<List<MemberListResponse>> searchMemberList(@RequestParam String personalId) {
 		return ResponseEntity.ok(
-				memberQueryService.searchByPersonalIdPrefix(personalId).stream()
-						.map(MemberListResponse::of)
-						.toList());
+				memberQueryService.searchByPersonalIdPrefix(personalId).stream().map(MemberListResponse::of).toList());
 	}
 
 	@GetMapping("/{memberId}")
-	public ResponseEntity<ProfileResponse> profileDetails(
-			@PathVariable Long memberId, @CurrentMember Member member) {
-		return ResponseEntity.ok(
-				memberQueryService.searchProfileByMemberId(memberId, member.getId()));
+	public ResponseEntity<ProfileResponse> profileDetails(@PathVariable Long memberId, @CurrentMember Member member) {
+		return ResponseEntity.ok(memberQueryService.searchProfileByMemberId(memberId, member.getId()));
 	}
 
 	@GetMapping("/me/recommends/members")
-	public ResponseEntity<List<FollowRecommendResponse>> recommendMemberList(
-			@CurrentMember Member member) {
-		List<FollowRecommendResponse> body =
-				memberRecommender.recommendFollows(member.getPersonalId());
+	public ResponseEntity<List<FollowRecommendResponse>> recommendMemberList(@CurrentMember Member member) {
+		List<FollowRecommendResponse> body = memberRecommender.recommendFollows(member.getPersonalId());
 		body.forEach(m -> log.info("result: {}", m.personalId()));
 		return ResponseEntity.ok(body);
 	}
@@ -79,32 +71,30 @@ public class MemberController {
 	}
 
 	@DeleteMapping("/{memberId}/unfollow")
-	public ResponseEntity<Void> unfollow(
-			@PathVariable Long memberId, @CurrentMember Member member) {
+	public ResponseEntity<Void> unfollow(@PathVariable Long memberId, @CurrentMember Member member) {
 		memberFollowService.unfollow(member.getId(), memberId);
 
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/me")
-	public ResponseEntity<Void> profileModify(
-			@CurrentMember Member member, @RequestBody @Valid ProfileModifyRequest request) {
+	public ResponseEntity<Void> profileModify(@CurrentMember Member member,
+			@RequestBody @Valid ProfileModifyRequest request) {
 		memberCommandService.modifyMemberInfo(request, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/me/image")
-	public ResponseEntity<Void> profileImageModify(
-			@RequestPart MultipartFile newImage, @CurrentMember Member member) throws IOException {
+	public ResponseEntity<Void> profileImageModify(@RequestPart MultipartFile newImage, @CurrentMember Member member)
+			throws IOException {
 		memberCommandService.modifyMemberProfileImage(newImage, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/me/fcmToken")
-	public ResponseEntity<Void> fcmTokenModify(
-			@RequestBody TokenUpdateRequest request, @CurrentMember Member member) {
+	public ResponseEntity<Void> fcmTokenModify(@RequestBody TokenUpdateRequest request, @CurrentMember Member member) {
 		memberDeviceService.updateFcmToken(request.deviceId(), request.fcmToken(), member.getId());
 
 		return ResponseEntity.noContent().build();

@@ -34,59 +34,47 @@ public class MonthlyGoalController {
 	private final MonthlyGoalQueryService monthlyGoalQueryService;
 
 	@PostMapping
-	public ResponseEntity<Long> monthlyGoalAdd(
-			@Validated @RequestBody final MonthlyGoalUpdateRequest request,
-			@PathVariable final Long calendarId,
-			@CurrentMember final Member member) {
+	public ResponseEntity<Long> monthlyGoalAdd(@Validated @RequestBody final MonthlyGoalUpdateRequest request,
+			@PathVariable final Long calendarId, @CurrentMember final Member member) {
 
 		Long monthlyGoalId = monthlyGoalUpdateService.add(request, member.getId(), calendarId);
 		return ResponseEntity.created(URI.create("/api/v1/monthly-goals/" + monthlyGoalId)).build();
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Void> monthlyGoalModify(
-			@Validated @RequestBody final MonthlyGoalUpdateRequest request,
-			@PathVariable final Long id,
-			@CurrentMember final Member member) {
+	public ResponseEntity<Void> monthlyGoalModify(@Validated @RequestBody final MonthlyGoalUpdateRequest request,
+			@PathVariable final Long id, @CurrentMember final Member member) {
 
 		monthlyGoalUpdateService.modify(request, id, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping
-	public ResponseEntity<List<MonthlyGoalListResponse>> monthlyGoalList(
-			@RequestParam @ValidYear final Integer year,
-			@RequestParam @ValidMonth final Integer month,
-			@PathVariable final Long calendarId,
+	public ResponseEntity<List<MonthlyGoalListResponse>> monthlyGoalList(@RequestParam @ValidYear final Integer year,
+			@RequestParam @ValidMonth final Integer month, @PathVariable final Long calendarId,
 			@CurrentMember final Member member) {
-		return ResponseEntity.ok(
-				monthlyGoalQueryService.searchAllByDate(year, month, calendarId).stream()
-						.map(MonthlyGoalListResponse::from)
-						.toList());
+		return ResponseEntity.ok(monthlyGoalQueryService.searchAllByDate(year, month, calendarId).stream()
+				.map(MonthlyGoalListResponse::from).toList());
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<MonthlyGoalDetailsResponse> monthlyGoalDetails(
-			@PathVariable final Long id, @CurrentMember final Member member) {
+	public ResponseEntity<MonthlyGoalDetailsResponse> monthlyGoalDetails(@PathVariable final Long id,
+			@CurrentMember final Member member) {
 
-		return ResponseEntity.ok(
-				MonthlyGoalDetailsResponse.from(
-						monthlyGoalQueryService.searchByIdAndCheckAuthority(id)));
+		return ResponseEntity
+				.ok(MonthlyGoalDetailsResponse.from(monthlyGoalQueryService.searchByIdAndCheckAuthority(id)));
 	}
 
 	@PatchMapping("/{id}/achieve")
-	public ResponseEntity<Void> monthlyGoalChangeAchieveStatus(
-			@PathVariable final Long id,
-			@RequestParam final Boolean status,
-			@CurrentMember final Member member) {
+	public ResponseEntity<Void> monthlyGoalChangeAchieveStatus(@PathVariable final Long id,
+			@RequestParam final Boolean status, @CurrentMember final Member member) {
 
 		monthlyGoalUpdateService.changeAchieveStatus(id, status, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> monthlyGoalRemove(
-			@PathVariable final Long id, @CurrentMember final Member member) {
+	public ResponseEntity<Void> monthlyGoalRemove(@PathVariable final Long id, @CurrentMember final Member member) {
 
 		monthlyGoalUpdateService.remove(id, member.getId());
 		return ResponseEntity.noContent().build();

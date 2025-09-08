@@ -16,26 +16,23 @@ class FeedContentTest {
 	void validIfFeedContentLengthIs5000OrUnder() {
 		FeedContent feedContent = new FeedContent("123");
 
-		assertAll(
-				() -> {
-					assertThat(feedContent).isEqualTo(new FeedContent("123"));
-					assertThat(feedContent.getContent()).isEqualTo("123");
-				});
+		assertAll(() -> {
+			assertThat(feedContent).isEqualTo(new FeedContent("123"));
+			assertThat(feedContent.getContent()).isEqualTo("123");
+		});
 	}
 
 	@Test
 	@DisplayName("내용이 null이면 InvalidFeedContentException이 발생한다.")
 	void throwInvalidFeedContentExceptionIfFeedContentIsNull() {
-		assertThatCode(() -> new FeedContent(null))
-				.isInstanceOf(InvalidFeedContentException.class)
+		assertThatCode(() -> new FeedContent(null)).isInstanceOf(InvalidFeedContentException.class)
 				.hasMessage(ErrorCode.NULL_FEED_CONTENT.getDescription());
 	}
 
 	@Test
 	@DisplayName("설명이 5000자 초과이면 InvalidFeedContentException이 발생한다.")
 	void throwInvalidFeedContentExceptionIfFeedContentLengthIs5000Over() {
-		assertThatCode(() -> new FeedContent("1234567890".repeat(501)))
-				.isInstanceOf(InvalidFeedContentException.class)
+		assertThatCode(() -> new FeedContent("1234567890".repeat(501))).isInstanceOf(InvalidFeedContentException.class)
 				.hasMessage(ErrorCode.INVALID_FEED_CONTENT_LENGTH.getDescription());
 	}
 }

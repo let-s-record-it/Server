@@ -20,31 +20,27 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class MemberDeviceServiceTest {
 
-	@Mock MemberDeviceRepository memberDeviceRepository;
-	@InjectMocks MemberDeviceService memberDeviceService;
+	@Mock
+	MemberDeviceRepository memberDeviceRepository;
+	@InjectMocks
+	MemberDeviceService memberDeviceService;
 
 	@Test
 	@DisplayName("디바이스가 존재하지 않으면 추가할 수 있다.")
 	void addedMemberDeviceIfNotExists() {
-		given(memberDeviceRepository.existsByIdentifierAndMemberId(eq("id"), any()))
-				.willReturn(false);
+		given(memberDeviceRepository.existsByIdentifierAndMemberId(eq("id"), any())).willReturn(false);
 
-		memberDeviceService.addMemberDeviceIfNotExists(
-				"id", "model", "token", MemberFixture.DEFAULT.getMember());
+		memberDeviceService.addMemberDeviceIfNotExists("id", "model", "token", MemberFixture.DEFAULT.getMember());
 
-		then(memberDeviceRepository)
-				.should(times(1))
-				.existsByIdentifierAndMemberId(eq("id"), any());
+		then(memberDeviceRepository).should(times(1)).existsByIdentifierAndMemberId(eq("id"), any());
 	}
 
 	@Test
 	@DisplayName("디바이스가 존재하면 추가되지 않는다.")
 	void notAddedMemberDeviceIfExists() {
-		given(memberDeviceRepository.existsByIdentifierAndMemberId(eq("id"), any()))
-				.willReturn(true);
+		given(memberDeviceRepository.existsByIdentifierAndMemberId(eq("id"), any())).willReturn(true);
 
-		memberDeviceService.addMemberDeviceIfNotExists(
-				"id", "model", "token", MemberFixture.DEFAULT.getMember());
+		memberDeviceService.addMemberDeviceIfNotExists("id", "model", "token", MemberFixture.DEFAULT.getMember());
 
 		then(memberDeviceRepository).should(times(0)).save(any());
 	}

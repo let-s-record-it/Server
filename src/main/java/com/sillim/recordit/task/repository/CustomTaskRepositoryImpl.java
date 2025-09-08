@@ -14,8 +14,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
-		implements CustomTaskRepository {
+public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport implements CustomTaskRepository {
 
 	public CustomTaskRepositoryImpl() {
 		super(Task.class);
@@ -23,32 +22,18 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 
 	@Override
 	public Optional<Task> findByIdAndCalendarId(Long taskId, Long calendarId) {
-		return Optional.ofNullable(
-				selectFrom(task)
-						.leftJoin(task.calendar, calendar)
-						.fetchJoin()
-						.leftJoin(task.taskGroup, taskGroup)
-						.fetchJoin()
-						.leftJoin(taskGroup.monthlyGoal, monthlyGoal)
-						.fetchJoin()
-						.leftJoin(taskGroup.weeklyGoal, weeklyGoal)
-						.fetchJoin()
-						.leftJoin(task.category)
-						.fetchJoin()
-						.where(task.deleted.isFalse())
-						.where(task.id.eq(taskId).and(task.calendar.id.eq(calendarId)))
-						.fetchOne());
+		return Optional.ofNullable(selectFrom(task).leftJoin(task.calendar, calendar).fetchJoin()
+				.leftJoin(task.taskGroup, taskGroup).fetchJoin().leftJoin(taskGroup.monthlyGoal, monthlyGoal)
+				.fetchJoin().leftJoin(taskGroup.weeklyGoal, weeklyGoal).fetchJoin().leftJoin(task.category).fetchJoin()
+				.where(task.deleted.isFalse()).where(task.id.eq(taskId).and(task.calendar.id.eq(calendarId)))
+				.fetchOne());
 	}
 
 	@Override
 	public List<Task> findTasksInMonth(Long calendarId, Integer year, Integer month) {
-		return selectFrom(task)
-				.leftJoin(task.category)
-				.fetchJoin()
-				.where(task.deleted.isFalse())
+		return selectFrom(task).leftJoin(task.category).fetchJoin().where(task.deleted.isFalse())
 				.where(task.calendar.id.eq(calendarId))
-				.where(task.date.year().eq(year).and(task.date.month().eq(month)))
-				.fetch();
+				.where(task.date.year().eq(year).and(task.date.month().eq(month))).fetch();
 	}
 
 	@Override
@@ -63,9 +48,7 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 	public void deleteAllByTaskGroupIdAndDateAfterOrEqual(Long taskGroupId, LocalDate date) {
 
 		getEntityManager().flush();
-		update(task)
-				.set(task.deleted, true)
-				.where(task.taskGroup.id.eq(taskGroupId).and(task.date.goe(date)))
+		update(task).set(task.deleted, true).where(task.taskGroup.id.eq(taskGroupId).and(task.date.goe(date)))
 				.execute();
 		getEntityManager().clear();
 	}

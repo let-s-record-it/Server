@@ -14,8 +14,8 @@ import org.springframework.security.core.AuthenticationException;
 
 class AuthenticationExceptionHandlerTest {
 
-	AuthenticationExceptionHandler authenticationExceptionHandler =
-			new AuthenticationExceptionHandler(new ObjectMapper());
+	AuthenticationExceptionHandler authenticationExceptionHandler = new AuthenticationExceptionHandler(
+			new ObjectMapper());
 
 	@Test
 	@DisplayName("ApplicationException을 response를 통해 출력한다.")
@@ -26,8 +26,7 @@ class AuthenticationExceptionHandlerTest {
 		authenticationExceptionHandler.handle(httpServletResponse, exception);
 
 		assertThat(httpServletResponse.getStatus()).isEqualTo(401);
-		assertThat(httpServletResponse.getContentType())
-				.isEqualTo("application/json;charset=UTF-8");
+		assertThat(httpServletResponse.getContentType()).isEqualTo("application/json;charset=UTF-8");
 		assertThat(httpServletResponse.getCharacterEncoding()).isEqualTo("UTF-8");
 	}
 
@@ -35,14 +34,12 @@ class AuthenticationExceptionHandlerTest {
 	@DisplayName("AuthenticationException을 response를 통해 출력한다.")
 	void responseAuthenticationException() throws IOException {
 		MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
-		AuthenticationException exception =
-				new InsufficientAuthenticationException("인증이 필요한 URI입니다.");
+		AuthenticationException exception = new InsufficientAuthenticationException("인증이 필요한 URI입니다.");
 
 		authenticationExceptionHandler.handle(httpServletResponse, exception);
 
 		assertThat(httpServletResponse.getStatus()).isEqualTo(401);
-		assertThat(httpServletResponse.getContentType())
-				.isEqualTo("application/json;charset=UTF-8");
+		assertThat(httpServletResponse.getContentType()).isEqualTo("application/json;charset=UTF-8");
 		assertThat(httpServletResponse.getCharacterEncoding()).isEqualTo("UTF-8");
 	}
 
@@ -50,8 +47,7 @@ class AuthenticationExceptionHandlerTest {
 	@DisplayName("ApplicationException 처리 시 response가 commit되어 있다면 출력되지 않는다.")
 	void notWriteIfApplicationExceptionResponseCommitted() throws IOException {
 		MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
-		AuthenticationException exception =
-				new InsufficientAuthenticationException("인증이 필요한 URI입니다.");
+		AuthenticationException exception = new InsufficientAuthenticationException("인증이 필요한 URI입니다.");
 		httpServletResponse.setCommitted(true);
 
 		authenticationExceptionHandler.handle(httpServletResponse, exception);

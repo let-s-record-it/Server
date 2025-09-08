@@ -27,11 +27,15 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 class MultipleFeedLikeServiceTest {
 
-	@MockBean MemberRepository memberRepository;
-	@Autowired FeedRepository feedRepository;
+	@MockBean
+	MemberRepository memberRepository;
+	@Autowired
+	FeedRepository feedRepository;
 
-	@Autowired FeedLikeService feedLikeService;
-	@Autowired FeedQueryService feedQueryService;
+	@Autowired
+	FeedLikeService feedLikeService;
+	@Autowired
+	FeedQueryService feedQueryService;
 
 	@Test
 	@DisplayName("좋아요를 빠르게 여러 번 눌러도 한 번만 적용된다.")
@@ -49,19 +53,16 @@ class MultipleFeedLikeServiceTest {
 		for (int i = 0; i < threadCount; i++) {
 			long feedId = feed.getId();
 			String key = "like:" + feedId + ":" + memberId;
-			executorService.submit(
-					() -> {
-						try {
-							RedisLockUtil.acquireAndRunLock(
-									key,
-									() -> {
-										feedLikeService.feedLike(feedId, memberId);
-										return true;
-									});
-						} finally {
-							latch.countDown();
-						}
+			executorService.submit(() -> {
+				try {
+					RedisLockUtil.acquireAndRunLock(key, () -> {
+						feedLikeService.feedLike(feedId, memberId);
+						return true;
 					});
+				} finally {
+					latch.countDown();
+				}
+			});
 		}
 
 		latch.await();
@@ -86,14 +87,13 @@ class MultipleFeedLikeServiceTest {
 		for (int i = 0; i < threadCount; i++) {
 			long feedId = feed.getId();
 			long memberId = i + 1L;
-			executorService.submit(
-					() -> {
-						try {
-							feedLikeService.feedLike(feedId, memberId);
-						} finally {
-							latch.countDown();
-						}
-					});
+			executorService.submit(() -> {
+				try {
+					feedLikeService.feedLike(feedId, memberId);
+				} finally {
+					latch.countDown();
+				}
+			});
 		}
 
 		latch.await();

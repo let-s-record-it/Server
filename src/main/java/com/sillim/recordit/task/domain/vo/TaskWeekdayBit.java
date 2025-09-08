@@ -19,7 +19,8 @@ public final class TaskWeekdayBit {
 	private static final int MIN_WEEKDAY_BIT = 0;
 	private static final int MAX_WEEKDAY_BIT = 127;
 
-	@Column private final Integer weekdayBit;
+	@Column
+	private final Integer weekdayBit;
 
 	public TaskWeekdayBit(final Integer weekdayBit) {
 		validate(weekdayBit);

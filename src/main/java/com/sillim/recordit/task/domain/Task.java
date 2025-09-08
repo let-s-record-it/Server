@@ -33,9 +33,11 @@ public class Task extends BaseTime {
 	@Column(name = "task_id", nullable = false)
 	private Long id;
 
-	@Embedded private TaskTitle title;
+	@Embedded
+	private TaskTitle title;
 
-	@Embedded private TaskDescription description;
+	@Embedded
+	private TaskDescription description;
 
 	@Column(nullable = false)
 	private LocalDate date;
@@ -60,13 +62,8 @@ public class Task extends BaseTime {
 	@ColumnDefault("false")
 	private boolean deleted = false;
 
-	public Task(
-			TaskTitle title,
-			TaskDescription description,
-			LocalDate date,
-			ScheduleCategory category,
-			Calendar calendar,
-			TaskGroup taskGroup) {
+	public Task(TaskTitle title, TaskDescription description, LocalDate date, ScheduleCategory category,
+			Calendar calendar, TaskGroup taskGroup) {
 		this.title = title;
 		this.description = description;
 		this.date = date;
@@ -76,28 +73,12 @@ public class Task extends BaseTime {
 	}
 
 	@Builder
-	public Task(
-			String title,
-			String description,
-			LocalDate date,
-			ScheduleCategory category,
-			Calendar calendar,
+	public Task(String title, String description, LocalDate date, ScheduleCategory category, Calendar calendar,
 			TaskGroup taskGroup) {
-		this(
-				new TaskTitle(title),
-				new TaskDescription(description),
-				date,
-				category,
-				calendar,
-				taskGroup);
+		this(new TaskTitle(title), new TaskDescription(description), date, category, calendar, taskGroup);
 	}
 
-	public void modify(
-			String title,
-			String description,
-			LocalDate date,
-			ScheduleCategory category,
-			Calendar calendar,
+	public void modify(String title, String description, LocalDate date, ScheduleCategory category, Calendar calendar,
 			TaskGroup taskGroup) {
 		this.title = new TaskTitle(title);
 		this.description = new TaskDescription(description);

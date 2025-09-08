@@ -27,8 +27,7 @@ public class GlobalControllerAdvice {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ResponseEntity<ErrorResponse> constraintViolation(SQLException exception) {
 		LoggingUtils.exceptionLog(HttpStatus.BAD_REQUEST, exception);
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(ErrorResponse.from(ErrorCode.INVALID_REQUEST));
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.from(ErrorCode.INVALID_REQUEST));
 	}
 
 	@ExceptionHandler(NoHandlerFoundException.class)
@@ -36,90 +35,76 @@ public class GlobalControllerAdvice {
 	public ResponseEntity<ErrorResponse> noHandlerFound(NoHandlerFoundException exception) {
 
 		LoggingUtils.exceptionLog(HttpStatus.NOT_FOUND, exception);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-				.body(ErrorResponse.from(ErrorCode.REQUEST_NOT_FOUND));
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(ErrorCode.REQUEST_NOT_FOUND));
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-	public ResponseEntity<Void> httpMessageNotReadable(
-			HandlerMethod handlerMethod, HttpMessageNotReadableException exception) {
+	public ResponseEntity<Void> httpMessageNotReadable(HandlerMethod handlerMethod,
+			HttpMessageNotReadableException exception) {
 
-		LoggingUtils.exceptionLog(
-				MethodSignature.extract(handlerMethod), HttpStatus.METHOD_NOT_ALLOWED, exception);
+		LoggingUtils.exceptionLog(MethodSignature.extract(handlerMethod), HttpStatus.METHOD_NOT_ALLOWED, exception);
 
 		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ErrorResponse> methodArgumentNotValid(
-			HandlerMethod handlerMethod, MethodArgumentNotValidException exception) {
+	public ResponseEntity<ErrorResponse> methodArgumentNotValid(HandlerMethod handlerMethod,
+			MethodArgumentNotValidException exception) {
 
 		String message = LoggingUtils.methodArgumentNotValidMessage(exception);
-		LoggingUtils.exceptionLog(
-				MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
+		LoggingUtils.exceptionLog(MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
 
-		return ResponseEntity.badRequest()
-				.body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
+		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
 	}
 
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ErrorResponse> methodArgumentTypeMismatch(
-			HandlerMethod handlerMethod, MethodArgumentTypeMismatchException exception) {
+	public ResponseEntity<ErrorResponse> methodArgumentTypeMismatch(HandlerMethod handlerMethod,
+			MethodArgumentTypeMismatchException exception) {
 
 		String message = LoggingUtils.methodArgumentTypeMismatchMessage(exception);
-		LoggingUtils.exceptionLog(
-				MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
+		LoggingUtils.exceptionLog(MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
 
-		return ResponseEntity.badRequest()
-				.body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
+		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
 	}
 
 	@ExceptionHandler(MissingServletRequestParameterException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ErrorResponse> missingRequestParameter(
-			HandlerMethod handlerMethod, MissingServletRequestParameterException exception) {
+	public ResponseEntity<ErrorResponse> missingRequestParameter(HandlerMethod handlerMethod,
+			MissingServletRequestParameterException exception) {
 
 		String message = LoggingUtils.missingRequestParameterMessage(exception);
-		LoggingUtils.exceptionLog(
-				MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
+		LoggingUtils.exceptionLog(MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
 
-		return ResponseEntity.badRequest()
-				.body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
+		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
 	}
 
 	@ExceptionHandler(HandlerMethodValidationException.class)
-	public ResponseEntity<ErrorResponse> handlerMethodValidation(
-			HandlerMethod handlerMethod, HandlerMethodValidationException exception) {
+	public ResponseEntity<ErrorResponse> handlerMethodValidation(HandlerMethod handlerMethod,
+			HandlerMethodValidationException exception) {
 
 		String message = LoggingUtils.handlerMethodValidationMessage(exception);
-		LoggingUtils.exceptionLog(
-				MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
-		return ResponseEntity.badRequest()
-				.body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
+		LoggingUtils.exceptionLog(MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception, message);
+		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT, message));
 	}
 
 	@ExceptionHandler(RecordNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ResponseEntity<ErrorResponse> entityNotFound(
-			HandlerMethod handlerMethod, RecordNotFoundException exception) {
+	public ResponseEntity<ErrorResponse> entityNotFound(HandlerMethod handlerMethod,
+			RecordNotFoundException exception) {
 
-		LoggingUtils.exceptionLog(
-				MethodSignature.extract(handlerMethod), HttpStatus.NOT_FOUND, exception);
+		LoggingUtils.exceptionLog(MethodSignature.extract(handlerMethod), HttpStatus.NOT_FOUND, exception);
 
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-				.body(ErrorResponse.from(exception.getErrorCode()));
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(exception.getErrorCode()));
 	}
 
 	@ExceptionHandler(ApplicationException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ErrorResponse> entityNotFound(
-			HandlerMethod handlerMethod, ApplicationException exception) {
+	public ResponseEntity<ErrorResponse> entityNotFound(HandlerMethod handlerMethod, ApplicationException exception) {
 
-		LoggingUtils.exceptionLog(
-				MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception);
+		LoggingUtils.exceptionLog(MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception);
 
 		return ResponseEntity.badRequest().body(ErrorResponse.from(exception.getErrorCode()));
 	}

@@ -41,214 +41,128 @@ public class ScheduleCommandService {
 	private final PushAlarmService pushAlarmService;
 	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
 
-	public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId)
-			throws SchedulerException {
-		ScheduleCategory scheduleCategory =
-				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+	public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId) throws SchedulerException {
+		ScheduleCategory scheduleCategory = scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		ScheduleGroup scheduleGroup = scheduleGroupService.newScheduleGroup(request.isRepeated());
 		List<Schedule> schedules;
 
 		if (request.isRepeated()) {
 			Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
-			schedules =
-					addRepeatingSchedule(
-							temporalAmount ->
-									scheduleRepository.save(
-											request.toSchedule(
-													temporalAmount,
-													scheduleCategory,
-													calendar,
-													scheduleGroup)),
-							request.repetition(),
-							scheduleGroup,
-							TO_SKIP_ADD_TEMPORAL);
+			schedules = addRepeatingSchedule(
+					temporalAmount -> scheduleRepository
+							.save(request.toSchedule(temporalAmount, scheduleCategory, calendar, scheduleGroup)),
+					request.repetition(), scheduleGroup, TO_SKIP_ADD_TEMPORAL);
 
 		} else {
-			schedules =
-					List.of(
-							scheduleRepository.save(
-									request.toSchedule(
-											scheduleCategory,
-											calendarQueryService.searchByCalendarId(calendarId),
-											scheduleGroup)));
+			schedules = List.of(scheduleRepository.save(request.toSchedule(scheduleCategory,
+					calendarQueryService.searchByCalendarId(calendarId), scheduleGroup)));
 		}
 
 		Schedule standSchedule = schedules.get(0);
-		pushAlarmService.reservePushAlarmJobs(
-				standSchedule.getCalendar().getMemberId(),
-				SCHEDULE_GROUP_PREFIX
-						+ standSchedule.getCalendar().getMemberId()
-						+ "/"
-						+ scheduleGroup.getId(),
+		pushAlarmService.reservePushAlarmJobs(standSchedule.getCalendar().getMemberId(),
+				SCHEDULE_GROUP_PREFIX + standSchedule.getCalendar().getMemberId() + "/" + scheduleGroup.getId(),
 				standSchedule.getTitle(),
-				standSchedule
-						.getStartDateTime()
-						.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)")),
+				standSchedule.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)")),
 				Map.of("scheduleId", standSchedule.getId()),
-				standSchedule.getScheduleAlarms().stream()
-						.map(ScheduleAlarm::getAlarmTime)
-						.toList());
+				standSchedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList());
 
 		return schedules;
 	}
 
 	public void modifySchedule(ScheduleModifyRequest request, Long scheduleId, Long memberId)
 			throws SchedulerException {
-		Schedule schedule =
-				scheduleRepository
-						.findByScheduleId(scheduleId)
-						.orElseThrow(
-								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		Schedule schedule = scheduleRepository.findByScheduleId(scheduleId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		schedule.validateAuthenticatedMember(memberId);
 		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
 		calendar.validateAuthenticatedMember(memberId);
-		ScheduleCategory category =
-				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
-		ScheduleGroup newScheduleGroup =
-				scheduleGroupService.newScheduleGroup(request.isRepeated());
+		ScheduleCategory category = scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+		ScheduleGroup newScheduleGroup = scheduleGroupService.newScheduleGroup(request.isRepeated());
 
-		pushAlarmService.deletePushAlarmJobs(
-				SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
-		schedule.modify(
-				request.title(),
-				request.description(),
-				request.isAllDay(),
-				request.startDateTime(),
-				request.endDateTime(),
-				request.place(),
-				request.setLocation(),
-				request.latitude(),
-				request.longitude(),
-				request.setAlarm(),
-				request.alarmTimes(),
-				category,
-				calendar,
-				newScheduleGroup);
-		pushAlarmService.reservePushAlarmJobs(
-				memberId,
-				SCHEDULE_GROUP_PREFIX + memberId + "/" + newScheduleGroup.getId(),
-				schedule.getTitle(),
-				schedule.getStartDateTime()
-						.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)")),
+		pushAlarmService
+				.deletePushAlarmJobs(SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
+		schedule.modify(request.title(), request.description(), request.isAllDay(), request.startDateTime(),
+				request.endDateTime(), request.place(), request.setLocation(), request.latitude(), request.longitude(),
+				request.setAlarm(), request.alarmTimes(), category, calendar, newScheduleGroup);
+		pushAlarmService.reservePushAlarmJobs(memberId,
+				SCHEDULE_GROUP_PREFIX + memberId + "/" + newScheduleGroup.getId(), schedule.getTitle(),
+				schedule.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)")),
 				Map.of("scheduleId", schedule.getId()),
 				schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList());
 
 		if (request.isRepeated()) {
 			addRepeatingSchedule(
-					temporalAmount ->
-							scheduleRepository.save(
-									request.toSchedule(
-											temporalAmount, category, calendar, newScheduleGroup)),
-					request.repetition(),
-					newScheduleGroup,
-					TO_SKIP_MODIFY_TEMPORAL);
+					temporalAmount -> scheduleRepository
+							.save(request.toSchedule(temporalAmount, category, calendar, newScheduleGroup)),
+					request.repetition(), newScheduleGroup, TO_SKIP_MODIFY_TEMPORAL);
 		}
 	}
 
 	public void modifyGroupSchedules(ScheduleModifyRequest request, Long scheduleId, Long memberId)
 			throws SchedulerException {
-		Schedule schedule =
-				scheduleRepository
-						.findByScheduleId(scheduleId)
-						.orElseThrow(
-								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		Schedule schedule = scheduleRepository.findByScheduleId(scheduleId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		schedule.validateAuthenticatedMember(memberId);
 		Calendar calendar = calendarQueryService.searchByCalendarId(request.calendarId());
 		calendar.validateAuthenticatedMember(memberId);
-		ScheduleCategory category =
-				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+		ScheduleCategory category = scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		ScheduleGroup scheduleGroup = schedule.getScheduleGroup();
 
-		pushAlarmService.deletePushAlarmJobs(
-				SCHEDULE_GROUP_PREFIX + memberId + "/" + scheduleGroup.getId());
+		pushAlarmService.deletePushAlarmJobs(SCHEDULE_GROUP_PREFIX + memberId + "/" + scheduleGroup.getId());
 		scheduleRepository.findGroupSchedules(scheduleGroup.getId()).forEach(Schedule::delete);
 
 		if (request.isRepeated()) {
-			repetitionPatternService
-					.updateRepetitionPattern(request.repetition(), scheduleGroup)
-					.repeatingStream()
-					.forEach(
-							temporalAmount ->
-									scheduleRepository.save(
-											request.toSchedule(
-													temporalAmount,
-													category,
-													calendar,
-													scheduleGroup)));
+			repetitionPatternService.updateRepetitionPattern(request.repetition(), scheduleGroup).repeatingStream()
+					.forEach(temporalAmount -> scheduleRepository
+							.save(request.toSchedule(temporalAmount, category, calendar, scheduleGroup)));
 		} else {
 			scheduleGroup.modifyNotRepeated();
-			scheduleRepository.save(
-					request.toSchedule(Period.ZERO, category, calendar, scheduleGroup));
+			scheduleRepository.save(request.toSchedule(Period.ZERO, category, calendar, scheduleGroup));
 		}
 
-		pushAlarmService.reservePushAlarmJobs(
-				memberId,
-				SCHEDULE_GROUP_PREFIX + memberId + "/" + scheduleGroup.getId(),
-				request.title(),
-				request.startDateTime().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)")),
-				Map.of("scheduleId", schedule.getId()),
-				request.alarmTimes());
+		pushAlarmService.reservePushAlarmJobs(memberId, SCHEDULE_GROUP_PREFIX + memberId + "/" + scheduleGroup.getId(),
+				request.title(), request.startDateTime().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)")),
+				Map.of("scheduleId", schedule.getId()), request.alarmTimes());
 	}
 
-	private List<Schedule> addRepeatingSchedule(
-			Function<TemporalAmount, Schedule> temporalToSchedule,
-			RepetitionUpdateRequest repetition,
-			ScheduleGroup scheduleGroup,
-			long toSkipTemporal) {
-		return repetitionPatternService
-				.addRepetitionPattern(repetition, scheduleGroup)
-				.repeatingStream()
-				.skip(toSkipTemporal)
-				.map(temporalToSchedule)
-				.toList();
+	private List<Schedule> addRepeatingSchedule(Function<TemporalAmount, Schedule> temporalToSchedule,
+			RepetitionUpdateRequest repetition, ScheduleGroup scheduleGroup, long toSkipTemporal) {
+		return repetitionPatternService.addRepetitionPattern(repetition, scheduleGroup).repeatingStream()
+				.skip(toSkipTemporal).map(temporalToSchedule).toList();
 	}
 
 	public void removeSchedule(Long scheduleId, Long memberId) throws SchedulerException {
-		Schedule schedule =
-				scheduleRepository
-						.findByScheduleId(scheduleId)
-						.orElseThrow(
-								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		Schedule schedule = scheduleRepository.findByScheduleId(scheduleId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		schedule.validateAuthenticatedMember(memberId);
-		pushAlarmService.deletePushAlarmJobs(
-				SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
+		pushAlarmService
+				.deletePushAlarmJobs(SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
 
 		schedule.delete();
 	}
 
 	public void removeGroupSchedules(Long scheduleId, Long memberId) throws SchedulerException {
-		Schedule schedule =
-				scheduleRepository
-						.findByScheduleId(scheduleId)
-						.orElseThrow(
-								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		Schedule schedule = scheduleRepository.findByScheduleId(scheduleId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		schedule.validateAuthenticatedMember(memberId);
-		pushAlarmService.deletePushAlarmJobs(
-				SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
+		pushAlarmService
+				.deletePushAlarmJobs(SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
 
-		scheduleRepository
-				.findGroupSchedules(schedule.getScheduleGroup().getId())
-				.forEach(Schedule::delete);
+		scheduleRepository.findGroupSchedules(schedule.getScheduleGroup().getId()).forEach(Schedule::delete);
 	}
 
 	public void removeGroupSchedulesAfterCurrent(Long scheduleId, Long memberId) {
-		Schedule schedule =
-				scheduleRepository
-						.findByScheduleId(scheduleId)
-						.orElseThrow(
-								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		Schedule schedule = scheduleRepository.findByScheduleId(scheduleId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		schedule.validateAuthenticatedMember(memberId);
 
 		scheduleRepository
-				.findGroupSchedulesAfterCurrent(
-						schedule.getScheduleGroup().getId(), schedule.getStartDateTime())
+				.findGroupSchedulesAfterCurrent(schedule.getScheduleGroup().getId(), schedule.getStartDateTime())
 				.forEach(Schedule::delete);
 	}
 
-	public void replaceScheduleCategoriesWithDefaultCategory(
-			Long categoryId, Long calendarId, Long memberId) {
-		ScheduleCategory defaultCategory =
-				scheduleCategoryQueryService.searchDefaultCategory(calendarId, memberId);
+	public void replaceScheduleCategoriesWithDefaultCategory(Long categoryId, Long calendarId, Long memberId) {
+		ScheduleCategory defaultCategory = scheduleCategoryQueryService.searchDefaultCategory(calendarId, memberId);
 		scheduleRepository.updateCategorySetDefault(defaultCategory.getId(), categoryId);
 	}
 

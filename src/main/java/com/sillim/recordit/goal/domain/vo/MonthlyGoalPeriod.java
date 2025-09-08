@@ -50,8 +50,7 @@ public class MonthlyGoalPeriod {
 
 	private boolean hasSameYearMonth(final LocalDate startDate, final LocalDate endDate) {
 
-		return (startDate.getYear() == endDate.getYear())
-				&& (startDate.getMonth() == endDate.getMonth());
+		return (startDate.getYear() == endDate.getYear()) && (startDate.getMonth() == endDate.getMonth());
 	}
 
 	/* 월 목표의 시작일은 1일이어야 한다. */
@@ -67,8 +66,7 @@ public class MonthlyGoalPeriod {
 
 		int lastDayOfMonth = YearMonth.from(endDate).lengthOfMonth();
 		if (endDate.getDayOfMonth() != lastDayOfMonth) {
-			throw new InvalidPeriodException(
-					ErrorCode.INVALID_END_DAY_OF_MONTH,
+			throw new InvalidPeriodException(ErrorCode.INVALID_END_DAY_OF_MONTH,
 					ErrorCode.INVALID_END_DAY_OF_MONTH.getFormattedDescription(lastDayOfMonth));
 		}
 	}

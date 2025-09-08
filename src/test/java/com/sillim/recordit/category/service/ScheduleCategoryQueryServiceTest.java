@@ -26,9 +26,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ScheduleCategoryQueryServiceTest {
 
-	@Mock ScheduleCategoryRepository scheduleCategoryRepository;
-	@Mock CalendarMemberService calendarMemberService;
-	@InjectMocks ScheduleCategoryQueryService scheduleCategoryQueryService;
+	@Mock
+	ScheduleCategoryRepository scheduleCategoryRepository;
+	@Mock
+	CalendarMemberService calendarMemberService;
+	@InjectMocks
+	ScheduleCategoryQueryService scheduleCategoryQueryService;
 
 	@Test
 	@DisplayName("특정 멤버의 캘린더 카테고리들을 조회할 수 있다.")
@@ -36,15 +39,13 @@ class ScheduleCategoryQueryServiceTest {
 		long calendarId = 1L;
 		long memberId = 2L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory calendarCategory =
-				CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		CalendarCategory calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 		given(scheduleCategoryRepository.findByDeletedIsFalseAndCalendarId(eq(calendarId)))
 				.willReturn(List.of(category));
 
-		List<ScheduleCategory> categories =
-				scheduleCategoryQueryService.searchScheduleCategories(calendarId, memberId);
+		List<ScheduleCategory> categories = scheduleCategoryQueryService.searchScheduleCategories(calendarId, memberId);
 
 		assertThat(categories.get(0)).isEqualTo(category);
 	}
@@ -55,15 +56,12 @@ class ScheduleCategoryQueryServiceTest {
 		long categoryId = 1L;
 		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
-		CalendarCategory calendarCategory =
-				CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+		CalendarCategory calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
-		given(scheduleCategoryRepository.findById(eq(categoryId)))
-				.willReturn(Optional.of(category));
+		given(scheduleCategoryRepository.findById(eq(categoryId))).willReturn(Optional.of(category));
 
-		ScheduleCategory foundCategory =
-				scheduleCategoryQueryService.searchScheduleCategory(categoryId);
+		ScheduleCategory foundCategory = scheduleCategoryQueryService.searchScheduleCategory(categoryId);
 
 		assertThat(foundCategory).isEqualTo(category);
 	}

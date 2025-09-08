@@ -12,8 +12,7 @@ public class LockManager {
 	private final RedisTemplate<String, String> redisTemplate;
 
 	public boolean lock(String key) {
-		return Boolean.TRUE.equals(
-				redisTemplate.opsForValue().setIfAbsent(key, "lock", Duration.ofSeconds(3)));
+		return Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent(key, "lock", Duration.ofSeconds(3)));
 	}
 
 	public boolean unlock(String key) {

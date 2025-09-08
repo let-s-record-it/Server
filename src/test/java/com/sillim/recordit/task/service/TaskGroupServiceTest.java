@@ -32,10 +32,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class TaskGroupServiceTest {
 
-	@InjectMocks TaskGroupService taskGroupService;
-	@Mock TaskGroupRepository taskGroupRepository;
-	@Mock MonthlyGoalQueryService monthlyGoalQueryService;
-	@Mock WeeklyGoalQueryService weeklyGoalQueryService;
+	@InjectMocks
+	TaskGroupService taskGroupService;
+	@Mock
+	TaskGroupRepository taskGroupRepository;
+	@Mock
+	MonthlyGoalQueryService monthlyGoalQueryService;
+	@Mock
+	WeeklyGoalQueryService weeklyGoalQueryService;
 
 	// TODO: WeeklyGoal 기능 구현 후 테스트 추가 필요
 
@@ -49,9 +53,7 @@ class TaskGroupServiceTest {
 
 		TaskGroup saved = taskGroupService.addNonRepeatingTaskGroup(request, memberId);
 
-		assertThat(saved)
-				.usingRecursiveComparison()
-				.ignoringFields("id", "createdAt", "modifiedAt")
+		assertThat(saved).usingRecursiveComparison().ignoringFields("id", "createdAt", "modifiedAt")
 				.isEqualTo(expected);
 		then(taskGroupRepository).should(times(1)).save(any(TaskGroup.class));
 	}
@@ -61,57 +63,32 @@ class TaskGroupServiceTest {
 	void addRepeatingTaskGroup() {
 		Long memberId = 1L;
 		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(1L, null);
-		TaskRepetitionUpdateRequest repetitionRequest =
-				new TaskRepetitionUpdateRequest(
-						TaskRepetitionType.DAILY,
-						1,
-						LocalDate.of(2024, 1, 1),
-						LocalDate.of(2024, 3, 31),
-						null,
-						null,
-						null,
-						null,
-						null);
+		TaskRepetitionUpdateRequest repetitionRequest = new TaskRepetitionUpdateRequest(TaskRepetitionType.DAILY, 1,
+				LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31), null, null, null, null, null);
 		TaskGroup expected = new TaskGroup(mock(MonthlyGoal.class), null);
-		expected.setRepetitionPattern(
-				TaskRepetitionPatternFactory.create(
-						repetitionRequest.repetitionType(),
-						repetitionRequest.repetitionPeriod(),
-						repetitionRequest.repetitionStartDate(),
-						repetitionRequest.repetitionEndDate(),
-						repetitionRequest.monthOfYear(),
-						repetitionRequest.dayOfMonth(),
-						repetitionRequest.weekNumber(),
-						repetitionRequest.weekday(),
-						repetitionRequest.weekdayBit(),
-						expected));
+		expected.setRepetitionPattern(TaskRepetitionPatternFactory.create(repetitionRequest.repetitionType(),
+				repetitionRequest.repetitionPeriod(), repetitionRequest.repetitionStartDate(),
+				repetitionRequest.repetitionEndDate(), repetitionRequest.monthOfYear(), repetitionRequest.dayOfMonth(),
+				repetitionRequest.weekNumber(), repetitionRequest.weekday(), repetitionRequest.weekdayBit(), expected));
 		given(taskGroupRepository.save(any(TaskGroup.class))).willReturn(expected);
 
-		TaskGroup saved =
-				taskGroupService.addRepeatingTaskGroup(request, repetitionRequest, memberId);
+		TaskGroup saved = taskGroupService.addRepeatingTaskGroup(request, repetitionRequest, memberId);
 
-		assertThat(saved)
-				.usingRecursiveComparison()
-				.ignoringFields("id", "createdAt", "modifiedAt", "repetition")
+		assertThat(saved).usingRecursiveComparison().ignoringFields("id", "createdAt", "modifiedAt", "repetition")
 				.isEqualTo(expected);
-		assertAll(
-				() -> {
-					assertThat(saved.getRepetitionPattern()).isNotEmpty();
-					TaskRepetitionPattern repetitionPattern = saved.getRepetitionPattern().get();
-					assertThat(repetitionPattern.getRepetitionType())
-							.isEqualTo(repetitionRequest.repetitionType());
-					assertThat(repetitionPattern.getRepetitionPeriod())
-							.isEqualTo(repetitionRequest.repetitionPeriod());
-					assertThat(repetitionPattern.getRepetitionStartDate())
-							.isEqualTo(repetitionRequest.repetitionStartDate());
-					assertThat(repetitionPattern.getRepetitionEndDate())
-							.isEqualTo(repetitionRequest.repetitionEndDate());
-					assertThat(repetitionPattern.getMonthOfYear()).isEmpty();
-					assertThat(repetitionPattern.getDayOfMonth()).isEmpty();
-					assertThat(repetitionPattern.getWeekNumber()).isEmpty();
-					assertThat(repetitionPattern.getWeekday()).isEmpty();
-					assertThat(repetitionPattern.getWeekdayBit()).isEmpty();
-				});
+		assertAll(() -> {
+			assertThat(saved.getRepetitionPattern()).isNotEmpty();
+			TaskRepetitionPattern repetitionPattern = saved.getRepetitionPattern().get();
+			assertThat(repetitionPattern.getRepetitionType()).isEqualTo(repetitionRequest.repetitionType());
+			assertThat(repetitionPattern.getRepetitionPeriod()).isEqualTo(repetitionRequest.repetitionPeriod());
+			assertThat(repetitionPattern.getRepetitionStartDate()).isEqualTo(repetitionRequest.repetitionStartDate());
+			assertThat(repetitionPattern.getRepetitionEndDate()).isEqualTo(repetitionRequest.repetitionEndDate());
+			assertThat(repetitionPattern.getMonthOfYear()).isEmpty();
+			assertThat(repetitionPattern.getDayOfMonth()).isEmpty();
+			assertThat(repetitionPattern.getWeekNumber()).isEmpty();
+			assertThat(repetitionPattern.getWeekday()).isEmpty();
+			assertThat(repetitionPattern.getWeekdayBit()).isEmpty();
+		});
 		then(taskGroupRepository).should(times(1)).save(any(TaskGroup.class));
 	}
 
@@ -125,17 +102,14 @@ class TaskGroupServiceTest {
 		origin.setRepetitionPattern(TaskRepetitionPatternFixture.DAILY.get(origin));
 		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
-		TaskGroup modified =
-				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
-						originTaskGroupId, request, memberId);
+		TaskGroup modified = taskGroupService.modifyTaskGroupAndMakeNonRepeatable(originTaskGroupId, request, memberId);
 
-		assertAll(
-				() -> {
-					assertThat(modified.getIsRepeated()).isFalse();
-					assertThat(modified.getMonthlyGoal()).isEmpty();
-					assertThat(modified.getWeeklyGoal()).isEmpty();
-					assertThat(modified.getRepetitionPattern()).isEmpty();
-				});
+		assertAll(() -> {
+			assertThat(modified.getIsRepeated()).isFalse();
+			assertThat(modified.getMonthlyGoal()).isEmpty();
+			assertThat(modified.getWeeklyGoal()).isEmpty();
+			assertThat(modified.getRepetitionPattern()).isEmpty();
+		});
 	}
 
 	@Test
@@ -147,17 +121,14 @@ class TaskGroupServiceTest {
 		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
 		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
-		TaskGroup modified =
-				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
-						originTaskGroupId, request, memberId);
+		TaskGroup modified = taskGroupService.modifyTaskGroupAndMakeNonRepeatable(originTaskGroupId, request, memberId);
 
-		assertAll(
-				() -> {
-					assertThat(modified.getIsRepeated()).isFalse();
-					assertThat(modified.getMonthlyGoal()).isEmpty();
-					assertThat(modified.getWeeklyGoal()).isEmpty();
-					assertThat(modified.getRepetitionPattern()).isEmpty();
-				});
+		assertAll(() -> {
+			assertThat(modified.getIsRepeated()).isFalse();
+			assertThat(modified.getMonthlyGoal()).isEmpty();
+			assertThat(modified.getWeeklyGoal()).isEmpty();
+			assertThat(modified.getRepetitionPattern()).isEmpty();
+		});
 	}
 
 	@Test
@@ -166,49 +137,34 @@ class TaskGroupServiceTest {
 		Long memberId = 1L;
 		Long originTaskGroupId = 2L;
 		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
-		TaskRepetitionUpdateRequest repetitionRequest =
-				new TaskRepetitionUpdateRequest(
-						TaskRepetitionType.DAILY,
-						1,
-						LocalDate.of(2024, 1, 1),
-						LocalDate.of(2024, 3, 31),
-						null,
-						null,
-						null,
-						null,
-						null);
+		TaskRepetitionUpdateRequest repetitionRequest = new TaskRepetitionUpdateRequest(TaskRepetitionType.DAILY, 1,
+				LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31), null, null, null, null, null);
 		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
-		TaskRepetitionPattern originRepetitionPattern =
-				TaskRepetitionPatternFixture.WEEKLY.get(origin);
+		TaskRepetitionPattern originRepetitionPattern = TaskRepetitionPatternFixture.WEEKLY.get(origin);
 		origin.setRepetitionPattern(originRepetitionPattern);
 		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
-		TaskGroup modified =
-				taskGroupService.modifyTaskGroupAndMakeRepeatable(
-						originTaskGroupId, request, repetitionRequest, memberId);
+		TaskGroup modified = taskGroupService.modifyTaskGroupAndMakeRepeatable(originTaskGroupId, request,
+				repetitionRequest, memberId);
 
-		assertAll(
-				() -> {
-					assertThat(modified.getIsRepeated()).isTrue();
-					assertThat(modified.getMonthlyGoal()).isEmpty();
-					assertThat(modified.getWeeklyGoal()).isEmpty();
-					assertThat(modified.getRepetitionPattern()).isNotEmpty();
-					TaskRepetitionPattern modifiedRepetitionPattern =
-							modified.getRepetitionPattern().get();
-					assertThat(modifiedRepetitionPattern.getRepetitionType())
-							.isEqualTo(repetitionRequest.repetitionType());
-					assertThat(modifiedRepetitionPattern.getRepetitionPeriod())
-							.isEqualTo(repetitionRequest.repetitionPeriod());
-					assertThat(modifiedRepetitionPattern.getRepetitionStartDate())
-							.isEqualTo(repetitionRequest.repetitionStartDate());
-					assertThat(modifiedRepetitionPattern.getRepetitionEndDate())
-							.isEqualTo(repetitionRequest.repetitionEndDate());
-					assertThat(modifiedRepetitionPattern.getMonthOfYear()).isEmpty();
-					assertThat(modifiedRepetitionPattern.getDayOfMonth()).isEmpty();
-					assertThat(modifiedRepetitionPattern.getWeekNumber()).isEmpty();
-					assertThat(modifiedRepetitionPattern.getWeekday()).isEmpty();
-					assertThat(modifiedRepetitionPattern.getWeekdayBit()).isEmpty();
-				});
+		assertAll(() -> {
+			assertThat(modified.getIsRepeated()).isTrue();
+			assertThat(modified.getMonthlyGoal()).isEmpty();
+			assertThat(modified.getWeeklyGoal()).isEmpty();
+			assertThat(modified.getRepetitionPattern()).isNotEmpty();
+			TaskRepetitionPattern modifiedRepetitionPattern = modified.getRepetitionPattern().get();
+			assertThat(modifiedRepetitionPattern.getRepetitionType()).isEqualTo(repetitionRequest.repetitionType());
+			assertThat(modifiedRepetitionPattern.getRepetitionPeriod()).isEqualTo(repetitionRequest.repetitionPeriod());
+			assertThat(modifiedRepetitionPattern.getRepetitionStartDate())
+					.isEqualTo(repetitionRequest.repetitionStartDate());
+			assertThat(modifiedRepetitionPattern.getRepetitionEndDate())
+					.isEqualTo(repetitionRequest.repetitionEndDate());
+			assertThat(modifiedRepetitionPattern.getMonthOfYear()).isEmpty();
+			assertThat(modifiedRepetitionPattern.getDayOfMonth()).isEmpty();
+			assertThat(modifiedRepetitionPattern.getWeekNumber()).isEmpty();
+			assertThat(modifiedRepetitionPattern.getWeekday()).isEmpty();
+			assertThat(modifiedRepetitionPattern.getWeekdayBit()).isEmpty();
+		});
 	}
 
 	@Test
@@ -217,45 +173,31 @@ class TaskGroupServiceTest {
 		Long memberId = 1L;
 		Long originTaskGroupId = 2L;
 		TaskGroupUpdateRequest request = new TaskGroupUpdateRequest(null, null);
-		TaskRepetitionUpdateRequest repetitionRequest =
-				new TaskRepetitionUpdateRequest(
-						TaskRepetitionType.DAILY,
-						1,
-						LocalDate.of(2024, 1, 1),
-						LocalDate.of(2024, 3, 31),
-						null,
-						null,
-						null,
-						null,
-						null);
+		TaskRepetitionUpdateRequest repetitionRequest = new TaskRepetitionUpdateRequest(TaskRepetitionType.DAILY, 1,
+				LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31), null, null, null, null, null);
 		TaskGroup origin = new TaskGroup(mock(MonthlyGoal.class), mock(WeeklyGoal.class));
 		given(taskGroupRepository.findById(originTaskGroupId)).willReturn(Optional.of(origin));
 
-		TaskGroup modified =
-				taskGroupService.modifyTaskGroupAndMakeRepeatable(
-						originTaskGroupId, request, repetitionRequest, memberId);
+		TaskGroup modified = taskGroupService.modifyTaskGroupAndMakeRepeatable(originTaskGroupId, request,
+				repetitionRequest, memberId);
 
-		assertAll(
-				() -> {
-					assertThat(modified.getIsRepeated()).isTrue();
-					assertThat(modified.getMonthlyGoal()).isEmpty();
-					assertThat(modified.getWeeklyGoal()).isEmpty();
-					assertThat(modified.getRepetitionPattern()).isNotEmpty();
-					TaskRepetitionPattern modifiedRepetitionPattern =
-							modified.getRepetitionPattern().get();
-					assertThat(modifiedRepetitionPattern.getRepetitionType())
-							.isEqualTo(repetitionRequest.repetitionType());
-					assertThat(modifiedRepetitionPattern.getRepetitionPeriod())
-							.isEqualTo(repetitionRequest.repetitionPeriod());
-					assertThat(modifiedRepetitionPattern.getRepetitionStartDate())
-							.isEqualTo(repetitionRequest.repetitionStartDate());
-					assertThat(modifiedRepetitionPattern.getRepetitionEndDate())
-							.isEqualTo(repetitionRequest.repetitionEndDate());
-					assertThat(modifiedRepetitionPattern.getMonthOfYear()).isEmpty();
-					assertThat(modifiedRepetitionPattern.getDayOfMonth()).isEmpty();
-					assertThat(modifiedRepetitionPattern.getWeekNumber()).isEmpty();
-					assertThat(modifiedRepetitionPattern.getWeekday()).isEmpty();
-					assertThat(modifiedRepetitionPattern.getWeekdayBit()).isEmpty();
-				});
+		assertAll(() -> {
+			assertThat(modified.getIsRepeated()).isTrue();
+			assertThat(modified.getMonthlyGoal()).isEmpty();
+			assertThat(modified.getWeeklyGoal()).isEmpty();
+			assertThat(modified.getRepetitionPattern()).isNotEmpty();
+			TaskRepetitionPattern modifiedRepetitionPattern = modified.getRepetitionPattern().get();
+			assertThat(modifiedRepetitionPattern.getRepetitionType()).isEqualTo(repetitionRequest.repetitionType());
+			assertThat(modifiedRepetitionPattern.getRepetitionPeriod()).isEqualTo(repetitionRequest.repetitionPeriod());
+			assertThat(modifiedRepetitionPattern.getRepetitionStartDate())
+					.isEqualTo(repetitionRequest.repetitionStartDate());
+			assertThat(modifiedRepetitionPattern.getRepetitionEndDate())
+					.isEqualTo(repetitionRequest.repetitionEndDate());
+			assertThat(modifiedRepetitionPattern.getMonthOfYear()).isEmpty();
+			assertThat(modifiedRepetitionPattern.getDayOfMonth()).isEmpty();
+			assertThat(modifiedRepetitionPattern.getWeekNumber()).isEmpty();
+			assertThat(modifiedRepetitionPattern.getWeekday()).isEmpty();
+			assertThat(modifiedRepetitionPattern.getWeekdayBit()).isEmpty();
+		});
 	}
 }

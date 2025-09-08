@@ -20,9 +20,11 @@ public class Location {
 	private static final int MAX_LATITUDE = 90;
 	private static final int MAX_LONGITUDE = 180;
 
-	@Column private double latitude;
+	@Column
+	private double latitude;
 
-	@Column private double longitude;
+	@Column
+	private double longitude;
 
 	public Location(double latitude, double longitude) {
 		validate(latitude, longitude);

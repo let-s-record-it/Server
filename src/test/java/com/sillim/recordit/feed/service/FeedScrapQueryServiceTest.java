@@ -16,16 +16,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FeedScrapQueryServiceTest {
 
-	@Mock FeedScrapRepository feedScrapRepository;
-	@InjectMocks FeedScrapQueryService feedScrapQueryService;
+	@Mock
+	FeedScrapRepository feedScrapRepository;
+	@InjectMocks
+	FeedScrapQueryService feedScrapQueryService;
 
 	@Test
 	@DisplayName("스크랩 여부를 확인할 수 있다.")
 	void searchIsScraped() {
 		long feedId = 1L;
 		long memberId = 1L;
-		given(feedScrapRepository.existsByFeedIdAndMemberId(eq(feedId), eq(memberId)))
-				.willReturn(true);
+		given(feedScrapRepository.existsByFeedIdAndMemberId(eq(feedId), eq(memberId))).willReturn(true);
 
 		boolean liked = feedScrapQueryService.isScraped(feedId, memberId);
 

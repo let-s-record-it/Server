@@ -9,17 +9,15 @@ import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 
 public final class RsaKeyUtils {
-	private RsaKeyUtils() {}
+	private RsaKeyUtils() {
+	}
 
 	public static Key getKeyByRsa(String modulus, String exponent)
 			throws InvalidKeySpecException, NoSuchAlgorithmException {
 		byte[] decodedModulus = Base64.getUrlDecoder().decode(modulus);
 		byte[] decodeExponent = Base64.getUrlDecoder().decode(exponent);
 
-		return KeyFactory.getInstance("RSA")
-				.generatePublic(
-						new RSAPublicKeySpec(
-								new BigInteger(1, decodedModulus),
-								new BigInteger(1, decodeExponent)));
+		return KeyFactory.getInstance("RSA").generatePublic(
+				new RSAPublicKeySpec(new BigInteger(1, decodedModulus), new BigInteger(1, decodeExponent)));
 	}
 }

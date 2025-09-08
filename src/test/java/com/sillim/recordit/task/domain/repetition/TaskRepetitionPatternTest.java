@@ -25,14 +25,8 @@ public class TaskRepetitionPatternTest {
 	@DisplayName("반복 주기가 null이라면 InvalidRepetitionException이 발생한다.")
 	void throwInvalidRepetitionExceptionIfPeriodIsNull() {
 
-		assertThatCode(
-						() ->
-								new MockTaskRepetitionPattern(
-										null,
-										LocalDate.of(2024, 1, 1),
-										LocalDate.of(2024, 3, 31),
-										taskGroup))
-				.isInstanceOf(InvalidRepetitionException.class)
+		assertThatCode(() -> new MockTaskRepetitionPattern(null, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31),
+				taskGroup)).isInstanceOf(InvalidRepetitionException.class)
 				.hasMessage(ErrorCode.NULL_TASK_REPETITION_PERIOD.getDescription());
 	}
 
@@ -41,12 +35,7 @@ public class TaskRepetitionPatternTest {
 	void throwInvalidRepetitionExceptionIfPeriodIsLessThan1() {
 
 		assertThatCode(
-						() ->
-								new MockTaskRepetitionPattern(
-										0,
-										LocalDate.of(2024, 1, 1),
-										LocalDate.of(2024, 3, 31),
-										taskGroup))
+				() -> new MockTaskRepetitionPattern(0, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31), taskGroup))
 				.isInstanceOf(InvalidRepetitionException.class)
 				.hasMessage(ErrorCode.TASK_REPETITION_PERIOD_OUT_OF_RANGE.getDescription());
 	}
@@ -55,14 +44,8 @@ public class TaskRepetitionPatternTest {
 	@DisplayName("반복 주기가 999초과라면 InvalidRepetitionException이 발생한다.")
 	void throwInvalidRepetitionExceptionIfPeriodIsGreaterThan999() {
 
-		assertThatCode(
-						() ->
-								new MockTaskRepetitionPattern(
-										1000,
-										LocalDate.of(2024, 1, 1),
-										LocalDate.of(2024, 3, 31),
-										taskGroup))
-				.isInstanceOf(InvalidRepetitionException.class)
+		assertThatCode(() -> new MockTaskRepetitionPattern(1000, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31),
+				taskGroup)).isInstanceOf(InvalidRepetitionException.class)
 				.hasMessage(ErrorCode.TASK_REPETITION_PERIOD_OUT_OF_RANGE.getDescription());
 	}
 
@@ -70,27 +53,20 @@ public class TaskRepetitionPatternTest {
 	@DisplayName("반복 시작/종료일이 null이라면 InvalidRepetitionException이 발생한다.")
 	void throwInvalidRepetitionExceptionIfStartDateOrEndDateIsNull() {
 
-		assertAll(
-				() -> {
-					// case 1. 시작일이 null
-					assertThatCode(
-									() ->
-											new MockTaskRepetitionPattern(
-													1, null, LocalDate.of(2024, 3, 31), taskGroup))
-							.isInstanceOf(InvalidRepetitionException.class)
-							.hasMessage(ErrorCode.NULL_TASK_REPETITION_DURATION.getDescription());
-					// case 2. 종료일이 null
-					assertThatCode(
-									() ->
-											new MockTaskRepetitionPattern(
-													1, LocalDate.of(2024, 1, 1), null, taskGroup))
-							.isInstanceOf(InvalidRepetitionException.class)
-							.hasMessage(ErrorCode.NULL_TASK_REPETITION_DURATION.getDescription());
-					// case 3. 시작일, 종료일이 null
-					assertThatCode(() -> new MockTaskRepetitionPattern(1, null, null, taskGroup))
-							.isInstanceOf(InvalidRepetitionException.class)
-							.hasMessage(ErrorCode.NULL_TASK_REPETITION_DURATION.getDescription());
-				});
+		assertAll(() -> {
+			// case 1. 시작일이 null
+			assertThatCode(() -> new MockTaskRepetitionPattern(1, null, LocalDate.of(2024, 3, 31), taskGroup))
+					.isInstanceOf(InvalidRepetitionException.class)
+					.hasMessage(ErrorCode.NULL_TASK_REPETITION_DURATION.getDescription());
+			// case 2. 종료일이 null
+			assertThatCode(() -> new MockTaskRepetitionPattern(1, LocalDate.of(2024, 1, 1), null, taskGroup))
+					.isInstanceOf(InvalidRepetitionException.class)
+					.hasMessage(ErrorCode.NULL_TASK_REPETITION_DURATION.getDescription());
+			// case 3. 시작일, 종료일이 null
+			assertThatCode(() -> new MockTaskRepetitionPattern(1, null, null, taskGroup))
+					.isInstanceOf(InvalidRepetitionException.class)
+					.hasMessage(ErrorCode.NULL_TASK_REPETITION_DURATION.getDescription());
+		});
 	}
 
 	@Test
@@ -98,12 +74,7 @@ public class TaskRepetitionPatternTest {
 	void throwInvalidRepetitionExceptionIfStartDateIsAfterEndDate() {
 
 		assertThatCode(
-						() ->
-								new MockTaskRepetitionPattern(
-										1,
-										LocalDate.of(2024, 3, 31),
-										LocalDate.of(2024, 1, 1),
-										taskGroup))
+				() -> new MockTaskRepetitionPattern(1, LocalDate.of(2024, 3, 31), LocalDate.of(2024, 1, 1), taskGroup))
 				.isInstanceOf(InvalidRepetitionException.class)
 				.hasMessage(ErrorCode.TASK_REPETITION_INVALID_DURATION.getDescription());
 	}

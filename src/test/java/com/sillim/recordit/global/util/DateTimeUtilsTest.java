@@ -35,15 +35,13 @@ class DateTimeUtilsTest {
 	@DisplayName("dayOfMonth 값이 1보다 작다면 DayOfMonthOutOfRangeException이 발생한다.")
 	void throwDayOfMonthOutOfRangeExceptionIfDayOfMonthIsLessThan1() {
 		assertThatCode(() -> DateTimeUtils.correctDayOfMonth(LocalDate.of(2024, 3, 31), -1))
-				.isInstanceOf(DayOfMonthOutOfRangeException.class)
-				.hasMessage("dayOfMonth는 1 이상 31 이하여야 합니다.");
+				.isInstanceOf(DayOfMonthOutOfRangeException.class).hasMessage("dayOfMonth는 1 이상 31 이하여야 합니다.");
 	}
 
 	@Test
 	@DisplayName("dayOfMonth 값이 31보다 크다면 DayOfMonthOutOfRangeException이 발생한다.")
 	void throwDayOfMonthOutOfRangeExceptionIfDayOfMonthIsGreaterThan1() {
 		assertThatCode(() -> DateTimeUtils.correctDayOfMonth(LocalDate.of(2024, 3, 31), 32))
-				.isInstanceOf(DayOfMonthOutOfRangeException.class)
-				.hasMessage("dayOfMonth는 1 이상 31 이하여야 합니다.");
+				.isInstanceOf(DayOfMonthOutOfRangeException.class).hasMessage("dayOfMonth는 1 이상 31 이하여야 합니다.");
 	}
 }

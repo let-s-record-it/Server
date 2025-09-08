@@ -33,103 +33,67 @@ public class TaskCommandService {
 	public void addTasks(final TaskAddRequest request, final Long calendarId, final Long memberId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
-		ScheduleCategory category =
-				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
+		ScheduleCategory category = scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		if (request.isRepeated()) {
-			TaskGroup taskGroup =
-					taskGroupService.addRepeatingTaskGroup(
-							request.taskGroup(), request.repetition(), memberId);
-			addRepeatingTasks(
-					temporalAmount -> request.toTask(temporalAmount, category, calendar, taskGroup),
+			TaskGroup taskGroup = taskGroupService.addRepeatingTaskGroup(request.taskGroup(), request.repetition(),
+					memberId);
+			addRepeatingTasks(temporalAmount -> request.toTask(temporalAmount, category, calendar, taskGroup),
 					taskGroup);
 			return;
 		}
-		TaskGroup taskGroup =
-				taskGroupService.addNonRepeatingTaskGroup(request.taskGroup(), memberId);
+		TaskGroup taskGroup = taskGroupService.addNonRepeatingTaskGroup(request.taskGroup(), memberId);
 		taskRepository.save(request.toTask(category, calendar, taskGroup));
 	}
 
-	public void resetTaskGroupAndAddNewTasks(
-			final TaskUpdateRequest request,
-			final Long calendarId,
-			final Long selectedTaskId,
-			final Long memberId) {
+	public void resetTaskGroupAndAddNewTasks(final TaskUpdateRequest request, final Long calendarId,
+			final Long selectedTaskId, final Long memberId) {
 
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
-		Task selectedTask =
-				taskRepository
-						.findByIdAndCalendarId(selectedTaskId, calendarId)
-						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		Task selectedTask = taskRepository.findByIdAndCalendarId(selectedTaskId, calendarId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		TaskGroup taskGroup = selectedTask.getTaskGroup();
 		taskRepository.deleteAllByTaskGroupId(taskGroup.getId()); // 기존에 있던 Task 모두 삭제
 
 		Calendar newCalendar = calendarQueryService.searchByCalendarId(request.newCalendarId());
 		newCalendar.validateAuthenticatedMember(memberId);
-		ScheduleCategory newCategory =
-				scheduleCategoryQueryService.searchScheduleCategory(request.newCategoryId());
+		ScheduleCategory newCategory = scheduleCategoryQueryService.searchScheduleCategory(request.newCategoryId());
 		if (request.isRepeated()) {
-			TaskGroup newTaskGroup =
-					taskGroupService.modifyTaskGroupAndMakeRepeatable(
-							taskGroup.getId(),
-							request.newTaskGroup(),
-							request.newRepetition(),
-							memberId);
-			addRepeatingTasks(
-					temporalAmount ->
-							request.toTask(temporalAmount, newCategory, newCalendar, newTaskGroup),
+			TaskGroup newTaskGroup = taskGroupService.modifyTaskGroupAndMakeRepeatable(taskGroup.getId(),
+					request.newTaskGroup(), request.newRepetition(), memberId);
+			addRepeatingTasks(temporalAmount -> request.toTask(temporalAmount, newCategory, newCalendar, newTaskGroup),
 					newTaskGroup);
 			return;
 		}
-		TaskGroup newTaskGroup =
-				taskGroupService.modifyTaskGroupAndMakeNonRepeatable(
-						taskGroup.getId(), request.newTaskGroup(), memberId);
+		TaskGroup newTaskGroup = taskGroupService.modifyTaskGroupAndMakeNonRepeatable(taskGroup.getId(),
+				request.newTaskGroup(), memberId);
 		taskRepository.save(request.toTask(newCategory, newCalendar, newTaskGroup));
 	}
 
-	public void modifyOne(
-			final TaskUpdateRequest request,
-			final Long calendarId,
-			final Long selectedTaskId,
+	public void modifyOne(final TaskUpdateRequest request, final Long calendarId, final Long selectedTaskId,
 			final Long memberId) {
 
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
-		Task selectedTask =
-				taskRepository
-						.findByIdAndCalendarId(selectedTaskId, calendarId)
-						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		Task selectedTask = taskRepository.findByIdAndCalendarId(selectedTaskId, calendarId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		TaskGroup taskGroup = selectedTask.getTaskGroup();
 
 		Calendar newCalendar = calendarQueryService.searchByCalendarId(request.newCalendarId());
 		newCalendar.validateAuthenticatedMember(memberId);
-		ScheduleCategory newCategory =
-				scheduleCategoryQueryService.searchScheduleCategory(request.newCategoryId());
+		ScheduleCategory newCategory = scheduleCategoryQueryService.searchScheduleCategory(request.newCategoryId());
 		if (request.isRepeated()) {
 			selectedTask.remove();
-			TaskGroup newTaskGroup =
-					taskGroupService.modifyTaskGroupAndMakeRepeatable(
-							taskGroup.getId(),
-							request.newTaskGroup(),
-							request.newRepetition(),
-							memberId);
-			addRepeatingTasks(
-					temporalAmount ->
-							request.toTask(temporalAmount, newCategory, newCalendar, newTaskGroup),
+			TaskGroup newTaskGroup = taskGroupService.modifyTaskGroupAndMakeRepeatable(taskGroup.getId(),
+					request.newTaskGroup(), request.newRepetition(), memberId);
+			addRepeatingTasks(temporalAmount -> request.toTask(temporalAmount, newCategory, newCalendar, newTaskGroup),
 					newTaskGroup);
 			return;
 		}
-		TaskGroup newTaskGroup =
-				taskGroupService.modifyTaskGroup(
-						taskGroup.getId(), request.newTaskGroup(), memberId);
-		selectedTask.modify(
-				request.newTitle(),
-				request.newDescription(),
-				request.date(),
-				newCategory,
-				newCalendar,
+		TaskGroup newTaskGroup = taskGroupService.modifyTaskGroup(taskGroup.getId(), request.newTaskGroup(), memberId);
+		selectedTask.modify(request.newTitle(), request.newDescription(), request.date(), newCategory, newCalendar,
 				newTaskGroup);
 	}
 
@@ -137,60 +101,42 @@ public class TaskCommandService {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
-		Task selectedTask =
-				taskRepository
-						.findByIdAndCalendarId(selectedTaskId, calendarId)
-						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		Task selectedTask = taskRepository.findByIdAndCalendarId(selectedTaskId, calendarId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		TaskGroup taskGroup = selectedTask.getTaskGroup();
 
 		taskRepository.deleteAllByTaskGroupId(taskGroup.getId());
 	}
 
-	public void removeAllAfterDate(
-			final Long calendarId, final Long selectedTaskId, final Long memberId) {
+	public void removeAllAfterDate(final Long calendarId, final Long selectedTaskId, final Long memberId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
-		Task selectedTask =
-				taskRepository
-						.findByIdAndCalendarId(selectedTaskId, calendarId)
-						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		Task selectedTask = taskRepository.findByIdAndCalendarId(selectedTaskId, calendarId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		TaskGroup taskGroup = selectedTask.getTaskGroup();
 
-		taskRepository.deleteAllByTaskGroupIdAndDateAfterOrEqual(
-				taskGroup.getId(), selectedTask.getDate());
+		taskRepository.deleteAllByTaskGroupIdAndDateAfterOrEqual(taskGroup.getId(), selectedTask.getDate());
 	}
 
 	public void removeOne(final Long calendarId, final Long selectedTaskId, final Long memberId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
-		Task selectedTask =
-				taskRepository
-						.findByIdAndCalendarId(selectedTaskId, calendarId)
-						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		Task selectedTask = taskRepository.findByIdAndCalendarId(selectedTaskId, calendarId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		selectedTask.remove();
 	}
 
-	private void addRepeatingTasks(
-			final Function<TemporalAmount, Task> temporalToTask, final TaskGroup taskGroup) {
+	private void addRepeatingTasks(final Function<TemporalAmount, Task> temporalToTask, final TaskGroup taskGroup) {
 
-		taskRepository.saveAllBatch(
-				taskGroup
-						.getRepetitionPattern()
-						.orElseThrow(
-								() ->
-										new RecordNotFoundException(
-												ErrorCode.TASK_REPETITION_NOT_FOUND))
-						.repeatingStream()
-						.map(temporalToTask)
-						.toList());
+		taskRepository.saveAllBatch(taskGroup.getRepetitionPattern()
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_REPETITION_NOT_FOUND)).repeatingStream()
+				.map(temporalToTask).toList());
 	}
 
-	public void replaceTaskCategoriesWithDefaultCategory(
-			Long categoryId, Long calendarId, Long memberId) {
-		ScheduleCategory defaultCategory =
-				scheduleCategoryQueryService.searchDefaultCategory(calendarId, memberId);
+	public void replaceTaskCategoriesWithDefaultCategory(Long categoryId, Long calendarId, Long memberId) {
+		ScheduleCategory defaultCategory = scheduleCategoryQueryService.searchDefaultCategory(calendarId, memberId);
 		taskRepository.updateCategorySetDefault(defaultCategory.getId(), categoryId);
 	}
 }

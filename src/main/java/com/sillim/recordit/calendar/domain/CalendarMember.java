@@ -8,13 +8,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(
-		name = "calendar_member",
-		uniqueConstraints = {
-			@UniqueConstraint(
-					name = "CalendarAndMember",
-					columnNames = {"member_id", "calendar_id"})
-		})
+@Table(name = "calendar_member", uniqueConstraints = {
+		@UniqueConstraint(name = "CalendarAndMember", columnNames = {"member_id", "calendar_id"})})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CalendarMember extends BaseTime {
 

@@ -38,8 +38,7 @@ public class FeedController {
 	private final FeedLikeService feedLikeService;
 
 	@PostMapping
-	public ResponseEntity<Void> feedAdd(
-			@Validated @RequestPart FeedAddRequest feedAddRequest,
+	public ResponseEntity<Void> feedAdd(@Validated @RequestPart FeedAddRequest feedAddRequest,
 			@Valid @Size(max = 10) @RequestPart(required = false) List<MultipartFile> images,
 			@CurrentMember Member member) {
 		Long feedId = feedCommandService.addFeed(feedAddRequest, images, member.getId());
@@ -47,31 +46,26 @@ public class FeedController {
 	}
 
 	@GetMapping("/{feedId}")
-	public ResponseEntity<FeedDetailsResponse> feedDetails(
-			@PathVariable Long feedId, @CurrentMember Member member) {
+	public ResponseEntity<FeedDetailsResponse> feedDetails(@PathVariable Long feedId, @CurrentMember Member member) {
 		return ResponseEntity.ok(feedQueryService.searchById(feedId, member.getId()));
 	}
 
 	@GetMapping
-	public ResponseEntity<SliceResponse<FeedInListResponse>> feedList(
-			Pageable pageable, @CurrentMember Member member) {
+	public ResponseEntity<SliceResponse<FeedInListResponse>> feedList(Pageable pageable, @CurrentMember Member member) {
 		return ResponseEntity.ok(feedQueryService.searchRecentCreated(pageable, member.getId()));
 	}
 
 	@GetMapping("/my-feed")
-	public ResponseEntity<SliceResponse<FeedInListResponse>> myFeedList(
-			Pageable pageable, @CurrentMember Member member) {
-		return ResponseEntity.ok(
-				feedQueryService.searchRecentCreatedByMemberId(pageable, member.getId()));
+	public ResponseEntity<SliceResponse<FeedInListResponse>> myFeedList(Pageable pageable,
+			@CurrentMember Member member) {
+		return ResponseEntity.ok(feedQueryService.searchRecentCreatedByMemberId(pageable, member.getId()));
 	}
 
 	@PutMapping("/{feedId}")
-	public ResponseEntity<Void> feedModify(
-			@PathVariable Long feedId,
+	public ResponseEntity<Void> feedModify(@PathVariable Long feedId,
 			@Validated @RequestPart FeedModifyRequest feedModifyRequest,
 			@Valid @Size(max = 10) @RequestPart(required = false) List<MultipartFile> newImages,
-			@CurrentMember Member member)
-			throws IOException {
+			@CurrentMember Member member) throws IOException {
 		feedCommandService.modifyFeed(feedModifyRequest, newImages, feedId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
@@ -84,47 +78,37 @@ public class FeedController {
 
 	@PostMapping("/{feedId}/like")
 	public ResponseEntity<Void> feedLike(@PathVariable Long feedId, @CurrentMember Member member) {
-		RedisLockUtil.acquireAndRunLock(
-				"feed_like:" + feedId + ":" + member.getId(),
-				() -> {
-					feedLikeService.feedLike(feedId, member.getId());
-					return true;
-				});
+		RedisLockUtil.acquireAndRunLock("feed_like:" + feedId + ":" + member.getId(), () -> {
+			feedLikeService.feedLike(feedId, member.getId());
+			return true;
+		});
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{feedId}/unlike")
-	public ResponseEntity<Void> feedUnlike(
-			@PathVariable Long feedId, @CurrentMember Member member) {
-		RedisLockUtil.acquireAndRunLock(
-				"feed_like:" + feedId + ":" + member.getId(),
-				() -> {
-					feedLikeService.feedUnlike(feedId, member.getId());
-					return true;
-				});
+	public ResponseEntity<Void> feedUnlike(@PathVariable Long feedId, @CurrentMember Member member) {
+		RedisLockUtil.acquireAndRunLock("feed_like:" + feedId + ":" + member.getId(), () -> {
+			feedLikeService.feedUnlike(feedId, member.getId());
+			return true;
+		});
 		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/{feedId}/scrap")
 	public ResponseEntity<Void> feedScrap(@PathVariable Long feedId, @CurrentMember Member member) {
-		RedisLockUtil.acquireAndRunLock(
-				"feed_scrap:" + feedId + ":" + member.getId(),
-				() -> {
-					feedScrapService.feedScrap(feedId, member.getId());
-					return true;
-				});
+		RedisLockUtil.acquireAndRunLock("feed_scrap:" + feedId + ":" + member.getId(), () -> {
+			feedScrapService.feedScrap(feedId, member.getId());
+			return true;
+		});
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{feedId}/unscrap")
-	public ResponseEntity<Void> feedUnScrap(
-			@PathVariable Long feedId, @CurrentMember Member member) {
-		RedisLockUtil.acquireAndRunLock(
-				"feed_scrap:" + feedId + ":" + member.getId(),
-				() -> {
-					feedScrapService.feedUnScrap(feedId, member.getId());
-					return true;
-				});
+	public ResponseEntity<Void> feedUnScrap(@PathVariable Long feedId, @CurrentMember Member member) {
+		RedisLockUtil.acquireAndRunLock("feed_scrap:" + feedId + ":" + member.getId(), () -> {
+			feedScrapService.feedUnScrap(feedId, member.getId());
+			return true;
+		});
 		return ResponseEntity.noContent().build();
 	}
 }

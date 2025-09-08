@@ -25,73 +25,44 @@ public class ScheduleQueryService {
 	private final CalendarQueryService calendarQueryService;
 
 	public DayScheduleResponse searchSchedule(Long scheduleId, Long memberId) {
-		Schedule schedule =
-				scheduleRepository
-						.findByScheduleId(scheduleId)
-						.orElseThrow(
-								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
+		Schedule schedule = scheduleRepository.findByScheduleId(scheduleId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		schedule.validateAuthenticatedMember(memberId);
 
 		if (schedule.getScheduleGroup().isRepeated()) {
-			return DayScheduleResponse.of(
-					schedule,
-					true,
+			return DayScheduleResponse.of(schedule, true,
 					schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList(),
 					RepetitionPatternResponse.from(
-							repetitionPatternService.searchByScheduleGroupId(
-									schedule.getScheduleGroup().getId())));
+							repetitionPatternService.searchByScheduleGroupId(schedule.getScheduleGroup().getId())));
 		}
 
-		return DayScheduleResponse.of(
-				schedule,
-				false,
+		return DayScheduleResponse.of(schedule, false,
+				schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList(), null);
+	}
+
+	public List<MonthScheduleResponse> searchSchedulesInMonth(Long calendarId, Integer year, Integer month,
+			Long memberId) {
+		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
+		return scheduleRepository.findScheduleInMonth(calendarId, year, month).stream().map(MonthScheduleResponse::from)
+				.toList();
+	}
+
+	public List<DayScheduleResponse> searchSchedulesInDay(Long calendarId, LocalDate date, Long memberId) {
+		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
+		return scheduleRepository.findScheduleInDay(calendarId, date).stream().map(schedule -> DayScheduleResponse.of(
+				schedule, schedule.getScheduleGroup().isRepeated(),
 				schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList(),
-				null);
-	}
-
-	public List<MonthScheduleResponse> searchSchedulesInMonth(
-			Long calendarId, Integer year, Integer month, Long memberId) {
-		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
-		return scheduleRepository.findScheduleInMonth(calendarId, year, month).stream()
-				.map(MonthScheduleResponse::from)
+				schedule.getScheduleGroup().getRepetitionPattern().map(RepetitionPatternResponse::from).orElse(null)))
 				.toList();
 	}
 
-	public List<DayScheduleResponse> searchSchedulesInDay(
-			Long calendarId, LocalDate date, Long memberId) {
-		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
-		return scheduleRepository.findScheduleInDay(calendarId, date).stream()
-				.map(
-						schedule ->
-								DayScheduleResponse.of(
-										schedule,
-										schedule.getScheduleGroup().isRepeated(),
-										schedule.getScheduleAlarms().stream()
-												.map(ScheduleAlarm::getAlarmTime)
-												.toList(),
-										schedule.getScheduleGroup()
-												.getRepetitionPattern()
-												.map(RepetitionPatternResponse::from)
-												.orElse(null)))
-				.toList();
-	}
-
-	public List<DayScheduleResponse> searchSchedulesContainQuery(
-			String query, Long calendarId, Long memberId) {
+	public List<DayScheduleResponse> searchSchedulesContainQuery(String query, Long calendarId, Long memberId) {
 		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
 		return scheduleRepository.findScheduleMatchedQuery(query, calendarId).stream()
-				.map(
-						schedule ->
-								DayScheduleResponse.of(
-										schedule,
-										schedule.getScheduleGroup().isRepeated(),
-										schedule.getScheduleAlarms().stream()
-												.map(ScheduleAlarm::getAlarmTime)
-												.toList(),
-										schedule.getScheduleGroup()
-												.getRepetitionPattern()
-												.map(RepetitionPatternResponse::from)
-												.orElse(null)))
+				.map(schedule -> DayScheduleResponse.of(schedule, schedule.getScheduleGroup().isRepeated(),
+						schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList(),
+						schedule.getScheduleGroup().getRepetitionPattern().map(RepetitionPatternResponse::from)
+								.orElse(null)))
 				.toList();
 	}
 }

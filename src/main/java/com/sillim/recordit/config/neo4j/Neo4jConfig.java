@@ -12,21 +12,17 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@EnableNeo4jRepositories(
-		includeFilters =
-				@ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Neo4jRepo.class),
-		transactionManagerRef = "neo4jTransactionManager",
-		basePackages = {"com.sillim.recordit"})
+@EnableNeo4jRepositories(includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Neo4jRepo.class), transactionManagerRef = "neo4jTransactionManager", basePackages = {
+		"com.sillim.recordit"})
 public class Neo4jConfig {
 
-	//	@Bean
-	//	Configuration cypherDslConfiguration() {
-	//		return Configuration.newConfig().withDialect(Dialect.NEO4J_5).build();
-	//	}
+	// @Bean
+	// Configuration cypherDslConfiguration() {
+	// return Configuration.newConfig().withDialect(Dialect.NEO4J_5).build();
+	// }
 
 	@Bean
-	public Neo4jTransactionManager neo4jTransactionManager(
-			Driver driver, DatabaseSelectionProvider provider) {
+	public Neo4jTransactionManager neo4jTransactionManager(Driver driver, DatabaseSelectionProvider provider) {
 		return new Neo4jTransactionManager(driver, provider);
 	}
 }

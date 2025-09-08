@@ -17,12 +17,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement(proxyTargetClass = true)
-@EnableJpaRepositories(
-		entityManagerFactoryRef = "jpaEntityManagerFactory",
-		transactionManagerRef = "jpaTransactionManager",
-		excludeFilters =
-				@ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Neo4jRepo.class),
-		basePackages = {"com.sillim.recordit"})
+@EnableJpaRepositories(entityManagerFactoryRef = "jpaEntityManagerFactory", transactionManagerRef = "jpaTransactionManager", excludeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Neo4jRepo.class), basePackages = {
+		"com.sillim.recordit"})
 public class DBConfig {
 
 	@Bean(name = "dataSource")
@@ -32,14 +28,11 @@ public class DBConfig {
 	}
 
 	@Bean(name = "jpaEntityManagerFactory")
-	public LocalContainerEntityManagerFactoryBean containerEntityManagerFactory(
-			EntityManagerFactoryBuilder builder, @Qualifier("dataSource") DataSource dataSource) {
-		return builder.dataSource(dataSource)
-				.packages("com.sillim.recordit")
-				.properties(
-						Map.of(
-								"hibernate.physical_naming_strategy",
-								CamelCaseToUnderscoresNamingStrategy.class.getName()))
+	public LocalContainerEntityManagerFactoryBean containerEntityManagerFactory(EntityManagerFactoryBuilder builder,
+			@Qualifier("dataSource") DataSource dataSource) {
+		return builder
+				.dataSource(dataSource).packages("com.sillim.recordit").properties(Map
+						.of("hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy.class.getName()))
 				.build();
 	}
 

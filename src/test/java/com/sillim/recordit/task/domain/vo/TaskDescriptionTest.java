@@ -16,18 +16,16 @@ class TaskDescriptionTest {
 	void validIfDescriptionLengthIs500OrUnder() {
 		TaskDescription taskDescription = new TaskDescription("123");
 
-		assertAll(
-				() -> {
-					assertThat(taskDescription).isEqualTo(new TaskDescription("123"));
-					assertThat(taskDescription.getDescription()).isEqualTo("123");
-				});
+		assertAll(() -> {
+			assertThat(taskDescription).isEqualTo(new TaskDescription("123"));
+			assertThat(taskDescription.getDescription()).isEqualTo("123");
+		});
 	}
 
 	@Test
 	@DisplayName("설명이 null이면 InvalidDescriptionException이 발생한다.")
 	void throwInvalidDescriptionExceptionIfDescriptionIsNull() {
-		assertThatCode(() -> new TaskDescription(null))
-				.isInstanceOf(InvalidDescriptionException.class)
+		assertThatCode(() -> new TaskDescription(null)).isInstanceOf(InvalidDescriptionException.class)
 				.hasMessage(ErrorCode.NULL_TASK_DESCRIPTION.getDescription());
 	}
 

@@ -21,8 +21,7 @@ public interface CustomScheduleRepository {
 
 	List<Schedule> findScheduleMatchedQuery(String query, Long calendarId);
 
-	void updateCategorySetDefault(
-			@Param("defaultCategoryId") Long defaultCategoryId,
+	void updateCategorySetDefault(@Param("defaultCategoryId") Long defaultCategoryId,
 			@Param("categoryId") Long categoryId);
 
 	void deleteSchedulesInCalendar(@Param("calendarId") Long calendarId);

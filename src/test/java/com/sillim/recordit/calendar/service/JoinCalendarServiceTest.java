@@ -27,9 +27,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class JoinCalendarServiceTest {
 
-	@Mock CalendarMemberService calendarMemberService;
-	@Mock InviteService inviteService;
-	@InjectMocks JoinCalendarService joinCalendarService;
+	@Mock
+	CalendarMemberService calendarMemberService;
+	@Mock
+	InviteService inviteService;
+	@InjectMocks
+	JoinCalendarService joinCalendarService;
 
 	@Test
 	@DisplayName("캘린더가 삭제되어 있으면 InvalidRequestException이 발생한다.")
@@ -43,8 +46,7 @@ class JoinCalendarServiceTest {
 		InviteLink inviteLink = new InviteLink(inviteCode, LocalDateTime.now(), false, calendar);
 		given(inviteService.searchInviteInfo(eq(inviteCode))).willReturn(inviteLink);
 
-		assertThatCode(() -> joinCalendarService.joinInCalendar("code", 1L))
-				.isInstanceOf(InvalidRequestException.class)
+		assertThatCode(() -> joinCalendarService.joinInCalendar("code", 1L)).isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_CALENDAR_GET_REQUEST.getDescription());
 	}
 
@@ -62,8 +64,7 @@ class JoinCalendarServiceTest {
 		InviteLink inviteLink = new InviteLink(inviteCode, LocalDateTime.now(), false, calendar);
 		given(calendar.getId()).willReturn(calendarId);
 		given(inviteService.searchInviteInfo(eq(inviteCode))).willReturn(inviteLink);
-		given(calendarMemberService.addCalendarMember(eq(calendarId), eq(joinMemberId)))
-				.willReturn(calendarMemberId);
+		given(calendarMemberService.addCalendarMember(eq(calendarId), eq(joinMemberId))).willReturn(calendarMemberId);
 
 		Long id = joinCalendarService.joinInCalendar(inviteCode, 2L);
 

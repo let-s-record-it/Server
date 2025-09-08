@@ -6,11 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Table(
-		uniqueConstraints =
-				@UniqueConstraint(
-						name = "feedLikeMember",
-						columnNames = {"feed_id", "member_id"}))
+@Table(uniqueConstraints = @UniqueConstraint(name = "feedLikeMember", columnNames = {"feed_id", "member_id"}))
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FeedLike {

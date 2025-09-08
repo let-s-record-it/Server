@@ -14,12 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(basePackageClasses = {MonthlyGoalController.class})
 public class GoalControllerAdvice {
 
-	@ExceptionHandler({
-		InvalidTitleException.class,
-		InvalidDescriptionException.class,
-		InvalidPeriodException.class,
-		InvalidColorHexException.class,
-	})
+	@ExceptionHandler({InvalidTitleException.class, InvalidDescriptionException.class, InvalidPeriodException.class,
+			InvalidColorHexException.class,})
 	public ResponseEntity<ErrorResponse> handleBadRequest(ApplicationException exception) {
 
 		return ResponseEntity.badRequest().body(ErrorResponse.from(exception.getErrorCode()));

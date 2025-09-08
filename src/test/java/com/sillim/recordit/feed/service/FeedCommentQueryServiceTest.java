@@ -28,9 +28,12 @@ import org.springframework.data.domain.SliceImpl;
 @ExtendWith(MockitoExtension.class)
 class FeedCommentQueryServiceTest {
 
-	@Mock FeedCommentRepository feedCommentRepository;
-	@Mock MemberQueryService memberQueryService;
-	@InjectMocks FeedCommentQueryService feedCommentQueryService;
+	@Mock
+	FeedCommentRepository feedCommentRepository;
+	@Mock
+	MemberQueryService memberQueryService;
+	@InjectMocks
+	FeedCommentQueryService feedCommentQueryService;
 
 	@Test
 	@DisplayName("오래된 순으로 pagination해서 피드 댓글 목록을 조회할 수 있다.")
@@ -46,14 +49,13 @@ class FeedCommentQueryServiceTest {
 		given(feedCommentRepository.findPaginatedOrderByCreatedAtAsc(eq(pageRequest), eq(feedId)))
 				.willReturn(new SliceImpl<>(List.of(feedComment), pageRequest, false));
 
-		SliceResponse<FeedCommentInListResponse> feedComments =
-				feedCommentQueryService.searchPaginatedOldCreated(pageRequest, feedId, 1L);
+		SliceResponse<FeedCommentInListResponse> feedComments = feedCommentQueryService
+				.searchPaginatedOldCreated(pageRequest, feedId, 1L);
 
-		assertAll(
-				() -> {
-					assertThat(feedComments.content()).hasSize(1);
-					assertThat(feedComments.isLast()).isTrue();
-				});
+		assertAll(() -> {
+			assertThat(feedComments.content()).hasSize(1);
+			assertThat(feedComments.isLast()).isTrue();
+		});
 	}
 
 	@Test
@@ -66,18 +68,15 @@ class FeedCommentQueryServiceTest {
 		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
 		given(feedComment.getId()).willReturn(1L);
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
-		given(
-						feedCommentRepository.findByMemberIdOrderByCreatedAtAsc(
-								eq(pageRequest), eq(memberId)))
+		given(feedCommentRepository.findByMemberIdOrderByCreatedAtAsc(eq(pageRequest), eq(memberId)))
 				.willReturn(new SliceImpl<>(List.of(feedComment), pageRequest, false));
 
-		SliceResponse<FeedCommentInListResponse> feedComments =
-				feedCommentQueryService.searchByMemberIdOldCreated(pageRequest, memberId);
+		SliceResponse<FeedCommentInListResponse> feedComments = feedCommentQueryService
+				.searchByMemberIdOldCreated(pageRequest, memberId);
 
-		assertAll(
-				() -> {
-					assertThat(feedComments.content()).hasSize(1);
-					assertThat(feedComments.isLast()).isTrue();
-				});
+		assertAll(() -> {
+			assertThat(feedComments.content()).hasSize(1);
+			assertThat(feedComments.isLast()).isTrue();
+		});
 	}
 }

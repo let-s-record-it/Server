@@ -5,4 +5,5 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record KakaoUserInfo(Long id, LocalDateTime connectedAt, KakaoAccount kakaoAccount) {}
+public record KakaoUserInfo(Long id, LocalDateTime connectedAt, KakaoAccount kakaoAccount) {
+}

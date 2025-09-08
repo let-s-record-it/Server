@@ -11,10 +11,7 @@ public class RestDocsConfiguration {
 
 	@Bean
 	public RestDocsMockMvcConfigurationCustomizer restDocsMockMvcConfigurationCustomizer() {
-		return configurer ->
-				configurer
-						.operationPreprocessors()
-						.withRequestDefaults(prettyPrint())
-						.withResponseDefaults(prettyPrint());
+		return configurer -> configurer.operationPreprocessors().withRequestDefaults(prettyPrint())
+				.withResponseDefaults(prettyPrint());
 	}
 }

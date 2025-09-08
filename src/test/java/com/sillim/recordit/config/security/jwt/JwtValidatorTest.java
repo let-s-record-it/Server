@@ -27,36 +27,21 @@ class JwtValidatorTest {
 	@Test
 	@DisplayName("토큰이 만료되면 InvalidJwtException 이 발생한다.")
 	void throwInvalidJwtExceptionIfTokenIsExpired() {
-		String token =
-				Jwts.builder()
-						.setSubject(memberId)
-						.signWith(secretKey, SignatureAlgorithm.HS256)
-						.setExpiration(Date.from(Instant.now().minus(1L, ChronoUnit.SECONDS)))
-						.compact();
+		String token = Jwts.builder().setSubject(memberId).signWith(secretKey, SignatureAlgorithm.HS256)
+				.setExpiration(Date.from(Instant.now().minus(1L, ChronoUnit.SECONDS))).compact();
 
-		assertThatThrownBy(() -> jwtValidator.getMemberIdIfValid(token))
-				.isInstanceOf(InvalidJwtException.class)
+		assertThatThrownBy(() -> jwtValidator.getMemberIdIfValid(token)).isInstanceOf(InvalidJwtException.class)
 				.hasMessage(ErrorCode.JWT_EXPIRED.getDescription());
 	}
 
 	@Test
 	@DisplayName("JWT가 손상되면 InvalidJwtException 이 발생한다.")
 	void throwMalformedJwtExceptionIfTokenIsMalformed() {
-		String token =
-				Jwts.builder()
-						.setSubject(memberId)
-						.signWith(secretKey, SignatureAlgorithm.HS256)
-						.setExpiration(
-								Date.from(
-										Instant.now()
-												.plus(
-														ACCESS_TOKEN_VALIDATION_SECOND,
-														ChronoUnit.SECONDS)))
-						.compact()
-						.substring(1);
+		String token = Jwts.builder().setSubject(memberId).signWith(secretKey, SignatureAlgorithm.HS256)
+				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
+				.compact().substring(1);
 
-		assertThatThrownBy(() -> jwtValidator.validateToken(token))
-				.isInstanceOf(InvalidJwtException.class)
+		assertThatThrownBy(() -> jwtValidator.validateToken(token)).isInstanceOf(InvalidJwtException.class)
 				.hasMessage(ErrorCode.JWT_MALFORMED.getDescription());
 	}
 
@@ -65,56 +50,31 @@ class JwtValidatorTest {
 	void throwInvalidJwtExceptionIfSignatureIsInvalid() {
 		String signature = "1signaturesignaturesignaturesignaturesignaturesignature";
 		SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(signature));
-		String token =
-				Jwts.builder()
-						.setSubject(memberId)
-						.signWith(secretKey, SignatureAlgorithm.HS256)
-						.setExpiration(
-								Date.from(
-										Instant.now()
-												.plus(
-														ACCESS_TOKEN_VALIDATION_SECOND,
-														ChronoUnit.SECONDS)))
-						.compact();
+		String token = Jwts.builder().setSubject(memberId).signWith(secretKey, SignatureAlgorithm.HS256)
+				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
+				.compact();
 
-		assertThatThrownBy(() -> jwtValidator.validateToken(token))
-				.isInstanceOf(InvalidJwtException.class)
+		assertThatThrownBy(() -> jwtValidator.validateToken(token)).isInstanceOf(InvalidJwtException.class)
 				.hasMessage(ErrorCode.JWT_INVALID_SIGNATURE.getDescription());
 	}
 
 	@Test
 	@DisplayName("지원하지 않는 JWT 형태이면 InvalidJwtException 이 발생한다.")
 	void throwInvalidJwtExceptionIfJwtIsUnsupported() {
-		String token =
-				Jwts.builder()
-						.setSubject(memberId)
-						.setExpiration(
-								Date.from(
-										Instant.now()
-												.plus(
-														ACCESS_TOKEN_VALIDATION_SECOND,
-														ChronoUnit.SECONDS)))
-						.compact();
+		String token = Jwts.builder().setSubject(memberId)
+				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
+				.compact();
 
-		assertThatThrownBy(() -> jwtValidator.validateToken(token))
-				.isInstanceOf(InvalidJwtException.class)
+		assertThatThrownBy(() -> jwtValidator.validateToken(token)).isInstanceOf(InvalidJwtException.class)
 				.hasMessage(ErrorCode.JWT_UNSUPPORTED.getDescription());
 	}
 
 	@Test
 	@DisplayName("JWT 검증에 성공하면 멤버 ID를 반환한다.")
 	void getMemberIdIfJwtIsInvalid() {
-		String token =
-				Jwts.builder()
-						.setSubject(memberId)
-						.signWith(secretKey, SignatureAlgorithm.HS256)
-						.setExpiration(
-								Date.from(
-										Instant.now()
-												.plus(
-														ACCESS_TOKEN_VALIDATION_SECOND,
-														ChronoUnit.SECONDS)))
-						.compact();
+		String token = Jwts.builder().setSubject(memberId).signWith(secretKey, SignatureAlgorithm.HS256)
+				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
+				.compact();
 
 		Long memberId = jwtValidator.getMemberIdIfValid(token);
 
@@ -124,19 +84,11 @@ class JwtValidatorTest {
 	@Test
 	@DisplayName("JWT 검증에 성공해도 멤버 ID가 JWT에 들어있지 않으면 InvalidJwtException 이 발생한다.")
 	void throwInvalidJwtExceptionIfNotExistsMemberIdInJwt() {
-		String token =
-				Jwts.builder()
-						.signWith(secretKey, SignatureAlgorithm.HS256)
-						.setExpiration(
-								Date.from(
-										Instant.now()
-												.plus(
-														ACCESS_TOKEN_VALIDATION_SECOND,
-														ChronoUnit.SECONDS)))
-						.compact();
+		String token = Jwts.builder().signWith(secretKey, SignatureAlgorithm.HS256)
+				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
+				.compact();
 
-		assertThatThrownBy(() -> jwtValidator.getMemberIdIfValid(token))
-				.isInstanceOf(InvalidJwtException.class)
+		assertThatThrownBy(() -> jwtValidator.getMemberIdIfValid(token)).isInstanceOf(InvalidJwtException.class)
 				.hasMessage("유저 ID를 찾을 수 없습니다.");
 	}
 }

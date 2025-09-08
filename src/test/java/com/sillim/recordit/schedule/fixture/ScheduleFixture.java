@@ -8,43 +8,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public enum ScheduleFixture {
-	DEFAULT(
-			"title",
-			"description",
-			false,
-			LocalDateTime.of(2024, 1, 1, 0, 0),
-			LocalDateTime.of(2024, 1, 2, 0, 0),
-			"서울역",
-			true,
-			36.0,
-			127.0,
-			true,
-			List.of(LocalDateTime.of(2024, 1, 1, 0, 0))),
-	NOT_SET_LOCATION(
-			"title",
-			"description",
-			false,
-			LocalDateTime.of(2024, 1, 1, 0, 0),
-			LocalDateTime.of(2024, 1, 2, 0, 0),
-			"서울역",
-			false,
-			36.0,
-			127.0,
-			true,
-			List.of(LocalDateTime.of(2024, 1, 1, 0, 0))),
-	NOT_SET_ALARM(
-			"title",
-			"description",
-			false,
-			LocalDateTime.of(2024, 1, 1, 0, 0),
-			LocalDateTime.of(2024, 1, 2, 0, 0),
-			"서울역",
-			true,
-			36.0,
-			127.0,
-			false,
-			List.of(LocalDateTime.of(2024, 1, 1, 0, 0))),
-	;
+	DEFAULT("title", "description", false, LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 2, 0, 0),
+			"서울역", true, 36.0, 127.0, true, List.of(LocalDateTime.of(2024, 1, 1, 0, 0))), NOT_SET_LOCATION("title",
+					"description", false, LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 2, 0, 0), "서울역",
+					false, 36.0, 127.0, true, List.of(LocalDateTime.of(2024, 1, 1, 0, 0))), NOT_SET_ALARM("title",
+							"description", false, LocalDateTime.of(2024, 1, 1, 0, 0),
+							LocalDateTime.of(2024, 1, 2, 0, 0), "서울역", true, 36.0, 127.0, false,
+							List.of(LocalDateTime.of(2024, 1, 1, 0, 0))),;
 
 	private final String title;
 	private final String description;
@@ -58,18 +28,9 @@ public enum ScheduleFixture {
 	private final Boolean setAlarm;
 	private final List<LocalDateTime> scheduleAlarms;
 
-	ScheduleFixture(
-			String title,
-			String description,
-			Boolean isAllDay,
-			LocalDateTime startDatetime,
-			LocalDateTime endDatetime,
-			String place,
-			Boolean setLocation,
-			Double latitude,
-			Double longitude,
-			Boolean setAlarm,
-			List<LocalDateTime> scheduleAlarms) {
+	ScheduleFixture(String title, String description, Boolean isAllDay, LocalDateTime startDatetime,
+			LocalDateTime endDatetime, String place, Boolean setLocation, Double latitude, Double longitude,
+			Boolean setAlarm, List<LocalDateTime> scheduleAlarms) {
 		this.title = title;
 		this.description = description;
 		this.isAllDay = isAllDay;
@@ -83,48 +44,19 @@ public enum ScheduleFixture {
 		this.scheduleAlarms = scheduleAlarms;
 	}
 
-	public Schedule getSchedule(
-			ScheduleCategory category, ScheduleGroup scheduleGroup, Calendar calendar) {
-		return Schedule.builder()
-				.title(title)
-				.description(description)
-				.isAllDay(isAllDay)
-				.startDateTime(startDatetime)
-				.endDateTime(endDatetime)
-				.place(place)
-				.setLocation(setLocation)
-				.latitude(latitude)
-				.longitude(longitude)
-				.setAlarm(setAlarm)
-				.category(category)
-				.scheduleGroup(scheduleGroup)
-				.calendar(calendar)
-				.scheduleAlarms(scheduleAlarms)
-				.build();
+	public Schedule getSchedule(ScheduleCategory category, ScheduleGroup scheduleGroup, Calendar calendar) {
+		return Schedule.builder().title(title).description(description).isAllDay(isAllDay).startDateTime(startDatetime)
+				.endDateTime(endDatetime).place(place).setLocation(setLocation).latitude(latitude).longitude(longitude)
+				.setAlarm(setAlarm).category(category).scheduleGroup(scheduleGroup).calendar(calendar)
+				.scheduleAlarms(scheduleAlarms).build();
 	}
 
-	public Schedule getSchedule(
-			ScheduleCategory category,
-			ScheduleGroup scheduleGroup,
-			Calendar calendar,
-			LocalDateTime startDatetime,
-			LocalDateTime endDatetime) {
-		return Schedule.builder()
-				.title(title)
-				.description(description)
-				.isAllDay(isAllDay)
-				.startDateTime(startDatetime)
-				.endDateTime(endDatetime)
-				.place(place)
-				.setLocation(setLocation)
-				.latitude(latitude)
-				.longitude(longitude)
-				.setAlarm(setAlarm)
-				.category(category)
-				.scheduleGroup(scheduleGroup)
-				.calendar(calendar)
-				.scheduleAlarms(scheduleAlarms)
-				.build();
+	public Schedule getSchedule(ScheduleCategory category, ScheduleGroup scheduleGroup, Calendar calendar,
+			LocalDateTime startDatetime, LocalDateTime endDatetime) {
+		return Schedule.builder().title(title).description(description).isAllDay(isAllDay).startDateTime(startDatetime)
+				.endDateTime(endDatetime).place(place).setLocation(setLocation).latitude(latitude).longitude(longitude)
+				.setAlarm(setAlarm).category(category).scheduleGroup(scheduleGroup).calendar(calendar)
+				.scheduleAlarms(scheduleAlarms).build();
 	}
 
 	public String getTitle() {

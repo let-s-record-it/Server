@@ -31,11 +31,7 @@ public class FeedImages {
 	private Integer feedImageCount;
 
 	@BatchSize(size = 10)
-	@OneToMany(
-			mappedBy = "feed",
-			fetch = FetchType.LAZY,
-			cascade = CascadeType.PERSIST,
-			orphanRemoval = true)
+	@OneToMany(mappedBy = "feed", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
 	private List<FeedImage> feedImages = new ArrayList<>();
 
 	public FeedImages(List<FeedImage> feedImages) {

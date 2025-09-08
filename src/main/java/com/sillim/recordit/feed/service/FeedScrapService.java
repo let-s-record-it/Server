@@ -18,15 +18,8 @@ public class FeedScrapService {
 	private final FeedRepository feedRepository;
 
 	public void feedScrap(Long feedId, Long memberId) {
-		feedScrapRepository.save(
-				new FeedScrap(
-						feedRepository
-								.findById(feedId)
-								.orElseThrow(
-										() ->
-												new RecordNotFoundException(
-														ErrorCode.FEED_NOT_FOUND)),
-						memberId));
+		feedScrapRepository.save(new FeedScrap(feedRepository.findById(feedId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND)), memberId));
 	}
 
 	public void feedUnScrap(Long feedId, Long memberId) {

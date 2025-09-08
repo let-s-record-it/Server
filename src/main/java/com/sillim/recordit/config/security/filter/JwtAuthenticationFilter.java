@@ -28,8 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final MemberQueryService memberQueryService;
 
 	@Override
-	protected void doFilterInternal(
-			HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		getTokenFromHeader(request).ifPresent(this::authenticate);
 
@@ -39,17 +38,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private void authenticate(String token) {
 		if (isBearerType(token)) {
 			AuthorizedUser authorizedUser = getAuthorizedUser(token);
-			SecurityContextHolder.getContext()
-					.setAuthentication(
-							new UsernamePasswordAuthenticationToken(
-									authorizedUser, "", authorizedUser.getAuthorities()));
+			SecurityContextHolder.getContext().setAuthentication(
+					new UsernamePasswordAuthenticationToken(authorizedUser, "", authorizedUser.getAuthorities()));
 		}
 	}
 
 	private AuthorizedUser getAuthorizedUser(String token) {
 		return authorizedUserMapper.toAuthorizedUser(
-				memberQueryService.findByMemberId(
-						jwtValidator.getMemberIdIfValid(token.substring(BEARER.length()))));
+				memberQueryService.findByMemberId(jwtValidator.getMemberIdIfValid(token.substring(BEARER.length()))));
 	}
 
 	private Optional<String> getTokenFromHeader(HttpServletRequest request) {

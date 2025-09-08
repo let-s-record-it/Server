@@ -7,8 +7,7 @@ import com.sillim.recordit.global.querydsl.QuerydslRepositorySupport;
 import java.util.List;
 import java.util.Optional;
 
-public class CustomCalendarRepositoryImpl extends QuerydslRepositorySupport
-		implements CustomCalendarRepository {
+public class CustomCalendarRepositoryImpl extends QuerydslRepositorySupport implements CustomCalendarRepository {
 
 	public CustomCalendarRepositoryImpl() {
 		super(Calendar.class);
@@ -16,23 +15,14 @@ public class CustomCalendarRepositoryImpl extends QuerydslRepositorySupport
 
 	@Override
 	public Optional<Calendar> findByIdWithFetchCategory(Long calendarId) {
-		return Optional.ofNullable(
-				selectFrom(calendar)
-						.leftJoin(calendar.category)
-						.fetchJoin()
-						.where(calendar.deleted.isFalse())
-						.where(calendar.id.eq(calendarId))
-						.fetchOne());
+		return Optional.ofNullable(selectFrom(calendar).leftJoin(calendar.category).fetchJoin()
+				.where(calendar.deleted.isFalse()).where(calendar.id.eq(calendarId)).fetchOne());
 	}
 
 	@Override
 	public List<Calendar> findByMemberId(Long memberId) {
-		return selectFrom(calendar)
-				.leftJoin(calendar.category)
-				.fetchJoin()
-				.where(calendar.deleted.isFalse())
-				.where(calendar.memberId.eq(memberId))
-				.fetch();
+		return selectFrom(calendar).leftJoin(calendar.category).fetchJoin().where(calendar.deleted.isFalse())
+				.where(calendar.memberId.eq(memberId)).fetch();
 	}
 
 	@Override
@@ -42,9 +32,7 @@ public class CustomCalendarRepositoryImpl extends QuerydslRepositorySupport
 
 	@Override
 	public void updateCategorySetDefault(Long defaultCategoryId, Long categoryId) {
-		update(calendar)
-				.set(calendar.category.id, defaultCategoryId)
-				.where(calendar.category.id.eq(categoryId))
+		update(calendar).set(calendar.category.id, defaultCategoryId).where(calendar.category.id.eq(categoryId))
 				.execute();
 	}
 }

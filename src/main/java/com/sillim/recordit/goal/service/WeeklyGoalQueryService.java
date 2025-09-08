@@ -19,8 +19,8 @@ public class WeeklyGoalQueryService {
 	private final CalendarQueryService calendarQueryService;
 	private final WeeklyGoalRepository weeklyGoalRepository;
 
-	public List<WeeklyGoal> searchAllWeeklyGoalByDate(
-			final Integer year, final Integer month, final Long memberId, final Long calendarId) {
+	public List<WeeklyGoal> searchAllWeeklyGoalByDate(final Integer year, final Integer month, final Long memberId,
+			final Long calendarId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
@@ -28,11 +28,8 @@ public class WeeklyGoalQueryService {
 	}
 
 	public WeeklyGoal searchByIdAndCheckAuthority(final Long weeklyGoalId) {
-		WeeklyGoal weeklyGoal =
-				weeklyGoalRepository
-						.findWeeklyGoalById(weeklyGoalId)
-						.orElseThrow(
-								() -> new RecordNotFoundException(ErrorCode.WEEKLY_GOAL_NOT_FOUND));
+		WeeklyGoal weeklyGoal = weeklyGoalRepository.findWeeklyGoalById(weeklyGoalId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.WEEKLY_GOAL_NOT_FOUND));
 
 		return weeklyGoal;
 	}

@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AlarmTime {
 
-	@Column private LocalDateTime alarmTime;
+	@Column
+	private LocalDateTime alarmTime;
 
 	private AlarmTime(LocalDateTime alarmTime) {
 		this.alarmTime = alarmTime;

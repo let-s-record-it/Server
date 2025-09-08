@@ -56,8 +56,10 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(TaskController.class)
 public class TaskControllerTest extends RestDocsTest {
 
-	@MockBean TaskCommandService taskCommandService;
-	@MockBean TaskQueryService taskQueryService;
+	@MockBean
+	TaskCommandService taskCommandService;
+	@MockBean
+	TaskQueryService taskQueryService;
 
 	long memberId = 1L;
 	private Member member;
@@ -78,43 +80,18 @@ public class TaskControllerTest extends RestDocsTest {
 	void addNonRepeatingTaskTest() throws Exception {
 
 		TaskGroupUpdateRequest taskGroupRequest = new TaskGroupUpdateRequest(null, null);
-		TaskRepetitionUpdateRequest repetitionRequest =
-				new TaskRepetitionUpdateRequest(
-						TaskRepetitionType.DAILY,
-						1,
-						LocalDate.of(2024, 1, 1),
-						LocalDate.of(2024, 3, 31),
-						null,
-						null,
-						null,
-						null,
-						null);
-		TaskAddRequest request =
-				new TaskAddRequest(
-						"회의록 작성",
-						"프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 1, 1),
-						true,
-						1L,
-						repetitionRequest,
-						taskGroupRequest);
+		TaskRepetitionUpdateRequest repetitionRequest = new TaskRepetitionUpdateRequest(TaskRepetitionType.DAILY, 1,
+				LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31), null, null, null, null, null);
+		TaskAddRequest request = new TaskAddRequest("회의록 작성", "프로젝트 회의록 작성하기", LocalDate.of(2024, 1, 1), true, 1L,
+				repetitionRequest, taskGroupRequest);
 
-		ResultActions perform =
-				mockMvc.perform(
-						post("/api/v1/calendars/{calendarId}/tasks", 1L)
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(request)));
+		ResultActions perform = mockMvc.perform(post("/api/v1/calendars/{calendarId}/tasks", 1L)
+				.contentType(MediaType.APPLICATION_JSON).content(toJson(request)));
 
 		perform.andExpect(status().isCreated());
 
-		perform.andDo(print())
-				.andDo(
-						document(
-								"add-tasks",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 ID"))));
+		perform.andDo(print()).andDo(document("add-tasks", getDocumentRequest(), getDocumentResponse(),
+				pathParameters(parameterWithName("calendarId").description("캘린더 ID"))));
 	}
 
 	@Test
@@ -124,32 +101,18 @@ public class TaskControllerTest extends RestDocsTest {
 		Long calendarId = 1L;
 		TaskGroup taskGroup = new TaskGroup(null, null);
 		LocalDate date = LocalDate.of(2024, 6, 12);
-		List<Task> tasks =
-				LongStream.rangeClosed(1, 2)
-						.mapToObj(
-								id -> {
-									Task task =
-											spy(
-													TaskFixture.DEFAULT.getWithDate(
-															date,
-															taskCategory,
-															calendar,
-															taskGroup));
-									given(task.getId()).willReturn(id);
-									return task;
-								})
-						.toList();
+		List<Task> tasks = LongStream.rangeClosed(1, 2).mapToObj(id -> {
+			Task task = spy(TaskFixture.DEFAULT.getWithDate(date, taskCategory, calendar, taskGroup));
+			given(task.getId()).willReturn(id);
+			return task;
+		}).toList();
 
 		given(taskQueryService.searchAllByDate(eq(calendarId), eq(date), any())).willReturn(tasks);
 
-		ResultActions perform =
-				mockMvc.perform(
-						get("/api/v1/calendars/{calendarId}/tasks", calendarId)
-								.contentType(MediaType.APPLICATION_JSON)
-								.queryParam("date", date.toString()));
+		ResultActions perform = mockMvc.perform(get("/api/v1/calendars/{calendarId}/tasks", calendarId)
+				.contentType(MediaType.APPLICATION_JSON).queryParam("date", date.toString()));
 
-		perform.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(2))
+		perform.andExpect(status().isOk()).andExpect(jsonPath("$.size()").value(2))
 				.andExpect(jsonPath("$[0].id").value(tasks.get(0).getId()))
 				.andExpect(jsonPath("$[0].title").value(tasks.get(0).getTitle()))
 				.andExpect(jsonPath("$[0].achieved").value(tasks.get(0).isAchieved()))
@@ -158,14 +121,9 @@ public class TaskControllerTest extends RestDocsTest {
 				.andExpect(jsonPath("$[1].achieved").value(tasks.get(1).isAchieved()));
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"get-task-list",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 ID")),
-								queryParameters(parameterWithName("date").description("조회할 날짜"))));
+				.andDo(document("get-task-list", getDocumentRequest(), getDocumentResponse(),
+						pathParameters(parameterWithName("calendarId").description("캘린더 ID")),
+						queryParameters(parameterWithName("date").description("조회할 날짜"))));
 	}
 
 	@Test
@@ -180,25 +138,17 @@ public class TaskControllerTest extends RestDocsTest {
 		given(task.getId()).willReturn(taskId);
 
 		TaskDetailsResponse response = TaskDetailsResponse.from(task);
-		given(taskQueryService.searchByIdAndCalendarId(eq(taskId), eq(calendarId), any()))
-				.willReturn(response);
+		given(taskQueryService.searchByIdAndCalendarId(eq(taskId), eq(calendarId), any())).willReturn(response);
 
-		ResultActions perform =
-				mockMvc.perform(
-						get("/api/v1/calendars/{calendarId}/tasks/{taskId}", calendarId, taskId)
-								.contentType(MediaType.APPLICATION_JSON));
+		ResultActions perform = mockMvc.perform(get("/api/v1/calendars/{calendarId}/tasks/{taskId}", calendarId, taskId)
+				.contentType(MediaType.APPLICATION_JSON));
 
 		perform.andExpect(status().isOk());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"get-task-details-with-no-repeat",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 ID"),
-										parameterWithName("taskId").description("할 일 ID"))));
+				.andDo(document("get-task-details-with-no-repeat", getDocumentRequest(), getDocumentResponse(),
+						pathParameters(parameterWithName("calendarId").description("캘린더 ID"),
+								parameterWithName("taskId").description("할 일 ID"))));
 	}
 
 	@Test
@@ -214,25 +164,17 @@ public class TaskControllerTest extends RestDocsTest {
 		TaskRepetitionPattern repetition = TaskRepetitionPatternFixture.DAILY.get(taskGroup);
 
 		TaskDetailsResponse response = TaskDetailsResponse.of(task, repetition);
-		given(taskQueryService.searchByIdAndCalendarId(eq(taskId), eq(calendarId), any()))
-				.willReturn(response);
+		given(taskQueryService.searchByIdAndCalendarId(eq(taskId), eq(calendarId), any())).willReturn(response);
 
-		ResultActions perform =
-				mockMvc.perform(
-						get("/api/v1/calendars/{calendarId}/tasks/{taskId}", calendarId, taskId)
-								.contentType(MediaType.APPLICATION_JSON));
+		ResultActions perform = mockMvc.perform(get("/api/v1/calendars/{calendarId}/tasks/{taskId}", calendarId, taskId)
+				.contentType(MediaType.APPLICATION_JSON));
 
 		perform.andExpect(status().isOk());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"get-task-details-with-repeat",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 ID"),
-										parameterWithName("taskId").description("할 일 ID"))));
+				.andDo(document("get-task-details-with-repeat", getDocumentRequest(), getDocumentResponse(),
+						pathParameters(parameterWithName("calendarId").description("캘린더 ID"),
+								parameterWithName("taskId").description("할 일 ID"))));
 	}
 
 	@Test
@@ -242,8 +184,7 @@ public class TaskControllerTest extends RestDocsTest {
 		calendar = spy(calendar);
 		given(calendar.getId()).willReturn(calendarId);
 		Long monthlyGoalId = 2L;
-		MonthlyGoal monthlyGoal =
-				spy(MonthlyGoalFixture.DEFAULT.getWithMember(taskCategory, calendar));
+		MonthlyGoal monthlyGoal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(taskCategory, calendar));
 		given(monthlyGoal.getId()).willReturn(monthlyGoalId);
 		TaskGroup taskGroup = new TaskGroup(monthlyGoal, null);
 		Long taskId = 3L;
@@ -251,25 +192,17 @@ public class TaskControllerTest extends RestDocsTest {
 		given(task.getId()).willReturn(taskId);
 
 		TaskDetailsResponse response = TaskDetailsResponse.from(task);
-		given(taskQueryService.searchByIdAndCalendarId(eq(taskId), eq(calendarId), any()))
-				.willReturn(response);
+		given(taskQueryService.searchByIdAndCalendarId(eq(taskId), eq(calendarId), any())).willReturn(response);
 
-		ResultActions perform =
-				mockMvc.perform(
-						get("/api/v1/calendars/{calendarId}/tasks/{taskId}", calendarId, taskId)
-								.contentType(MediaType.APPLICATION_JSON));
+		ResultActions perform = mockMvc.perform(get("/api/v1/calendars/{calendarId}/tasks/{taskId}", calendarId, taskId)
+				.contentType(MediaType.APPLICATION_JSON));
 
 		perform.andExpect(status().isOk());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"get-task-details-with-related-goals",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 ID"),
-										parameterWithName("taskId").description("할 일 ID"))));
+				.andDo(document("get-task-details-with-related-goals", getDocumentRequest(), getDocumentResponse(),
+						pathParameters(parameterWithName("calendarId").description("캘린더 ID"),
+								parameterWithName("taskId").description("할 일 ID"))));
 	}
 
 	@Test
@@ -278,50 +211,22 @@ public class TaskControllerTest extends RestDocsTest {
 
 		Long calendarId = 1L;
 		Long taskId = 2L;
-		TaskRepetitionUpdateRequest repetitionRequest =
-				new TaskRepetitionUpdateRequest(
-						TaskRepetitionType.DAILY,
-						1,
-						LocalDate.of(2024, 1, 1),
-						LocalDate.of(2024, 3, 31),
-						null,
-						null,
-						null,
-						null,
-						null);
+		TaskRepetitionUpdateRequest repetitionRequest = new TaskRepetitionUpdateRequest(TaskRepetitionType.DAILY, 1,
+				LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31), null, null, null, null, null);
 		TaskGroupUpdateRequest taskGroupRequest = new TaskGroupUpdateRequest(1L, null);
-		TaskUpdateRequest request =
-				new TaskUpdateRequest(
-						"(수정) 회의록 작성",
-						"(수정) 프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 7, 28),
-						1L,
-						3L,
-						true,
-						repetitionRequest,
-						taskGroupRequest);
+		TaskUpdateRequest request = new TaskUpdateRequest("(수정) 회의록 작성", "(수정) 프로젝트 회의록 작성하기",
+				LocalDate.of(2024, 7, 28), 1L, 3L, true, repetitionRequest, taskGroupRequest);
 
-		ResultActions perform =
-				mockMvc.perform(
-						put(
-										"/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-all",
-										calendarId,
-										taskId)
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(request)));
+		ResultActions perform = mockMvc
+				.perform(put("/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-all", calendarId, taskId)
+						.contentType(MediaType.APPLICATION_JSON).content(toJson(request)));
 
 		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"modify-all-tasks",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 ID"),
-										parameterWithName("taskId")
-												.description("수정을 위해 선택한 할 일의 ID"))));
+				.andDo(document("modify-all-tasks", getDocumentRequest(), getDocumentResponse(),
+						pathParameters(parameterWithName("calendarId").description("캘린더 ID"),
+								parameterWithName("taskId").description("수정을 위해 선택한 할 일의 ID"))));
 	}
 
 	@Test
@@ -331,38 +236,19 @@ public class TaskControllerTest extends RestDocsTest {
 		Long calendarId = 1L;
 		Long taskId = 2L;
 		TaskGroupUpdateRequest taskGroupRequest = new TaskGroupUpdateRequest(1L, null);
-		TaskUpdateRequest request =
-				new TaskUpdateRequest(
-						"(수정) 회의록 작성",
-						"(수정) 프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 7, 28),
-						1L,
-						3L,
-						false,
-						null,
-						taskGroupRequest);
+		TaskUpdateRequest request = new TaskUpdateRequest("(수정) 회의록 작성", "(수정) 프로젝트 회의록 작성하기",
+				LocalDate.of(2024, 7, 28), 1L, 3L, false, null, taskGroupRequest);
 
-		ResultActions perform =
-				mockMvc.perform(
-						put(
-										"/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-one",
-										calendarId,
-										taskId)
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(request)));
+		ResultActions perform = mockMvc
+				.perform(put("/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-one", calendarId, taskId)
+						.contentType(MediaType.APPLICATION_JSON).content(toJson(request)));
 
 		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"modify-one-task",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 ID"),
-										parameterWithName("taskId")
-												.description("수정을 위해 선택한 할 일의 ID"))));
+				.andDo(document("modify-one-task", getDocumentRequest(), getDocumentResponse(),
+						pathParameters(parameterWithName("calendarId").description("캘린더 ID"),
+								parameterWithName("taskId").description("수정을 위해 선택한 할 일의 ID"))));
 	}
 
 	@Test
@@ -371,37 +257,15 @@ public class TaskControllerTest extends RestDocsTest {
 
 		Long calendarId = 1L;
 		Long taskId = 2L;
-		TaskRepetitionUpdateRequest repetitionRequest =
-				new TaskRepetitionUpdateRequest(
-						TaskRepetitionType.DAILY,
-						1,
-						LocalDate.of(2024, 1, 1),
-						LocalDate.of(2024, 3, 31),
-						null,
-						null,
-						null,
-						null,
-						null);
+		TaskRepetitionUpdateRequest repetitionRequest = new TaskRepetitionUpdateRequest(TaskRepetitionType.DAILY, 1,
+				LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31), null, null, null, null, null);
 		TaskGroupUpdateRequest taskGroupRequest = new TaskGroupUpdateRequest(1L, null);
-		TaskUpdateRequest request =
-				new TaskUpdateRequest(
-						"(수정) 회의록 작성",
-						"(수정) 프로젝트 회의록 작성하기",
-						LocalDate.of(2024, 7, 28),
-						1L,
-						3L,
-						true,
-						repetitionRequest,
-						taskGroupRequest);
+		TaskUpdateRequest request = new TaskUpdateRequest("(수정) 회의록 작성", "(수정) 프로젝트 회의록 작성하기",
+				LocalDate.of(2024, 7, 28), 1L, 3L, true, repetitionRequest, taskGroupRequest);
 
-		ResultActions perform =
-				mockMvc.perform(
-						put(
-										"/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-one",
-										calendarId,
-										taskId)
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(toJson(request)));
+		ResultActions perform = mockMvc
+				.perform(put("/api/v1/calendars/{calendarId}/tasks/{taskId}/modify-one", calendarId, taskId)
+						.contentType(MediaType.APPLICATION_JSON).content(toJson(request)));
 
 		perform.andExpect(status().isNoContent());
 
@@ -414,26 +278,16 @@ public class TaskControllerTest extends RestDocsTest {
 		Long calendarId = 1L;
 		Long taskId = 2L;
 
-		ResultActions perform =
-				mockMvc.perform(
-						delete(
-										"/api/v1/calendars/{calendarId}/tasks/{taskId}/remove-all",
-										calendarId,
-										taskId)
-								.contentType(MediaType.APPLICATION_JSON));
+		ResultActions perform = mockMvc
+				.perform(delete("/api/v1/calendars/{calendarId}/tasks/{taskId}/remove-all", calendarId, taskId)
+						.contentType(MediaType.APPLICATION_JSON));
 
 		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"delete-all-tasks",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 ID"),
-										parameterWithName("taskId")
-												.description("삭제를 위해 선택한 할 일의 ID"))));
+				.andDo(document("delete-all-tasks", getDocumentRequest(), getDocumentResponse(),
+						pathParameters(parameterWithName("calendarId").description("캘린더 ID"),
+								parameterWithName("taskId").description("삭제를 위해 선택한 할 일의 ID"))));
 	}
 
 	@Test
@@ -442,26 +296,16 @@ public class TaskControllerTest extends RestDocsTest {
 		Long calendarId = 1L;
 		Long taskId = 2L;
 
-		ResultActions perform =
-				mockMvc.perform(
-						delete(
-										"/api/v1/calendars/{calendarId}/tasks/{taskId}/remove-after-all",
-										calendarId,
-										taskId)
-								.contentType(MediaType.APPLICATION_JSON));
+		ResultActions perform = mockMvc
+				.perform(delete("/api/v1/calendars/{calendarId}/tasks/{taskId}/remove-after-all", calendarId, taskId)
+						.contentType(MediaType.APPLICATION_JSON));
 
 		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"delete-after-all-tasks",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 ID"),
-										parameterWithName("taskId")
-												.description("삭제를 위해 선택한 할 일의 ID"))));
+				.andDo(document("delete-after-all-tasks", getDocumentRequest(), getDocumentResponse(),
+						pathParameters(parameterWithName("calendarId").description("캘린더 ID"),
+								parameterWithName("taskId").description("삭제를 위해 선택한 할 일의 ID"))));
 	}
 
 	@Test
@@ -470,25 +314,15 @@ public class TaskControllerTest extends RestDocsTest {
 		Long calendarId = 1L;
 		Long taskId = 2L;
 
-		ResultActions perform =
-				mockMvc.perform(
-						delete(
-										"/api/v1/calendars/{calendarId}/tasks/{taskId}/remove-one",
-										calendarId,
-										taskId)
-								.contentType(MediaType.APPLICATION_JSON));
+		ResultActions perform = mockMvc
+				.perform(delete("/api/v1/calendars/{calendarId}/tasks/{taskId}/remove-one", calendarId, taskId)
+						.contentType(MediaType.APPLICATION_JSON));
 
 		perform.andExpect(status().isNoContent());
 
 		perform.andDo(print())
-				.andDo(
-						document(
-								"delete-one-task",
-								getDocumentRequest(),
-								getDocumentResponse(),
-								pathParameters(
-										parameterWithName("calendarId").description("캘린더 ID"),
-										parameterWithName("taskId")
-												.description("삭제를 위해 선택한 할 일의 ID"))));
+				.andDo(document("delete-one-task", getDocumentRequest(), getDocumentResponse(),
+						pathParameters(parameterWithName("calendarId").description("캘린더 ID"),
+								parameterWithName("taskId").description("삭제를 위해 선택한 할 일의 ID"))));
 	}
 }
