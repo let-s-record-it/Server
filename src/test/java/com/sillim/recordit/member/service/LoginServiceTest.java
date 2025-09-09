@@ -24,7 +24,6 @@ import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.repository.MemberRepository;
 import com.sillim.recordit.member.service.kakao.KakaoAuthenticationService;
 import com.sillim.recordit.member.service.naver.NaverAuthenticationService;
-import java.io.IOException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,14 +58,14 @@ class LoginServiceTest {
 
 	@Test
 	@DisplayName("oidc를 지원하는 로그인의 경우 토큰을 검증하여 로그인 한다.")
-	void login() throws IOException {
+	void login() throws Exception {
 		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
 		Member member = MemberFixture.DEFAULT.getMember();
 		String idToken = "header.payload.signature";
 		String account = "account";
 		given(kakaoAuthenticationService.authenticate(any(IdToken.class))).willReturn(account);
 		given(memberRepository.findByOauthAccount(eq(account))).willReturn(Optional.of(member));
-		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
+		given(jwtProvider.generateAuthorizationToken(member.getEmail())).willReturn(target);
 
 		OAuthTokenResponse token = loginService
 				.login(new LoginRequest(idToken, "accessToken", OAuthProvider.KAKAO, "id", "model", "token"));
@@ -77,14 +76,14 @@ class LoginServiceTest {
 
 	@Test
 	@DisplayName("웹 로그인의 경우 발급받은 토큰을 검증하여 로그인 한다.")
-	void loginByToken() {
+	void loginByToken() throws Exception {
 		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
 		Member member = MemberFixture.DEFAULT.getMember();
 		String token = "header.payload.signature";
-		long memberId = 1L;
-		given(jwtValidator.getMemberIdIfValid(eq(token))).willReturn(memberId);
-		given(memberRepository.findById(eq(memberId))).willReturn(Optional.of(member));
-		given(jwtProvider.generateAuthorizationToken(eq(memberId))).willReturn(target);
+		String email = "test@mail.com";
+		given(jwtValidator.getSubIfValid(eq(token))).willReturn(email);
+		given(memberRepository.findByEmail(eq(email))).willReturn(Optional.of(member));
+		given(jwtProvider.generateAuthorizationToken(eq(email))).willReturn(target);
 
 		OAuthTokenResponse tokenResponse = loginService.login(token);
 
@@ -94,7 +93,7 @@ class LoginServiceTest {
 
 	@Test
 	@DisplayName("로그인 시 인가받은 유저 정보가 없을 경우 회원가입 후 로그인 한다.")
-	void signInIfNotExistsMemberInfo() throws IOException {
+	void signInIfNotExistsMemberInfo() throws Exception {
 		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
 		Member member = MemberFixture.DEFAULT.getMember();
 		String idToken = "header.payload.signature";
@@ -105,7 +104,7 @@ class LoginServiceTest {
 		given(memberRepository.findByOauthAccount(eq(account))).willReturn(Optional.empty());
 		given(kakaoAuthenticationService.getMemberInfoByAccessToken(anyString())).willReturn(memberInfo);
 		given(signupService.signup(eq(memberInfo))).willReturn(member);
-		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
+		given(jwtProvider.generateAuthorizationToken(member.getEmail())).willReturn(target);
 
 		OAuthTokenResponse token = loginService
 				.login(new LoginRequest(idToken, "accessToken", OAuthProvider.KAKAO, "id", "model", "token"));
@@ -116,7 +115,7 @@ class LoginServiceTest {
 
 	@Test
 	@DisplayName("네이버 로그인 시 엑세스 토큰으로 인가받아 로그인 한다.")
-	void naverLoginWithoutOidcToken() throws IOException {
+	void naverLoginWithoutOidcToken() throws Exception {
 		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
 		Member member = MemberFixture.DEFAULT.getMember();
 		String account = "account";
@@ -124,7 +123,7 @@ class LoginServiceTest {
 				"https://image.url");
 		given(naverAuthenticationService.getMemberInfoByAccessToken(anyString())).willReturn(memberInfo);
 		given(memberRepository.findByOauthAccount(eq(account))).willReturn(Optional.of(member));
-		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
+		given(jwtProvider.generateAuthorizationToken(member.getEmail())).willReturn(target);
 
 		OAuthTokenResponse token = loginService
 				.login(new LoginRequest("", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));
@@ -135,7 +134,7 @@ class LoginServiceTest {
 
 	@Test
 	@DisplayName("네이버 로그인 시 인가받은 유저 정보가 없을 경우 회원가입 후 로그인 한다.")
-	void naverSignInIfNotExistsMemberInfo() throws IOException {
+	void naverSignInIfNotExistsMemberInfo() throws Exception {
 		AuthorizationToken target = AuthorizationTokenFixture.DEFAULT.getAuthorizationToken();
 		Member member = MemberFixture.DEFAULT.getMember();
 		String account = "account";
@@ -144,7 +143,7 @@ class LoginServiceTest {
 		given(naverAuthenticationService.getMemberInfoByAccessToken(anyString())).willReturn(memberInfo);
 		given(memberRepository.findByOauthAccount(eq(account))).willReturn(Optional.empty());
 		given(signupService.signup(eq(memberInfo))).willReturn(member);
-		given(jwtProvider.generateAuthorizationToken(member.getId())).willReturn(target);
+		given(jwtProvider.generateAuthorizationToken(member.getEmail())).willReturn(target);
 
 		OAuthTokenResponse token = loginService
 				.login(new LoginRequest("", "accessToken", OAuthProvider.NAVER, "id", "model", "token"));

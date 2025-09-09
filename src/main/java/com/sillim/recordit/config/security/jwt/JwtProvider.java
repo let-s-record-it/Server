@@ -1,5 +1,6 @@
 package com.sillim.recordit.config.security.jwt;
 
+import com.sillim.recordit.config.security.encrypt.AESEncryptor;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,41 +9,47 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
 
-	private final Key secretKey;
+	@Value("${jwt.secret-key}")
+	private String secret;
 
 	private static final Long EXCHANGE_TOKEN_VALIDATION_SECOND = 60L * 1000;
 	private static final Long ACCESS_TOKEN_VALIDATION_SECOND = 60L * 60 * 24 * 1000;
 	private static final Long REFRESH_TOKEN_VALIDATION_SECOND = 60L * 60 * 24 * 14 * 1000;
 
-	public String generateExchangeToken(Long memberId) {
-		return buildToken(memberId)
-				.setExpiration(Date.from(Instant.now().plus(EXCHANGE_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
+	private final Key secretKey;
+	private final AESEncryptor encryptor;
+
+	public String generateExchangeToken(String email) throws Exception {
+		return buildToken(email)
+				.setExpiration(Date.from(Instant.now().plus(EXCHANGE_TOKEN_VALIDATION_SECOND, ChronoUnit.MILLIS)))
 				.compact();
 	}
 
-	public AuthorizationToken generateAuthorizationToken(Long memberId) {
-		return new AuthorizationToken(generateAccessToken(memberId), generateRefreshToken(memberId));
+	public AuthorizationToken generateAuthorizationToken(String email) throws Exception {
+		return new AuthorizationToken(generateAccessToken(email), generateRefreshToken(email));
 	}
 
-	private String generateAccessToken(Long memberId) {
-		return buildToken(memberId)
-				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
+	private String generateAccessToken(String email) throws Exception {
+		return buildToken(email)
+				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.MILLIS)))
 				.compact();
 	}
 
-	private String generateRefreshToken(Long memberId) {
-		return buildToken(memberId)
-				.setExpiration(Date.from(Instant.now().plus(REFRESH_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
+	private String generateRefreshToken(String email) throws Exception {
+		return buildToken(email)
+				.setExpiration(Date.from(Instant.now().plus(REFRESH_TOKEN_VALIDATION_SECOND, ChronoUnit.MILLIS)))
 				.compact();
 	}
 
-	private JwtBuilder buildToken(Long memberId) {
-		return Jwts.builder().setSubject(String.valueOf(memberId)).signWith(secretKey, SignatureAlgorithm.HS512);
+	private JwtBuilder buildToken(String email) throws Exception {
+		return Jwts.builder().setSubject(encryptor.encrypt(email, secret)).signWith(secretKey,
+				SignatureAlgorithm.HS512);
 	}
 }

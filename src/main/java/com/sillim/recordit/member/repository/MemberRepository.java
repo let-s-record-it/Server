@@ -15,6 +15,8 @@ public interface MemberRepository extends Neo4jRepository<Member, Long> {
 	@Query("MATCH (m:Member) WHERE m.oauthAccount = $oauthAccount RETURN m")
 	Optional<Member> findByOauthAccount(@Param("oauthAccount") String oauthAccount);
 
+	Optional<Member> findByEmail(String email);
+
 	List<Member> findByPersonalIdStartingWith(String prefix);
 
 	@Query("""

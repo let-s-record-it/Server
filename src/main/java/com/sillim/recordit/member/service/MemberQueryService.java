@@ -23,6 +23,11 @@ public class MemberQueryService {
 				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 	}
 
+	public Member findByEmail(String email) {
+		return memberRepository.findByEmail(email)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+	}
+
 	public ProfileResponse searchProfileByMemberId(Long memberId, Long myId) {
 		Member me = findByMemberId(myId);
 		Member other = findByMemberId(memberId);

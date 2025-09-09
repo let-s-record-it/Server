@@ -1,5 +1,6 @@
 package com.sillim.recordit.config.security.jwt;
 
+import com.sillim.recordit.config.security.encrypt.AESEncryptor;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.security.InvalidJwtException;
 import io.jsonwebtoken.Claims;
@@ -12,21 +13,26 @@ import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class JwtValidator {
 
+	@Value("${jwt.secret-key}")
+	private String secret;
+
 	private final Key secretKey;
+	private final AESEncryptor encryptor;
 
-	public Long getMemberIdIfValid(String accessToken) {
-		String memberId = validateToken(accessToken).getBody().getSubject();
+	public String getSubIfValid(String accessToken) throws Exception {
+		String sub = validateToken(accessToken).getBody().getSubject();
 
-		if (Objects.isNull(memberId)) {
-			throw new InvalidJwtException(ErrorCode.JWT_UNSUPPORTED, "유저 ID를 찾을 수 없습니다.");
+		if (Objects.isNull(sub)) {
+			throw new InvalidJwtException(ErrorCode.JWT_UNSUPPORTED, "Subject를 찾을 수 없습니다.");
 		}
-		return Long.valueOf(memberId);
+		return encryptor.decrypt(sub, secret);
 	}
 
 	public Jws<Claims> validateToken(String token) {

@@ -47,17 +47,17 @@ class JwtAuthenticationFilterTest {
 
 	@Test
 	@DisplayName("헤더에 유효한 Bearer Token이 있으면 인증에 성공한다.")
-	void authenticatedIfExistsTokenInHeader() throws ServletException, IOException {
+	void authenticatedIfExistsTokenInHeader() throws Exception {
 		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
 		MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
 		FilterChain mockFilterChain = mock(FilterChain.class);
 		String token = "Bearer token";
 		httpServletRequest.addHeader(HttpHeaders.AUTHORIZATION, token);
-		long memberId = 1L;
+		String email = "test@mail.com";
 		Member member = Member.createNoJobMember("12345", OAuthProvider.KAKAO, "name", "test@mail.com",
 				"https://image.url");
-		given(jwtValidator.getMemberIdIfValid(eq("token"))).willReturn(memberId);
-		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
+		given(jwtValidator.getSubIfValid(eq("token"))).willReturn(email);
+		given(memberQueryService.findByEmail(eq(email))).willReturn(member);
 		given(authorizedUserMapper.toAuthorizedUser(member)).willReturn(new AuthorizedUser(member, null, null));
 
 		jwtAuthenticationFilter.doFilterInternal(httpServletRequest, httpServletResponse, mockFilterChain);
@@ -93,13 +93,13 @@ class JwtAuthenticationFilterTest {
 
 	@Test
 	@DisplayName("헤더에 Token이 유효하지 않으면 인증에 실패한다.")
-	void notAuthenticatedIfTokenIsInvalid() throws ServletException, IOException {
+	void notAuthenticatedIfTokenIsInvalid() throws Exception {
 		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
 		MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
 		FilterChain mockFilterChain = mock(FilterChain.class);
 		String token = "Bearer token";
 		httpServletRequest.addHeader(HttpHeaders.AUTHORIZATION, token);
-		given(jwtValidator.getMemberIdIfValid(eq("token"))).willThrow(MalformedJwtException.class);
+		given(jwtValidator.getSubIfValid(eq("token"))).willThrow(MalformedJwtException.class);
 
 		assertThatThrownBy(() -> jwtAuthenticationFilter.doFilterInternal(httpServletRequest, httpServletResponse,
 				mockFilterChain)).isInstanceOf(MalformedJwtException.class);

@@ -22,18 +22,18 @@ class JwtProviderTest {
 
 	@Test
 	@DisplayName("멤버 ID를 통해 인가 토큰을 생성한다.")
-	void generateAuthorizationTokenByMemberId() {
-		long memberId = 1L;
+	void generateAuthorizationTokenByMemberId() throws Exception {
 		String signature = "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest"
 				+ "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest" + "testtest";
+		String email = "test@mail.com";
 		Key secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(signature.getBytes()));
 		ReflectionTestUtils.setField(jwtProvider, "secretKey", secretKey);
 
-		AuthorizationToken token = jwtProvider.generateAuthorizationToken(memberId);
+		AuthorizationToken token = jwtProvider.generateAuthorizationToken(email);
 
 		assertThat(Long.parseLong(Jwts.parserBuilder().setSigningKey(secretKey).build()
-				.parseClaimsJws(token.accessToken()).getBody().getSubject())).isEqualTo(memberId);
+				.parseClaimsJws(token.accessToken()).getBody().getSubject())).isEqualTo(email);
 		assertThat(Long.parseLong(Jwts.parserBuilder().setSigningKey(secretKey).build()
-				.parseClaimsJws(token.refreshToken()).getBody().getSubject())).isEqualTo(memberId);
+				.parseClaimsJws(token.refreshToken()).getBody().getSubject())).isEqualTo(email);
 	}
 }

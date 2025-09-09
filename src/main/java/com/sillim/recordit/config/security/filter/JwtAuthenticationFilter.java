@@ -1,6 +1,8 @@
 package com.sillim.recordit.config.security.filter;
 
 import com.sillim.recordit.config.security.jwt.JwtValidator;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.ApplicationException;
 import com.sillim.recordit.member.domain.AuthorizedUser;
 import com.sillim.recordit.member.mapper.AuthorizedUserMapper;
 import com.sillim.recordit.member.service.MemberQueryService;
@@ -30,12 +32,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		getTokenFromHeader(request).ifPresent(this::authenticate);
+		getTokenFromHeader(request).ifPresent(token -> {
+			try {
+				authenticate(token);
+			} catch (Exception e) {
+				throw new ApplicationException(ErrorCode.UNHANDLED_EXCEPTION, e.getMessage());
+			}
+		});
 
 		doFilter(request, response, filterChain);
 	}
 
-	private void authenticate(String token) {
+	private void authenticate(String token) throws Exception {
 		if (isBearerType(token)) {
 			AuthorizedUser authorizedUser = getAuthorizedUser(token);
 			SecurityContextHolder.getContext().setAuthentication(
@@ -43,9 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 	}
 
-	private AuthorizedUser getAuthorizedUser(String token) {
+	private AuthorizedUser getAuthorizedUser(String token) throws Exception {
 		return authorizedUserMapper.toAuthorizedUser(
-				memberQueryService.findByMemberId(jwtValidator.getMemberIdIfValid(token.substring(BEARER.length()))));
+				memberQueryService.findByEmail(jwtValidator.getSubIfValid(token.substring(BEARER.length()))));
 	}
 
 	private Optional<String> getTokenFromHeader(HttpServletRequest request) {

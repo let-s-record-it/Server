@@ -3,6 +3,7 @@ package com.sillim.recordit.config.security.jwt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.sillim.recordit.config.security.encrypt.AESEncryptor;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.security.InvalidJwtException;
 import io.jsonwebtoken.Jwts;
@@ -22,7 +23,7 @@ class JwtValidatorTest {
 	String signature = "signaturesignaturesignaturesignaturesignaturesignature";
 	SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(signature));
 	String memberId = "1";
-	JwtValidator jwtValidator = new JwtValidator(secretKey);
+	JwtValidator jwtValidator = new JwtValidator(secretKey, new AESEncryptor());
 
 	@Test
 	@DisplayName("토큰이 만료되면 InvalidJwtException 이 발생한다.")
@@ -30,7 +31,7 @@ class JwtValidatorTest {
 		String token = Jwts.builder().setSubject(memberId).signWith(secretKey, SignatureAlgorithm.HS256)
 				.setExpiration(Date.from(Instant.now().minus(1L, ChronoUnit.SECONDS))).compact();
 
-		assertThatThrownBy(() -> jwtValidator.getMemberIdIfValid(token)).isInstanceOf(InvalidJwtException.class)
+		assertThatThrownBy(() -> jwtValidator.getSubIfValid(token)).isInstanceOf(InvalidJwtException.class)
 				.hasMessage(ErrorCode.JWT_EXPIRED.getDescription());
 	}
 
@@ -70,15 +71,15 @@ class JwtValidatorTest {
 	}
 
 	@Test
-	@DisplayName("JWT 검증에 성공하면 멤버 ID를 반환한다.")
-	void getMemberIdIfJwtIsInvalid() {
+	@DisplayName("JWT 검증에 성공하면 subject를 반환한다.")
+	void getMemberIdIfJwtIsInvalid() throws Exception {
 		String token = Jwts.builder().setSubject(memberId).signWith(secretKey, SignatureAlgorithm.HS256)
 				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
 				.compact();
 
-		Long memberId = jwtValidator.getMemberIdIfValid(token);
+		String sub = jwtValidator.getSubIfValid(token);
 
-		assertThat(memberId).isEqualTo(Long.parseLong(this.memberId));
+		assertThat(sub).isEqualTo(Long.parseLong(this.memberId));
 	}
 
 	@Test
@@ -88,7 +89,7 @@ class JwtValidatorTest {
 				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.SECONDS)))
 				.compact();
 
-		assertThatThrownBy(() -> jwtValidator.getMemberIdIfValid(token)).isInstanceOf(InvalidJwtException.class)
+		assertThatThrownBy(() -> jwtValidator.getSubIfValid(token)).isInstanceOf(InvalidJwtException.class)
 				.hasMessage("유저 ID를 찾을 수 없습니다.");
 	}
 }
