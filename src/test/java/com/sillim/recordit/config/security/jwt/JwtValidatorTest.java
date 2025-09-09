@@ -1,5 +1,8 @@
 package com.sillim.recordit.config.security.jwt;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.sillim.recordit.config.security.encrypt.AESEncryptor;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.security.InvalidJwtException;
@@ -7,17 +10,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import javax.crypto.SecretKey;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import javax.crypto.SecretKey;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class JwtValidatorTest {
 
