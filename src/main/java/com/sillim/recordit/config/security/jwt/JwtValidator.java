@@ -10,8 +10,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,7 +31,8 @@ public class JwtValidator {
 	private final Key secretKey;
 	private final AESEncryptor encryptor;
 
-	public String getSubIfValid(String accessToken) throws Exception {
+	public String getSubIfValid(String accessToken) throws NoSuchPaddingException, IllegalBlockSizeException,
+			NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
 		String sub = validateToken(accessToken).getBody().getSubject();
 
 		if (Objects.isNull(sub)) {

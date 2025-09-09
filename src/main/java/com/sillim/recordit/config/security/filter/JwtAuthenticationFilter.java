@@ -11,7 +11,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,7 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		getTokenFromHeader(request).ifPresent(token -> {
 			try {
 				authenticate(token);
-			} catch (Exception e) {
+			} catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
+					| InvalidKeyException e) {
 				throw new ApplicationException(ErrorCode.UNHANDLED_EXCEPTION, e.getMessage());
 			}
 		});
@@ -43,7 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		doFilter(request, response, filterChain);
 	}
 
-	private void authenticate(String token) throws Exception {
+	private void authenticate(String token) throws NoSuchPaddingException, IllegalBlockSizeException,
+			NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
 		if (isBearerType(token)) {
 			AuthorizedUser authorizedUser = getAuthorizedUser(token);
 			SecurityContextHolder.getContext().setAuthentication(
@@ -51,7 +58,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 	}
 
-	private AuthorizedUser getAuthorizedUser(String token) throws Exception {
+	private AuthorizedUser getAuthorizedUser(String token) throws NoSuchPaddingException, IllegalBlockSizeException,
+			NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
 		return authorizedUserMapper.toAuthorizedUser(
 				memberQueryService.findByEmail(jwtValidator.getSubIfValid(token.substring(BEARER.length()))));
 	}
