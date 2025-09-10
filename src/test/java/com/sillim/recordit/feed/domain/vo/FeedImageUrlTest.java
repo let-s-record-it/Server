@@ -12,14 +12,16 @@ class FeedImageUrlTest {
 	@Test
 	@DisplayName("FeedImageUrl이 null이면 InvalidFeedImageUrlException이 발생한다.")
 	void throwInvalidFeedImageUrlExceptionIfFeedImageUrlIsNull() {
-		assertThatCode(() -> new FeedImageUrl(null)).isInstanceOf(InvalidFeedImageUrlException.class)
+		assertThatCode(() -> new FeedImageUrl(null))
+				.isInstanceOf(InvalidFeedImageUrlException.class)
 				.hasMessage(ErrorCode.NULL_FEED_IMAGE_URL.getDescription());
 	}
 
 	@Test
 	@DisplayName("FeedImageUrl이 공백이면 InvalidFeedImageUrlException이 발생한다.")
 	void throwInvalidFeedImageUrlExceptionIfImageUrlIsBlank() {
-		assertThatCode(() -> new FeedImageUrl("          ")).isInstanceOf(InvalidFeedImageUrlException.class)
+		assertThatCode(() -> new FeedImageUrl("          "))
+				.isInstanceOf(InvalidFeedImageUrlException.class)
 				.hasMessage(ErrorCode.BLANK_FEED_IMAGE_URL.getDescription());
 	}
 }

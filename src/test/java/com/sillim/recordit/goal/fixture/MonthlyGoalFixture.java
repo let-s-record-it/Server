@@ -6,8 +6,9 @@ import com.sillim.recordit.goal.domain.MonthlyGoal;
 import java.time.LocalDate;
 
 public enum MonthlyGoalFixture {
-	DEFAULT("취뽀하기!", "취업할 때까지 숨 참는다!", LocalDate.of(2024, 4, 1), LocalDate.of(2024, 4, 30)), MODIFIED("(수정)취뽀하기!",
-			"(수정)취업할 때까지 숨 참는다!", LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31));
+	DEFAULT("취뽀하기!", "취업할 때까지 숨 참는다!", LocalDate.of(2024, 4, 1), LocalDate.of(2024, 4, 30)),
+	MODIFIED(
+			"(수정)취뽀하기!", "(수정)취업할 때까지 숨 참는다!", LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31));
 
 	private final String title;
 	private final String description;
@@ -23,14 +24,26 @@ public enum MonthlyGoalFixture {
 
 	public MonthlyGoal getWithMember(ScheduleCategory category, Calendar calendar) {
 
-		return MonthlyGoal.builder().title(title).description(description).startDate(startDate).endDate(endDate)
-				.category(category).calendar(calendar).build();
+		return MonthlyGoal.builder()
+				.title(title)
+				.description(description)
+				.startDate(startDate)
+				.endDate(endDate)
+				.category(category)
+				.calendar(calendar)
+				.build();
 	}
 
-	public MonthlyGoal getWithStartDateAndEndDate(LocalDate startDate, LocalDate endDate, ScheduleCategory category,
-			Calendar calendar) {
+	public MonthlyGoal getWithStartDateAndEndDate(
+			LocalDate startDate, LocalDate endDate, ScheduleCategory category, Calendar calendar) {
 
-		return MonthlyGoal.builder().title(title).description(description).startDate(startDate).endDate(endDate)
-				.category(category).calendar(calendar).build();
+		return MonthlyGoal.builder()
+				.title(title)
+				.description(description)
+				.startDate(startDate)
+				.endDate(endDate)
+				.category(category)
+				.calendar(calendar)
+				.build();
 	}
 }

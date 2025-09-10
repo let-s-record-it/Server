@@ -20,32 +20,71 @@ import lombok.NoArgsConstructor;
 public class TaskWeeklyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
-	private TaskWeeklyRepetitionPattern(final TaskRepetitionType repetitionType, final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final TaskWeekdayBit weekdayBit,
+	private TaskWeeklyRepetitionPattern(
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskWeekdayBit weekdayBit,
 			final TaskGroup taskGroup) {
-		super(repetitionType, repetitionPeriod, repetitionStartDate, repetitionEndDate, null, null, null, null,
-				weekdayBit, taskGroup);
+		super(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				null,
+				null,
+				null,
+				null,
+				weekdayBit,
+				taskGroup);
 	}
 
-	public static TaskRepetitionPattern createWeekly(final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final Integer weekdayBit,
+	public static TaskRepetitionPattern createWeekly(
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final Integer weekdayBit,
 			final TaskGroup taskGroup) {
-		return TaskWeeklyRepetitionPattern.builder().repetitionType(TaskRepetitionType.WEEKLY)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).weekdayBit(new TaskWeekdayBit(weekdayBit)).taskGroup(taskGroup)
+		return TaskWeeklyRepetitionPattern.builder()
+				.repetitionType(TaskRepetitionType.WEEKLY)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.weekdayBit(new TaskWeekdayBit(weekdayBit))
+				.taskGroup(taskGroup)
 				.build();
 	}
 
 	@Override
 	public Stream<TemporalAmount> repeatingStream() {
-		return Stream
-				.iterate(getRepetitionStartDate(), date -> date.isBefore(getRepetitionEndDate().plusDays(1L)),
-						date -> date.plusWeeks(getRepetitionPeriod())
-								.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)))
-				.flatMap(startDate -> Stream.iterate(startDate,
-						date -> date.isBefore(getRepetitionEndDate().plusDays(1L))
-								&& date.isBefore(startDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY))),
-						date -> date.plusDays(1L)).filter(date -> isValidWeekday(date.getDayOfWeek())))
-				.map(date -> Period.ofDays((int) ChronoUnit.DAYS.between(getRepetitionStartDate(), date)));
+		return Stream.iterate(
+						getRepetitionStartDate(),
+						date -> date.isBefore(getRepetitionEndDate().plusDays(1L)),
+						date ->
+								date.plusWeeks(getRepetitionPeriod())
+										.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)))
+				.flatMap(
+						startDate ->
+								Stream.iterate(
+												startDate,
+												date ->
+														date.isBefore(
+																		getRepetitionEndDate()
+																				.plusDays(1L))
+																&& date.isBefore(
+																		startDate.with(
+																				TemporalAdjusters
+																						.next(
+																								DayOfWeek
+																										.SUNDAY))),
+												date -> date.plusDays(1L))
+										.filter(date -> isValidWeekday(date.getDayOfWeek())))
+				.map(
+						date ->
+								Period.ofDays(
+										(int)
+												ChronoUnit.DAYS.between(
+														getRepetitionStartDate(), date)));
 	}
 }

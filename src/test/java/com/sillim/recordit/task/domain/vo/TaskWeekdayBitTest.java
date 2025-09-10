@@ -17,32 +17,38 @@ class TaskWeekdayBitTest {
 		TaskWeekdayBit weekdayBit1 = new TaskWeekdayBit(Integer.parseInt("0000000", 2));
 		TaskWeekdayBit weekdayBit2 = new TaskWeekdayBit(Integer.parseInt("1111111", 2));
 
-		assertAll(() -> {
-			assertThat(weekdayBit1).isEqualTo(new TaskWeekdayBit(Integer.parseInt("0000000", 2)));
-			assertThat(weekdayBit1).isEqualTo(new TaskWeekdayBit(0));
-			assertThat(weekdayBit2).isEqualTo(new TaskWeekdayBit(Integer.parseInt("1111111", 2)));
-			assertThat(weekdayBit2).isEqualTo(new TaskWeekdayBit(127));
-		});
+		assertAll(
+				() -> {
+					assertThat(weekdayBit1)
+							.isEqualTo(new TaskWeekdayBit(Integer.parseInt("0000000", 2)));
+					assertThat(weekdayBit1).isEqualTo(new TaskWeekdayBit(0));
+					assertThat(weekdayBit2)
+							.isEqualTo(new TaskWeekdayBit(Integer.parseInt("1111111", 2)));
+					assertThat(weekdayBit2).isEqualTo(new TaskWeekdayBit(127));
+				});
 	}
 
 	@Test
 	@DisplayName("WeekdayBit가 null이라면 InvalidWeekdayBitException이 발생한다.")
 	void throwInvalidWeekdayBitExceptionIfWeekdayBitIsNull() {
-		assertThatCode(() -> new TaskWeekdayBit(null)).isInstanceOf(InvalidWeekdayBitException.class)
+		assertThatCode(() -> new TaskWeekdayBit(null))
+				.isInstanceOf(InvalidWeekdayBitException.class)
 				.hasMessage(ErrorCode.NULL_TASK_WEEKDAY_BIT.getDescription());
 	}
 
 	@Test
 	@DisplayName("WeekdayBit가 0미만일 경우 InvalidWeekdayBitException 예외가 발생한다.")
 	void throwInvalidWeekdayBitExceptionIfWeekdayBitIs1Under() {
-		assertThatCode(() -> new TaskWeekdayBit(-1)).isInstanceOf(InvalidWeekdayBitException.class)
+		assertThatCode(() -> new TaskWeekdayBit(-1))
+				.isInstanceOf(InvalidWeekdayBitException.class)
 				.hasMessage(ErrorCode.TASK_WEEKDAY_BIT_OUT_OF_RANGE.getDescription());
 	}
 
 	@Test
 	@DisplayName("WeekdayBit가 127초과일 경우 InvalidWeekdayBitException 예외가 발생한다.")
 	void throwInvalidWeekdayBitExceptionWhen127OverWeekdayBit() {
-		assertThatCode(() -> new TaskWeekdayBit(128)).isInstanceOf(InvalidWeekdayBitException.class)
+		assertThatCode(() -> new TaskWeekdayBit(128))
+				.isInstanceOf(InvalidWeekdayBitException.class)
 				.hasMessage(ErrorCode.TASK_WEEKDAY_BIT_OUT_OF_RANGE.getDescription());
 	}
 }

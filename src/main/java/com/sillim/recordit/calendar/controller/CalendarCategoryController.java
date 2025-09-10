@@ -23,27 +23,33 @@ public class CalendarCategoryController {
 	private final CalendarCategoryCommandService calendarCategoryCommandService;
 
 	@GetMapping
-	public ResponseEntity<List<CalendarCategoryListResponse>> calendarCategoryList(@CurrentMember Member member) {
-		return ResponseEntity.ok(calendarCategoryQueryService.searchCalendarCategories(member.getId()).stream()
-				.map(CalendarCategoryListResponse::of).toList());
+	public ResponseEntity<List<CalendarCategoryListResponse>> calendarCategoryList(
+			@CurrentMember Member member) {
+		return ResponseEntity.ok(
+				calendarCategoryQueryService.searchCalendarCategories(member.getId()).stream()
+						.map(CalendarCategoryListResponse::of)
+						.toList());
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> addCalendarCategory(@Valid @RequestBody CalendarCategoryAddRequest request,
-			@CurrentMember Member member) {
+	public ResponseEntity<Void> addCalendarCategory(
+			@Valid @RequestBody CalendarCategoryAddRequest request, @CurrentMember Member member) {
 		Long id = calendarCategoryCommandService.addCategory(request, member.getId());
 		return ResponseEntity.created(URI.create("/api/v1/calendar-categories/" + id)).build();
 	}
 
 	@PutMapping("/{categoryId}")
-	public ResponseEntity<Void> modifyCalendarCategory(@PathVariable Long categoryId,
-			@Valid @RequestBody CalendarCategoryModifyRequest request, @CurrentMember Member member) {
+	public ResponseEntity<Void> modifyCalendarCategory(
+			@PathVariable Long categoryId,
+			@Valid @RequestBody CalendarCategoryModifyRequest request,
+			@CurrentMember Member member) {
 		calendarCategoryCommandService.modifyCategory(request, categoryId, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{categoryId}")
-	public ResponseEntity<Void> deleteCalendarCategory(@PathVariable Long categoryId, @CurrentMember Member member) {
+	public ResponseEntity<Void> deleteCalendarCategory(
+			@PathVariable Long categoryId, @CurrentMember Member member) {
 		calendarCategoryCommandService.removeCategory(categoryId, member.getId());
 		return ResponseEntity.noContent().build();
 	}

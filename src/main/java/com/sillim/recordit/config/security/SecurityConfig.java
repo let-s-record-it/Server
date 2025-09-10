@@ -45,7 +45,8 @@ public class SecurityConfig {
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return web -> web.ignoring().requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**"));
+		return web ->
+				web.ignoring().requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**"));
 	}
 
 	@Bean
@@ -54,26 +55,44 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, MvcRequestMatcher.Builder mvc)
-			throws Exception {
-		return httpSecurity.httpBasic(Customizer.withDefaults()).oauth2Login(setOAuth2Config())
+	public SecurityFilterChain securityFilterChain(
+			HttpSecurity httpSecurity, MvcRequestMatcher.Builder mvc) throws Exception {
+		return httpSecurity
+				.httpBasic(Customizer.withDefaults())
+				.oauth2Login(setOAuth2Config())
 				.csrf(CsrfConfigurer::disable)
-				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers(mvc.pattern("/api/v1/login"), mvc.pattern("/api/v1/invite/info/**"),
-								mvc.pattern("/api/v1/web-login"), mvc.pattern("/actuator/health"),
-								mvc.pattern("/actuator/prometheus"))
-						.permitAll().requestMatchers(mvc.pattern("api/**")).authenticated().anyRequest()
-						.authenticated())
-				.sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.exceptionHandling(config -> config.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+				.authorizeHttpRequests(
+						authorize ->
+								authorize
+										.requestMatchers(
+												mvc.pattern("/api/v1/login"),
+												mvc.pattern("/api/v1/invite/info/**"),
+												mvc.pattern("/api/v1/web-login"),
+												mvc.pattern("/actuator/health"),
+												mvc.pattern("/actuator/prometheus"))
+										.permitAll()
+										.requestMatchers(mvc.pattern("api/**"))
+										.authenticated()
+										.anyRequest()
+										.authenticated())
+				.sessionManagement(
+						configurer ->
+								configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(
+						config -> config.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+				.addFilterBefore(
+						jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(authExceptionTranslationFilter, JwtAuthenticationFilter.class)
-				.cors(config -> config.configurationSource(corsConfigurationSource())).build();
+				.cors(config -> config.configurationSource(corsConfigurationSource()))
+				.build();
 	}
 
 	private Customizer<OAuth2LoginConfigurer<HttpSecurity>> setOAuth2Config() {
-		return configurer -> configurer.authorizationEndpoint(oauth2 -> oauth2.baseUri("/oauth2/authorize"))
-				.userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService)).successHandler(successHandler);
+		return configurer ->
+				configurer
+						.authorizationEndpoint(oauth2 -> oauth2.baseUri("/oauth2/authorize"))
+						.userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
+						.successHandler(successHandler);
 	}
 
 	@Bean

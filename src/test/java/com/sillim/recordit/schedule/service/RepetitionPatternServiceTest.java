@@ -24,10 +24,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RepetitionPatternServiceTest {
 
-	@Mock
-	RepetitionPatternRepository repetitionPatternRepository;
-	@InjectMocks
-	RepetitionPatternService repetitionPatternService;
+	@Mock RepetitionPatternRepository repetitionPatternRepository;
+	@InjectMocks RepetitionPatternService repetitionPatternService;
 
 	Member member;
 
@@ -42,20 +40,35 @@ class RepetitionPatternServiceTest {
 		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
-		RepetitionPattern expectedRepetitionPattern = RepetitionPattern.createDaily(1, repetitionStartDate,
-				repetitionEndDate, scheduleGroup);
-		RepetitionUpdateRequest repetitionUpdateRequest = new RepetitionUpdateRequest(RepetitionType.DAILY, 1,
-				repetitionStartDate, repetitionEndDate, null, null, null, null, null);
-		given(repetitionPatternRepository.save(any(RepetitionPattern.class))).willReturn(expectedRepetitionPattern);
+		RepetitionPattern expectedRepetitionPattern =
+				RepetitionPattern.createDaily(
+						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
+		RepetitionUpdateRequest repetitionUpdateRequest =
+				new RepetitionUpdateRequest(
+						RepetitionType.DAILY,
+						1,
+						repetitionStartDate,
+						repetitionEndDate,
+						null,
+						null,
+						null,
+						null,
+						null);
+		given(repetitionPatternRepository.save(any(RepetitionPattern.class)))
+				.willReturn(expectedRepetitionPattern);
 
-		RepetitionPattern repetitionPattern = repetitionPatternService.addRepetitionPattern(repetitionUpdateRequest,
-				scheduleGroup);
+		RepetitionPattern repetitionPattern =
+				repetitionPatternService.addRepetitionPattern(
+						repetitionUpdateRequest, scheduleGroup);
 
-		assertAll(() -> {
-			assertThat(repetitionPattern.getRepetitionStartDate()).isEqualTo(repetitionStartDate);
-			assertThat(repetitionPattern.getRepetitionEndDate()).isEqualTo(repetitionEndDate);
-			assertThat(repetitionPattern.getRepetitionPeriod()).isEqualTo(1);
-		});
+		assertAll(
+				() -> {
+					assertThat(repetitionPattern.getRepetitionStartDate())
+							.isEqualTo(repetitionStartDate);
+					assertThat(repetitionPattern.getRepetitionEndDate())
+							.isEqualTo(repetitionEndDate);
+					assertThat(repetitionPattern.getRepetitionPeriod()).isEqualTo(1);
+				});
 	}
 
 	@Test
@@ -64,22 +77,40 @@ class RepetitionPatternServiceTest {
 		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(true);
-		RepetitionPattern expectedRepetitionPattern = RepetitionPattern.createDaily(1,
-				LocalDateTime.of(2023, 1, 1, 0, 0), LocalDateTime.of(2023, 2, 1, 0, 0), scheduleGroup);
-		RepetitionUpdateRequest repetitionUpdateRequest = new RepetitionUpdateRequest(RepetitionType.WEEKLY, 2,
-				repetitionStartDate, repetitionEndDate, null, null, null, null, 1);
+		RepetitionPattern expectedRepetitionPattern =
+				RepetitionPattern.createDaily(
+						1,
+						LocalDateTime.of(2023, 1, 1, 0, 0),
+						LocalDateTime.of(2023, 2, 1, 0, 0),
+						scheduleGroup);
+		RepetitionUpdateRequest repetitionUpdateRequest =
+				new RepetitionUpdateRequest(
+						RepetitionType.WEEKLY,
+						2,
+						repetitionStartDate,
+						repetitionEndDate,
+						null,
+						null,
+						null,
+						null,
+						1);
 		scheduleGroup.setRepetitionPattern(expectedRepetitionPattern);
 
-		RepetitionPattern repetitionPattern = repetitionPatternService.updateRepetitionPattern(repetitionUpdateRequest,
-				scheduleGroup);
+		RepetitionPattern repetitionPattern =
+				repetitionPatternService.updateRepetitionPattern(
+						repetitionUpdateRequest, scheduleGroup);
 
-		assertAll(() -> {
-			assertThat(repetitionPattern.getRepetitionType()).isEqualTo(RepetitionType.WEEKLY);
-			assertThat(repetitionPattern.getRepetitionPeriod()).isEqualTo(2);
-			assertThat(repetitionPattern.getRepetitionStartDate()).isEqualTo(repetitionStartDate);
-			assertThat(repetitionPattern.getRepetitionEndDate()).isEqualTo(repetitionEndDate);
-			assertThat(repetitionPattern.getWeekdayBit()).isNotEmpty();
-		});
+		assertAll(
+				() -> {
+					assertThat(repetitionPattern.getRepetitionType())
+							.isEqualTo(RepetitionType.WEEKLY);
+					assertThat(repetitionPattern.getRepetitionPeriod()).isEqualTo(2);
+					assertThat(repetitionPattern.getRepetitionStartDate())
+							.isEqualTo(repetitionStartDate);
+					assertThat(repetitionPattern.getRepetitionEndDate())
+							.isEqualTo(repetitionEndDate);
+					assertThat(repetitionPattern.getWeekdayBit()).isNotEmpty();
+				});
 	}
 
 	@Test
@@ -88,20 +119,36 @@ class RepetitionPatternServiceTest {
 		LocalDateTime repetitionStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
 		LocalDateTime repetitionEndDate = LocalDateTime.of(2024, 2, 1, 0, 0);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
-		RepetitionPattern expectedRepetitionPattern = RepetitionPattern.createDaily(1, repetitionStartDate,
-				repetitionEndDate, scheduleGroup);
-		RepetitionUpdateRequest repetitionUpdateRequest = new RepetitionUpdateRequest(RepetitionType.DAILY, 1,
-				repetitionStartDate, repetitionEndDate, null, null, null, null, null);
-		given(repetitionPatternRepository.save(any(RepetitionPattern.class))).willReturn(expectedRepetitionPattern);
+		RepetitionPattern expectedRepetitionPattern =
+				RepetitionPattern.createDaily(
+						1, repetitionStartDate, repetitionEndDate, scheduleGroup);
+		RepetitionUpdateRequest repetitionUpdateRequest =
+				new RepetitionUpdateRequest(
+						RepetitionType.DAILY,
+						1,
+						repetitionStartDate,
+						repetitionEndDate,
+						null,
+						null,
+						null,
+						null,
+						null);
+		given(repetitionPatternRepository.save(any(RepetitionPattern.class)))
+				.willReturn(expectedRepetitionPattern);
 
-		RepetitionPattern repetitionPattern = repetitionPatternService.updateRepetitionPattern(repetitionUpdateRequest,
-				scheduleGroup);
+		RepetitionPattern repetitionPattern =
+				repetitionPatternService.updateRepetitionPattern(
+						repetitionUpdateRequest, scheduleGroup);
 
-		assertAll(() -> {
-			assertThat(repetitionPattern.getRepetitionType()).isEqualTo(RepetitionType.DAILY);
-			assertThat(repetitionPattern.getRepetitionPeriod()).isEqualTo(1);
-			assertThat(repetitionPattern.getRepetitionStartDate()).isEqualTo(repetitionStartDate);
-			assertThat(repetitionPattern.getRepetitionEndDate()).isEqualTo(repetitionEndDate);
-		});
+		assertAll(
+				() -> {
+					assertThat(repetitionPattern.getRepetitionType())
+							.isEqualTo(RepetitionType.DAILY);
+					assertThat(repetitionPattern.getRepetitionPeriod()).isEqualTo(1);
+					assertThat(repetitionPattern.getRepetitionStartDate())
+							.isEqualTo(repetitionStartDate);
+					assertThat(repetitionPattern.getRepetitionEndDate())
+							.isEqualTo(repetitionEndDate);
+				});
 	}
 }

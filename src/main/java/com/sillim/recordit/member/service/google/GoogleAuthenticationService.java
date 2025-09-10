@@ -31,11 +31,16 @@ public class GoogleAuthenticationService implements AuthenticationService {
 
 	@Override
 	public MemberInfo getMemberInfoByAccessToken(String accessToken) {
-		GoogleUserInfo googleUserInfo = googleUserInfoClient
-				.getGoogleUserInfo(TokenType.BEARER.getValueWithSpace() + accessToken);
+		GoogleUserInfo googleUserInfo =
+				googleUserInfoClient.getGoogleUserInfo(
+						TokenType.BEARER.getValueWithSpace() + accessToken);
 
-		return MemberInfo.builder().oauthAccount(googleUserInfo.sub()).oAuthProvider(OAuthProvider.GOOGLE)
-				.name(googleUserInfo.name()).email(googleUserInfo.email()).profileImageUrl(googleUserInfo.picture())
+		return MemberInfo.builder()
+				.oauthAccount(googleUserInfo.sub())
+				.oAuthProvider(OAuthProvider.GOOGLE)
+				.name(googleUserInfo.name())
+				.email(googleUserInfo.email())
+				.profileImageUrl(googleUserInfo.picture())
 				.build();
 	}
 }

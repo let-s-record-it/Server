@@ -58,29 +58,31 @@ public class RepetitionPattern extends BaseTime {
 	@Column(nullable = false)
 	private LocalDateTime repetitionEndDate;
 
-	@Embedded
-	private MonthOfYear monthOfYear;
+	@Embedded private MonthOfYear monthOfYear;
 
-	@Embedded
-	private DayOfMonth dayOfMonth;
+	@Embedded private DayOfMonth dayOfMonth;
 
-	@Column
-	private WeekNumber weekNumber;
+	@Column private WeekNumber weekNumber;
 
-	@Column
-	private Weekday weekday;
+	@Column private Weekday weekday;
 
-	@Embedded
-	private WeekdayBit weekdayBit;
+	@Embedded private WeekdayBit weekdayBit;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_group_id", unique = true)
 	private ScheduleGroup scheduleGroup;
 
 	@Builder(access = AccessLevel.PRIVATE)
-	private RepetitionPattern(RepetitionType repetitionType, Integer repetitionPeriod,
-			LocalDateTime repetitionStartDate, LocalDateTime repetitionEndDate, MonthOfYear monthOfYear,
-			DayOfMonth dayOfMonth, WeekNumber weekNumber, Weekday weekday, WeekdayBit weekdayBit,
+	private RepetitionPattern(
+			RepetitionType repetitionType,
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			MonthOfYear monthOfYear,
+			DayOfMonth dayOfMonth,
+			WeekNumber weekNumber,
+			Weekday weekday,
+			WeekdayBit weekdayBit,
 			ScheduleGroup scheduleGroup) {
 		validatePeriod(repetitionPeriod);
 		validateDuration(repetitionStartDate, repetitionEndDate);
@@ -121,30 +123,61 @@ public class RepetitionPattern extends BaseTime {
 		return Optional.ofNullable(this.weekdayBit);
 	}
 
-	public void modify(RepetitionType repetitionType, Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer monthOfYear, Integer dayOfMonth, WeekNumber weekNumber,
-			Weekday weekday, Integer weekdayBit) {
+	public void modify(
+			RepetitionType repetitionType,
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			Integer dayOfMonth,
+			WeekNumber weekNumber,
+			Weekday weekday,
+			Integer weekdayBit) {
 		validatePeriod(repetitionPeriod);
 		validateDuration(repetitionStartDate, repetitionEndDate);
 		switch (repetitionType) {
 			case DAILY -> modifyDaily(repetitionPeriod, repetitionStartDate, repetitionEndDate);
-			case WEEKLY -> modifyWeekly(repetitionPeriod, repetitionStartDate, repetitionEndDate, weekdayBit);
+			case WEEKLY ->
+					modifyWeekly(
+							repetitionPeriod, repetitionStartDate, repetitionEndDate, weekdayBit);
 			case MONTHLY_WITH_DATE ->
-				modifyMonthlyWithDate(repetitionPeriod, repetitionStartDate, repetitionEndDate, dayOfMonth);
+					modifyMonthlyWithDate(
+							repetitionPeriod, repetitionStartDate, repetitionEndDate, dayOfMonth);
 			case MONTHLY_WITH_WEEKDAY ->
-				modifyMonthlyWithWeekday(repetitionPeriod, repetitionStartDate, repetitionEndDate, weekNumber, weekday);
+					modifyMonthlyWithWeekday(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							weekNumber,
+							weekday);
 			case MONTHLY_WITH_LAST_DAY ->
-				modifyMonthlyWithLastDay(repetitionPeriod, repetitionStartDate, repetitionEndDate);
+					modifyMonthlyWithLastDay(
+							repetitionPeriod, repetitionStartDate, repetitionEndDate);
 			case YEARLY_WITH_DATE ->
-				modifyYearlyWithDate(repetitionPeriod, repetitionStartDate, repetitionEndDate, monthOfYear, dayOfMonth);
-			case YEARLY_WITH_WEEKDAY -> modifyYearlyWithWeekday(repetitionPeriod, repetitionStartDate,
-					repetitionEndDate, monthOfYear, weekNumber, weekday);
+					modifyYearlyWithDate(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							dayOfMonth);
+			case YEARLY_WITH_WEEKDAY ->
+					modifyYearlyWithWeekday(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							weekNumber,
+							weekday);
 			case YEARLY_WITH_LAST_DAY ->
-				modifyYearlyWithLastDay(repetitionPeriod, repetitionStartDate, repetitionEndDate, monthOfYear);
-		};
+					modifyYearlyWithLastDay(
+							repetitionPeriod, repetitionStartDate, repetitionEndDate, monthOfYear);
+		}
+		;
 	}
 
-	private void modifyDaily(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
+	private void modifyDaily(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
 			LocalDateTime repetitionEndDate) {
 		this.repetitionType = RepetitionType.DAILY;
 		this.repetitionPeriod = repetitionPeriod;
@@ -152,8 +185,11 @@ public class RepetitionPattern extends BaseTime {
 		this.repetitionEndDate = repetitionEndDate;
 	}
 
-	public void modifyWeekly(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer weekdayBit) {
+	public void modifyWeekly(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer weekdayBit) {
 		this.repetitionType = RepetitionType.WEEKLY;
 		this.repetitionPeriod = repetitionPeriod;
 		this.repetitionStartDate = repetitionStartDate;
@@ -161,8 +197,11 @@ public class RepetitionPattern extends BaseTime {
 		this.weekdayBit = new WeekdayBit(weekdayBit);
 	}
 
-	public void modifyMonthlyWithDate(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer dayOfMonth) {
+	public void modifyMonthlyWithDate(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer dayOfMonth) {
 		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
 		this.repetitionType = RepetitionType.MONTHLY_WITH_DATE;
 		this.repetitionPeriod = repetitionPeriod;
@@ -171,8 +210,12 @@ public class RepetitionPattern extends BaseTime {
 		this.dayOfMonth = DayOfMonth.createMonthly(dayOfMonth);
 	}
 
-	public void modifyMonthlyWithWeekday(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, WeekNumber weekNumber, Weekday weekday) {
+	public void modifyMonthlyWithWeekday(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			WeekNumber weekNumber,
+			Weekday weekday) {
 		this.repetitionType = RepetitionType.MONTHLY_WITH_WEEKDAY;
 		this.repetitionPeriod = repetitionPeriod;
 		this.repetitionStartDate = repetitionStartDate;
@@ -181,7 +224,9 @@ public class RepetitionPattern extends BaseTime {
 		this.weekday = weekday;
 	}
 
-	public void modifyMonthlyWithLastDay(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
+	public void modifyMonthlyWithLastDay(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
 			LocalDateTime repetitionEndDate) {
 		this.repetitionType = RepetitionType.MONTHLY_WITH_LAST_DAY;
 		this.repetitionPeriod = repetitionPeriod;
@@ -189,8 +234,12 @@ public class RepetitionPattern extends BaseTime {
 		this.repetitionEndDate = repetitionEndDate;
 	}
 
-	public void modifyYearlyWithDate(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer monthOfYear, Integer dayOfMonth) {
+	public void modifyYearlyWithDate(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			Integer dayOfMonth) {
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
 		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
 		this.repetitionType = RepetitionType.YEARLY_WITH_DATE;
@@ -201,8 +250,13 @@ public class RepetitionPattern extends BaseTime {
 		this.dayOfMonth = DayOfMonth.createYearly(monthOfYear, dayOfMonth);
 	}
 
-	public void modifyYearlyWithWeekday(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer monthOfYear, WeekNumber weekNumber, Weekday weekday) {
+	public void modifyYearlyWithWeekday(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			WeekNumber weekNumber,
+			Weekday weekday) {
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
 		this.repetitionType = RepetitionType.YEARLY_WITH_WEEKDAY;
 		this.repetitionPeriod = repetitionPeriod;
@@ -213,8 +267,11 @@ public class RepetitionPattern extends BaseTime {
 		this.weekday = weekday;
 	}
 
-	public void modifyYearlyWithLastDay(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer monthOfYear) {
+	public void modifyYearlyWithLastDay(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear) {
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
 		this.repetitionType = RepetitionType.YEARLY_WITH_LAST_DAY;
 		this.repetitionPeriod = repetitionPeriod;
@@ -229,99 +286,220 @@ public class RepetitionPattern extends BaseTime {
 		}
 	}
 
-	private static void validateDuration(LocalDateTime repetitionStartDate, LocalDateTime repetitionEndDate) {
+	private static void validateDuration(
+			LocalDateTime repetitionStartDate, LocalDateTime repetitionEndDate) {
 		if (repetitionStartDate.isAfter(repetitionEndDate)) {
 			throw new InvalidRepetitionException(ErrorCode.INVALID_DURATION);
 		}
 	}
 
-	public static RepetitionPattern createDaily(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, ScheduleGroup scheduleGroup) {
-		return RepetitionPattern.builder().repetitionType(RepetitionType.DAILY).repetitionPeriod(repetitionPeriod)
-				.repetitionStartDate(repetitionStartDate).repetitionEndDate(repetitionEndDate)
-				.scheduleGroup(scheduleGroup).build();
-	}
-
-	public static RepetitionPattern createWeekly(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer weekdayBit, ScheduleGroup scheduleGroup) {
-		return RepetitionPattern.builder().repetitionType(RepetitionType.WEEKLY).repetitionPeriod(repetitionPeriod)
-				.repetitionStartDate(repetitionStartDate).repetitionEndDate(repetitionEndDate)
-				.weekdayBit(new WeekdayBit(weekdayBit)).scheduleGroup(scheduleGroup).build();
-	}
-
-	public static RepetitionPattern createMonthlyWithDate(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer dayOfMonth, ScheduleGroup scheduleGroup) {
-		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
-		return RepetitionPattern.builder().repetitionType(RepetitionType.MONTHLY_WITH_DATE)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).dayOfMonth(DayOfMonth.createMonthly(dayOfMonth))
-				.scheduleGroup(scheduleGroup).build();
-	}
-
-	public static RepetitionPattern createMonthlyWithWeekday(Integer repetitionPeriod,
-			LocalDateTime repetitionStartDate, LocalDateTime repetitionEndDate, WeekNumber weekNumber, Weekday weekday,
+	public static RepetitionPattern createDaily(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
 			ScheduleGroup scheduleGroup) {
-		return RepetitionPattern.builder().repetitionType(RepetitionType.MONTHLY_WITH_WEEKDAY)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).weekNumber(weekNumber).weekday(weekday)
-				.scheduleGroup(scheduleGroup).build();
+		return RepetitionPattern.builder()
+				.repetitionType(RepetitionType.DAILY)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.scheduleGroup(scheduleGroup)
+				.build();
 	}
 
-	public static RepetitionPattern createMonthlyWithLastDay(Integer repetitionPeriod,
-			LocalDateTime repetitionStartDate, LocalDateTime repetitionEndDate, ScheduleGroup scheduleGroup) {
-		return RepetitionPattern.builder().repetitionType(RepetitionType.MONTHLY_WITH_LAST_DAY)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).scheduleGroup(scheduleGroup).build();
+	public static RepetitionPattern createWeekly(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer weekdayBit,
+			ScheduleGroup scheduleGroup) {
+		return RepetitionPattern.builder()
+				.repetitionType(RepetitionType.WEEKLY)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.weekdayBit(new WeekdayBit(weekdayBit))
+				.scheduleGroup(scheduleGroup)
+				.build();
 	}
 
-	public static RepetitionPattern createYearlyWithDate(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer monthOfYear, Integer dayOfMonth, ScheduleGroup scheduleGroup) {
-		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
+	public static RepetitionPattern createMonthlyWithDate(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer dayOfMonth,
+			ScheduleGroup scheduleGroup) {
 		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
-		return RepetitionPattern.builder().repetitionType(RepetitionType.YEARLY_WITH_DATE)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).monthOfYear(new MonthOfYear(monthOfYear))
-				.dayOfMonth(DayOfMonth.createYearly(monthOfYear, dayOfMonth)).scheduleGroup(scheduleGroup).build();
+		return RepetitionPattern.builder()
+				.repetitionType(RepetitionType.MONTHLY_WITH_DATE)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.dayOfMonth(DayOfMonth.createMonthly(dayOfMonth))
+				.scheduleGroup(scheduleGroup)
+				.build();
 	}
 
-	public static RepetitionPattern createYearlyWithWeekday(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer monthOfYear, WeekNumber weekNumber, Weekday weekday,
+	public static RepetitionPattern createMonthlyWithWeekday(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			WeekNumber weekNumber,
+			Weekday weekday,
+			ScheduleGroup scheduleGroup) {
+		return RepetitionPattern.builder()
+				.repetitionType(RepetitionType.MONTHLY_WITH_WEEKDAY)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.weekNumber(weekNumber)
+				.weekday(weekday)
+				.scheduleGroup(scheduleGroup)
+				.build();
+	}
+
+	public static RepetitionPattern createMonthlyWithLastDay(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			ScheduleGroup scheduleGroup) {
+		return RepetitionPattern.builder()
+				.repetitionType(RepetitionType.MONTHLY_WITH_LAST_DAY)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.scheduleGroup(scheduleGroup)
+				.build();
+	}
+
+	public static RepetitionPattern createYearlyWithDate(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			Integer dayOfMonth,
 			ScheduleGroup scheduleGroup) {
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
-		return RepetitionPattern.builder().repetitionType(RepetitionType.YEARLY_WITH_WEEKDAY)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).monthOfYear(new MonthOfYear(monthOfYear)).weekNumber(weekNumber)
-				.weekday(weekday).scheduleGroup(scheduleGroup).build();
+		validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth);
+		return RepetitionPattern.builder()
+				.repetitionType(RepetitionType.YEARLY_WITH_DATE)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.monthOfYear(new MonthOfYear(monthOfYear))
+				.dayOfMonth(DayOfMonth.createYearly(monthOfYear, dayOfMonth))
+				.scheduleGroup(scheduleGroup)
+				.build();
 	}
 
-	public static RepetitionPattern createYearlyWithLastDay(Integer repetitionPeriod, LocalDateTime repetitionStartDate,
-			LocalDateTime repetitionEndDate, Integer monthOfYear, ScheduleGroup scheduleGroup) {
+	public static RepetitionPattern createYearlyWithWeekday(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			WeekNumber weekNumber,
+			Weekday weekday,
+			ScheduleGroup scheduleGroup) {
 		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
-		return RepetitionPattern.builder().repetitionType(RepetitionType.YEARLY_WITH_LAST_DAY)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).monthOfYear(new MonthOfYear(monthOfYear))
-				.scheduleGroup(scheduleGroup).build();
+		return RepetitionPattern.builder()
+				.repetitionType(RepetitionType.YEARLY_WITH_WEEKDAY)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.monthOfYear(new MonthOfYear(monthOfYear))
+				.weekNumber(weekNumber)
+				.weekday(weekday)
+				.scheduleGroup(scheduleGroup)
+				.build();
 	}
 
-	public static RepetitionPattern create(RepetitionType repetitionType, Integer repetitionPeriod,
-			LocalDateTime repetitionStartDate, LocalDateTime repetitionEndDate, Integer monthOfYear, Integer dayOfMonth,
-			WeekNumber weekNumber, Weekday weekday, Integer weekdayBit, ScheduleGroup scheduleGroup) {
+	public static RepetitionPattern createYearlyWithLastDay(
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			ScheduleGroup scheduleGroup) {
+		validateMonthOfYearEqualsStartDateMonth(repetitionStartDate, monthOfYear);
+		return RepetitionPattern.builder()
+				.repetitionType(RepetitionType.YEARLY_WITH_LAST_DAY)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.monthOfYear(new MonthOfYear(monthOfYear))
+				.scheduleGroup(scheduleGroup)
+				.build();
+	}
+
+	public static RepetitionPattern create(
+			RepetitionType repetitionType,
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			Integer dayOfMonth,
+			WeekNumber weekNumber,
+			Weekday weekday,
+			Integer weekdayBit,
+			ScheduleGroup scheduleGroup) {
 		return switch (repetitionType) {
-			case DAILY -> createDaily(repetitionPeriod, repetitionStartDate, repetitionEndDate, scheduleGroup);
+			case DAILY ->
+					createDaily(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							scheduleGroup);
 			case WEEKLY ->
-				createWeekly(repetitionPeriod, repetitionStartDate, repetitionEndDate, weekdayBit, scheduleGroup);
-			case MONTHLY_WITH_DATE -> createMonthlyWithDate(repetitionPeriod, repetitionStartDate, repetitionEndDate,
-					dayOfMonth, scheduleGroup);
-			case MONTHLY_WITH_WEEKDAY -> createMonthlyWithWeekday(repetitionPeriod, repetitionStartDate,
-					repetitionEndDate, weekNumber, weekday, scheduleGroup);
+					createWeekly(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							weekdayBit,
+							scheduleGroup);
+			case MONTHLY_WITH_DATE ->
+					createMonthlyWithDate(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							dayOfMonth,
+							scheduleGroup);
+			case MONTHLY_WITH_WEEKDAY ->
+					createMonthlyWithWeekday(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							weekNumber,
+							weekday,
+							scheduleGroup);
 			case MONTHLY_WITH_LAST_DAY ->
-				createMonthlyWithLastDay(repetitionPeriod, repetitionStartDate, repetitionEndDate, scheduleGroup);
-			case YEARLY_WITH_DATE -> createYearlyWithDate(repetitionPeriod, repetitionStartDate, repetitionEndDate,
-					monthOfYear, dayOfMonth, scheduleGroup);
-			case YEARLY_WITH_WEEKDAY -> createYearlyWithWeekday(repetitionPeriod, repetitionStartDate,
-					repetitionEndDate, monthOfYear, weekNumber, weekday, scheduleGroup);
-			case YEARLY_WITH_LAST_DAY -> createYearlyWithLastDay(repetitionPeriod, repetitionStartDate,
-					repetitionEndDate, monthOfYear, scheduleGroup);
+					createMonthlyWithLastDay(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							scheduleGroup);
+			case YEARLY_WITH_DATE ->
+					createYearlyWithDate(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							dayOfMonth,
+							scheduleGroup);
+			case YEARLY_WITH_WEEKDAY ->
+					createYearlyWithWeekday(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							weekNumber,
+							weekday,
+							scheduleGroup);
+			case YEARLY_WITH_LAST_DAY ->
+					createYearlyWithLastDay(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							scheduleGroup);
 		};
 	}
 
@@ -339,71 +517,139 @@ public class RepetitionPattern extends BaseTime {
 	}
 
 	private Stream<TemporalAmount> dailyRepeatingStream() {
-		return Stream.iterate(0, day -> repetitionStartDate.plusDays(day).isBefore(repetitionEndDate.plusDays(1L)),
-				day -> day + repetitionPeriod).map(Period::ofDays);
+		return Stream.iterate(
+						0,
+						day ->
+								repetitionStartDate
+										.plusDays(day)
+										.isBefore(repetitionEndDate.plusDays(1L)),
+						day -> day + repetitionPeriod)
+				.map(Period::ofDays);
 	}
 
 	private Stream<TemporalAmount> weeklyRepeatingStream() {
-		return Stream
-				.iterate(repetitionStartDate, date -> date.isBefore(repetitionEndDate.plusDays(1L)), date -> date
-						.plusWeeks(repetitionPeriod).with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)))
+		return Stream.iterate(
+						repetitionStartDate,
+						date -> date.isBefore(repetitionEndDate.plusDays(1L)),
+						date ->
+								date.plusWeeks(repetitionPeriod)
+										.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)))
 				.flatMap(
-						startDate -> Stream
-								.iterate(startDate,
-										date -> date.isBefore(repetitionEndDate.plusDays(1L)) && date
-												.isBefore(startDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY))),
-										date -> date.plusDays(1L))
-								.filter(date -> weekdayBit.isValidWeekday(date.getDayOfWeek())))
-				.map(date -> Period.ofDays((int) ChronoUnit.DAYS.between(repetitionStartDate, date)));
+						startDate ->
+								Stream.iterate(
+												startDate,
+												date ->
+														date.isBefore(
+																		repetitionEndDate.plusDays(
+																				1L))
+																&& date.isBefore(
+																		startDate.with(
+																				TemporalAdjusters
+																						.next(
+																								DayOfWeek
+																										.SUNDAY))),
+												date -> date.plusDays(1L))
+										.filter(
+												date ->
+														weekdayBit.isValidWeekday(
+																date.getDayOfWeek())))
+				.map(
+						date ->
+								Period.ofDays(
+										(int) ChronoUnit.DAYS.between(repetitionStartDate, date)));
 	}
 
 	private Stream<TemporalAmount> monthlyWithDateRepeatingStream() {
-		return Stream
-				.iterate(repetitionStartDate, date -> date.isBefore(repetitionEndDate.plusDays(1L)),
+		return Stream.iterate(
+						repetitionStartDate,
+						date -> date.isBefore(repetitionEndDate.plusDays(1L)),
 						date -> date.plusMonths(repetitionPeriod))
-				.map(date -> Period.ofDays((int) ChronoUnit.DAYS.between(repetitionStartDate, date)));
+				.map(
+						date ->
+								Period.ofDays(
+										(int) ChronoUnit.DAYS.between(repetitionStartDate, date)));
 	}
 
 	private Stream<TemporalAmount> monthlyWithWeekdayRepeatingStream() {
-		return Stream
-				.iterate(repetitionStartDate,
-						date -> date.isBefore(repetitionEndDate.with(TemporalAdjusters.lastDayOfMonth()).plusDays(1L)),
+		return Stream.iterate(
+						repetitionStartDate,
+						date ->
+								date.isBefore(
+										repetitionEndDate
+												.with(TemporalAdjusters.lastDayOfMonth())
+												.plusDays(1L)),
 						date -> date.plusMonths(repetitionPeriod))
-				.filter(date -> findDateByWeekday(date).isBefore(repetitionEndDate)).map(date -> Period
-						.ofDays((int) ChronoUnit.DAYS.between(repetitionStartDate, findDateByWeekday(date))));
+				.filter(date -> findDateByWeekday(date).isBefore(repetitionEndDate))
+				.map(
+						date ->
+								Period.ofDays(
+										(int)
+												ChronoUnit.DAYS.between(
+														repetitionStartDate,
+														findDateByWeekday(date))));
 	}
 
 	private Stream<TemporalAmount> monthlyWithLastDayRepeatingStream() {
-		return Stream
-				.iterate(repetitionStartDate, date -> date.isBefore(repetitionEndDate.plusDays(1L)),
+		return Stream.iterate(
+						repetitionStartDate,
+						date -> date.isBefore(repetitionEndDate.plusDays(1L)),
 						date -> date.plusMonths(repetitionPeriod))
-				.map(date -> Period.ofDays((int) ChronoUnit.DAYS.between(repetitionStartDate,
-						date.with(TemporalAdjusters.lastDayOfMonth()))));
+				.map(
+						date ->
+								Period.ofDays(
+										(int)
+												ChronoUnit.DAYS.between(
+														repetitionStartDate,
+														date.with(
+																TemporalAdjusters
+																		.lastDayOfMonth()))));
 	}
 
 	private Stream<TemporalAmount> yearlyWithDateRepeatingStream() {
-		return Stream
-				.iterate(repetitionStartDate, date -> date.isBefore(repetitionEndDate.plusDays(1L)),
+		return Stream.iterate(
+						repetitionStartDate,
+						date -> date.isBefore(repetitionEndDate.plusDays(1L)),
 						date -> date.plusYears(repetitionPeriod))
 				.filter(date -> dayOfMonth.equalsDayOfMonthValue(date.getDayOfMonth()))
-				.map(date -> Period.ofDays((int) ChronoUnit.DAYS.between(repetitionStartDate, date)));
+				.map(
+						date ->
+								Period.ofDays(
+										(int) ChronoUnit.DAYS.between(repetitionStartDate, date)));
 	}
 
 	private Stream<TemporalAmount> yearlyWithWeekdayRepeatingStream() {
-		return Stream
-				.iterate(repetitionStartDate,
-						date -> date.isBefore(repetitionEndDate.with(TemporalAdjusters.lastDayOfMonth()).plusDays(1L)),
+		return Stream.iterate(
+						repetitionStartDate,
+						date ->
+								date.isBefore(
+										repetitionEndDate
+												.with(TemporalAdjusters.lastDayOfMonth())
+												.plusDays(1L)),
 						date -> date.plusYears(repetitionPeriod))
-				.filter(date -> findDateByWeekday(date).isBefore(repetitionEndDate)).map(date -> Period
-						.ofDays((int) ChronoUnit.DAYS.between(repetitionStartDate, findDateByWeekday(date))));
+				.filter(date -> findDateByWeekday(date).isBefore(repetitionEndDate))
+				.map(
+						date ->
+								Period.ofDays(
+										(int)
+												ChronoUnit.DAYS.between(
+														repetitionStartDate,
+														findDateByWeekday(date))));
 	}
 
 	private Stream<TemporalAmount> yearlyWithLastDayRepeatingStream() {
-		return Stream
-				.iterate(repetitionStartDate, date -> date.isBefore(repetitionEndDate.plusDays(1L)),
+		return Stream.iterate(
+						repetitionStartDate,
+						date -> date.isBefore(repetitionEndDate.plusDays(1L)),
 						date -> date.plusYears(repetitionPeriod))
-				.map(date -> Period.ofDays((int) ChronoUnit.DAYS.between(repetitionStartDate,
-						date.with(TemporalAdjusters.lastDayOfMonth()))));
+				.map(
+						date ->
+								Period.ofDays(
+										(int)
+												ChronoUnit.DAYS.between(
+														repetitionStartDate,
+														date.with(
+																TemporalAdjusters
+																		.lastDayOfMonth()))));
 	}
 
 	private LocalDateTime findDateByWeekday(LocalDateTime date) {
@@ -418,13 +664,15 @@ public class RepetitionPattern extends BaseTime {
 		return firstDayOfMonth.plusDays(daysUntilWeekday + ((weekNumber.getValue() - 1) * 7L));
 	}
 
-	private static void validateDayOfMonthEqualsStartDate(LocalDateTime startDate, Integer dayOfMonth) {
+	private static void validateDayOfMonthEqualsStartDate(
+			LocalDateTime startDate, Integer dayOfMonth) {
 		if (startDate.getDayOfMonth() != dayOfMonth) {
 			throw new InvalidRepetitionException(ErrorCode.NOT_EQUAL_DAY_OF_MONTH);
 		}
 	}
 
-	private static void validateMonthOfYearEqualsStartDateMonth(LocalDateTime startDate, Integer monthOfYear) {
+	private static void validateMonthOfYearEqualsStartDateMonth(
+			LocalDateTime startDate, Integer monthOfYear) {
 		if (startDate.getMonth().getValue() != monthOfYear) {
 			throw new InvalidRepetitionException(ErrorCode.NOT_EQUAL_MONTH_OF_YEAR);
 		}

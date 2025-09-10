@@ -7,7 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "feedScrapMember", columnNames = {"feed_id", "member_id"}))
+@Table(
+		uniqueConstraints =
+				@UniqueConstraint(
+						name = "feedScrapMember",
+						columnNames = {"feed_id", "member_id"}))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FeedScrap {
 

@@ -20,11 +20,15 @@ class ScheduleDurationTest {
 		ScheduleDuration scheduleDuration = ScheduleDuration.createNotAllDay(start, end);
 		ScheduleDuration allDayScheduleDuration = ScheduleDuration.createAllDay(start, end);
 
-		assertAll(() -> {
-			assertThat(scheduleDuration).isEqualTo(ScheduleDuration.createNotAllDay(start, end));
-			assertThat(allDayScheduleDuration).isEqualTo(ScheduleDuration.createAllDay(start, end));
-			assertThat(allDayScheduleDuration).isNotEqualTo(ScheduleDuration.createNotAllDay(start, end));
-		});
+		assertAll(
+				() -> {
+					assertThat(scheduleDuration)
+							.isEqualTo(ScheduleDuration.createNotAllDay(start, end));
+					assertThat(allDayScheduleDuration)
+							.isEqualTo(ScheduleDuration.createAllDay(start, end));
+					assertThat(allDayScheduleDuration)
+							.isNotEqualTo(ScheduleDuration.createNotAllDay(start, end));
+				});
 	}
 
 	@Test
@@ -32,14 +36,15 @@ class ScheduleDurationTest {
 	void throwInvalidScheduleDurationExceptionIfStartDateIsAfterEndDate() {
 		LocalDateTime start = LocalDateTime.of(2024, 1, 2, 0, 0);
 		LocalDateTime end = LocalDateTime.of(2024, 1, 1, 0, 0);
-		assertAll(() -> {
-			assertThatCode(() -> ScheduleDuration.createNotAllDay(start, end))
-					.isInstanceOf(InvalidScheduleDurationException.class)
-					.hasMessage(ErrorCode.INVALID_DURATION.getDescription());
-			assertThatCode(() -> ScheduleDuration.createAllDay(start, end))
-					.isInstanceOf(InvalidScheduleDurationException.class)
-					.hasMessage(ErrorCode.INVALID_DURATION.getDescription());
-		});
+		assertAll(
+				() -> {
+					assertThatCode(() -> ScheduleDuration.createNotAllDay(start, end))
+							.isInstanceOf(InvalidScheduleDurationException.class)
+							.hasMessage(ErrorCode.INVALID_DURATION.getDescription());
+					assertThatCode(() -> ScheduleDuration.createAllDay(start, end))
+							.isInstanceOf(InvalidScheduleDurationException.class)
+							.hasMessage(ErrorCode.INVALID_DURATION.getDescription());
+				});
 	}
 
 	@Test
@@ -47,8 +52,10 @@ class ScheduleDurationTest {
 	void validScheduleDurationIfIsAllDayEvenIfStartTimeIsAfterEndTime() {
 		LocalDateTime start = LocalDateTime.of(2024, 1, 1, 11, 0);
 		LocalDateTime end = LocalDateTime.of(2024, 1, 1, 10, 0);
-		assertAll(() -> {
-			assertThatCode(() -> ScheduleDuration.createAllDay(start, end)).doesNotThrowAnyException();
-		});
+		assertAll(
+				() -> {
+					assertThatCode(() -> ScheduleDuration.createAllDay(start, end))
+							.doesNotThrowAnyException();
+				});
 	}
 }

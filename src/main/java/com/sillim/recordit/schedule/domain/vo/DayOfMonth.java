@@ -16,8 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DayOfMonth {
 
-	@Column
-	private Integer dayOfMonth;
+	@Column private Integer dayOfMonth;
 
 	private DayOfMonth(Integer dayOfMonth) {
 		this.dayOfMonth = dayOfMonth;
@@ -33,10 +32,13 @@ public class DayOfMonth {
 		return new DayOfMonth(dayOfMonth);
 	}
 
-	public static DayOfMonth create(RepetitionType repetitionType, Integer monthOfYear, Integer dayOfMonth) {
+	public static DayOfMonth create(
+			RepetitionType repetitionType, Integer monthOfYear, Integer dayOfMonth) {
 		return switch (repetitionType) {
-			case MONTHLY_WITH_DATE, MONTHLY_WITH_WEEKDAY, MONTHLY_WITH_LAST_DAY -> createMonthly(dayOfMonth);
-			case YEARLY_WITH_DATE, YEARLY_WITH_WEEKDAY, YEARLY_WITH_LAST_DAY -> createYearly(monthOfYear, dayOfMonth);
+			case MONTHLY_WITH_DATE, MONTHLY_WITH_WEEKDAY, MONTHLY_WITH_LAST_DAY ->
+					createMonthly(dayOfMonth);
+			case YEARLY_WITH_DATE, YEARLY_WITH_WEEKDAY, YEARLY_WITH_LAST_DAY ->
+					createYearly(monthOfYear, dayOfMonth);
 			default -> null;
 		};
 	}
@@ -52,7 +54,8 @@ public class DayOfMonth {
 			throw new InvalidDayOfMonthException(ErrorCode.INVALID_DAY_OF_MONTH);
 		}
 
-		if ((monthOfYear == 4 || monthOfYear == 6 || monthOfYear == 9 || monthOfYear == 11) && dayOfMonth > 30) {
+		if ((monthOfYear == 4 || monthOfYear == 6 || monthOfYear == 9 || monthOfYear == 11)
+				&& dayOfMonth > 30) {
 			throw new InvalidDayOfMonthException(ErrorCode.INVALID_DAY_OF_MONTH);
 		}
 	}

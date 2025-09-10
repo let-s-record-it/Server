@@ -35,18 +35,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class MonthlyGoalUpdateServiceTest {
 
-	@Mock
-	MonthlyGoalQueryService monthlyGoalQueryService;
-	@Mock
-	CalendarQueryService calendarQueryService;
-	@Mock
-	CalendarMemberService calendarMemberService;
-	@Mock
-	MonthlyGoalRepository monthlyGoalRepository;
-	@Mock
-	ScheduleCategoryQueryService scheduleCategoryQueryService;
-	@InjectMocks
-	MonthlyGoalUpdateService monthlyGoalUpdateService;
+	@Mock MonthlyGoalQueryService monthlyGoalQueryService;
+	@Mock CalendarQueryService calendarQueryService;
+	@Mock CalendarMemberService calendarMemberService;
+	@Mock MonthlyGoalRepository monthlyGoalRepository;
+	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
+	@InjectMocks MonthlyGoalUpdateService monthlyGoalUpdateService;
 
 	long memberId = 1L;
 	private Member member;
@@ -69,8 +63,14 @@ public class MonthlyGoalUpdateServiceTest {
 		Long monthlyGoalId = 2L;
 		Long categoryId = 3L;
 		Long calendarId = 4L;
-		MonthlyGoalUpdateRequest request = new MonthlyGoalUpdateRequest("취뽀하기!", "취업할 때까지 숨 참는다.",
-				LocalDate.of(2024, 4, 1), LocalDate.of(2024, 4, 30), categoryId, calendarId);
+		MonthlyGoalUpdateRequest request =
+				new MonthlyGoalUpdateRequest(
+						"취뽀하기!",
+						"취업할 때까지 숨 참는다.",
+						LocalDate.of(2024, 4, 1),
+						LocalDate.of(2024, 4, 30),
+						categoryId,
+						calendarId);
 		MonthlyGoal saved = mock(MonthlyGoal.class);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(scheduleCategoryQueryService.searchScheduleCategory(categoryId)).willReturn(category);
@@ -90,21 +90,29 @@ public class MonthlyGoalUpdateServiceTest {
 		Long monthlyGoalId = 2L;
 		Long categoryId = 3L;
 		Long calendarId = 4L;
-		MonthlyGoalUpdateRequest request = new MonthlyGoalUpdateRequest("(수정)취뽀하기!", "(수정)취업할 때까지 숨 참는다.",
-				LocalDate.of(2024, 5, 1), LocalDate.of(2024, 5, 31), categoryId, calendarId);
+		MonthlyGoalUpdateRequest request =
+				new MonthlyGoalUpdateRequest(
+						"(수정)취뽀하기!",
+						"(수정)취업할 때까지 숨 참는다.",
+						LocalDate.of(2024, 5, 1),
+						LocalDate.of(2024, 5, 31),
+						categoryId,
+						calendarId);
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		given(scheduleCategoryQueryService.searchScheduleCategory(categoryId)).willReturn(category);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId))).willReturn(monthlyGoal);
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId)))
+				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.modify(request, monthlyGoalId, memberId);
 
-		assertAll(() -> {
-			assertThat(monthlyGoal.getTitle()).isEqualTo(request.title());
-			assertThat(monthlyGoal.getDescription()).isEqualTo(request.description());
-			assertThat(monthlyGoal.getStartDate()).isEqualTo(request.startDate());
-			assertThat(monthlyGoal.getEndDate()).isEqualTo(request.endDate());
-		});
+		assertAll(
+				() -> {
+					assertThat(monthlyGoal.getTitle()).isEqualTo(request.title());
+					assertThat(monthlyGoal.getDescription()).isEqualTo(request.description());
+					assertThat(monthlyGoal.getStartDate()).isEqualTo(request.startDate());
+					assertThat(monthlyGoal.getEndDate()).isEqualTo(request.endDate());
+				});
 	}
 
 	@Test
@@ -114,7 +122,8 @@ public class MonthlyGoalUpdateServiceTest {
 		Long monthlyGoalId = 2L;
 		Boolean status = true;
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId))).willReturn(monthlyGoal);
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId)))
+				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.changeAchieveStatus(monthlyGoalId, status, memberId);
 
@@ -127,7 +136,8 @@ public class MonthlyGoalUpdateServiceTest {
 		Long memberId = 1L;
 		Long monthlyGoalId = 2L;
 		MonthlyGoal monthlyGoal = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId))).willReturn(monthlyGoal);
+		given(monthlyGoalQueryService.searchByIdAndCheckAuthority(eq(monthlyGoalId)))
+				.willReturn(monthlyGoal);
 
 		monthlyGoalUpdateService.remove(monthlyGoalId, memberId);
 

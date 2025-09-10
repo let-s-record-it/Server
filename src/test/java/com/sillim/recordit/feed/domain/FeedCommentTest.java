@@ -33,7 +33,8 @@ class FeedCommentTest {
 		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 		FeedComment feedComment = new FeedComment("content", feed, memberId);
 
-		assertThatCode(() -> feedComment.validateAuthenticatedUser(2L)).isInstanceOf(InvalidRequestException.class)
+		assertThatCode(() -> feedComment.validateAuthenticatedUser(2L))
+				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
 }

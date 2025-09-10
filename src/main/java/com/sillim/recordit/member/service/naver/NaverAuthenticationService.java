@@ -22,11 +22,16 @@ public class NaverAuthenticationService implements AuthenticationService {
 
 	@Override
 	public MemberInfo getMemberInfoByAccessToken(String accessToken) {
-		NaverUserInfo naverUserInfo = naverUserInfoClient
-				.getNaverUserInfo(TokenType.BEARER.getValueWithSpace() + accessToken);
+		NaverUserInfo naverUserInfo =
+				naverUserInfoClient.getNaverUserInfo(
+						TokenType.BEARER.getValueWithSpace() + accessToken);
 
-		return MemberInfo.builder().oauthAccount(naverUserInfo.response().id()).oAuthProvider(OAuthProvider.NAVER)
-				.name(naverUserInfo.response().nickname()).email(naverUserInfo.response().email())
-				.profileImageUrl(naverUserInfo.response().profileImage()).build();
+		return MemberInfo.builder()
+				.oauthAccount(naverUserInfo.response().id())
+				.oAuthProvider(OAuthProvider.NAVER)
+				.name(naverUserInfo.response().nickname())
+				.email(naverUserInfo.response().email())
+				.profileImageUrl(naverUserInfo.response().profileImage())
+				.build();
 	}
 }

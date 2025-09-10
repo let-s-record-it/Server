@@ -5,7 +5,12 @@ import java.time.LocalDate;
 import java.time.Period;
 
 public enum WeekNumber {
-	FIRST(1), SECOND(2), THIRD(3), FOURTH(4), FIFTH(5),;
+	FIRST(1),
+	SECOND(2),
+	THIRD(3),
+	FOURTH(4),
+	FIFTH(5),
+	;
 	private final Integer value;
 
 	WeekNumber(Integer value) {

@@ -30,12 +30,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class InviteServiceTest {
 
-	@Mock
-	InviteLinkRepository inviteLinkRepository;
-	@Mock
-	CalendarQueryService calendarQueryService;
-	@InjectMocks
-	InviteService inviteService;
+	@Mock InviteLinkRepository inviteLinkRepository;
+	@Mock CalendarQueryService calendarQueryService;
+	@InjectMocks InviteService inviteService;
 
 	@DisplayName("유효한 초대 코드가 있다면 가져온다.")
 	@Test
@@ -46,7 +43,8 @@ class InviteServiceTest {
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
-		InviteLink inviteLink = new InviteLink(expectInviteCode, LocalDateTime.now().plusDays(7), false, calendar);
+		InviteLink inviteLink =
+				new InviteLink(expectInviteCode, LocalDateTime.now().plusDays(7), false, calendar);
 		given(inviteLinkRepository.findByCalendarIdAndExpiredIsFalse(eq(calendarId)))
 				.willReturn(Optional.of(inviteLink));
 
@@ -64,10 +62,14 @@ class InviteServiceTest {
 		Member member = MemberFixture.DEFAULT.getMember();
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
-		InviteLink expectInviteLink = new InviteLink(expectInviteCode, LocalDateTime.now().plusDays(7), false,
-				calendar);
-		InviteLink inviteLink = new InviteLink(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1), false,
-				calendar);
+		InviteLink expectInviteLink =
+				new InviteLink(expectInviteCode, LocalDateTime.now().plusDays(7), false, calendar);
+		InviteLink inviteLink =
+				new InviteLink(
+						UUID.randomUUID().toString(),
+						LocalDateTime.now().minusDays(1),
+						false,
+						calendar);
 		given(inviteLinkRepository.findByCalendarIdAndExpiredIsFalse(eq(calendarId)))
 				.willReturn(Optional.of(inviteLink));
 		given(inviteLinkRepository.save(any(InviteLink.class))).willReturn(expectInviteLink);
@@ -88,14 +90,17 @@ class InviteServiceTest {
 		given(member.getId()).willReturn(1L);
 		given(calendar.getId()).willReturn(1L);
 		InviteLink expectInviteLink = new InviteLink("code", LocalDateTime.now(), false, calendar);
-		given(inviteLinkRepository.findInfoByInviteCode(eq(new String(Base64.getUrlDecoder().decode(inviteCode)))))
+		given(
+						inviteLinkRepository.findInfoByInviteCode(
+								eq(new String(Base64.getUrlDecoder().decode(inviteCode)))))
 				.willReturn(expectInviteLink);
 
 		InviteLink inviteLink = inviteService.searchInviteInfo(inviteCode);
 
-		assertAll(() -> {
-			assertThat(inviteLink.getCalendar().getId()).isEqualTo(calendar.getId());
-			assertThat(inviteLink.getCalendar().getMemberId()).isEqualTo(member.getId());
-		});
+		assertAll(
+				() -> {
+					assertThat(inviteLink.getCalendar().getId()).isEqualTo(calendar.getId());
+					assertThat(inviteLink.getCalendar().getMemberId()).isEqualTo(member.getId());
+				});
 	}
 }

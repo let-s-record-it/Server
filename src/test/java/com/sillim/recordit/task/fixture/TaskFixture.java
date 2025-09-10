@@ -7,7 +7,8 @@ import com.sillim.recordit.task.domain.TaskGroup;
 import java.time.LocalDate;
 
 public enum TaskFixture {
-	DEFAULT("회의록 작성", "프로젝트 회의록 작성", LocalDate.of(2024, 6, 1)),;
+	DEFAULT("회의록 작성", "프로젝트 회의록 작성", LocalDate.of(2024, 6, 1)),
+	;
 
 	private final String title;
 	private final String description;
@@ -20,12 +21,25 @@ public enum TaskFixture {
 	}
 
 	public Task get(ScheduleCategory category, Calendar calendar, TaskGroup taskGroup) {
-		return Task.builder().title(title).description(description).date(date).category(category).calendar(calendar)
-				.taskGroup(taskGroup).build();
+		return Task.builder()
+				.title(title)
+				.description(description)
+				.date(date)
+				.category(category)
+				.calendar(calendar)
+				.taskGroup(taskGroup)
+				.build();
 	}
 
-	public Task getWithDate(LocalDate date, ScheduleCategory category, Calendar calendar, TaskGroup taskGroup) {
-		return Task.builder().title(title).description(description).date(date).category(category).calendar(calendar)
-				.taskGroup(taskGroup).build();
+	public Task getWithDate(
+			LocalDate date, ScheduleCategory category, Calendar calendar, TaskGroup taskGroup) {
+		return Task.builder()
+				.title(title)
+				.description(description)
+				.date(date)
+				.category(category)
+				.calendar(calendar)
+				.taskGroup(taskGroup)
+				.build();
 	}
 }

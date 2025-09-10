@@ -29,11 +29,9 @@ public class Feed extends BaseTime {
 	@Column(nullable = false, name = "feed_id")
 	private Long id;
 
-	@Embedded
-	private FeedTitle title;
+	@Embedded private FeedTitle title;
 
-	@Embedded
-	private FeedContent content;
+	@Embedded private FeedContent content;
 
 	@Column(nullable = false)
 	@ColumnDefault("false")
@@ -45,11 +43,9 @@ public class Feed extends BaseTime {
 	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
-	@Embedded
-	private FeedImages feedImages;
+	@Embedded private FeedImages feedImages;
 
-	@Version
-	private Long version;
+	@Version private Long version;
 
 	public Feed(String title, String content, Long memberId) {
 		this.title = new FeedTitle(title);
@@ -78,11 +74,18 @@ public class Feed extends BaseTime {
 		return feedImages.getFeedImages().stream().map(FeedImage::getImageUrl).toList();
 	}
 
-	public void modify(String title, String content, List<String> existingImageUrls, List<String> newImageUrls) {
+	public void modify(
+			String title,
+			String content,
+			List<String> existingImageUrls,
+			List<String> newImageUrls) {
 		this.title = new FeedTitle(title);
 		this.content = new FeedContent(content);
-		feedImages.modifyFeedImages(existingImageUrls, newImageUrls.stream()
-				.map(newImageUrl -> new FeedImage(newImageUrl, this)).collect(Collectors.toList()));
+		feedImages.modifyFeedImages(
+				existingImageUrls,
+				newImageUrls.stream()
+						.map(newImageUrl -> new FeedImage(newImageUrl, this))
+						.collect(Collectors.toList()));
 	}
 
 	public boolean isOwner(Long memberId) {

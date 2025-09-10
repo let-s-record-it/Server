@@ -20,8 +20,7 @@ public class Calendar extends BaseTime {
 	@Column(name = "calendar_id", nullable = false)
 	private Long id;
 
-	@Embedded
-	private CalendarTitle title;
+	@Embedded private CalendarTitle title;
 
 	@Column(nullable = false)
 	private boolean deleted;

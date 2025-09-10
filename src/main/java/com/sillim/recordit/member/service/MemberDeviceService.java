@@ -15,10 +15,16 @@ public class MemberDeviceService {
 
 	private final MemberDeviceRepository memberDeviceRepository;
 
-	public void addMemberDeviceIfNotExists(String id, String model, String fcmToken, Member member) {
+	public void addMemberDeviceIfNotExists(
+			String id, String model, String fcmToken, Member member) {
 		if (!memberDeviceRepository.existsByIdentifierAndMemberId(id, member.getId())) {
-			memberDeviceRepository
-					.save(MemberDevice.builder().identifier(id).model(model).fcmToken(fcmToken).member(member).build());
+			memberDeviceRepository.save(
+					MemberDevice.builder()
+							.identifier(id)
+							.model(model)
+							.fcmToken(fcmToken)
+							.member(member)
+							.build());
 		}
 	}
 

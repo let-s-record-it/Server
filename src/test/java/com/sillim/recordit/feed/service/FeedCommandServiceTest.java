@@ -29,22 +29,22 @@ import org.springframework.mock.web.MockMultipartFile;
 @ExtendWith(MockitoExtension.class)
 class FeedCommandServiceTest {
 
-	@Mock
-	FeedRepository feedRepository;
-	@Mock
-	MemberQueryService memberQueryService;
-	@Mock
-	MessagePublisher messagePublisher;
-	@InjectMocks
-	FeedCommandService feedCommandService;
+	@Mock FeedRepository feedRepository;
+	@Mock MemberQueryService memberQueryService;
+	@Mock MessagePublisher messagePublisher;
+	@InjectMocks FeedCommandService feedCommandService;
 
 	@Test
 	@DisplayName("피드를 추가할 수 있다.")
 	void addFeed() throws IOException {
 		Member member = mock(Member.class);
 		Feed feed = mock(Feed.class);
-		MockMultipartFile multipartFile = new MockMultipartFile("images", "image.jpg", "text/plain",
-				"test1".getBytes(StandardCharsets.UTF_8));
+		MockMultipartFile multipartFile =
+				new MockMultipartFile(
+						"images",
+						"image.jpg",
+						"text/plain",
+						"test1".getBytes(StandardCharsets.UTF_8));
 		given(feed.getId()).willReturn(1L);
 		given(feedRepository.save(any(Feed.class))).willReturn(feed);
 

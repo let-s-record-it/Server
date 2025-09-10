@@ -14,9 +14,12 @@ class AlarmTimeTest {
 	void createAlarmTime() {
 		AlarmTime alarmTime = AlarmTime.create(LocalDateTime.of(2024, 1, 1, 0, 0));
 
-		assertAll(() -> {
-			assertThat(alarmTime).isEqualTo(AlarmTime.create(LocalDateTime.of(2024, 1, 1, 0, 0)));
-			assertThat(alarmTime.getAlarmTime()).isEqualTo(LocalDateTime.of(2024, 1, 1, 0, 0));
-		});
+		assertAll(
+				() -> {
+					assertThat(alarmTime)
+							.isEqualTo(AlarmTime.create(LocalDateTime.of(2024, 1, 1, 0, 0)));
+					assertThat(alarmTime.getAlarmTime())
+							.isEqualTo(LocalDateTime.of(2024, 1, 1, 0, 0));
+				});
 	}
 }

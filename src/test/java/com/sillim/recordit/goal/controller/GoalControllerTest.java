@@ -41,10 +41,8 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(GoalController.class)
 public class GoalControllerTest extends RestDocsTest {
 
-	@MockBean
-	MonthlyGoalQueryService monthlyGoalQueryService;
-	@MockBean
-	WeeklyGoalQueryService weeklyGoalQueryService;
+	@MockBean MonthlyGoalQueryService monthlyGoalQueryService;
+	@MockBean WeeklyGoalQueryService weeklyGoalQueryService;
 
 	private Member member;
 	private ScheduleCategory category;
@@ -63,26 +61,48 @@ public class GoalControllerTest extends RestDocsTest {
 	@Test
 	@DisplayName("당월의 목표 목록을 조회한다.")
 	void monthlyGoalListTest() throws Exception {
-		List<MonthlyGoal> monthlyGoals = LongStream.rangeClosed(1, 3).mapToObj((id) -> {
-			MonthlyGoal goal = spy(MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar));
-			given(goal.getId()).willReturn(id);
-			given(goal.isAchieved()).willReturn(id % 2 == 0);
-			return goal;
-		}).toList();
-		given(monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), anyLong())).willReturn(monthlyGoals);
-		List<WeeklyGoal> weeklyGoals = LongStream.rangeClosed(1, 2).mapToObj((id) -> {
-			WeeklyGoal goal = spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
-			given(goal.getId()).willReturn(id);
-			given(goal.isAchieved()).willReturn(id % 2 == 0);
-			return goal;
-		}).toList();
-		given(weeklyGoalQueryService.searchAllWeeklyGoalByDate(anyInt(), anyInt(), any(), anyLong()))
+		List<MonthlyGoal> monthlyGoals =
+				LongStream.rangeClosed(1, 3)
+						.mapToObj(
+								(id) -> {
+									MonthlyGoal goal =
+											spy(
+													MonthlyGoalFixture.DEFAULT.getWithMember(
+															category, calendar));
+									given(goal.getId()).willReturn(id);
+									given(goal.isAchieved()).willReturn(id % 2 == 0);
+									return goal;
+								})
+						.toList();
+		given(monthlyGoalQueryService.searchAllByDate(anyInt(), anyInt(), anyLong()))
+				.willReturn(monthlyGoals);
+		List<WeeklyGoal> weeklyGoals =
+				LongStream.rangeClosed(1, 2)
+						.mapToObj(
+								(id) -> {
+									WeeklyGoal goal =
+											spy(
+													WeeklyGoalFixture.DEFAULT.getWithMember(
+															category, calendar));
+									given(goal.getId()).willReturn(id);
+									given(goal.isAchieved()).willReturn(id % 2 == 0);
+									return goal;
+								})
+						.toList();
+		given(
+						weeklyGoalQueryService.searchAllWeeklyGoalByDate(
+								anyInt(), anyInt(), any(), anyLong()))
 				.willReturn(weeklyGoals);
 
-		ResultActions perform = mockMvc.perform(get("/api/v1/calendars/{calendarId}/goals", 1L)
-				.headers(authorizationHeader()).queryParam("year", "2024").queryParam("month", "4"));
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/calendars/{calendarId}/goals", 1L)
+								.headers(authorizationHeader())
+								.queryParam("year", "2024")
+								.queryParam("month", "4"));
 
-		perform.andExpect(status().isOk()).andExpect(jsonPath("$.monthlyGoals.size()").value(3))
+		perform.andExpect(status().isOk())
+				.andExpect(jsonPath("$.monthlyGoals.size()").value(3))
 				.andExpect(jsonPath("$.weeklyGoals.size()").value(2))
 				.andExpect(jsonPath("$.monthlyGoals.[0].id").value(1))
 				.andExpect(jsonPath("$.monthlyGoals.[0].title").value("취뽀하기!"))
@@ -95,8 +115,15 @@ public class GoalControllerTest extends RestDocsTest {
 				.andExpect(jsonPath("$.weeklyGoals.[1].id").value(2))
 				.andExpect(jsonPath("$.weeklyGoals.[1].title").value("데이터베이스 3장까지"));
 
-		perform.andDo(print()).andDo(document("goal-list", getDocumentRequest(), getDocumentResponse(),
-				requestHeaders(authorizationDesc()), queryParameters(parameterWithName("year").description("조회할 연도"),
-						parameterWithName("month").description("조회할 월"))));
+		perform.andDo(print())
+				.andDo(
+						document(
+								"goal-list",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								requestHeaders(authorizationDesc()),
+								queryParameters(
+										parameterWithName("year").description("조회할 연도"),
+										parameterWithName("month").description("조회할 월"))));
 	}
 }

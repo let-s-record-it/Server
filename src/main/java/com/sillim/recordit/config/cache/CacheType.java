@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum CacheType {
-	PUBLIC_KEYS("publicKeys", 60 * 60, 20),;
+	PUBLIC_KEYS("publicKeys", 60 * 60, 20),
+	;
 
 	private final String cacheName;
 	private final int expireAfterWrite;

@@ -19,12 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class MemberCommandServiceTest {
 
-	@Mock
-	MemberQueryService memberQueryService;
-	@Mock
-	MemberRepository memberRepository;
-	@InjectMocks
-	MemberCommandService memberCommandService;
+	@Mock MemberQueryService memberQueryService;
+	@Mock MemberRepository memberRepository;
+	@InjectMocks MemberCommandService memberCommandService;
 
 	@Test
 	@DisplayName("멤버 정보를 수정할 수 있다.")

@@ -18,19 +18,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class CalendarCategoryQueryServiceTest {
-	@Mock
-	CalendarCategoryRepository calendarCategoryRepository;
-	@InjectMocks
-	CalendarCategoryQueryService calendarCategoryQueryService;
+	@Mock CalendarCategoryRepository calendarCategoryRepository;
+	@InjectMocks CalendarCategoryQueryService calendarCategoryQueryService;
 
 	@Test
 	@DisplayName("특정 멤버의 캘린더 카테고리들을 조회할 수 있다.")
 	void searchCalendarCategoriesByMemberId() {
 		long memberId = 1L;
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
-		given(calendarCategoryRepository.findByDeletedIsFalseAndMemberId(eq(memberId))).willReturn(List.of(category));
+		given(calendarCategoryRepository.findByDeletedIsFalseAndMemberId(eq(memberId)))
+				.willReturn(List.of(category));
 
-		List<CalendarCategory> categories = calendarCategoryQueryService.searchCalendarCategories(memberId);
+		List<CalendarCategory> categories =
+				calendarCategoryQueryService.searchCalendarCategories(memberId);
 
 		assertThat(categories.get(0)).isEqualTo(category);
 	}
@@ -41,9 +41,11 @@ class CalendarCategoryQueryServiceTest {
 		long categoryId = 1L;
 		long memberId = 1L;
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
-		given(calendarCategoryRepository.findById(eq(categoryId))).willReturn(Optional.of(category));
+		given(calendarCategoryRepository.findById(eq(categoryId)))
+				.willReturn(Optional.of(category));
 
-		CalendarCategory foundCategory = calendarCategoryQueryService.searchCalendarCategory(categoryId);
+		CalendarCategory foundCategory =
+				calendarCategoryQueryService.searchCalendarCategory(categoryId);
 
 		assertThat(foundCategory).isEqualTo(category);
 	}

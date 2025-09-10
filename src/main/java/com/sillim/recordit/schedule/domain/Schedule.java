@@ -41,14 +41,11 @@ public class Schedule {
 	@Column(name = "schedule_id", nullable = false)
 	private Long id;
 
-	@Embedded
-	private ScheduleTitle title;
+	@Embedded private ScheduleTitle title;
 
-	@Embedded
-	private ScheduleDescription description;
+	@Embedded private ScheduleDescription description;
 
-	@Embedded
-	private ScheduleDuration scheduleDuration;
+	@Embedded private ScheduleDuration scheduleDuration;
 
 	@Column(nullable = false)
 	private String place;
@@ -56,8 +53,7 @@ public class Schedule {
 	@Column(nullable = false)
 	private boolean setLocation;
 
-	@Embedded
-	private Location location;
+	@Embedded private Location location;
 
 	@Column(nullable = false)
 	private boolean setAlarm;
@@ -74,16 +70,29 @@ public class Schedule {
 	@JoinColumn(name = "schedule_group_id")
 	private ScheduleGroup scheduleGroup;
 
-	@OneToMany(mappedBy = "schedule", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+	@OneToMany(
+			mappedBy = "schedule",
+			fetch = FetchType.LAZY,
+			cascade = CascadeType.PERSIST,
+			orphanRemoval = true)
 	private List<ScheduleAlarm> scheduleAlarms = new ArrayList<>();
 
 	@Column(nullable = false)
 	@ColumnDefault("false")
 	private boolean deleted;
 
-	public Schedule(ScheduleTitle title, ScheduleDescription description, ScheduleDuration scheduleDuration,
-			String place, boolean setLocation, Location location, boolean setAlarm, ScheduleCategory category,
-			Calendar calendar, ScheduleGroup scheduleGroup, List<AlarmTime> scheduleAlarms) {
+	public Schedule(
+			ScheduleTitle title,
+			ScheduleDescription description,
+			ScheduleDuration scheduleDuration,
+			String place,
+			boolean setLocation,
+			Location location,
+			boolean setAlarm,
+			ScheduleCategory category,
+			Calendar calendar,
+			ScheduleGroup scheduleGroup,
+			List<AlarmTime> scheduleAlarms) {
 		this.title = title;
 		this.description = description;
 		this.scheduleDuration = scheduleDuration;
@@ -94,22 +103,43 @@ public class Schedule {
 		this.category = category;
 		this.calendar = calendar;
 		this.scheduleGroup = scheduleGroup;
-		this.scheduleAlarms = scheduleAlarms.stream().map(alarmTime -> new ScheduleAlarm(alarmTime, this))
-				.collect(Collectors.toList());
+		this.scheduleAlarms =
+				scheduleAlarms.stream()
+						.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
+						.collect(Collectors.toList());
 		this.deleted = false;
 	}
 
 	@Builder
-	public Schedule(String title, String description, boolean isAllDay, LocalDateTime startDateTime,
-			LocalDateTime endDateTime, String place, boolean setLocation, Double latitude, Double longitude,
-			boolean setAlarm, ScheduleCategory category, Calendar calendar, ScheduleGroup scheduleGroup,
+	public Schedule(
+			String title,
+			String description,
+			boolean isAllDay,
+			LocalDateTime startDateTime,
+			LocalDateTime endDateTime,
+			String place,
+			boolean setLocation,
+			Double latitude,
+			Double longitude,
+			boolean setAlarm,
+			ScheduleCategory category,
+			Calendar calendar,
+			ScheduleGroup scheduleGroup,
 			List<LocalDateTime> scheduleAlarms) {
-		this(new ScheduleTitle(title), new ScheduleDescription(description),
+		this(
+				new ScheduleTitle(title),
+				new ScheduleDescription(description),
 				isAllDay
 						? ScheduleDuration.createAllDay(startDateTime, endDateTime)
 						: ScheduleDuration.createNotAllDay(startDateTime, endDateTime),
-				place, setLocation, setLocation ? new Location(latitude, longitude) : null, setAlarm, category,
-				calendar, scheduleGroup, scheduleAlarms.stream().map(AlarmTime::create).toList());
+				place,
+				setLocation,
+				setLocation ? new Location(latitude, longitude) : null,
+				setAlarm,
+				category,
+				calendar,
+				scheduleGroup,
+				scheduleAlarms.stream().map(AlarmTime::create).toList());
 	}
 
 	public String getTitle() {
@@ -144,15 +174,27 @@ public class Schedule {
 		return Optional.ofNullable(location).map(Location::getLongitude).orElse(null);
 	}
 
-	public void modify(String title, String description, boolean isAllDay, LocalDateTime startDateTime,
-			LocalDateTime endDateTime, String place, boolean setLocation, Double latitude, Double longitude,
-			boolean setAlarm, List<LocalDateTime> scheduleAlarms, ScheduleCategory category, Calendar calendar,
+	public void modify(
+			String title,
+			String description,
+			boolean isAllDay,
+			LocalDateTime startDateTime,
+			LocalDateTime endDateTime,
+			String place,
+			boolean setLocation,
+			Double latitude,
+			Double longitude,
+			boolean setAlarm,
+			List<LocalDateTime> scheduleAlarms,
+			ScheduleCategory category,
+			Calendar calendar,
 			ScheduleGroup scheduleGroup) {
 		this.title = new ScheduleTitle(title);
 		this.description = new ScheduleDescription(description);
-		this.scheduleDuration = isAllDay
-				? ScheduleDuration.createAllDay(startDateTime, endDateTime)
-				: ScheduleDuration.createNotAllDay(startDateTime, endDateTime);
+		this.scheduleDuration =
+				isAllDay
+						? ScheduleDuration.createAllDay(startDateTime, endDateTime)
+						: ScheduleDuration.createNotAllDay(startDateTime, endDateTime);
 		this.place = place;
 		this.setLocation = setLocation;
 		this.location = setLocation ? new Location(latitude, longitude) : null;
@@ -165,7 +207,9 @@ public class Schedule {
 
 	private void updateScheduleAlarms(List<LocalDateTime> scheduleAlarms) {
 		this.scheduleAlarms.clear();
-		scheduleAlarms.stream().map(AlarmTime::create).map(alarmTime -> new ScheduleAlarm(alarmTime, this))
+		scheduleAlarms.stream()
+				.map(AlarmTime::create)
+				.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
 				.forEach(scheduleAlarm -> this.scheduleAlarms.add(scheduleAlarm));
 	}
 

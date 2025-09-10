@@ -63,20 +63,15 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 	@Column(nullable = false)
 	private LocalDate repetitionEndDate;
 
-	@Embedded
-	private TaskMonthOfYear monthOfYear;
+	@Embedded private TaskMonthOfYear monthOfYear;
 
-	@Embedded
-	private TaskDayOfMonth dayOfMonth;
+	@Embedded private TaskDayOfMonth dayOfMonth;
 
-	@Column
-	private WeekNumber weekNumber;
+	@Column private WeekNumber weekNumber;
 
-	@Column
-	private Weekday weekday;
+	@Column private Weekday weekday;
 
-	@Embedded
-	private TaskWeekdayBit weekdayBit;
+	@Embedded private TaskWeekdayBit weekdayBit;
 
 	@Column(nullable = false)
 	@ColumnDefault("false")
@@ -86,12 +81,27 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 	@JoinColumn(name = "task_group_id")
 	private TaskGroup taskGroup;
 
-	protected TaskRepetitionPattern(final TaskRepetitionType repetitionType, final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final TaskMonthOfYear monthOfYear,
-			final TaskDayOfMonth dayOfMonth, final WeekNumber weekNumber, final Weekday weekday,
-			final TaskWeekdayBit weekdayBit, final TaskGroup taskGroup) {
-		validate(repetitionType, repetitionPeriod, repetitionStartDate, repetitionEndDate, monthOfYear, dayOfMonth,
-				weekNumber, weekday, weekdayBit);
+	protected TaskRepetitionPattern(
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskMonthOfYear monthOfYear,
+			final TaskDayOfMonth dayOfMonth,
+			final WeekNumber weekNumber,
+			final Weekday weekday,
+			final TaskWeekdayBit weekdayBit,
+			final TaskGroup taskGroup) {
+		validate(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				monthOfYear,
+				dayOfMonth,
+				weekNumber,
+				weekday,
+				weekdayBit);
 		this.repetitionType = repetitionType;
 		this.repetitionPeriod = repetitionPeriod;
 		this.repetitionStartDate = repetitionStartDate;
@@ -146,9 +156,15 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 		this.taskGroup = null;
 	}
 
-	protected void validate(final TaskRepetitionType repetitionType, final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final TaskMonthOfYear monthOfYear,
-			final TaskDayOfMonth dayOfMonth, final WeekNumber weekNumber, final Weekday weekday,
+	protected void validate(
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskMonthOfYear monthOfYear,
+			final TaskDayOfMonth dayOfMonth,
+			final WeekNumber weekNumber,
+			final Weekday weekday,
 			final TaskWeekdayBit weekdayBit) {
 		validatePeriod(repetitionPeriod);
 		validateDuration(repetitionStartDate, repetitionEndDate);
@@ -163,7 +179,8 @@ public abstract class TaskRepetitionPattern extends BaseTime {
 		}
 	}
 
-	private void validateDuration(final LocalDate repetitionStartDate, final LocalDate repetitionEndDate) {
+	private void validateDuration(
+			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate) {
 		if (Objects.isNull(repetitionStartDate) || Objects.isNull(repetitionEndDate)) {
 			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_DURATION);
 		}

@@ -15,10 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 class GoogleOidcClientTest {
 
-	@Autowired
-	CacheManager cacheManager;
-	@Autowired
-	GoogleOidcClient googleOidcClient;
+	@Autowired CacheManager cacheManager;
+	@Autowired GoogleOidcClient googleOidcClient;
 
 	@Test
 	@DisplayName("Google PublicKeys를 조회한다.")
@@ -32,8 +30,9 @@ class GoogleOidcClientTest {
 	@DisplayName("Google PublicKeys 요청 시 캐싱된 것을 먼저 불러온다.")
 	void findGooglePublicKeysThatCached() {
 		googleOidcClient.getOidcPublicKeys();
-		Optional<OidcPublicKeys> cachedPublicKeys = Optional.ofNullable(cacheManager.getCache("publicKeys"))
-				.map(cache -> cache.get("google", OidcPublicKeys.class));
+		Optional<OidcPublicKeys> cachedPublicKeys =
+				Optional.ofNullable(cacheManager.getCache("publicKeys"))
+						.map(cache -> cache.get("google", OidcPublicKeys.class));
 
 		OidcPublicKeys oidcPublicKeys = googleOidcClient.getOidcPublicKeys();
 

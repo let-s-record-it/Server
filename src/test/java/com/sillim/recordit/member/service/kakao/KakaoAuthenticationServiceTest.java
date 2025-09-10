@@ -31,23 +31,22 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(MockitoExtension.class)
 class KakaoAuthenticationServiceTest {
 
-	@Mock
-	KakaoOidcClient kakaoOidcClient;
-	@Mock
-	KakaoUserInfoClient kakaoUserInfoClient;
-	@InjectMocks
-	KakaoAuthenticationService kakaoAuthenticationService;
+	@Mock KakaoOidcClient kakaoOidcClient;
+	@Mock KakaoUserInfoClient kakaoUserInfoClient;
+	@InjectMocks KakaoAuthenticationService kakaoAuthenticationService;
 
 	@Test
 	@DisplayName("인증 토큰을 검증하여 성공하면 멤버를 반환한다.")
 	void authenticationToken() {
-		OidcPublicKeys publicKeys = new OidcPublicKeys(
-				List.of(new OidcPublicKey("kid", "alg", "kty", "use", "n", "e")));
+		OidcPublicKeys publicKeys =
+				new OidcPublicKeys(
+						List.of(new OidcPublicKey("kid", "alg", "kty", "use", "n", "e")));
 		IdToken mockIdToken = mock(IdToken.class);
 		String account = "account";
 		ReflectionTestUtils.setField(kakaoAuthenticationService, "appKey", "appKay");
 		given(kakaoOidcClient.getOidcPublicKeys()).willReturn(publicKeys);
-		given(mockIdToken.authenticateToken(any(OidcPublicKeys.class), anyString(), anyString())).willReturn(account);
+		given(mockIdToken.authenticateToken(any(OidcPublicKeys.class), anyString(), anyString()))
+				.willReturn(account);
 
 		String memberAccount = kakaoAuthenticationService.authenticate(mockIdToken);
 
@@ -57,10 +56,16 @@ class KakaoAuthenticationServiceTest {
 	@Test
 	@DisplayName("인증 토큰을 검증하여 실패하면 예외가 발생한다.")
 	void signupMemberIfNotExists() {
-		OidcPublicKeys publicKeys = new OidcPublicKeys(
-				List.of(new OidcPublicKey("kid", "alg", "kty", "use", "modulus", "exponent")));
-		IdToken idToken = new IdToken(new IdTokenHeader("kid", "typ", "alg"),
-				new IdTokenPayload("iss", "aud", 123456789L, "sub"), "idToken");
+		OidcPublicKeys publicKeys =
+				new OidcPublicKeys(
+						List.of(
+								new OidcPublicKey(
+										"kid", "alg", "kty", "use", "modulus", "exponent")));
+		IdToken idToken =
+				new IdToken(
+						new IdTokenHeader("kid", "typ", "alg"),
+						new IdTokenPayload("iss", "aud", 123456789L, "sub"),
+						"idToken");
 		ReflectionTestUtils.setField(kakaoAuthenticationService, "appKey", "appKay");
 		given(kakaoOidcClient.getOidcPublicKeys()).willReturn(publicKeys);
 
@@ -71,11 +76,21 @@ class KakaoAuthenticationServiceTest {
 	@Test
 	@DisplayName("access token을 통해 Kakao User 정보를 가져온다.")
 	void getKakaoUserInfoByAccessToken() {
-		KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(1234567L, LocalDateTime.now(), new KakaoAccount(false, false,
-				false, "test@mail.com", new KakaoProfile("nickname", "image", "image", false, false)));
-		BDDMockito.given(kakaoUserInfoClient.getKakaoUserInfo(anyString())).willReturn(kakaoUserInfo);
+		KakaoUserInfo kakaoUserInfo =
+				new KakaoUserInfo(
+						1234567L,
+						LocalDateTime.now(),
+						new KakaoAccount(
+								false,
+								false,
+								false,
+								"test@mail.com",
+								new KakaoProfile("nickname", "image", "image", false, false)));
+		BDDMockito.given(kakaoUserInfoClient.getKakaoUserInfo(anyString()))
+				.willReturn(kakaoUserInfo);
 
-		MemberInfo memberInfo = kakaoAuthenticationService.getMemberInfoByAccessToken("accessToken");
+		MemberInfo memberInfo =
+				kakaoAuthenticationService.getMemberInfoByAccessToken("accessToken");
 
 		assertThat(memberInfo.oauthAccount()).isEqualTo(kakaoUserInfo.id().toString());
 	}

@@ -24,8 +24,9 @@ class TaskDailyRepetitionPatternTest {
 	@Test
 	@DisplayName("일간 반복 패턴을 생성할 수 있다.")
 	void createDailyRepeatingPattern() {
-		TaskRepetitionPattern repetitionPattern = TaskDailyRepetitionPattern.createDaily(1, LocalDate.of(2024, 1, 1),
-				LocalDate.of(2024, 3, 31), taskGroup);
+		TaskRepetitionPattern repetitionPattern =
+				TaskDailyRepetitionPattern.createDaily(
+						1, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31), taskGroup);
 		assertThat(repetitionPattern.getRepetitionType()).isEqualTo(TaskRepetitionType.DAILY);
 	}
 
@@ -33,37 +34,49 @@ class TaskDailyRepetitionPatternTest {
 	@DisplayName("일간 반복 패턴에서 시작일부터의 일 수 스트림을 생성할 수 있다. - 주기가 1일인 경우")
 	void createDailyRepeatingPatternScheduleStreamWithPeriod1() {
 		// 1월 1일 ~ 1월 31일까지 매일 반복
-		TaskRepetitionPattern repetitionPattern = TaskDailyRepetitionPattern.createDaily(1, LocalDate.of(2024, 1, 1),
-				LocalDate.of(2024, 1, 31), taskGroup);
+		TaskRepetitionPattern repetitionPattern =
+				TaskDailyRepetitionPattern.createDaily(
+						1, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31), taskGroup);
 
 		List<TemporalAmount> repeating = repetitionPattern.repeatingStream().toList();
 
-		assertAll(() -> {
-			assertThat(repetitionPattern.getRepetitionType()).isEqualTo(TaskRepetitionType.DAILY);
-			assertThat(repeating).hasSize(31);
-			assertThat(repetitionPattern.getRepetitionStartDate().plus(repeating.get(0)))
-					.isEqualTo(LocalDate.of(2024, 1, 1));
-			assertThat(repetitionPattern.getRepetitionStartDate().plus(repeating.get(repeating.size() - 1)))
-					.isEqualTo(LocalDate.of(2024, 1, 31));
-		});
+		assertAll(
+				() -> {
+					assertThat(repetitionPattern.getRepetitionType())
+							.isEqualTo(TaskRepetitionType.DAILY);
+					assertThat(repeating).hasSize(31);
+					assertThat(repetitionPattern.getRepetitionStartDate().plus(repeating.get(0)))
+							.isEqualTo(LocalDate.of(2024, 1, 1));
+					assertThat(
+									repetitionPattern
+											.getRepetitionStartDate()
+											.plus(repeating.get(repeating.size() - 1)))
+							.isEqualTo(LocalDate.of(2024, 1, 31));
+				});
 	}
 
 	@Test
 	@DisplayName("일간 반복 패턴에서 시작일부터의 일 수 스트림을 생성할 수 있다. - 주기가 2일인 경우")
 	void createDailyRepeatingPatternScheduleStreamWithPeriod2() {
 		// 1월 1일 ~ 1월 31일까지 매일 반복
-		TaskRepetitionPattern repetitionPattern = TaskDailyRepetitionPattern.createDaily(2, LocalDate.of(2024, 1, 1),
-				LocalDate.of(2024, 1, 31), taskGroup);
+		TaskRepetitionPattern repetitionPattern =
+				TaskDailyRepetitionPattern.createDaily(
+						2, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31), taskGroup);
 
 		List<TemporalAmount> repeating = repetitionPattern.repeatingStream().toList();
 
-		assertAll(() -> {
-			assertThat(repetitionPattern.getRepetitionType()).isEqualTo(TaskRepetitionType.DAILY);
-			assertThat(repeating).hasSize(16);
-			assertThat(repetitionPattern.getRepetitionStartDate().plus(repeating.get(0)))
-					.isEqualTo(LocalDate.of(2024, 1, 1));
-			assertThat(repetitionPattern.getRepetitionStartDate().plus(repeating.get(repeating.size() - 1)))
-					.isEqualTo(LocalDate.of(2024, 1, 31));
-		});
+		assertAll(
+				() -> {
+					assertThat(repetitionPattern.getRepetitionType())
+							.isEqualTo(TaskRepetitionType.DAILY);
+					assertThat(repeating).hasSize(16);
+					assertThat(repetitionPattern.getRepetitionStartDate().plus(repeating.get(0)))
+							.isEqualTo(LocalDate.of(2024, 1, 1));
+					assertThat(
+									repetitionPattern
+											.getRepetitionStartDate()
+											.plus(repeating.get(repeating.size() - 1)))
+							.isEqualTo(LocalDate.of(2024, 1, 31));
+				});
 	}
 }

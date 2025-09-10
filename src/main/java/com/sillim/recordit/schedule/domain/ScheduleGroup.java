@@ -37,11 +37,26 @@ public class ScheduleGroup {
 		return Optional.ofNullable(repetitionPattern);
 	}
 
-	public void modifyRepeated(RepetitionType repetitionType, Integer repetitionPeriod,
-			LocalDateTime repetitionStartDate, LocalDateTime repetitionEndDate, Integer monthOfYear, Integer dayOfMonth,
-			WeekNumber weekNumber, Weekday weekday, Integer weekdayBit) {
-		this.repetitionPattern.modify(repetitionType, repetitionPeriod, repetitionStartDate, repetitionEndDate,
-				monthOfYear, dayOfMonth, weekNumber, weekday, weekdayBit);
+	public void modifyRepeated(
+			RepetitionType repetitionType,
+			Integer repetitionPeriod,
+			LocalDateTime repetitionStartDate,
+			LocalDateTime repetitionEndDate,
+			Integer monthOfYear,
+			Integer dayOfMonth,
+			WeekNumber weekNumber,
+			Weekday weekday,
+			Integer weekdayBit) {
+		this.repetitionPattern.modify(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				monthOfYear,
+				dayOfMonth,
+				weekNumber,
+				weekday,
+				weekdayBit);
 		this.isRepeated = true;
 	}
 

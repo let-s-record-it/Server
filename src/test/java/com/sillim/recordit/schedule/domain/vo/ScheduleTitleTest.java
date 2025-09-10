@@ -16,23 +16,26 @@ class ScheduleTitleTest {
 	void validIfTitleIsNotBlankAnd30OrUnderLength() {
 		ScheduleTitle scheduleTitle = new ScheduleTitle("title");
 
-		assertAll(() -> {
-			assertThat(scheduleTitle).isEqualTo(new ScheduleTitle("title"));
-			assertThat(scheduleTitle.getTitle()).isEqualTo("title");
-		});
+		assertAll(
+				() -> {
+					assertThat(scheduleTitle).isEqualTo(new ScheduleTitle("title"));
+					assertThat(scheduleTitle.getTitle()).isEqualTo("title");
+				});
 	}
 
 	@Test
 	@DisplayName("문자열이 null이면 InvalidTitleException 예외가 발생한다.")
 	void throwInvalidTitleExceptionIfTitleIsNull() {
-		assertThatCode(() -> new ScheduleTitle(null)).isInstanceOf(InvalidTitleException.class)
+		assertThatCode(() -> new ScheduleTitle(null))
+				.isInstanceOf(InvalidTitleException.class)
 				.hasMessage(ErrorCode.NULL_SCHEDULE_TITLE.getDescription());
 	}
 
 	@Test
 	@DisplayName("문자열이 공백이면 InvalidTitleException 예외가 발생한다.")
 	void throwInvalidTitleExceptionIfTitleIsBlank() {
-		assertThatCode(() -> new ScheduleTitle("    ")).isInstanceOf(InvalidTitleException.class)
+		assertThatCode(() -> new ScheduleTitle("    "))
+				.isInstanceOf(InvalidTitleException.class)
 				.hasMessage(ErrorCode.BLANK_SCHEDULE_TITLE.getDescription());
 	}
 

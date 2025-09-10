@@ -28,23 +28,22 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(MockitoExtension.class)
 class GoogleAuthenticationServiceTest {
 
-	@Mock
-	GoogleOidcClient googleOidcClient;
-	@Mock
-	GoogleUserInfoClient googleUserInfoClient;
-	@InjectMocks
-	GoogleAuthenticationService googleAuthenticationService;
+	@Mock GoogleOidcClient googleOidcClient;
+	@Mock GoogleUserInfoClient googleUserInfoClient;
+	@InjectMocks GoogleAuthenticationService googleAuthenticationService;
 
 	@Test
 	@DisplayName("인증 토큰을 검증하여 성공하면 멤버 Account를 반환한다.")
 	void authenticationToken() {
-		OidcPublicKeys publicKeys = new OidcPublicKeys(
-				List.of(new OidcPublicKey("kid", "alg", "kty", "use", "n", "e")));
+		OidcPublicKeys publicKeys =
+				new OidcPublicKeys(
+						List.of(new OidcPublicKey("kid", "alg", "kty", "use", "n", "e")));
 		IdToken mockIdToken = mock(IdToken.class);
 		String account = "account";
 		ReflectionTestUtils.setField(googleAuthenticationService, "appKey", "appKay");
 		given(googleOidcClient.getOidcPublicKeys()).willReturn(publicKeys);
-		given(mockIdToken.authenticateToken(any(OidcPublicKeys.class), anyString(), anyString())).willReturn(account);
+		given(mockIdToken.authenticateToken(any(OidcPublicKeys.class), anyString(), anyString()))
+				.willReturn(account);
 
 		String memberAccount = googleAuthenticationService.authenticate(mockIdToken);
 
@@ -54,10 +53,16 @@ class GoogleAuthenticationServiceTest {
 	@Test
 	@DisplayName("인증 토큰을 검증하여 실패하면 예외가 발생한다.")
 	void signupMemberIfNotExists() {
-		OidcPublicKeys publicKeys = new OidcPublicKeys(
-				List.of(new OidcPublicKey("kid", "alg", "kty", "use", "modulus", "exponent")));
-		IdToken idToken = new IdToken(new IdTokenHeader("kid", "typ", "alg"),
-				new IdTokenPayload("iss", "aud", 123456789L, "sub"), "idToken");
+		OidcPublicKeys publicKeys =
+				new OidcPublicKeys(
+						List.of(
+								new OidcPublicKey(
+										"kid", "alg", "kty", "use", "modulus", "exponent")));
+		IdToken idToken =
+				new IdToken(
+						new IdTokenHeader("kid", "typ", "alg"),
+						new IdTokenPayload("iss", "aud", 123456789L, "sub"),
+						"idToken");
 		ReflectionTestUtils.setField(googleAuthenticationService, "appKey", "appKay");
 		given(googleOidcClient.getOidcPublicKeys()).willReturn(publicKeys);
 
@@ -68,10 +73,13 @@ class GoogleAuthenticationServiceTest {
 	@Test
 	@DisplayName("access token을 통해 Google User 정보를 가져온다.")
 	void getGoogleUserInfoByAccessToken() {
-		GoogleUserInfo googleUserInfo = new GoogleUserInfo("sub", "name", "name", "picture", "email", true, "ko");
-		BDDMockito.given(googleUserInfoClient.getGoogleUserInfo(anyString())).willReturn(googleUserInfo);
+		GoogleUserInfo googleUserInfo =
+				new GoogleUserInfo("sub", "name", "name", "picture", "email", true, "ko");
+		BDDMockito.given(googleUserInfoClient.getGoogleUserInfo(anyString()))
+				.willReturn(googleUserInfo);
 
-		MemberInfo memberInfo = googleAuthenticationService.getMemberInfoByAccessToken("accessToken");
+		MemberInfo memberInfo =
+				googleAuthenticationService.getMemberInfoByAccessToken("accessToken");
 
 		assertThat(memberInfo.oauthAccount()).isEqualTo(googleUserInfo.sub());
 	}

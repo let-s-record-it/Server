@@ -14,7 +14,9 @@ public class LoginMember implements OAuth2User {
 	private final Map<String, Object> attributes;
 	private final Collection<? extends GrantedAuthority> authorities;
 
-	public LoginMember(Member member, Map<String, Object> attributes,
+	public LoginMember(
+			Member member,
+			Map<String, Object> attributes,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.member = member;
 		this.attributes = attributes;
@@ -33,10 +35,6 @@ public class LoginMember implements OAuth2User {
 
 	@Override
 	public String getName() {
-		return member.getId().toString();
-	}
-
-	public Long getId() {
-		return member.getId();
+		return member.getEmail();
 	}
 }

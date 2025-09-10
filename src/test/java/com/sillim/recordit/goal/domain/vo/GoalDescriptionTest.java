@@ -21,7 +21,8 @@ class GoalDescriptionTest {
 	@DisplayName("description은 null이 아니어야 한다.")
 	void validateNullTest() {
 
-		assertThatThrownBy(() -> new GoalDescription(null)).isInstanceOf(InvalidDescriptionException.class)
+		assertThatThrownBy(() -> new GoalDescription(null))
+				.isInstanceOf(InvalidDescriptionException.class)
 				.hasMessage(ErrorCode.NULL_GOAL_DESCRIPTION.getDescription());
 	}
 

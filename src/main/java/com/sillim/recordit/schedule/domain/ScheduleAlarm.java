@@ -25,8 +25,7 @@ public class ScheduleAlarm {
 	@Column(name = "schedule_alarm_id", nullable = false)
 	private Long id;
 
-	@Embedded
-	private AlarmTime alarmTime;
+	@Embedded private AlarmTime alarmTime;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_id")

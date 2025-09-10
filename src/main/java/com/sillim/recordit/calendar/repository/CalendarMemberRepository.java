@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface CalendarMemberRepository extends JpaRepository<CalendarMember, Long>, CustomCalendarMemberRepository {
+public interface CalendarMemberRepository
+		extends JpaRepository<CalendarMember, Long>, CustomCalendarMemberRepository {
 
 	@Modifying(clearAutomatically = true)
 	@Query("update CalendarMember cm set cm.deleted = true where cm.calendar.id = :calendarId")

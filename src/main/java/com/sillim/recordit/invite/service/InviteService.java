@@ -20,17 +20,25 @@ public class InviteService {
 	private final CalendarQueryService calendarQueryService;
 
 	public String getOrGenerateInviteLink(Long calendarId) {
-		Optional<InviteLink> inviteLink = inviteLinkRepository.findByCalendarIdAndExpiredIsFalse(calendarId);
+		Optional<InviteLink> inviteLink =
+				inviteLinkRepository.findByCalendarIdAndExpiredIsFalse(calendarId);
 		if (isValidInviteLink(inviteLink)) {
-			return Base64.getUrlEncoder().encodeToString(inviteLink.get().getInviteCode().getBytes());
+			return Base64.getUrlEncoder()
+					.encodeToString(inviteLink.get().getInviteCode().getBytes());
 		}
 
 		return Base64.getUrlEncoder()
 				.encodeToString(
 						inviteLinkRepository
-								.save(new InviteLink(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(7),
-										false, calendarQueryService.searchByCalendarId(calendarId)))
-								.getInviteCode().getBytes());
+								.save(
+										new InviteLink(
+												UUID.randomUUID().toString(),
+												LocalDateTime.now().plusDays(7),
+												false,
+												calendarQueryService.searchByCalendarId(
+														calendarId)))
+								.getInviteCode()
+								.getBytes());
 	}
 
 	public boolean isValidInviteLink(Optional<InviteLink> inviteLink) {
@@ -48,6 +56,7 @@ public class InviteService {
 
 	@Transactional(readOnly = true)
 	public InviteLink searchInviteInfo(String inviteCode) {
-		return inviteLinkRepository.findInfoByInviteCode(new String(Base64.getUrlDecoder().decode(inviteCode)));
+		return inviteLinkRepository.findInfoByInviteCode(
+				new String(Base64.getUrlDecoder().decode(inviteCode)));
 	}
 }

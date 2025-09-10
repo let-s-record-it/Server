@@ -16,23 +16,26 @@ class CalendarTitleTest {
 	void validIfTitleIsNotBlankAnd30OrUnderLength() {
 		CalendarTitle calendarTitle = new CalendarTitle("title");
 
-		assertAll(() -> {
-			assertThat(calendarTitle).isEqualTo(new CalendarTitle("title"));
-			assertThat(calendarTitle.getTitle()).isEqualTo("title");
-		});
+		assertAll(
+				() -> {
+					assertThat(calendarTitle).isEqualTo(new CalendarTitle("title"));
+					assertThat(calendarTitle.getTitle()).isEqualTo("title");
+				});
 	}
 
 	@Test
 	@DisplayName("문자열이 null이면 InvalidTitleException 예외가 발생한다.")
 	void throwInvalidTitleExceptionIfTitleIsNull() {
-		assertThatCode(() -> new CalendarTitle(null)).isInstanceOf(InvalidTitleException.class)
+		assertThatCode(() -> new CalendarTitle(null))
+				.isInstanceOf(InvalidTitleException.class)
 				.hasMessage(ErrorCode.NULL_CALENDAR_TITLE.getDescription());
 	}
 
 	@Test
 	@DisplayName("문자열이 공백이면 InvalidTitleException 예외가 발생한다.")
 	void throwInvalidTitleExceptionIfTitleIsBlank() {
-		assertThatCode(() -> new CalendarTitle("    ")).isInstanceOf(InvalidTitleException.class)
+		assertThatCode(() -> new CalendarTitle("    "))
+				.isInstanceOf(InvalidTitleException.class)
 				.hasMessage(ErrorCode.BLANK_CALENDAR_TITLE.getDescription());
 	}
 

@@ -26,15 +26,11 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 class MultipleFeedScrapServiceTest {
 
-	@MockBean
-	MemberRepository memberRepository;
-	@Autowired
-	FeedRepository feedRepository;
+	@MockBean MemberRepository memberRepository;
+	@Autowired FeedRepository feedRepository;
 
-	@Autowired
-	FeedScrapService feedScrapService;
-	@Autowired
-	FeedQueryService feedQueryService;
+	@Autowired FeedScrapService feedScrapService;
+	@Autowired FeedQueryService feedQueryService;
 
 	@Test
 	@DisplayName("스크랩을 빠르게 여러 번 눌러도 한 번만 적용된다.")
@@ -50,16 +46,19 @@ class MultipleFeedScrapServiceTest {
 		for (int i = 0; i < threadCount; i++) {
 			long feedId = feed.getId();
 			String key = "scrap:" + feedId + ":" + memberId;
-			executorService.submit(() -> {
-				try {
-					RedisLockUtil.acquireAndRunLock(key, () -> {
-						feedScrapService.feedScrap(feedId, memberId);
-						return true;
+			executorService.submit(
+					() -> {
+						try {
+							RedisLockUtil.acquireAndRunLock(
+									key,
+									() -> {
+										feedScrapService.feedScrap(feedId, memberId);
+										return true;
+									});
+						} finally {
+							latch.countDown();
+						}
 					});
-				} finally {
-					latch.countDown();
-				}
-			});
 		}
 
 		latch.await();

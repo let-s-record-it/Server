@@ -24,7 +24,8 @@ public class InviteController {
 
 	@GetMapping("/{calenderId}")
 	public ResponseEntity<InviteLinkResponse> getInviteLink(@PathVariable Long calenderId) {
-		return ResponseEntity.ok(new InviteLinkResponse(inviteService.getOrGenerateInviteLink(calenderId)));
+		return ResponseEntity.ok(
+				new InviteLinkResponse(inviteService.getOrGenerateInviteLink(calenderId)));
 	}
 
 	@GetMapping("/info/{inviteCode}")
@@ -32,7 +33,8 @@ public class InviteController {
 		InviteLink inviteLink = inviteService.searchInviteInfo(inviteCode);
 		Calendar calendar = inviteLink.getCalendar();
 		Member member = memberQueryService.findByMemberId(calendar.getMemberId());
-		return ResponseEntity
-				.ok(new InviteInfoResponse(calendar.getId(), calendar.getTitle(), member.getId(), member.getName()));
+		return ResponseEntity.ok(
+				new InviteInfoResponse(
+						calendar.getId(), calendar.getTitle(), member.getId(), member.getName()));
 	}
 }

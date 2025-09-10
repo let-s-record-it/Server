@@ -26,10 +26,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @DataJpaTest
 class TaskRepositoryIntegrationTest {
 
-	@Autowired
-	TaskRepository taskRepository;
-	@Autowired
-	TestEntityManager em;
+	@Autowired TaskRepository taskRepository;
+	@Autowired TestEntityManager em;
 
 	long memberId = 1L;
 	private CalendarCategory calendarCategory;
@@ -39,7 +37,8 @@ class TaskRepositoryIntegrationTest {
 
 	@BeforeEach
 	void init() {
-		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
+		calendarCategory =
+				em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
 		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		em.persist(calendar);
 		taskGroup = new TaskGroup(null, null);
@@ -51,10 +50,13 @@ class TaskRepositoryIntegrationTest {
 	@DisplayName("Task 객체의 모든 필드가 올바르게 저장된다")
 	void save_SaveAllFieldsCorrectly() {
 		final Task expected = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
-		Task saved = taskRepository.save(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
+		Task saved =
+				taskRepository.save(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
 
-		assertThat(saved).usingRecursiveComparison()
-				.ignoringFields("id", "calendar", "taskGroup", "createdAt", "modifiedAt").isEqualTo(expected);
+		assertThat(saved)
+				.usingRecursiveComparison()
+				.ignoringFields("id", "calendar", "taskGroup", "createdAt", "modifiedAt")
+				.isEqualTo(expected);
 	}
 
 	@Test
@@ -66,21 +68,30 @@ class TaskRepositoryIntegrationTest {
 		taskRepository.saveAllBatch(tasks);
 
 		List<Task> saved = taskRepository.findAllByTaskGroupId(calendar.getId(), taskGroup.getId());
-		assertThat(saved.get(0)).usingRecursiveComparison()
-				.ignoringFields("id", "calendar", "taskGroup", "createdAt", "modifiedAt").isEqualTo(expected);
+		assertThat(saved.get(0))
+				.usingRecursiveComparison()
+				.ignoringFields("id", "calendar", "taskGroup", "createdAt", "modifiedAt")
+				.isEqualTo(expected);
 	}
 
 	@Test
 	@DisplayName("해당 캘린더에 속하는 특정 날짜의 할 일 레코드를 모두 조회한다.")
 	void findAllByCalendarAndDateTest() {
-		final List<Task> saved = List.of(
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 6, 11), taskCategory, calendar, taskGroup),
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 6, 12), taskCategory, calendar, taskGroup),
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 6, 12), taskCategory, calendar, taskGroup),
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 6, 13), taskCategory, calendar, taskGroup));
+		final List<Task> saved =
+				List.of(
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 11), taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 12), taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 12), taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 13), taskCategory, calendar, taskGroup));
 		taskRepository.saveAll(saved);
 
-		List<Task> found = taskRepository.findAllByCalendarIdAndDate(calendar.getId(), LocalDate.of(2024, 6, 12));
+		List<Task> found =
+				taskRepository.findAllByCalendarIdAndDate(
+						calendar.getId(), LocalDate.of(2024, 6, 12));
 
 		assertThat(found).hasSize(2);
 		found.forEach(task -> assertThat(task.getDate()).isEqualTo(LocalDate.of(2024, 6, 12)));
@@ -89,21 +100,30 @@ class TaskRepositoryIntegrationTest {
 	@Test
 	@DisplayName("캘린더 id와 할 일 그룹 id에 해당하는 할 일 목록을 조회한다.")
 	void findAllByCalendarIdAndTaskGroupId() {
-		List<Task> expected = List.of(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup),
-				TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup),
-				TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
+		List<Task> expected =
+				List.of(
+						TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
 		taskRepository.saveAll(expected);
 
 		List<Task> found = taskRepository.findAllByTaskGroupId(calendar.getId(), taskGroup.getId());
 
 		assertThat(found).hasSize(3);
-		assertAll(() -> {
-			assertThat(found.get(0)).usingRecursiveComparison().ignoringFields("createdAt", "modifiedAt")
-					.isEqualTo(expected.get(0));
-			assertThat(found.get(1)).usingRecursiveComparison().ignoringFields("createdAt", "modifiedAt")
-					.isEqualTo(expected.get(1));
-			assertThat(found.get(2)).usingRecursiveComparison().ignoringFields("createdAt", "modifiedAt")
-					.isEqualTo(expected.get(2));
-		});
+		assertAll(
+				() -> {
+					assertThat(found.get(0))
+							.usingRecursiveComparison()
+							.ignoringFields("createdAt", "modifiedAt")
+							.isEqualTo(expected.get(0));
+					assertThat(found.get(1))
+							.usingRecursiveComparison()
+							.ignoringFields("createdAt", "modifiedAt")
+							.isEqualTo(expected.get(1));
+					assertThat(found.get(2))
+							.usingRecursiveComparison()
+							.ignoringFields("createdAt", "modifiedAt")
+							.isEqualTo(expected.get(2));
+				});
 	}
 }

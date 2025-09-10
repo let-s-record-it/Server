@@ -36,29 +36,37 @@ class ScheduleTest {
 	@Test
 	@DisplayName("스케줄을 생성할 수 있다.")
 	void createSchedule() {
-		ScheduleCategory scheduleCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
-		Schedule schedule = ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
+		Schedule schedule =
+				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
 		ScheduleFixture fixture = ScheduleFixture.DEFAULT;
 
-		assertAll(() -> {
-			assertThat(schedule.getTitle()).isEqualTo(fixture.getTitle());
-			assertThat(schedule.getDescription()).isEqualTo(fixture.getDescription());
-			assertThat(schedule.getScheduleDuration())
-					.isEqualTo(ScheduleDuration.createNotAllDay(fixture.getStartDatetime(), fixture.getEndDatetime()));
-			assertThat(schedule.getColorHex()).isEqualTo(scheduleCategory.getColorHex());
-			assertThat(schedule.getPlace()).isEqualTo(fixture.getPlace());
-			assertThat(schedule.isSetLocation()).isEqualTo(fixture.getSetLocation());
-			assertThat(schedule.getLatitude()).isEqualTo(fixture.getLatitude());
-			assertThat(schedule.getLongitude()).isEqualTo(fixture.getLongitude());
-			assertThat(schedule.isSetAlarm()).isEqualTo(fixture.getSetAlarm());
-		});
+		assertAll(
+				() -> {
+					assertThat(schedule.getTitle()).isEqualTo(fixture.getTitle());
+					assertThat(schedule.getDescription()).isEqualTo(fixture.getDescription());
+					assertThat(schedule.getScheduleDuration())
+							.isEqualTo(
+									ScheduleDuration.createNotAllDay(
+											fixture.getStartDatetime(), fixture.getEndDatetime()));
+					assertThat(schedule.getColorHex()).isEqualTo(scheduleCategory.getColorHex());
+					assertThat(schedule.getPlace()).isEqualTo(fixture.getPlace());
+					assertThat(schedule.isSetLocation()).isEqualTo(fixture.getSetLocation());
+					assertThat(schedule.getLatitude()).isEqualTo(fixture.getLatitude());
+					assertThat(schedule.getLongitude()).isEqualTo(fixture.getLongitude());
+					assertThat(schedule.isSetAlarm()).isEqualTo(fixture.getSetAlarm());
+				});
 	}
 
 	@Test
 	@DisplayName("위치 설정 여부가 false이면 위치 값에 null이 저장된다.")
 	void locationIsNullWhenSetLocationIsFalse() {
-		ScheduleCategory scheduleCategory = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
-		Schedule schedule = ScheduleFixture.NOT_SET_LOCATION.getSchedule(scheduleCategory, scheduleGroup, calendar);
+		ScheduleCategory scheduleCategory =
+				ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
+		Schedule schedule =
+				ScheduleFixture.NOT_SET_LOCATION.getSchedule(
+						scheduleCategory, scheduleGroup, calendar);
 
 		assertThat(schedule.getLocation()).isNull();
 	}

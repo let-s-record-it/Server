@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class FeedControllerAdvice {
 
-	@ExceptionHandler({InvalidFeedContentException.class, InvalidFeedImageUrlException.class,})
+	@ExceptionHandler({
+		InvalidFeedContentException.class,
+		InvalidFeedImageUrlException.class,
+	})
 	public ResponseEntity<ErrorResponse> handleInvalidFeedRequest(ApplicationException exception) {
 		LoggingUtils.exceptionLog(HttpStatus.BAD_REQUEST, exception);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -37,8 +37,12 @@ class FileUtilsTest {
 	@Test
 	@DisplayName("MultipartFile을 File로 변환할 수 있다.")
 	void multipartFileConvertToFile() throws IOException {
-		MockMultipartFile multipartFile = new MockMultipartFile("images", "image.jpg", "text/plain",
-				"test1".getBytes(StandardCharsets.UTF_8));
+		MockMultipartFile multipartFile =
+				new MockMultipartFile(
+						"images",
+						"image.jpg",
+						"text/plain",
+						"test1".getBytes(StandardCharsets.UTF_8));
 
 		File file = FileUtils.convert(multipartFile, "image.jpg");
 
@@ -49,11 +53,16 @@ class FileUtilsTest {
 	@Test
 	@DisplayName("파일이 이미 존재하면 FileGenerateException이 발생한다.")
 	void throwFileGenerateExceptionIfAlreadyExists() throws IOException {
-		MockMultipartFile multipartFile = new MockMultipartFile("images", "image.jpg", "text/plain",
-				"test1".getBytes(StandardCharsets.UTF_8));
+		MockMultipartFile multipartFile =
+				new MockMultipartFile(
+						"images",
+						"image.jpg",
+						"text/plain",
+						"test1".getBytes(StandardCharsets.UTF_8));
 
 		File file = FileUtils.convert(multipartFile, "image");
-		assertThatCode(() -> FileUtils.convert(multipartFile, "image")).isInstanceOf(FileGenerateException.class)
+		assertThatCode(() -> FileUtils.convert(multipartFile, "image"))
+				.isInstanceOf(FileGenerateException.class)
 				.hasMessage(ErrorCode.FILE_GENERATE_FAIL.getDescription());
 
 		file.delete();

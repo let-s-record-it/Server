@@ -35,14 +35,11 @@ public class WeeklyGoal extends BaseTime {
 	@Column(name = "weekly_goal_id")
 	private Long id;
 
-	@Embedded
-	private GoalTitle title;
+	@Embedded private GoalTitle title;
 
-	@Embedded
-	private GoalDescription description;
+	@Embedded private GoalDescription description;
 
-	@Embedded
-	private WeeklyGoalPeriod period;
+	@Embedded private WeeklyGoalPeriod period;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "weekly_goal_category_id")
@@ -65,8 +62,14 @@ public class WeeklyGoal extends BaseTime {
 	private Calendar calendar;
 
 	@Builder
-	public WeeklyGoal(final String title, final String description, final Integer week, final LocalDate startDate,
-			final LocalDate endDate, final ScheduleCategory category, final MonthlyGoal relatedMonthlyGoal,
+	public WeeklyGoal(
+			final String title,
+			final String description,
+			final Integer week,
+			final LocalDate startDate,
+			final LocalDate endDate,
+			final ScheduleCategory category,
+			final MonthlyGoal relatedMonthlyGoal,
 			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
@@ -82,8 +85,14 @@ public class WeeklyGoal extends BaseTime {
 		this.achieved = status;
 	}
 
-	public void modify(final String title, final String description, final Integer week, final LocalDate startDate,
-			final LocalDate endDate, final ScheduleCategory category, final MonthlyGoal relatedMonthlyGoal,
+	public void modify(
+			final String title,
+			final String description,
+			final Integer week,
+			final LocalDate startDate,
+			final LocalDate endDate,
+			final ScheduleCategory category,
+			final MonthlyGoal relatedMonthlyGoal,
 			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
@@ -93,8 +102,14 @@ public class WeeklyGoal extends BaseTime {
 		this.calendar = calendar;
 	}
 
-	public void modify(final String title, final String description, final Integer week, final LocalDate startDate,
-			final LocalDate endDate, final ScheduleCategory category, final Calendar calendar) {
+	public void modify(
+			final String title,
+			final String description,
+			final Integer week,
+			final LocalDate startDate,
+			final LocalDate endDate,
+			final ScheduleCategory category,
+			final Calendar calendar) {
 		this.title = new GoalTitle(title);
 		this.description = new GoalDescription(description);
 		this.period = new WeeklyGoalPeriod(week, startDate, endDate);

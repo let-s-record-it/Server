@@ -31,20 +31,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CalendarCommandServiceTest {
 
-	@Mock
-	CalendarRepository calendarRepository;
-	@Mock
-	CalendarQueryService calendarQueryService;
-	@Mock
-	CalendarMemberService calendarMemberService;
-	@Mock
-	CalendarCategoryQueryService calendarCategoryQueryService;
-	@Mock
-	ScheduleCommandService scheduleCommandService;
-	@Mock
-	ScheduleCategoryCommandService scheduleCategoryCommandService;
-	@InjectMocks
-	CalendarCommandService calendarCommandService;
+	@Mock CalendarRepository calendarRepository;
+	@Mock CalendarQueryService calendarQueryService;
+	@Mock CalendarMemberService calendarMemberService;
+	@Mock CalendarCategoryQueryService calendarCategoryQueryService;
+	@Mock ScheduleCommandService scheduleCommandService;
+	@Mock ScheduleCategoryCommandService scheduleCategoryCommandService;
+	@InjectMocks CalendarCommandService calendarCommandService;
 
 	Member member;
 

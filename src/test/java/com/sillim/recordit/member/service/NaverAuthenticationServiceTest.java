@@ -19,19 +19,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class NaverAuthenticationServiceTest {
 
-	@Mock
-	NaverUserInfoClient naverUserInfoClient;
-	@InjectMocks
-	NaverAuthenticationService naverAuthenticationService;
+	@Mock NaverUserInfoClient naverUserInfoClient;
+	@InjectMocks NaverAuthenticationService naverAuthenticationService;
 
 	@Test
 	@DisplayName("access token을 통해 Naver User 정보를 가져온다.")
 	void getNaverUserInfoByAccessToken() {
-		NaverUserInfo naverUserInfo = new NaverUserInfo("00", "success",
-				new NaverProfile("id", "nickname", "image", "email", "name"));
-		BDDMockito.given(naverUserInfoClient.getNaverUserInfo(anyString())).willReturn(naverUserInfo);
+		NaverUserInfo naverUserInfo =
+				new NaverUserInfo(
+						"00",
+						"success",
+						new NaverProfile("id", "nickname", "image", "email", "name"));
+		BDDMockito.given(naverUserInfoClient.getNaverUserInfo(anyString()))
+				.willReturn(naverUserInfo);
 
-		MemberInfo memberInfo = naverAuthenticationService.getMemberInfoByAccessToken("accessToken");
+		MemberInfo memberInfo =
+				naverAuthenticationService.getMemberInfoByAccessToken("accessToken");
 
 		assertThat(memberInfo.oauthAccount()).isEqualTo(naverUserInfo.response().id());
 	}

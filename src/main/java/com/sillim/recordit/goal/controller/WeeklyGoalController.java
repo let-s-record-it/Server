@@ -37,62 +37,83 @@ public class WeeklyGoalController {
 	private final WeeklyGoalQueryService weeklyGoalQueryService;
 
 	@PostMapping
-	public ResponseEntity<Void> addWeeklyGoal(@RequestBody @Validated final WeeklyGoalUpdateRequest request,
-			@PathVariable final Long calendarId, @CurrentMember final Member member) {
+	public ResponseEntity<Void> addWeeklyGoal(
+			@RequestBody @Validated final WeeklyGoalUpdateRequest request,
+			@PathVariable final Long calendarId,
+			@CurrentMember final Member member) {
 
-		Long weeklyGoalId = weeklyGoalUpdateService.addWeeklyGoal(request, member.getId(), calendarId);
+		Long weeklyGoalId =
+				weeklyGoalUpdateService.addWeeklyGoal(request, member.getId(), calendarId);
 		return ResponseEntity.created(URI.create("/api/v1/weekly-goals/" + weeklyGoalId)).build();
 	}
 
 	@GetMapping
-	public ResponseEntity<List<WeeklyGoalListResponse>> getWeeklyGoalList(@RequestParam final Integer year,
-			@RequestParam final Integer month, @PathVariable final Long calendarId,
+	public ResponseEntity<List<WeeklyGoalListResponse>> getWeeklyGoalList(
+			@RequestParam final Integer year,
+			@RequestParam final Integer month,
+			@PathVariable final Long calendarId,
 			@CurrentMember final Member member) {
 
-		List<WeeklyGoal> weeklyGoals = weeklyGoalQueryService.searchAllWeeklyGoalByDate(year, month, member.getId(),
-				calendarId);
+		List<WeeklyGoal> weeklyGoals =
+				weeklyGoalQueryService.searchAllWeeklyGoalByDate(
+						year, month, member.getId(), calendarId);
 
-		Map<Integer, List<WeeklyGoal>> goalsByWeek = weeklyGoals.stream().collect(
-				Collectors.groupingBy(weeklyGoal -> changeWeekIfMonthOfStartDateIsNotEqual(weeklyGoal, month)));
+		Map<Integer, List<WeeklyGoal>> goalsByWeek =
+				weeklyGoals.stream()
+						.collect(
+								Collectors.groupingBy(
+										weeklyGoal ->
+												changeWeekIfMonthOfStartDateIsNotEqual(
+														weeklyGoal, month)));
 
 		return ResponseEntity.ok(
-				goalsByWeek.entrySet().stream().map(e -> WeeklyGoalListResponse.of(e.getKey(), e.getValue())).toList());
+				goalsByWeek.entrySet().stream()
+						.map(e -> WeeklyGoalListResponse.of(e.getKey(), e.getValue()))
+						.toList());
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<WeeklyGoalDetailsResponse> getWeeklyGoalDetails(@PathVariable final Long id,
-			@CurrentMember final Member member) {
+	public ResponseEntity<WeeklyGoalDetailsResponse> getWeeklyGoalDetails(
+			@PathVariable final Long id, @CurrentMember final Member member) {
 
-		return ResponseEntity
-				.ok(WeeklyGoalDetailsResponse.from(weeklyGoalQueryService.searchByIdAndCheckAuthority(id)));
+		return ResponseEntity.ok(
+				WeeklyGoalDetailsResponse.from(
+						weeklyGoalQueryService.searchByIdAndCheckAuthority(id)));
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Void> modifyWeeklyGoal(@Validated @RequestBody final WeeklyGoalUpdateRequest request,
-			@PathVariable final Long id, @CurrentMember final Member member) {
+	public ResponseEntity<Void> modifyWeeklyGoal(
+			@Validated @RequestBody final WeeklyGoalUpdateRequest request,
+			@PathVariable final Long id,
+			@CurrentMember final Member member) {
 
 		weeklyGoalUpdateService.modifyWeeklyGoal(request, id, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@PatchMapping("/{id}/achieve")
-	public ResponseEntity<Void> changeWeeklyGoalAchieveStatus(@PathVariable final Long id,
-			@RequestParam final Boolean status, @CurrentMember final Member member) {
+	public ResponseEntity<Void> changeWeeklyGoalAchieveStatus(
+			@PathVariable final Long id,
+			@RequestParam final Boolean status,
+			@CurrentMember final Member member) {
 
 		weeklyGoalUpdateService.changeAchieveStatus(id, status, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> removeWeeklyGoal(@PathVariable final Long id, @CurrentMember final Member member) {
+	public ResponseEntity<Void> removeWeeklyGoal(
+			@PathVariable final Long id, @CurrentMember final Member member) {
 
 		weeklyGoalUpdateService.remove(id, member.getId());
 		return ResponseEntity.noContent().build();
 	}
 
 	@PatchMapping("/{id}/link")
-	public ResponseEntity<Void> linkRelatedMonthlyGoal(@PathVariable final Long id,
-			@RequestParam final Long relatedGoalId, @CurrentMember final Member member) {
+	public ResponseEntity<Void> linkRelatedMonthlyGoal(
+			@PathVariable final Long id,
+			@RequestParam final Long relatedGoalId,
+			@CurrentMember final Member member) {
 
 		weeklyGoalUpdateService.linkRelatedMonthlyGoal(id, relatedGoalId, member.getId());
 
@@ -100,15 +121,16 @@ public class WeeklyGoalController {
 	}
 
 	@PatchMapping("/{id}/unlink")
-	public ResponseEntity<Void> unlinkRelatedMonthlyGoal(@PathVariable final Long id,
-			@CurrentMember final Member member) {
+	public ResponseEntity<Void> unlinkRelatedMonthlyGoal(
+			@PathVariable final Long id, @CurrentMember final Member member) {
 
 		weeklyGoalUpdateService.unlinkRelatedMonthlyGoal(id, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}
 
-	private Integer changeWeekIfMonthOfStartDateIsNotEqual(final WeeklyGoal weeklyGoal, final Integer currentMonth) {
+	private Integer changeWeekIfMonthOfStartDateIsNotEqual(
+			final WeeklyGoal weeklyGoal, final Integer currentMonth) {
 		if (weeklyGoal.getStartDate().getMonthValue() == currentMonth) {
 			return weeklyGoal.getWeek();
 		}

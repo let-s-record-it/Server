@@ -19,8 +19,14 @@ public class MemberFollowService {
 	private final MemberQueryService memberQueryService;
 	private final MemberRepository memberRepository;
 
-	@Retryable(retryFor = {OptimisticLockException.class, ObjectOptimisticLockingFailureException.class,
-			StaleObjectStateException.class}, maxAttempts = 15, backoff = @Backoff(delay = 30))
+	@Retryable(
+			retryFor = {
+				OptimisticLockException.class,
+				ObjectOptimisticLockingFailureException.class,
+				StaleObjectStateException.class
+			},
+			maxAttempts = 15,
+			backoff = @Backoff(delay = 30))
 	public void follow(Long followerId, Long followedId) {
 		Member follower = memberQueryService.findByMemberId(followerId);
 		Member followed = memberQueryService.findByMemberId(followedId);
@@ -29,8 +35,14 @@ public class MemberFollowService {
 		memberRepository.save(follower);
 	}
 
-	@Retryable(retryFor = {OptimisticLockException.class, ObjectOptimisticLockingFailureException.class,
-			StaleObjectStateException.class}, maxAttempts = 15, backoff = @Backoff(delay = 30))
+	@Retryable(
+			retryFor = {
+				OptimisticLockException.class,
+				ObjectOptimisticLockingFailureException.class,
+				StaleObjectStateException.class
+			},
+			maxAttempts = 15,
+			backoff = @Backoff(delay = 30))
 	public void unfollow(Long followerId, Long followedId) {
 		Member follower = memberQueryService.findByMemberId(followerId);
 		Member followed = memberQueryService.findByMemberId(followedId);

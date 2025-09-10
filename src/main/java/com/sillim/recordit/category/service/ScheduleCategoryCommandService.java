@@ -32,9 +32,16 @@ public class ScheduleCategoryCommandService {
 		calendarMemberService.validateCalendarMember(calendarId, memberId);
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		return Arrays.stream(InitialColor.values())
-				.map(color -> scheduleCategoryRepository
-						.save(new ScheduleCategory(color.getColorHex(), color.getName(), color.isDefault(), calendar))
-						.getId())
+				.map(
+						color ->
+								scheduleCategoryRepository
+										.save(
+												new ScheduleCategory(
+														color.getColorHex(),
+														color.getName(),
+														color.isDefault(),
+														calendar))
+										.getId())
 				.toList();
 	}
 
@@ -42,19 +49,27 @@ public class ScheduleCategoryCommandService {
 		calendarMemberService.validateCalendarMember(calendarId, memberId);
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		return scheduleCategoryRepository
-				.save(new ScheduleCategory(request.colorHex(), request.name(), false, calendar)).getId();
+				.save(new ScheduleCategory(request.colorHex(), request.name(), false, calendar))
+				.getId();
 	}
 
-	public void modifyCategory(ScheduleCategoryModifyRequest request, Long categoryId, Long calendarId, Long memberId) {
+	public void modifyCategory(
+			ScheduleCategoryModifyRequest request,
+			Long categoryId,
+			Long calendarId,
+			Long memberId) {
 		calendarMemberService.validateCalendarMember(calendarId, memberId);
-		ScheduleCategory scheduleCategory = scheduleCategoryQueryService.searchScheduleCategory(categoryId);
+		ScheduleCategory scheduleCategory =
+				scheduleCategoryQueryService.searchScheduleCategory(categoryId);
 		scheduleCategory.modify(request.colorHex(), request.name());
 	}
 
 	public void deleteCategory(Long categoryId, Long calendarId, Long memberId) {
 		calendarMemberService.validateCalendarMember(calendarId, memberId);
 		scheduleCategoryQueryService.searchScheduleCategory(categoryId).delete();
-		scheduleCommandService.replaceScheduleCategoriesWithDefaultCategory(categoryId, calendarId, memberId);
-		taskCommandService.replaceTaskCategoriesWithDefaultCategory(categoryId, calendarId, memberId);
+		scheduleCommandService.replaceScheduleCategoriesWithDefaultCategory(
+				categoryId, calendarId, memberId);
+		taskCommandService.replaceTaskCategoriesWithDefaultCategory(
+				categoryId, calendarId, memberId);
 	}
 }

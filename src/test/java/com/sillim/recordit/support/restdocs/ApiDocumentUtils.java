@@ -11,7 +11,9 @@ import org.springframework.restdocs.operation.preprocess.OperationResponsePrepro
 public interface ApiDocumentUtils {
 
 	static OperationRequestPreprocessor getDocumentRequest() {
-		return preprocessRequest(modifyUris().scheme("https").host("dev.recordit.store").removePort(), prettyPrint());
+		return preprocessRequest(
+				modifyUris().scheme("https").host("dev.recordit.store").removePort(),
+				prettyPrint());
 	}
 
 	static OperationResponsePreprocessor getDocumentResponse() {

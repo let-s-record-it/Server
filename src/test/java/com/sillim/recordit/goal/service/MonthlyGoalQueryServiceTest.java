@@ -36,10 +36,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class MonthlyGoalQueryServiceTest {
 
-	@Mock
-	MonthlyGoalRepository monthlyGoalRepository;
-	@InjectMocks
-	MonthlyGoalQueryService monthlyGoalQueryService;
+	@Mock MonthlyGoalRepository monthlyGoalRepository;
+	@InjectMocks MonthlyGoalQueryService monthlyGoalQueryService;
 
 	long memberId = 1L;
 	private Member member;
@@ -60,7 +58,8 @@ public class MonthlyGoalQueryServiceTest {
 	void searchTest() {
 		Long monthlyGoalId = 1L;
 		MonthlyGoal expected = spy(MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar));
-		given(monthlyGoalRepository.findByIdWithFetch(eq(monthlyGoalId))).willReturn(Optional.of(expected));
+		given(monthlyGoalRepository.findByIdWithFetch(eq(monthlyGoalId)))
+				.willReturn(Optional.of(expected));
 
 		MonthlyGoal found = monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
 		assertThat(found).usingRecursiveComparison().isEqualTo(expected);
@@ -84,18 +83,26 @@ public class MonthlyGoalQueryServiceTest {
 		Long calendarId = 1L;
 		Integer year = 2024;
 		Integer month = 4;
-		List<MonthlyGoal> monthlyGoals = LongStream.rangeClosed(1, 3).mapToObj((id) -> MonthlyGoalFixture.DEFAULT
-				.getWithStartDateAndEndDate(LocalDate.of(2024, 4, 1), LocalDate.of(2024, 4, 30), category, calendar))
-				.toList();
+		List<MonthlyGoal> monthlyGoals =
+				LongStream.rangeClosed(1, 3)
+						.mapToObj(
+								(id) ->
+										MonthlyGoalFixture.DEFAULT.getWithStartDateAndEndDate(
+												LocalDate.of(2024, 4, 1),
+												LocalDate.of(2024, 4, 30),
+												category,
+												calendar))
+						.toList();
 		given(monthlyGoalRepository.findMonthlyGoalInMonth(eq(year), eq(month), eq(calendarId)))
 				.willReturn(monthlyGoals);
 
 		List<MonthlyGoal> found = monthlyGoalQueryService.searchAllByDate(year, month, calendarId);
 
-		assertAll(() -> {
-			assertThat(found).hasSize(monthlyGoals.size());
-			found.forEach(mg -> assertThat(mg.getStartDate()).hasYear(year));
-			found.forEach(mg -> assertThat(mg.getStartDate()).hasMonth(Month.of(month)));
-		});
+		assertAll(
+				() -> {
+					assertThat(found).hasSize(monthlyGoals.size());
+					found.forEach(mg -> assertThat(mg.getStartDate()).hasYear(year));
+					found.forEach(mg -> assertThat(mg.getStartDate()).hasMonth(Month.of(month)));
+				});
 	}
 }

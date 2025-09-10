@@ -31,8 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LoginService {
 
-	private final Map<OAuthProvider, AuthenticationService> authenticationServiceMap = new EnumMap<>(
-			OAuthProvider.class);
+	private final Map<OAuthProvider, AuthenticationService> authenticationServiceMap =
+			new EnumMap<>(OAuthProvider.class);
 	private final JwtProvider jwtProvider;
 	private final JwtValidator jwtValidator;
 	private final ObjectMapper objectMapper;
@@ -41,9 +41,15 @@ public class LoginService {
 	private final MemberDeviceService memberDeviceService;
 	private final MemberDeleteService memberDeleteService;
 
-	public LoginService(JwtProvider jwtProvider, JwtValidator jwtValidator, ObjectMapper objectMapper,
-			MemberRepository memberRepository, SignupService signupService, MemberDeviceService memberDeviceService,
-			MemberDeleteService memberDeleteService, KakaoAuthenticationService kakaoAuthenticationService,
+	public LoginService(
+			JwtProvider jwtProvider,
+			JwtValidator jwtValidator,
+			ObjectMapper objectMapper,
+			MemberRepository memberRepository,
+			SignupService signupService,
+			MemberDeviceService memberDeviceService,
+			MemberDeleteService memberDeleteService,
+			KakaoAuthenticationService kakaoAuthenticationService,
 			GoogleAuthenticationService googleAuthenticationService,
 			NaverAuthenticationService naverAuthenticationService) {
 		this.jwtProvider = jwtProvider;
@@ -58,10 +64,10 @@ public class LoginService {
 		authenticationServiceMap.put(OAuthProvider.NAVER, naverAuthenticationService);
 	}
 
-	public OAuthTokenResponse login(String exchangeToken) {
-		Long memberId = jwtValidator.getMemberIdIfValid(exchangeToken);
-		AuthorizationToken token = jwtProvider.generateAuthorizationToken(memberId);
-		Optional<Member> member = memberRepository.findById(memberId);
+	public OAuthTokenResponse login(String exchangeToken) throws Exception {
+		String sub = jwtValidator.getSubIfValid(exchangeToken);
+		AuthorizationToken token = jwtProvider.generateAuthorizationToken(sub);
+		Optional<Member> member = memberRepository.findByEmail(sub);
 		boolean activated = false;
 		if (member.isPresent()) {
 			activated = member.get().getActivated();
@@ -70,41 +76,54 @@ public class LoginService {
 		return new OAuthTokenResponse(token.accessToken(), token.refreshToken(), activated);
 	}
 
-	public OAuthTokenResponse login(LoginRequest loginRequest) throws IOException {
-		AuthenticationService authenticationService = authenticationServiceMap.get(loginRequest.provider());
+	public OAuthTokenResponse login(LoginRequest loginRequest) throws Exception {
+		AuthenticationService authenticationService =
+				authenticationServiceMap.get(loginRequest.provider());
 
 		if (loginRequest.provider().equals(OAuthProvider.NAVER)) {
 			return loginWithoutOidc(loginRequest, authenticationService);
 		}
 
 		String account = authenticationService.authenticate(parseToken(loginRequest.idToken()));
-		MemberInfo memberInfo = authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
-		Member member = memberRepository.findByOauthAccount(account).orElseGet(() -> signupService.signup(memberInfo));
+		MemberInfo memberInfo =
+				authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
+		Member member =
+				memberRepository
+						.findByOauthAccount(account)
+						.orElseGet(() -> signupService.signup(memberInfo));
 		member = validateQuickRejoinMember(member, memberInfo);
-		memberDeviceService.addMemberDeviceIfNotExists(loginRequest.deviceId(), loginRequest.model(),
-				loginRequest.fcmToken(), member);
+		memberDeviceService.addMemberDeviceIfNotExists(
+				loginRequest.deviceId(), loginRequest.model(), loginRequest.fcmToken(), member);
 
-		AuthorizationToken token = jwtProvider.generateAuthorizationToken(member.getId());
-		return new OAuthTokenResponse(token.accessToken(), token.refreshToken(), member.getActivated());
+		AuthorizationToken token = jwtProvider.generateAuthorizationToken(member.getEmail());
+		return new OAuthTokenResponse(
+				token.accessToken(), token.refreshToken(), member.getActivated());
 	}
 
 	public void activateMember(String personalId, Long memberId) {
-		Member member = memberRepository.findById(memberId)
-				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+		Member member =
+				memberRepository
+						.findById(memberId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 		member.active(personalId);
 		memberRepository.save(member);
 	}
 
-	private OAuthTokenResponse loginWithoutOidc(LoginRequest loginRequest,
-			AuthenticationService authenticationService) {
-		MemberInfo memberInfo = authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
-		Member member = memberRepository.findByOauthAccount(memberInfo.oauthAccount())
-				.orElseGet(() -> signupService.signup(memberInfo));
+	private OAuthTokenResponse loginWithoutOidc(
+			LoginRequest loginRequest, AuthenticationService authenticationService)
+			throws Exception {
+		MemberInfo memberInfo =
+				authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
+		Member member =
+				memberRepository
+						.findByOauthAccount(memberInfo.oauthAccount())
+						.orElseGet(() -> signupService.signup(memberInfo));
 		member = validateQuickRejoinMember(member, memberInfo);
 
-		AuthorizationToken token = jwtProvider.generateAuthorizationToken(member.getId());
-		return new OAuthTokenResponse(token.accessToken(), token.refreshToken(), member.getActivated());
+		AuthorizationToken token = jwtProvider.generateAuthorizationToken(member.getEmail());
+		return new OAuthTokenResponse(
+				token.accessToken(), token.refreshToken(), member.getActivated());
 	}
 
 	private Member validateQuickRejoinMember(Member member, MemberInfo memberInfo) {
@@ -122,7 +141,11 @@ public class LoginService {
 
 	private IdToken parseToken(String idToken) throws IOException {
 		String[] tokenParts = idToken.split("\\.");
-		return new IdToken(objectMapper.readValue(Base64.getDecoder().decode(tokenParts[0]), IdTokenHeader.class),
-				objectMapper.readValue(Base64.getDecoder().decode(tokenParts[1]), IdTokenPayload.class), idToken);
+		return new IdToken(
+				objectMapper.readValue(
+						Base64.getDecoder().decode(tokenParts[0]), IdTokenHeader.class),
+				objectMapper.readValue(
+						Base64.getDecoder().decode(tokenParts[1]), IdTokenPayload.class),
+				idToken);
 	}
 }
