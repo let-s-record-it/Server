@@ -31,14 +31,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @ExtendWith(MockitoExtension.class)
 class BatchTaskRepositoryTest {
 
-	private static final String EXPECTED_SQL = """
+	private static final String EXPECTED_SQL =
+			"""
 			INSERT INTO TASK (title, description, date, achieved, task_category_id, calendar_id, task_group_id, deleted, created_at, modified_at)
 			VALUES (?,?,?,?,?,?,?,?,?,?)
 			""";
 
 	BatchTaskRepository batchTaskRepository;
-	@Mock
-	JdbcTemplate jdbcTemplate;
+	@Mock JdbcTemplate jdbcTemplate;
 
 	long memberId = 1L;
 	private Member member;
@@ -60,8 +60,8 @@ class BatchTaskRepositoryTest {
 	@Test
 	@DisplayName("1000개 이하의 Task를 저장하는 경우, 한 번의 Batch로 저장된다.")
 	void saveAllBatch_ExecutesSingleBatch() {
-		ArgumentCaptor<BatchPreparedStatementSetter> captor = ArgumentCaptor
-				.forClass(BatchPreparedStatementSetter.class);
+		ArgumentCaptor<BatchPreparedStatementSetter> captor =
+				ArgumentCaptor.forClass(BatchPreparedStatementSetter.class);
 		final List<Task> tasks = new ArrayList<>();
 		for (int i = 0; i < 1000; i++) {
 			tasks.add(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
@@ -77,8 +77,8 @@ class BatchTaskRepositoryTest {
 	@Test
 	@DisplayName("1000개를 초과하는 Task를 저장하는 경우, 여러 번의 Batch로 분할하여 저장한다.")
 	void saveAllBatch_ExecutesMultipleBatches() {
-		ArgumentCaptor<BatchPreparedStatementSetter> captor = ArgumentCaptor
-				.forClass(BatchPreparedStatementSetter.class);
+		ArgumentCaptor<BatchPreparedStatementSetter> captor =
+				ArgumentCaptor.forClass(BatchPreparedStatementSetter.class);
 		final List<Task> tasks = new ArrayList<>();
 		for (int i = 0; i < 1500; i++) {
 			tasks.add(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));

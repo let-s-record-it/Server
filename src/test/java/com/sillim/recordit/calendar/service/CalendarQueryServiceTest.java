@@ -28,10 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CalendarQueryServiceTest {
 
-	@Mock
-	CalendarRepository calendarRepository;
-	@InjectMocks
-	CalendarQueryService calendarQueryService;
+	@Mock CalendarRepository calendarRepository;
+	@InjectMocks CalendarQueryService calendarQueryService;
 
 	Member member;
 	long memberId = 1L;
@@ -46,7 +44,8 @@ class CalendarQueryServiceTest {
 	void searchByCalendarId() {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar expectedCalendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
-		given(calendarRepository.findByIdWithFetchCategory(eq(1L))).willReturn(Optional.of(expectedCalendar));
+		given(calendarRepository.findByIdWithFetchCategory(eq(1L)))
+				.willReturn(Optional.of(expectedCalendar));
 
 		Calendar calendar = calendarQueryService.searchByCalendarId(1L);
 
@@ -58,7 +57,8 @@ class CalendarQueryServiceTest {
 	void throwRecordNotFoundExceptionIfNotExistsCalendarWhenSearchByCalendarId() {
 		given(calendarRepository.findByIdWithFetchCategory(eq(1L))).willReturn(Optional.empty());
 
-		assertThatCode(() -> calendarQueryService.searchByCalendarId(1L)).isInstanceOf(RecordNotFoundException.class)
+		assertThatCode(() -> calendarQueryService.searchByCalendarId(1L))
+				.isInstanceOf(RecordNotFoundException.class)
 				.hasMessage(ErrorCode.CALENDAR_NOT_FOUND.getDescription());
 	}
 
@@ -68,14 +68,16 @@ class CalendarQueryServiceTest {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar expectedCalendar1 = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		Calendar expectedCalendar2 = CalendarFixture.DEFAULT.getCalendar(category, memberId);
-		given(calendarRepository.findByMemberId(eq(1L))).willReturn(List.of(expectedCalendar1, expectedCalendar2));
+		given(calendarRepository.findByMemberId(eq(1L)))
+				.willReturn(List.of(expectedCalendar1, expectedCalendar2));
 
 		List<Calendar> calendars = calendarQueryService.searchByMemberId(1L);
 
-		assertAll(() -> {
-			assertThat(calendars).hasSize(2);
-			assertThat(calendars.get(0)).isEqualTo(expectedCalendar1);
-			assertThat(calendars.get(1)).isEqualTo(expectedCalendar2);
-		});
+		assertAll(
+				() -> {
+					assertThat(calendars).hasSize(2);
+					assertThat(calendars.get(0)).isEqualTo(expectedCalendar1);
+					assertThat(calendars.get(1)).isEqualTo(expectedCalendar2);
+				});
 	}
 }

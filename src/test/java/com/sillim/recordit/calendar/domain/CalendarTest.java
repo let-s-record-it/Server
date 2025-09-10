@@ -14,10 +14,14 @@ class CalendarTest {
 	@DisplayName("캘린더 주인이 아니면 InvalidRequestException이 발생한다.")
 	void throwInvalidRequestExceptionIfNotCalendarOwner() {
 		long memberId = 1L;
-		Calendar calendar = new Calendar("title", CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId),
-				memberId);
+		Calendar calendar =
+				new Calendar(
+						"title",
+						CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId),
+						memberId);
 
-		assertThatCode(() -> calendar.validateAuthenticatedMember(2L)).isInstanceOf(InvalidRequestException.class)
+		assertThatCode(() -> calendar.validateAuthenticatedMember(2L))
+				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
 }

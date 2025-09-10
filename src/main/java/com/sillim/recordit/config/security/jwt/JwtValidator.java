@@ -31,8 +31,12 @@ public class JwtValidator {
 	private final Key secretKey;
 	private final AESEncryptor encryptor;
 
-	public String getSubIfValid(String accessToken) throws NoSuchPaddingException, IllegalBlockSizeException,
-			NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+	public String getSubIfValid(String accessToken)
+			throws NoSuchPaddingException,
+					IllegalBlockSizeException,
+					NoSuchAlgorithmException,
+					BadPaddingException,
+					InvalidKeyException {
 		String sub = validateToken(accessToken).getBody().getSubject();
 
 		if (Objects.isNull(sub)) {

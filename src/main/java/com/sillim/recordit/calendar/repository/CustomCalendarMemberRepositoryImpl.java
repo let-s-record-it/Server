@@ -11,8 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySupport
-		implements
-			CustomCalendarMemberRepository {
+		implements CustomCalendarMemberRepository {
 
 	public CustomCalendarMemberRepositoryImpl() {
 		super(CalendarMember.class);
@@ -20,34 +19,53 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 
 	@Override
 	public Optional<CalendarMember> findCalendarMember(Long calendarId, Long memberId) {
-		return Optional.ofNullable(selectFrom(calendarMember).leftJoin(calendarMember.calendar).fetchJoin()
-				.leftJoin(calendarMember.calendar.category).fetchJoin()
-				// .leftJoin(calendarMember.member)
-				// .fetchJoin()
-				.where(calendarMember.deleted.isFalse()).where(calendarMember.calendar.id.eq(calendarId))
-				// .where(calendarMember.member.id.eq(memberId))
-				.fetchOne());
+		return Optional.ofNullable(
+				selectFrom(calendarMember)
+						.leftJoin(calendarMember.calendar)
+						.fetchJoin()
+						.leftJoin(calendarMember.calendar.category)
+						.fetchJoin()
+						// .leftJoin(calendarMember.member)
+						// .fetchJoin()
+						.where(calendarMember.deleted.isFalse())
+						.where(calendarMember.calendar.id.eq(calendarId))
+						// .where(calendarMember.member.id.eq(memberId))
+						.fetchOne());
 	}
 
 	@Override
 	public List<CalendarMember> findCalendarMembers(Long calendarId) {
-		return selectFrom(calendarMember).leftJoin(calendarMember.calendar).fetchJoin()
-				.leftJoin(calendarMember.calendar.category).fetchJoin()
+		return selectFrom(calendarMember)
+				.leftJoin(calendarMember.calendar)
+				.fetchJoin()
+				.leftJoin(calendarMember.calendar.category)
+				.fetchJoin()
 				// .leftJoin(calendarMember.memberId)
 				// .fetchJoin()
-				.where(calendarMember.deleted.isFalse()).where(calendarMember.calendar.id.eq(calendarId)).fetch();
+				.where(calendarMember.deleted.isFalse())
+				.where(calendarMember.calendar.id.eq(calendarId))
+				.fetch();
 	}
 
 	@Override
 	public List<Calendar> findCalendarsByMemberId(Long memberId) {
-		return getJpaQueryFactory().select(calendarMember.calendar).from(calendarMember)
-				.leftJoin(calendarMember.calendar.category).fetchJoin().where(calendarMember.deleted.isFalse())
-				.where(calendarMember.calendar.deleted.isFalse()).where(calendarMember.memberId.eq(memberId)).fetch();
+		return getJpaQueryFactory()
+				.select(calendarMember.calendar)
+				.from(calendarMember)
+				.leftJoin(calendarMember.calendar.category)
+				.fetchJoin()
+				.where(calendarMember.deleted.isFalse())
+				.where(calendarMember.calendar.deleted.isFalse())
+				.where(calendarMember.memberId.eq(memberId))
+				.fetch();
 	}
 
 	@Override
 	public void updateMemberIsNull(Long memberId) {
-		update(calendarMember).setNull(calendarMember.memberId).set(calendarMember.deleted, true)
-				.where(calendarMember.memberId.eq(memberId)).execute();
+		update(calendarMember)
+				.setNull(calendarMember.memberId)
+				.set(calendarMember.deleted, true)
+				.where(calendarMember.memberId.eq(memberId))
+				.execute();
 	}
 }

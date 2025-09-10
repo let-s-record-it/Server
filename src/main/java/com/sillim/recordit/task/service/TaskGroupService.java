@@ -27,47 +27,67 @@ public class TaskGroupService {
 	private final TaskGroupRepository taskGroupRepository;
 
 	@Transactional
-	public TaskGroup addNonRepeatingTaskGroup(final TaskGroupUpdateRequest request, final Long memberId) {
-		RelatedGoals relatedGoals = getRelatedGoals(request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(),
-				memberId);
+	public TaskGroup addNonRepeatingTaskGroup(
+			final TaskGroupUpdateRequest request, final Long memberId) {
+		RelatedGoals relatedGoals =
+				getRelatedGoals(
+						request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(), memberId);
 		TaskGroup taskGroup = new TaskGroup(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
 		return taskGroupRepository.save(taskGroup);
 	}
 
 	@Transactional
-	public TaskGroup addRepeatingTaskGroup(final TaskGroupUpdateRequest request,
-			final TaskRepetitionUpdateRequest repetitionRequest, final Long memberId) {
-		RelatedGoals relatedGoals = getRelatedGoals(request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(),
-				memberId);
-		TaskGroup taskGroup = new TaskGroup(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
-
-		taskGroup.setRepetitionPattern(TaskRepetitionPatternFactory.create(repetitionRequest.repetitionType(),
-				repetitionRequest.repetitionPeriod(), repetitionRequest.repetitionStartDate(),
-				repetitionRequest.repetitionEndDate(), repetitionRequest.monthOfYear(), repetitionRequest.dayOfMonth(),
-				repetitionRequest.weekNumber(), repetitionRequest.weekday(), repetitionRequest.weekdayBit(),
-				taskGroup));
-		return taskGroupRepository.save(taskGroup);
-	}
-
-	@Transactional
-	public TaskGroup modifyTaskGroup(final Long taskGroupId, final TaskGroupUpdateRequest request,
+	public TaskGroup addRepeatingTaskGroup(
+			final TaskGroupUpdateRequest request,
+			final TaskRepetitionUpdateRequest repetitionRequest,
 			final Long memberId) {
-		TaskGroup taskGroup = taskGroupRepository.findById(taskGroupId)
-				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
-		RelatedGoals relatedGoals = getRelatedGoals(request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(),
-				memberId);
+		RelatedGoals relatedGoals =
+				getRelatedGoals(
+						request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(), memberId);
+		TaskGroup taskGroup = new TaskGroup(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
+
+		taskGroup.setRepetitionPattern(
+				TaskRepetitionPatternFactory.create(
+						repetitionRequest.repetitionType(),
+						repetitionRequest.repetitionPeriod(),
+						repetitionRequest.repetitionStartDate(),
+						repetitionRequest.repetitionEndDate(),
+						repetitionRequest.monthOfYear(),
+						repetitionRequest.dayOfMonth(),
+						repetitionRequest.weekNumber(),
+						repetitionRequest.weekday(),
+						repetitionRequest.weekdayBit(),
+						taskGroup));
+		return taskGroupRepository.save(taskGroup);
+	}
+
+	@Transactional
+	public TaskGroup modifyTaskGroup(
+			final Long taskGroupId, final TaskGroupUpdateRequest request, final Long memberId) {
+		TaskGroup taskGroup =
+				taskGroupRepository
+						.findById(taskGroupId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
+		RelatedGoals relatedGoals =
+				getRelatedGoals(
+						request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(), memberId);
 		taskGroup.modify(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
 
 		return taskGroup;
 	}
 
 	@Transactional
-	public TaskGroup modifyTaskGroupAndMakeNonRepeatable(final Long taskGroupId, final TaskGroupUpdateRequest request,
-			final Long memberId) {
-		TaskGroup taskGroup = taskGroupRepository.findById(taskGroupId)
-				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
-		RelatedGoals relatedGoals = getRelatedGoals(request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(),
-				memberId);
+	public TaskGroup modifyTaskGroupAndMakeNonRepeatable(
+			final Long taskGroupId, final TaskGroupUpdateRequest request, final Long memberId) {
+		TaskGroup taskGroup =
+				taskGroupRepository
+						.findById(taskGroupId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
+		RelatedGoals relatedGoals =
+				getRelatedGoals(
+						request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(), memberId);
 		taskGroup.modify(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
 
 		if (taskGroup.getIsRepeated()) {
@@ -78,39 +98,57 @@ public class TaskGroupService {
 	}
 
 	@Transactional
-	public TaskGroup modifyTaskGroupAndMakeRepeatable(final Long taskGroupId, final TaskGroupUpdateRequest request,
-			final TaskRepetitionUpdateRequest repetitionRequest, final Long memberId) {
-		TaskGroup taskGroup = taskGroupRepository.findById(taskGroupId)
-				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
-		RelatedGoals relatedGoals = getRelatedGoals(request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(),
-				memberId);
+	public TaskGroup modifyTaskGroupAndMakeRepeatable(
+			final Long taskGroupId,
+			final TaskGroupUpdateRequest request,
+			final TaskRepetitionUpdateRequest repetitionRequest,
+			final Long memberId) {
+		TaskGroup taskGroup =
+				taskGroupRepository
+						.findById(taskGroupId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.TASK_GROUP_NOT_FOUND));
+		RelatedGoals relatedGoals =
+				getRelatedGoals(
+						request.relatedMonthlyGoalId(), request.relatedWeeklyGoalId(), memberId);
 		taskGroup.modify(relatedGoals.monthlyGoal(), relatedGoals.weeklyGoal());
 
 		if (taskGroup.getIsRepeated()) {
 			taskGroup.removeRepetitionPattern();
 			taskGroupRepository.flush();
 		}
-		taskGroup.setRepetitionPattern(TaskRepetitionPatternFactory.create(repetitionRequest.repetitionType(),
-				repetitionRequest.repetitionPeriod(), repetitionRequest.repetitionStartDate(),
-				repetitionRequest.repetitionEndDate(), repetitionRequest.monthOfYear(), repetitionRequest.dayOfMonth(),
-				repetitionRequest.weekNumber(), repetitionRequest.weekday(), repetitionRequest.weekdayBit(),
-				taskGroup));
+		taskGroup.setRepetitionPattern(
+				TaskRepetitionPatternFactory.create(
+						repetitionRequest.repetitionType(),
+						repetitionRequest.repetitionPeriod(),
+						repetitionRequest.repetitionStartDate(),
+						repetitionRequest.repetitionEndDate(),
+						repetitionRequest.monthOfYear(),
+						repetitionRequest.dayOfMonth(),
+						repetitionRequest.weekNumber(),
+						repetitionRequest.weekday(),
+						repetitionRequest.weekdayBit(),
+						taskGroup));
 		return taskGroup;
 	}
 
-	private RelatedGoals getRelatedGoals(final Long monthlyGoalId, final Long weeklyGoalId, final Long memberId) {
+	private RelatedGoals getRelatedGoals(
+			final Long monthlyGoalId, final Long weeklyGoalId, final Long memberId) {
 		if (monthlyGoalId == null && weeklyGoalId == null) {
 			return RelatedGoals.empty();
 		}
 		if (monthlyGoalId == null) {
-			WeeklyGoal weeklyGoal = weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);
+			WeeklyGoal weeklyGoal =
+					weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);
 			return RelatedGoals.from(weeklyGoal);
 		}
 		if (weeklyGoalId == null) {
-			MonthlyGoal monthlyGoal = monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
+			MonthlyGoal monthlyGoal =
+					monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
 			return RelatedGoals.from(monthlyGoal);
 		}
-		MonthlyGoal monthlyGoal = monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
+		MonthlyGoal monthlyGoal =
+				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
 		WeeklyGoal weeklyGoal = weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);
 		return RelatedGoals.of(monthlyGoal, weeklyGoal);
 	}

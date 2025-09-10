@@ -28,10 +28,12 @@ class FeedImagesTest {
 
 		FeedImages feedImages = new FeedImages();
 		feedImages.setFeedImages(feedImageList);
-		assertAll(() -> {
-			assertThat(feedImages.getFeedImageCount()).isEqualTo(10);
-			assertThat(feedImages.getFeedImages().get(0).getImageUrl()).isEqualTo("https://image.url");
-		});
+		assertAll(
+				() -> {
+					assertThat(feedImages.getFeedImageCount()).isEqualTo(10);
+					assertThat(feedImages.getFeedImages().get(0).getImageUrl())
+							.isEqualTo("https://image.url");
+				});
 	}
 
 	@Test
@@ -55,12 +57,15 @@ class FeedImagesTest {
 		long memberId = 1L;
 		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 
-		FeedImages feedImages = new FeedImages(
-				new ArrayList<>(List.of(new FeedImage("url1", feed), new FeedImage("url2", feed))));
+		FeedImages feedImages =
+				new FeedImages(
+						new ArrayList<>(
+								List.of(new FeedImage("url1", feed), new FeedImage("url2", feed))));
 
 		feedImages.modifyFeedImages(List.of("url2"), List.of(new FeedImage("url3", feed)));
 
-		List<String> feedImageUrls = feedImages.getFeedImages().stream().map(FeedImage::getImageUrl).toList();
+		List<String> feedImageUrls =
+				feedImages.getFeedImages().stream().map(FeedImage::getImageUrl).toList();
 
 		assertThat(feedImageUrls).hasSize(2);
 		assertThat(feedImageUrls).containsExactly("url2", "url3");

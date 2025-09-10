@@ -19,7 +19,8 @@ class MonthlyGoalTest {
 
 	long memberId = 1L;
 	Member member = MemberFixture.DEFAULT.getMember();
-	CalendarCategory calendarCategory = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
+	CalendarCategory calendarCategory =
+			CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 	Calendar calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 	ScheduleCategory category = ScheduleCategoryFixture.DEFAULT.getScheduleCategory(calendar);
 
@@ -29,8 +30,13 @@ class MonthlyGoalTest {
 		MonthlyGoal expected = MonthlyGoalFixture.MODIFIED.getWithMember(category, calendar);
 
 		MonthlyGoal modified = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		modified.modify(expected.getTitle(), expected.getDescription(), expected.getStartDate(), expected.getEndDate(),
-				category, calendar);
+		modified.modify(
+				expected.getTitle(),
+				expected.getDescription(),
+				expected.getStartDate(),
+				expected.getEndDate(),
+				category,
+				calendar);
 
 		assertThat(modified).usingRecursiveComparison().isEqualTo(expected);
 	}
@@ -44,9 +50,10 @@ class MonthlyGoalTest {
 		MonthlyGoal monthlyGoal2 = MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar);
 		monthlyGoal2.changeAchieveStatus(false);
 
-		assertAll(() -> {
-			assertThat(monthlyGoal1.isAchieved()).isTrue();
-			assertThat(monthlyGoal2.isAchieved()).isFalse();
-		});
+		assertAll(
+				() -> {
+					assertThat(monthlyGoal1.isAchieved()).isTrue();
+					assertThat(monthlyGoal2.isAchieved()).isFalse();
+				});
 	}
 }

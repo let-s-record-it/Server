@@ -17,8 +17,7 @@ public class WeekdayBit {
 	private static final int MIN_WEEKDAY_BIT = 0;
 	private static final int MAX_WEEKDAY_BIT = 127;
 
-	@Column
-	private Integer weekdayBit;
+	@Column private Integer weekdayBit;
 
 	public WeekdayBit(Integer weekdayBit) {
 		validate(weekdayBit);

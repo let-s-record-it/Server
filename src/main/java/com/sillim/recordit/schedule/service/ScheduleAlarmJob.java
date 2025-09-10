@@ -21,17 +21,25 @@ public class ScheduleAlarmJob implements Job {
 		List<String> fcmTokens = (List<String>) jobDataMap.get("fcmTokens");
 		String scheduleId = String.valueOf(jobDataMap.getLong("scheduleId"));
 
-		fcmTokens.forEach(fcmToken -> {
-			try {
-				Message message = Message.builder()
-						.setNotification(Notification.builder().setTitle(title).setBody(body).build())
-						.putData("scheduleId", scheduleId).setToken(fcmToken).build();
+		fcmTokens.forEach(
+				fcmToken -> {
+					try {
+						Message message =
+								Message.builder()
+										.setNotification(
+												Notification.builder()
+														.setTitle(title)
+														.setBody(body)
+														.build())
+										.putData("scheduleId", scheduleId)
+										.setToken(fcmToken)
+										.build();
 
-				String response = FirebaseMessaging.getInstance().send(message);
-				log.info("send push message response: {}", response);
-			} catch (FirebaseMessagingException e) {
-				throw new RuntimeException(e);
-			}
-		});
+						String response = FirebaseMessaging.getInstance().send(message);
+						log.info("send push message response: {}", response);
+					} catch (FirebaseMessagingException e) {
+						throw new RuntimeException(e);
+					}
+				});
 	}
 }

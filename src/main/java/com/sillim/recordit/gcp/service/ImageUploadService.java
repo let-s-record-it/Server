@@ -42,10 +42,12 @@ public class ImageUploadService {
 	public String uploadImage(MultipartFile image) throws IOException {
 		validateImageIsEmpty(image);
 
-		String uuidFileName = FileUtils.generateUUIDFileName(Objects.requireNonNull(image.getOriginalFilename()));
+		String uuidFileName =
+				FileUtils.generateUUIDFileName(Objects.requireNonNull(image.getOriginalFilename()));
 		String ext = image.getContentType();
 		String imageUrl = "https://storage.googleapis.com/" + bucketName + "/" + uuidFileName;
-		BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, uuidFileName).setContentType(ext).build();
+		BlobInfo blobInfo =
+				BlobInfo.newBuilder(bucketName, uuidFileName).setContentType(ext).build();
 
 		storage.create(blobInfo, image.getInputStream());
 

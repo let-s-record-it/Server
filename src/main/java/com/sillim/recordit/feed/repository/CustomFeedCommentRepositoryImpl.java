@@ -12,7 +12,8 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport implements CustomFeedCommentRepository {
+public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport
+		implements CustomFeedCommentRepository {
 
 	public CustomFeedCommentRepositoryImpl() {
 		super(FeedComment.class);
@@ -20,38 +21,52 @@ public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport i
 
 	@Override
 	public Slice<FeedComment> findPaginatedOrderByCreatedAtAsc(Pageable pageable, Long feedId) {
-		List<FeedComment> feedComments = selectFrom(feedComment)
-				// .leftJoin(feedComment.member)
-				// .fetchJoin()
-				.where(feedComment.deleted.isFalse()).where(feedComment.feed.id.eq(feedId))
-				.orderBy(feedComment.createdAt.asc()).offset(pageable.getOffset()).limit(pageable.getPageSize() + 1)
-				.fetch();
+		List<FeedComment> feedComments =
+				selectFrom(feedComment)
+						// .leftJoin(feedComment.member)
+						// .fetchJoin()
+						.where(feedComment.deleted.isFalse())
+						.where(feedComment.feed.id.eq(feedId))
+						.orderBy(feedComment.createdAt.asc())
+						.offset(pageable.getOffset())
+						.limit(pageable.getPageSize() + 1)
+						.fetch();
 
 		return new SliceImpl<>(feedComments, pageable, hasNext(pageable, feedComments));
 	}
 
 	@Override
 	public Slice<FeedComment> findByMemberIdOrderByCreatedAtAsc(Pageable pageable, Long memberId) {
-		List<FeedComment> feedComments = selectFrom(feedComment)
-				// .leftJoin(feedComment.member)
-				// .fetchJoin()
-				.where(feedComment.deleted.isFalse()).where(feedComment.memberId.eq(memberId))
-				.orderBy(feedComment.createdAt.asc()).offset(pageable.getOffset()).limit(pageable.getPageSize() + 1)
-				.fetch();
+		List<FeedComment> feedComments =
+				selectFrom(feedComment)
+						// .leftJoin(feedComment.member)
+						// .fetchJoin()
+						.where(feedComment.deleted.isFalse())
+						.where(feedComment.memberId.eq(memberId))
+						.orderBy(feedComment.createdAt.asc())
+						.offset(pageable.getOffset())
+						.limit(pageable.getPageSize() + 1)
+						.fetch();
 
 		return new SliceImpl<>(feedComments, pageable, hasNext(pageable, feedComments));
 	}
 
 	@Override
 	public Optional<FeedComment> findByIdWithFetch(Long commentId) {
-		return Optional.ofNullable(selectFrom(feedComment)
-				// .leftJoin(feedComment.member)
-				// .fetchJoin()
-				.where(feedComment.deleted.isFalse()).where(feedComment.id.eq(commentId)).fetchFirst());
+		return Optional.ofNullable(
+				selectFrom(feedComment)
+						// .leftJoin(feedComment.member)
+						// .fetchJoin()
+						.where(feedComment.deleted.isFalse())
+						.where(feedComment.id.eq(commentId))
+						.fetchFirst());
 	}
 
 	@Override
 	public void updateMemberIsNull(Long memberId) {
-		update(feedComment).setNull(feedComment.memberId).where(feedComment.memberId.eq(memberId)).execute();
+		update(feedComment)
+				.setNull(feedComment.memberId)
+				.where(feedComment.memberId.eq(memberId))
+				.execute();
 	}
 }

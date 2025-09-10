@@ -6,33 +6,68 @@ import java.time.LocalDate;
 import lombok.Builder;
 
 @Builder
-public record TaskDetailsResponse(Long taskId, String title, String description, LocalDate date, Long categoryId,
-		String colorHex, Long calendarId, String calendarTitle, Boolean isRepeated,
-		TaskRepetitionDetailsResponse repetition, RelatedGoalDetailsResponse relatedMonthlyGoal,
+public record TaskDetailsResponse(
+		Long taskId,
+		String title,
+		String description,
+		LocalDate date,
+		Long categoryId,
+		String colorHex,
+		Long calendarId,
+		String calendarTitle,
+		Boolean isRepeated,
+		TaskRepetitionDetailsResponse repetition,
+		RelatedGoalDetailsResponse relatedMonthlyGoal,
 		RelatedGoalDetailsResponse relatedWeeklyGoal) {
 
 	public static TaskDetailsResponse from(final Task task) {
-		return TaskDetailsResponse.builder().taskId(task.getId()).title(task.getTitle())
-				.description(task.getDescription()).date(task.getDate()).categoryId(task.getCategory().getId())
-				.colorHex(task.getColorHex()).calendarId(task.getCalendar().getId())
-				.calendarTitle(task.getCalendar().getTitle()).isRepeated(false).repetition(null)
+		return TaskDetailsResponse.builder()
+				.taskId(task.getId())
+				.title(task.getTitle())
+				.description(task.getDescription())
+				.date(task.getDate())
+				.categoryId(task.getCategory().getId())
+				.colorHex(task.getColorHex())
+				.calendarId(task.getCalendar().getId())
+				.calendarTitle(task.getCalendar().getTitle())
+				.isRepeated(false)
+				.repetition(null)
 				.relatedMonthlyGoal(
-						task.getTaskGroup().getMonthlyGoal().map(RelatedGoalDetailsResponse::from).orElse(null))
+						task.getTaskGroup()
+								.getMonthlyGoal()
+								.map(RelatedGoalDetailsResponse::from)
+								.orElse(null))
 				.relatedWeeklyGoal(
-						task.getTaskGroup().getWeeklyGoal().map(RelatedGoalDetailsResponse::from).orElse(null))
+						task.getTaskGroup()
+								.getWeeklyGoal()
+								.map(RelatedGoalDetailsResponse::from)
+								.orElse(null))
 				.build();
 	}
 
-	public static TaskDetailsResponse of(final Task task, final TaskRepetitionPattern repetitionPattern) {
-		return TaskDetailsResponse.builder().taskId(task.getId()).title(task.getTitle())
-				.description(task.getDescription()).date(task.getDate()).categoryId(task.getCategory().getId())
-				.colorHex(task.getColorHex()).calendarId(task.getCalendar().getId())
-				.calendarTitle(task.getCalendar().getTitle()).isRepeated(true)
+	public static TaskDetailsResponse of(
+			final Task task, final TaskRepetitionPattern repetitionPattern) {
+		return TaskDetailsResponse.builder()
+				.taskId(task.getId())
+				.title(task.getTitle())
+				.description(task.getDescription())
+				.date(task.getDate())
+				.categoryId(task.getCategory().getId())
+				.colorHex(task.getColorHex())
+				.calendarId(task.getCalendar().getId())
+				.calendarTitle(task.getCalendar().getTitle())
+				.isRepeated(true)
 				.repetition(TaskRepetitionDetailsResponse.from(repetitionPattern))
 				.relatedMonthlyGoal(
-						task.getTaskGroup().getMonthlyGoal().map(RelatedGoalDetailsResponse::from).orElse(null))
+						task.getTaskGroup()
+								.getMonthlyGoal()
+								.map(RelatedGoalDetailsResponse::from)
+								.orElse(null))
 				.relatedWeeklyGoal(
-						task.getTaskGroup().getWeeklyGoal().map(RelatedGoalDetailsResponse::from).orElse(null))
+						task.getTaskGroup()
+								.getWeeklyGoal()
+								.map(RelatedGoalDetailsResponse::from)
+								.orElse(null))
 				.build();
 	}
 }

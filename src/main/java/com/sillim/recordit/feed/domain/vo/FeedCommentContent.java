@@ -32,7 +32,8 @@ public class FeedCommentContent {
 		}
 
 		if (content.length() > MAX_CONTENT_LENGTH) {
-			throw new InvalidFeedCommentContentException(ErrorCode.INVALID_FEED_COMMENT_CONTENT_LENGTH);
+			throw new InvalidFeedCommentContentException(
+					ErrorCode.INVALID_FEED_COMMENT_CONTENT_LENGTH);
 		}
 	}
 }

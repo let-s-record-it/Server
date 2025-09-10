@@ -38,34 +38,45 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(FeedController.class)
 class FeedControllerTest extends RestDocsTest {
 
-	@MockBean
-	FeedCommandService feedCommandService;
-	@MockBean
-	FeedQueryService feedQueryService;
-	@MockBean
-	FeedLikeService feedLikeService;
-	@MockBean
-	FeedScrapService feedScrapService;
+	@MockBean FeedCommandService feedCommandService;
+	@MockBean FeedQueryService feedQueryService;
+	@MockBean FeedLikeService feedLikeService;
+	@MockBean FeedScrapService feedScrapService;
 
 	@Test
 	@DisplayName("피드를 생성한다.")
 	void feedAdd() throws Exception {
 		FeedAddRequest request = new FeedAddRequest("title", "content");
 		long feedId = 1L;
-		MockMultipartFile multipartFile1 = new MockMultipartFile("images", "image1.jpg", "text/plain",
-				"test1".getBytes(StandardCharsets.UTF_8));
-		MockMultipartFile multipartFile2 = new MockMultipartFile("images", "image2.jpg", "text/plain",
-				"test2".getBytes(StandardCharsets.UTF_8));
-		MockMultipartFile feedAddRequest = new MockMultipartFile("feedAddRequest", "", "application/json",
-				toJson(request).getBytes());
+		MockMultipartFile multipartFile1 =
+				new MockMultipartFile(
+						"images",
+						"image1.jpg",
+						"text/plain",
+						"test1".getBytes(StandardCharsets.UTF_8));
+		MockMultipartFile multipartFile2 =
+				new MockMultipartFile(
+						"images",
+						"image2.jpg",
+						"text/plain",
+						"test2".getBytes(StandardCharsets.UTF_8));
+		MockMultipartFile feedAddRequest =
+				new MockMultipartFile(
+						"feedAddRequest", "", "application/json", toJson(request).getBytes());
 		given(feedCommandService.addFeed(eq(request), anyList(), any())).willReturn(feedId);
 
-		ResultActions perform = mockMvc.perform(
-				multipart("/api/v1/feeds", feedId).file(multipartFile1).file(multipartFile2).file(feedAddRequest));
+		ResultActions perform =
+				mockMvc.perform(
+						multipart("/api/v1/feeds", feedId)
+								.file(multipartFile1)
+								.file(multipartFile2)
+								.file(feedAddRequest));
 
-		perform.andExpect(status().isCreated()).andExpect(header().string("Location", "/api/v1/feeds/1"));
+		perform.andExpect(status().isCreated())
+				.andExpect(header().string("Location", "/api/v1/feeds/1"));
 
-		perform.andDo(print()).andDo(document("feed-add", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("feed-add", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -83,7 +94,8 @@ class FeedControllerTest extends RestDocsTest {
 
 		perform.andExpect(status().isOk());
 
-		perform.andDo(print()).andDo(document("feed-details", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("feed-details", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -93,16 +105,23 @@ class FeedControllerTest extends RestDocsTest {
 		Member member = mock(Member.class);
 		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		given(feed.getId()).willReturn(1L);
-		SliceResponse<FeedInListResponse> response = SliceResponse.of(new SliceImpl<>(
-				List.of(FeedInListResponse.from(feed, member, false, false)), PageRequest.of(0, 10), false));
+		SliceResponse<FeedInListResponse> response =
+				SliceResponse.of(
+						new SliceImpl<>(
+								List.of(FeedInListResponse.from(feed, member, false, false)),
+								PageRequest.of(0, 10),
+								false));
 		given(member.equalsId(any())).willReturn(true);
 		given(feedQueryService.searchRecentCreated(any(), any())).willReturn(response);
 
-		ResultActions perform = mockMvc.perform(get("/api/v1/feeds").queryParam("page", "0").queryParam("size", "10"));
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/feeds").queryParam("page", "0").queryParam("size", "10"));
 
 		perform.andExpect(status().isOk());
 
-		perform.andDo(print()).andDo(document("feed-list", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("feed-list", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -112,17 +131,25 @@ class FeedControllerTest extends RestDocsTest {
 		Member member = mock(Member.class);
 		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
 		given(feed.getId()).willReturn(1L);
-		SliceResponse<FeedInListResponse> response = SliceResponse.of(new SliceImpl<>(
-				List.of(FeedInListResponse.from(feed, member, false, false)), PageRequest.of(0, 10), false));
+		SliceResponse<FeedInListResponse> response =
+				SliceResponse.of(
+						new SliceImpl<>(
+								List.of(FeedInListResponse.from(feed, member, false, false)),
+								PageRequest.of(0, 10),
+								false));
 		given(member.equalsId(any())).willReturn(true);
 		given(feedQueryService.searchRecentCreatedByMemberId(any(), any())).willReturn(response);
 
-		ResultActions perform = mockMvc
-				.perform(get("/api/v1/feeds/my-feed").queryParam("page", "0").queryParam("size", "10"));
+		ResultActions perform =
+				mockMvc.perform(
+						get("/api/v1/feeds/my-feed")
+								.queryParam("page", "0")
+								.queryParam("size", "10"));
 
 		perform.andExpect(status().isOk());
 
-		perform.andDo(print()).andDo(document("my-feed-list", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("my-feed-list", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -133,7 +160,8 @@ class FeedControllerTest extends RestDocsTest {
 
 		perform.andExpect(status().isNoContent());
 
-		perform.andDo(print()).andDo(document("feed-remove", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("feed-remove", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -142,7 +170,8 @@ class FeedControllerTest extends RestDocsTest {
 		long feedId = 1L;
 		ResultActions perform = mockMvc.perform(post("/api/v1/feeds/{feedId}/like", feedId));
 
-		perform.andDo(print()).andDo(document("feed-like", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("feed-like", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -151,7 +180,8 @@ class FeedControllerTest extends RestDocsTest {
 		long feedId = 1L;
 		ResultActions perform = mockMvc.perform(delete("/api/v1/feeds/{feedId}/unlike", feedId));
 
-		perform.andDo(print()).andDo(document("feed-unlike", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("feed-unlike", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -160,7 +190,8 @@ class FeedControllerTest extends RestDocsTest {
 		long feedId = 1L;
 		ResultActions perform = mockMvc.perform(post("/api/v1/feeds/{feedId}/scrap", feedId));
 
-		perform.andDo(print()).andDo(document("feed-scrap", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("feed-scrap", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -169,6 +200,7 @@ class FeedControllerTest extends RestDocsTest {
 		long feedId = 1L;
 		ResultActions perform = mockMvc.perform(delete("/api/v1/feeds/{feedId}/unscrap", feedId));
 
-		perform.andDo(print()).andDo(document("feed-unscrap", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("feed-unscrap", getDocumentRequest(), getDocumentResponse()));
 	}
 }

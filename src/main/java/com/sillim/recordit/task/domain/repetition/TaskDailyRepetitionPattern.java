@@ -16,23 +16,47 @@ import lombok.NoArgsConstructor;
 public class TaskDailyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
-	private TaskDailyRepetitionPattern(final TaskRepetitionType repetitionType, final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final TaskGroup taskGroup) {
-		super(repetitionType, repetitionPeriod, repetitionStartDate, repetitionEndDate, null, null, null, null, null,
+	private TaskDailyRepetitionPattern(
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskGroup taskGroup) {
+		super(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				null,
+				null,
+				null,
+				null,
+				null,
 				taskGroup);
 	}
 
-	public static TaskRepetitionPattern createDaily(final Integer repetitionPeriod, final LocalDate repetitionStartDate,
-			final LocalDate repetitionEndDate, final TaskGroup taskGroup) {
-		return TaskDailyRepetitionPattern.builder().repetitionType(TaskRepetitionType.DAILY)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).taskGroup(taskGroup).build();
+	public static TaskRepetitionPattern createDaily(
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskGroup taskGroup) {
+		return TaskDailyRepetitionPattern.builder()
+				.repetitionType(TaskRepetitionType.DAILY)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.taskGroup(taskGroup)
+				.build();
 	}
 
 	@Override
 	public Stream<TemporalAmount> repeatingStream() {
-		return Stream
-				.iterate(0, day -> getRepetitionStartDate().plusDays(day).isBefore(getRepetitionEndDate().plusDays(1L)),
+		return Stream.iterate(
+						0,
+						day ->
+								getRepetitionStartDate()
+										.plusDays(day)
+										.isBefore(getRepetitionEndDate().plusDays(1L)),
 						day -> day + getRepetitionPeriod())
 				.map(Period::ofDays);
 	}

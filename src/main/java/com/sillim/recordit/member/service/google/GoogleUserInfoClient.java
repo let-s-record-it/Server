@@ -10,5 +10,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface GoogleUserInfoClient {
 
 	@GetMapping("/v1/userinfo")
-	GoogleUserInfo getGoogleUserInfo(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization);
+	GoogleUserInfo getGoogleUserInfo(
+			@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization);
 }

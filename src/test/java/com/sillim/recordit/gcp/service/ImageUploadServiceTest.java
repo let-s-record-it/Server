@@ -35,8 +35,12 @@ class ImageUploadServiceTest {
 	void uploadImagesFeedImages() throws IOException {
 		ReflectionTestUtils.setField(imageUploadService, "bucketName", "1234");
 
-		MockMultipartFile multipartFile = new MockMultipartFile("images", "image.jpg", "text/plain",
-				"test1".getBytes(StandardCharsets.UTF_8));
+		MockMultipartFile multipartFile =
+				new MockMultipartFile(
+						"images",
+						"image.jpg",
+						"text/plain",
+						"test1".getBytes(StandardCharsets.UTF_8));
 
 		List<String> imageUrls = imageUploadService.uploadImages(List.of(multipartFile));
 
@@ -55,10 +59,12 @@ class ImageUploadServiceTest {
 	@Test
 	@DisplayName("이미지가 비어있으면 FileNotFoundException이 발생한다.")
 	void throwFileNotFoundExceptionIfFeedImageFileNotExists() {
-		MockMultipartFile multipartFile = new MockMultipartFile("images", "image.jpg", "text/plain",
-				"".getBytes(StandardCharsets.UTF_8));
+		MockMultipartFile multipartFile =
+				new MockMultipartFile(
+						"images", "image.jpg", "text/plain", "".getBytes(StandardCharsets.UTF_8));
 
 		assertThatCode(() -> imageUploadService.uploadImages(List.of(multipartFile)))
-				.isInstanceOf(FileNotFoundException.class).hasMessage(ErrorCode.FILE_NOT_FOUND.getDescription());
+				.isInstanceOf(FileNotFoundException.class)
+				.hasMessage(ErrorCode.FILE_NOT_FOUND.getDescription());
 	}
 }

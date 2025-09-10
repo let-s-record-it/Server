@@ -31,10 +31,17 @@ public class JwtProvider {
 	private final Key secretKey;
 	private final AESEncryptor encryptor;
 
-	public String generateExchangeToken(String email) throws NoSuchPaddingException, IllegalBlockSizeException,
-			NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+	public String generateExchangeToken(String email)
+			throws NoSuchPaddingException,
+					IllegalBlockSizeException,
+					NoSuchAlgorithmException,
+					BadPaddingException,
+					InvalidKeyException {
 		return buildToken(email)
-				.setExpiration(Date.from(Instant.now().plus(EXCHANGE_TOKEN_VALIDATION_SECOND, ChronoUnit.MILLIS)))
+				.setExpiration(
+						Date.from(
+								Instant.now()
+										.plus(EXCHANGE_TOKEN_VALIDATION_SECOND, ChronoUnit.MILLIS)))
 				.compact();
 	}
 
@@ -42,23 +49,42 @@ public class JwtProvider {
 		return new AuthorizationToken(generateAccessToken(email), generateRefreshToken(email));
 	}
 
-	private String generateAccessToken(String email) throws NoSuchPaddingException, IllegalBlockSizeException,
-			NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+	private String generateAccessToken(String email)
+			throws NoSuchPaddingException,
+					IllegalBlockSizeException,
+					NoSuchAlgorithmException,
+					BadPaddingException,
+					InvalidKeyException {
 		return buildToken(email)
-				.setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.MILLIS)))
+				.setExpiration(
+						Date.from(
+								Instant.now()
+										.plus(ACCESS_TOKEN_VALIDATION_SECOND, ChronoUnit.MILLIS)))
 				.compact();
 	}
 
-	private String generateRefreshToken(String email) throws NoSuchPaddingException, IllegalBlockSizeException,
-			NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+	private String generateRefreshToken(String email)
+			throws NoSuchPaddingException,
+					IllegalBlockSizeException,
+					NoSuchAlgorithmException,
+					BadPaddingException,
+					InvalidKeyException {
 		return buildToken(email)
-				.setExpiration(Date.from(Instant.now().plus(REFRESH_TOKEN_VALIDATION_SECOND, ChronoUnit.MILLIS)))
+				.setExpiration(
+						Date.from(
+								Instant.now()
+										.plus(REFRESH_TOKEN_VALIDATION_SECOND, ChronoUnit.MILLIS)))
 				.compact();
 	}
 
-	private JwtBuilder buildToken(String email) throws NoSuchPaddingException, IllegalBlockSizeException,
-			NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-		return Jwts.builder().setSubject(encryptor.encrypt(email, secret)).signWith(secretKey,
-				SignatureAlgorithm.HS512);
+	private JwtBuilder buildToken(String email)
+			throws NoSuchPaddingException,
+					IllegalBlockSizeException,
+					NoSuchAlgorithmException,
+					BadPaddingException,
+					InvalidKeyException {
+		return Jwts.builder()
+				.setSubject(encryptor.encrypt(email, secret))
+				.signWith(secretKey, SignatureAlgorithm.HS512);
 	}
 }

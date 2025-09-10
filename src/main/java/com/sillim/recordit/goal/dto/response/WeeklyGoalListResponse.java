@@ -7,6 +7,7 @@ public record WeeklyGoalListResponse(Integer week, List<WeeklyGoalResponse> week
 
 	public static WeeklyGoalListResponse of(Integer week, List<WeeklyGoal> weeklyGoals) {
 
-		return new WeeklyGoalListResponse(week, weeklyGoals.stream().map(WeeklyGoalResponse::from).toList());
+		return new WeeklyGoalListResponse(
+				week, weeklyGoals.stream().map(WeeklyGoalResponse::from).toList());
 	}
 }

@@ -5,7 +5,11 @@ import com.sillim.recordit.member.domain.OAuthProvider;
 import lombok.Builder;
 
 @Builder
-public record MemberInfo(String oauthAccount, OAuthProvider oAuthProvider, String name, String email,
+public record MemberInfo(
+		String oauthAccount,
+		OAuthProvider oAuthProvider,
+		String name,
+		String email,
 		String profileImageUrl) {
 
 	public Member toMember() {

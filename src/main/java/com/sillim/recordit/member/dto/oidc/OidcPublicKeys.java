@@ -7,7 +7,9 @@ import java.util.List;
 public record OidcPublicKeys(List<OidcPublicKey> keys) {
 
 	public OidcPublicKey getPublicKey(String kid) {
-		return this.keys.stream().filter(key -> key.kid().equals(kid)).findFirst()
+		return this.keys.stream()
+				.filter(key -> key.kid().equals(kid))
+				.findFirst()
 				.orElseThrow(() -> new InvalidIdTokenException(ErrorCode.ID_TOKEN_UNSUPPORTED));
 	}
 }

@@ -16,8 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public final class TaskDayOfMonth {
 
-	@Column
-	private final Integer dayOfMonth;
+	@Column private final Integer dayOfMonth;
 
 	private TaskDayOfMonth(final Integer dayOfMonth) {
 		this.dayOfMonth = dayOfMonth;

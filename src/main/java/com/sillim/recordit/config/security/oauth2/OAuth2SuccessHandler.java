@@ -22,12 +22,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private String redirectEndpoint;
 
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+	public void onAuthenticationSuccess(
+			HttpServletRequest request,
+			HttpServletResponse response,
 			Authentication authentication) {
 		LoginMember loginMember = (LoginMember) authentication.getPrincipal();
 		try {
-			getRedirectStrategy().sendRedirect(request, response, clientUrl + redirectEndpoint + "?token="
-					+ jwtProvider.generateExchangeToken(loginMember.getName()));
+			getRedirectStrategy()
+					.sendRedirect(
+							request,
+							response,
+							clientUrl
+									+ redirectEndpoint
+									+ "?token="
+									+ jwtProvider.generateExchangeToken(loginMember.getName()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

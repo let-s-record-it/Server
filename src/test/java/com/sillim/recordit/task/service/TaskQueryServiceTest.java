@@ -39,12 +39,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class TaskQueryServiceTest {
 
-	@InjectMocks
-	TaskQueryService taskQueryService;
-	@Mock
-	CalendarQueryService calendarQueryService;
-	@Mock
-	TaskRepository taskRepository;
+	@InjectMocks TaskQueryService taskQueryService;
+	@Mock CalendarQueryService calendarQueryService;
+	@Mock TaskRepository taskRepository;
 
 	private Member member;
 	private Calendar calendar;
@@ -64,9 +61,12 @@ class TaskQueryServiceTest {
 		Long calendarId = 2L;
 		TaskGroup taskGroup = new TaskGroup(null, null);
 		LocalDate date = LocalDate.of(2024, 6, 12);
-		List<Task> tasks = List.of(
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 6, 12), taskCategory, calendar, taskGroup),
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 6, 12), taskCategory, calendar, taskGroup));
+		List<Task> tasks =
+				List.of(
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 12), taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 6, 12), taskCategory, calendar, taskGroup));
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 		given(taskRepository.findAllByCalendarIdAndDate(calendarId, date)).willReturn(tasks);
 
@@ -86,21 +86,24 @@ class TaskQueryServiceTest {
 		given(task.getId()).willReturn(taskId);
 
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId))).willReturn(Optional.of(task));
+		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
+				.willReturn(Optional.of(task));
 
-		TaskDetailsResponse taskDto = taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId);
+		TaskDetailsResponse taskDto =
+				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId);
 
-		assertAll(() -> {
-			assertThat(taskDto.taskId()).isEqualTo(task.getId());
-			assertThat(taskDto.title()).isEqualTo(task.getTitle());
-			assertThat(taskDto.description()).isEqualTo(task.getDescription());
-			assertThat(taskDto.date()).isEqualTo(task.getDate());
-			assertThat(taskDto.colorHex()).isEqualTo(task.getColorHex());
-			assertThat(taskDto.isRepeated()).isFalse();
-			assertThat(taskDto.repetition()).isNull();
-			assertThat(taskDto.relatedMonthlyGoal()).isNull();
-			assertThat(taskDto.relatedWeeklyGoal()).isNull();
-		});
+		assertAll(
+				() -> {
+					assertThat(taskDto.taskId()).isEqualTo(task.getId());
+					assertThat(taskDto.title()).isEqualTo(task.getTitle());
+					assertThat(taskDto.description()).isEqualTo(task.getDescription());
+					assertThat(taskDto.date()).isEqualTo(task.getDate());
+					assertThat(taskDto.colorHex()).isEqualTo(task.getColorHex());
+					assertThat(taskDto.isRepeated()).isFalse();
+					assertThat(taskDto.repetition()).isNull();
+					assertThat(taskDto.relatedMonthlyGoal()).isNull();
+					assertThat(taskDto.relatedWeeklyGoal()).isNull();
+				});
 	}
 
 	@Test
@@ -115,28 +118,35 @@ class TaskQueryServiceTest {
 		given(task.getId()).willReturn(taskId);
 
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId))).willReturn(Optional.of(task));
+		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
+				.willReturn(Optional.of(task));
 
-		TaskDetailsResponse taskDto = taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId);
+		TaskDetailsResponse taskDto =
+				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId);
 
-		assertAll(() -> {
-			assertThat(taskDto.taskId()).isEqualTo(task.getId());
-			assertThat(taskDto.title()).isEqualTo(task.getTitle());
-			assertThat(taskDto.description()).isEqualTo(task.getDescription());
-			assertThat(taskDto.date()).isEqualTo(task.getDate());
-			assertThat(taskDto.colorHex()).isEqualTo(task.getColorHex());
-			assertThat(taskDto.isRepeated()).isTrue();
-			assertThat(taskDto.repetition()).isNotNull();
-			assertThat(taskDto.relatedMonthlyGoal()).isNull();
-			assertThat(taskDto.relatedWeeklyGoal()).isNull();
-			assertThat(taskGroup.getRepetitionPattern()).isNotEmpty();
-			TaskRepetitionPattern repetitionPattern = taskGroup.getRepetitionPattern().get();
-			assertThat(taskDto.repetition().repetitionType()).isEqualTo(repetitionPattern.getRepetitionType());
-			assertThat(taskDto.repetition().repetitionPeriod()).isEqualTo(repetitionPattern.getRepetitionPeriod());
-			assertThat(taskDto.repetition().repetitionStartDate())
-					.isEqualTo(repetitionPattern.getRepetitionStartDate());
-			assertThat(taskDto.repetition().repetitionEndDate()).isEqualTo(repetitionPattern.getRepetitionEndDate());
-		});
+		assertAll(
+				() -> {
+					assertThat(taskDto.taskId()).isEqualTo(task.getId());
+					assertThat(taskDto.title()).isEqualTo(task.getTitle());
+					assertThat(taskDto.description()).isEqualTo(task.getDescription());
+					assertThat(taskDto.date()).isEqualTo(task.getDate());
+					assertThat(taskDto.colorHex()).isEqualTo(task.getColorHex());
+					assertThat(taskDto.isRepeated()).isTrue();
+					assertThat(taskDto.repetition()).isNotNull();
+					assertThat(taskDto.relatedMonthlyGoal()).isNull();
+					assertThat(taskDto.relatedWeeklyGoal()).isNull();
+					assertThat(taskGroup.getRepetitionPattern()).isNotEmpty();
+					TaskRepetitionPattern repetitionPattern =
+							taskGroup.getRepetitionPattern().get();
+					assertThat(taskDto.repetition().repetitionType())
+							.isEqualTo(repetitionPattern.getRepetitionType());
+					assertThat(taskDto.repetition().repetitionPeriod())
+							.isEqualTo(repetitionPattern.getRepetitionPeriod());
+					assertThat(taskDto.repetition().repetitionStartDate())
+							.isEqualTo(repetitionPattern.getRepetitionStartDate());
+					assertThat(taskDto.repetition().repetitionEndDate())
+							.isEqualTo(repetitionPattern.getRepetitionEndDate());
+				});
 	}
 
 	@Test
@@ -151,23 +161,27 @@ class TaskQueryServiceTest {
 		given(task.getId()).willReturn(taskId);
 
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId))).willReturn(Optional.of(task));
+		given(taskRepository.findByIdAndCalendarId(eq(taskId), eq(calendarId)))
+				.willReturn(Optional.of(task));
 
-		TaskDetailsResponse taskDto = taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId);
+		TaskDetailsResponse taskDto =
+				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId);
 
-		assertAll(() -> {
-			assertThat(taskDto.taskId()).isEqualTo(task.getId());
-			assertThat(taskDto.title()).isEqualTo(task.getTitle());
-			assertThat(taskDto.description()).isEqualTo(task.getDescription());
-			assertThat(taskDto.date()).isEqualTo(task.getDate());
-			assertThat(taskDto.colorHex()).isEqualTo(task.getColorHex());
-			assertThat(taskDto.isRepeated()).isFalse();
-			assertThat(taskDto.repetition()).isNull();
-			assertThat(taskDto.relatedMonthlyGoal()).isNotNull();
-			assertThat(taskDto.relatedMonthlyGoal().id()).isEqualTo(monthlyGoal.getId());
-			assertThat(taskDto.relatedMonthlyGoal().title()).isEqualTo(monthlyGoal.getTitle());
-			assertThat(taskDto.relatedWeeklyGoal()).isNull();
-		});
+		assertAll(
+				() -> {
+					assertThat(taskDto.taskId()).isEqualTo(task.getId());
+					assertThat(taskDto.title()).isEqualTo(task.getTitle());
+					assertThat(taskDto.description()).isEqualTo(task.getDescription());
+					assertThat(taskDto.date()).isEqualTo(task.getDate());
+					assertThat(taskDto.colorHex()).isEqualTo(task.getColorHex());
+					assertThat(taskDto.isRepeated()).isFalse();
+					assertThat(taskDto.repetition()).isNull();
+					assertThat(taskDto.relatedMonthlyGoal()).isNotNull();
+					assertThat(taskDto.relatedMonthlyGoal().id()).isEqualTo(monthlyGoal.getId());
+					assertThat(taskDto.relatedMonthlyGoal().title())
+							.isEqualTo(monthlyGoal.getTitle());
+					assertThat(taskDto.relatedWeeklyGoal()).isNull();
+				});
 	}
 
 	@Test
@@ -182,6 +196,7 @@ class TaskQueryServiceTest {
 				.willThrow(new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 
 		assertThatCode(() -> taskQueryService.searchByIdAndCalendarId(taskId, calendarId, memberId))
-				.isInstanceOf(RecordNotFoundException.class).hasMessage(ErrorCode.TASK_NOT_FOUND.getDescription());
+				.isInstanceOf(RecordNotFoundException.class)
+				.hasMessage(ErrorCode.TASK_NOT_FOUND.getDescription());
 	}
 }

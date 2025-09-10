@@ -26,10 +26,13 @@ public class MockAuthenticationFilter implements Filter {
 			throws IOException, ServletException {
 		Member member = MemberFixture.DEFAULT.getMember();
 
-		AuthorizedUser authorizedUser = new AuthorizedUser(member, new HashMap<>(), member.getAuthorities());
+		AuthorizedUser authorizedUser =
+				new AuthorizedUser(member, new HashMap<>(), member.getAuthorities());
 
-		SecurityContextHolder.getContext().setAuthentication(
-				new UsernamePasswordAuthenticationToken(authorizedUser, "password", authorizedUser.getAuthorities()));
+		SecurityContextHolder.getContext()
+				.setAuthentication(
+						new UsernamePasswordAuthenticationToken(
+								authorizedUser, "password", authorizedUser.getAuthorities()));
 
 		chain.doFilter(request, response);
 	}

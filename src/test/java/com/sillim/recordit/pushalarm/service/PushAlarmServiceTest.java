@@ -28,12 +28,9 @@ import org.quartz.impl.matchers.GroupMatcher;
 @ExtendWith(MockitoExtension.class)
 class PushAlarmServiceTest {
 
-	@Mock
-	MemberDeviceService memberDeviceService;
-	@Mock
-	Scheduler scheduler;
-	@InjectMocks
-	PushAlarmService pushAlarmService;
+	@Mock MemberDeviceService memberDeviceService;
+	@Mock Scheduler scheduler;
+	@InjectMocks PushAlarmService pushAlarmService;
 
 	@Test
 	@DisplayName("일정 푸시 알람 Job을 등록할 수 있다.")
@@ -44,17 +41,23 @@ class PushAlarmServiceTest {
 		String jobGroupName = memberId + "/" + scheduleGroupId + "/" + scheduleId;
 		String title = "title";
 		String body = "body";
-		Member member = Member.createNoJobMember("12345", OAuthProvider.KAKAO, "name", "test@mail.com",
-				"https://image.url");
+		Member member =
+				Member.createNoJobMember(
+						"12345", OAuthProvider.KAKAO, "name", "test@mail.com", "https://image.url");
 		List<LocalDateTime> alarmTimes = List.of(LocalDateTime.of(2024, 1, 1, 0, 0));
-		given(memberDeviceService.searchFcmTokensByMemberId(eq(memberId))).willReturn(List.of("token"));
+		given(memberDeviceService.searchFcmTokensByMemberId(eq(memberId)))
+				.willReturn(List.of("token"));
 
-		pushAlarmService.reservePushAlarmJobs(memberId, jobGroupName, title, body, Map.of("test", "test"), alarmTimes);
+		pushAlarmService.reservePushAlarmJobs(
+				memberId, jobGroupName, title, body, Map.of("test", "test"), alarmTimes);
 
-		assertAll(() -> {
-			then(scheduler).should(times(1)).scheduleJob(any(JobDetail.class), any(Trigger.class));
-			then(scheduler).should(times(1)).start();
-		});
+		assertAll(
+				() -> {
+					then(scheduler)
+							.should(times(1))
+							.scheduleJob(any(JobDetail.class), any(Trigger.class));
+					then(scheduler).should(times(1)).start();
+				});
 	}
 
 	@Test
@@ -65,18 +68,24 @@ class PushAlarmServiceTest {
 		long scheduleId = 1L;
 		String jobGroupName = memberId + "/" + scheduleGroupId + "/" + scheduleId;
 		JobKey jobKey = new JobKey("1/1/1");
-		SimpleTrigger trigger = TriggerBuilder.newTrigger().withIdentity("test", "1/1/1").startNow()
-				.withSchedule(SimpleScheduleBuilder.simpleSchedule()).build();
+		SimpleTrigger trigger =
+				TriggerBuilder.newTrigger()
+						.withIdentity("test", "1/1/1")
+						.startNow()
+						.withSchedule(SimpleScheduleBuilder.simpleSchedule())
+						.build();
 
 		Set<JobKey> jobKeys = Set.of(jobKey);
 		given(scheduler.getJobKeys(any(GroupMatcher.class))).willReturn(jobKeys);
-		when(scheduler.getTriggersOfJob(eq(jobKey))).thenAnswer(unused -> Collections.singletonList(trigger));
+		when(scheduler.getTriggersOfJob(eq(jobKey)))
+				.thenAnswer(unused -> Collections.singletonList(trigger));
 
 		pushAlarmService.deletePushAlarmJobs(jobGroupName);
 
-		assertAll(() -> {
-			then(scheduler).should(times(1)).unscheduleJob(any(TriggerKey.class));
-			then(scheduler).should(times(1)).deleteJob(any(JobKey.class));
-		});
+		assertAll(
+				() -> {
+					then(scheduler).should(times(1)).unscheduleJob(any(TriggerKey.class));
+					then(scheduler).should(times(1)).deleteJob(any(JobKey.class));
+				});
 	}
 }

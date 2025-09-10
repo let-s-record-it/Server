@@ -24,7 +24,8 @@ public class AuthenticationExceptionHandler {
 
 	private final ObjectMapper objectMapper;
 
-	public void handle(HttpServletResponse response, ApplicationException exception) throws IOException {
+	public void handle(HttpServletResponse response, ApplicationException exception)
+			throws IOException {
 		if (response.isCommitted()) {
 			return;
 		}
@@ -32,7 +33,8 @@ public class AuthenticationExceptionHandler {
 		writeUnauthorizedResponse(response, body);
 	}
 
-	public void handle(HttpServletResponse response, AuthenticationException exception) throws IOException {
+	public void handle(HttpServletResponse response, AuthenticationException exception)
+			throws IOException {
 		if (response.isCommitted()) {
 			return;
 		}
@@ -40,15 +42,18 @@ public class AuthenticationExceptionHandler {
 		writeUnauthorizedResponse(response, body);
 	}
 
-	private void writeUnauthorizedResponse(HttpServletResponse response, ErrorResponse body) throws IOException {
+	private void writeUnauthorizedResponse(HttpServletResponse response, ErrorResponse body)
+			throws IOException {
 		log.info("Authentication Exception: {} {}", body.errorCode(), body.message());
 
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-		response.getWriter().write(
-				objectMapper.writeValueAsString(ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(body)));
+		response.getWriter()
+				.write(
+						objectMapper.writeValueAsString(
+								ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(body)));
 		response.getWriter().flush();
 	}
 

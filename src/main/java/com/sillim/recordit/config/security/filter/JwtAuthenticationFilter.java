@@ -35,33 +35,51 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final MemberQueryService memberQueryService;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(
+			HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		getTokenFromHeader(request).ifPresent(token -> {
-			try {
-				authenticate(token);
-			} catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
-					| InvalidKeyException e) {
-				throw new ApplicationException(ErrorCode.UNHANDLED_EXCEPTION, e.getMessage());
-			}
-		});
+		getTokenFromHeader(request)
+				.ifPresent(
+						token -> {
+							try {
+								authenticate(token);
+							} catch (NoSuchAlgorithmException
+									| NoSuchPaddingException
+									| IllegalBlockSizeException
+									| BadPaddingException
+									| InvalidKeyException e) {
+								throw new ApplicationException(
+										ErrorCode.UNHANDLED_EXCEPTION, e.getMessage());
+							}
+						});
 
 		doFilter(request, response, filterChain);
 	}
 
-	private void authenticate(String token) throws NoSuchPaddingException, IllegalBlockSizeException,
-			NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+	private void authenticate(String token)
+			throws NoSuchPaddingException,
+					IllegalBlockSizeException,
+					NoSuchAlgorithmException,
+					BadPaddingException,
+					InvalidKeyException {
 		if (isBearerType(token)) {
 			AuthorizedUser authorizedUser = getAuthorizedUser(token);
-			SecurityContextHolder.getContext().setAuthentication(
-					new UsernamePasswordAuthenticationToken(authorizedUser, "", authorizedUser.getAuthorities()));
+			SecurityContextHolder.getContext()
+					.setAuthentication(
+							new UsernamePasswordAuthenticationToken(
+									authorizedUser, "", authorizedUser.getAuthorities()));
 		}
 	}
 
-	private AuthorizedUser getAuthorizedUser(String token) throws NoSuchPaddingException, IllegalBlockSizeException,
-			NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+	private AuthorizedUser getAuthorizedUser(String token)
+			throws NoSuchPaddingException,
+					IllegalBlockSizeException,
+					NoSuchAlgorithmException,
+					BadPaddingException,
+					InvalidKeyException {
 		return authorizedUserMapper.toAuthorizedUser(
-				memberQueryService.findByEmail(jwtValidator.getSubIfValid(token.substring(BEARER.length()))));
+				memberQueryService.findByEmail(
+						jwtValidator.getSubIfValid(token.substring(BEARER.length()))));
 	}
 
 	private Optional<String> getTokenFromHeader(HttpServletRequest request) {

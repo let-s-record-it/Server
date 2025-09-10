@@ -19,11 +19,9 @@ public class CalendarCategory extends BaseTime {
 	@Column(name = "calendar_category_id", nullable = false)
 	private Long id;
 
-	@Embedded
-	private CalendarColorHex colorHex;
+	@Embedded private CalendarColorHex colorHex;
 
-	@Embedded
-	private CalendarCategoryName name;
+	@Embedded private CalendarCategoryName name;
 
 	@Column(nullable = false)
 	private boolean isDefault;

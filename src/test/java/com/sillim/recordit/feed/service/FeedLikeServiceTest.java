@@ -25,14 +25,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FeedLikeServiceTest {
 
-	@Mock
-	FeedLikeRepository feedLikeRepository;
-	@Mock
-	FeedRepository feedRepository;
-	@Mock
-	MemberQueryService memberQueryService;
-	@InjectMocks
-	FeedLikeService feedLikeService;
+	@Mock FeedLikeRepository feedLikeRepository;
+	@Mock FeedRepository feedRepository;
+	@Mock MemberQueryService memberQueryService;
+	@InjectMocks FeedLikeService feedLikeService;
 
 	@Test
 	@DisplayName("피드에 좋아요를 할 수 있다.")
@@ -62,6 +58,8 @@ class FeedLikeServiceTest {
 		feedLikeService.feedUnlike(feedId, memberId);
 
 		then(feed).should(times(1)).unlike();
-		then(feedLikeRepository).should(times(1)).deleteByFeedIdAndMemberId(eq(feedId), eq(memberId));
+		then(feedLikeRepository)
+				.should(times(1))
+				.deleteByFeedIdAndMemberId(eq(feedId), eq(memberId));
 	}
 }

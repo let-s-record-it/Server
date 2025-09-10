@@ -21,7 +21,8 @@ public class TaskQueryService {
 	private final CalendarQueryService calendarQueryService;
 	private final TaskRepository taskRepository;
 
-	public List<Task> searchAllByDate(final Long calendarId, final LocalDate date, final Long memberId) {
+	public List<Task> searchAllByDate(
+			final Long calendarId, final LocalDate date, final Long memberId) {
 
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
@@ -29,22 +30,32 @@ public class TaskQueryService {
 		return taskRepository.findAllByCalendarIdAndDate(calendarId, date);
 	}
 
-	public List<Task> searchTasksInMonth(Long calendarId, Long memberId, Integer year, Integer month) {
+	public List<Task> searchTasksInMonth(
+			Long calendarId, Long memberId, Integer year, Integer month) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
 
 		return taskRepository.findTasksInMonth(calendarId, year, month);
 	}
 
-	public TaskDetailsResponse searchByIdAndCalendarId(final Long taskId, final Long calendarId, final Long memberId) {
+	public TaskDetailsResponse searchByIdAndCalendarId(
+			final Long taskId, final Long calendarId, final Long memberId) {
 
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(memberId);
-		Task task = taskRepository.findByIdAndCalendarId(taskId, calendarId)
-				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
+		Task task =
+				taskRepository
+						.findByIdAndCalendarId(taskId, calendarId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
 		if (task.isRepeated()) {
-			return TaskDetailsResponse.of(task, task.getTaskGroup().getRepetitionPattern()
-					.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_REPETITION_NOT_FOUND)));
+			return TaskDetailsResponse.of(
+					task,
+					task.getTaskGroup()
+							.getRepetitionPattern()
+							.orElseThrow(
+									() ->
+											new RecordNotFoundException(
+													ErrorCode.TASK_REPETITION_NOT_FOUND)));
 		}
 		return TaskDetailsResponse.from(task);
 	}

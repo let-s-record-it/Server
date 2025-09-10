@@ -11,17 +11,38 @@ import java.time.temporal.TemporalAmount;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 
-public record TaskAddRequest(@NotBlank @Length(max = 30) String title, @Length(max = 500) String description,
-		@NotNull LocalDate date, @NotNull Boolean isRepeated, @NotNull Long categoryId,
-		@Validated TaskRepetitionUpdateRequest repetition, @NotNull TaskGroupUpdateRequest taskGroup) {
+public record TaskAddRequest(
+		@NotBlank @Length(max = 30) String title,
+		@Length(max = 500) String description,
+		@NotNull LocalDate date,
+		@NotNull Boolean isRepeated,
+		@NotNull Long categoryId,
+		@Validated TaskRepetitionUpdateRequest repetition,
+		@NotNull TaskGroupUpdateRequest taskGroup) {
 
-	public Task toTask(TemporalAmount plusAmount, ScheduleCategory category, Calendar calendar, TaskGroup taskGroup) {
-		return Task.builder().title(title).description(description).date(date.plus(plusAmount)).category(category)
-				.calendar(calendar).taskGroup(taskGroup).build();
+	public Task toTask(
+			TemporalAmount plusAmount,
+			ScheduleCategory category,
+			Calendar calendar,
+			TaskGroup taskGroup) {
+		return Task.builder()
+				.title(title)
+				.description(description)
+				.date(date.plus(plusAmount))
+				.category(category)
+				.calendar(calendar)
+				.taskGroup(taskGroup)
+				.build();
 	}
 
 	public Task toTask(ScheduleCategory category, Calendar calendar, TaskGroup taskGroup) {
-		return Task.builder().title(title).description(description).date(date).category(category).calendar(calendar)
-				.taskGroup(taskGroup).build();
+		return Task.builder()
+				.title(title)
+				.description(description)
+				.date(date)
+				.category(category)
+				.calendar(calendar)
+				.taskGroup(taskGroup)
+				.build();
 	}
 }

@@ -28,48 +28,101 @@ import lombok.NoArgsConstructor;
 public class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 
 	@Builder(access = AccessLevel.PRIVATE)
-	private TaskMonthlyRepetitionPattern(final TaskRepetitionType repetitionType, final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final TaskDayOfMonth dayOfMonth,
-			final WeekNumber weekNumber, final Weekday weekday, final TaskGroup taskGroup) {
-		super(repetitionType, repetitionPeriod, repetitionStartDate, repetitionEndDate, null, dayOfMonth, weekNumber,
-				weekday, null, taskGroup);
-	}
-
-	public static TaskRepetitionPattern createMonthlyWithDate(final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final Integer dayOfMonth,
+	private TaskMonthlyRepetitionPattern(
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskDayOfMonth dayOfMonth,
+			final WeekNumber weekNumber,
+			final Weekday weekday,
 			final TaskGroup taskGroup) {
-		return TaskMonthlyRepetitionPattern.builder().repetitionType(TaskRepetitionType.MONTHLY_WITH_DATE)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).dayOfMonth(TaskDayOfMonth.createMonthly(dayOfMonth))
-				.taskGroup(taskGroup).build();
+		super(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				null,
+				dayOfMonth,
+				weekNumber,
+				weekday,
+				null,
+				taskGroup);
 	}
 
-	public static TaskRepetitionPattern createMonthlyWithWeekday(final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final WeekNumber weekNumber,
-			final Weekday weekday, final TaskGroup taskGroup) {
-		return TaskMonthlyRepetitionPattern.builder().repetitionType(TaskRepetitionType.MONTHLY_WITH_WEEKDAY)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).weekNumber(weekNumber).weekday(weekday).taskGroup(taskGroup)
+	public static TaskRepetitionPattern createMonthlyWithDate(
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final Integer dayOfMonth,
+			final TaskGroup taskGroup) {
+		return TaskMonthlyRepetitionPattern.builder()
+				.repetitionType(TaskRepetitionType.MONTHLY_WITH_DATE)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.dayOfMonth(TaskDayOfMonth.createMonthly(dayOfMonth))
+				.taskGroup(taskGroup)
 				.build();
 	}
 
-	public static TaskRepetitionPattern createMonthlyWithLastDay(final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final TaskGroup taskGroup) {
-		return TaskMonthlyRepetitionPattern.builder().repetitionType(TaskRepetitionType.MONTHLY_WITH_LAST_DAY)
-				.repetitionPeriod(repetitionPeriod).repetitionStartDate(repetitionStartDate)
-				.repetitionEndDate(repetitionEndDate).taskGroup(taskGroup).build();
+	public static TaskRepetitionPattern createMonthlyWithWeekday(
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final WeekNumber weekNumber,
+			final Weekday weekday,
+			final TaskGroup taskGroup) {
+		return TaskMonthlyRepetitionPattern.builder()
+				.repetitionType(TaskRepetitionType.MONTHLY_WITH_WEEKDAY)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.weekNumber(weekNumber)
+				.weekday(weekday)
+				.taskGroup(taskGroup)
+				.build();
+	}
+
+	public static TaskRepetitionPattern createMonthlyWithLastDay(
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskGroup taskGroup) {
+		return TaskMonthlyRepetitionPattern.builder()
+				.repetitionType(TaskRepetitionType.MONTHLY_WITH_LAST_DAY)
+				.repetitionPeriod(repetitionPeriod)
+				.repetitionStartDate(repetitionStartDate)
+				.repetitionEndDate(repetitionEndDate)
+				.taskGroup(taskGroup)
+				.build();
 	}
 
 	@Override
-	protected void validate(final TaskRepetitionType repetitionType, final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final TaskMonthOfYear monthOfYear,
-			final TaskDayOfMonth dayOfMonth, final WeekNumber weekNumber, final Weekday weekday,
+	protected void validate(
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final TaskMonthOfYear monthOfYear,
+			final TaskDayOfMonth dayOfMonth,
+			final WeekNumber weekNumber,
+			final Weekday weekday,
 			final TaskWeekdayBit weekdayBit) {
-		super.validate(repetitionType, repetitionPeriod, repetitionStartDate, repetitionEndDate, monthOfYear,
-				dayOfMonth, weekNumber, weekday, weekdayBit);
+		super.validate(
+				repetitionType,
+				repetitionPeriod,
+				repetitionStartDate,
+				repetitionEndDate,
+				monthOfYear,
+				dayOfMonth,
+				weekNumber,
+				weekday,
+				weekdayBit);
 		switch (repetitionType) {
 			case MONTHLY_WITH_DATE ->
-				validateDayOfMonthEqualsStartDate(repetitionStartDate, dayOfMonth.getDayOfMonth());
+					validateDayOfMonthEqualsStartDate(
+							repetitionStartDate, dayOfMonth.getDayOfMonth());
 			case MONTHLY_WITH_WEEKDAY -> {
 				validateWeekNumberAndWeekdayIsNotNull(weekNumber, weekday);
 				validateWeekNumberEqualsStartDate(repetitionStartDate, weekNumber);
@@ -78,13 +131,15 @@ public class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 		}
 	}
 
-	private void validateDayOfMonthEqualsStartDate(final LocalDate startDate, final Integer dayOfMonth) {
+	private void validateDayOfMonthEqualsStartDate(
+			final LocalDate startDate, final Integer dayOfMonth) {
 		if (startDate.getDayOfMonth() != dayOfMonth) {
 			throw new InvalidRepetitionException(ErrorCode.NOT_EQUAL_TASK_DAY_OF_MONTH);
 		}
 	}
 
-	private void validateWeekNumberAndWeekdayIsNotNull(final WeekNumber weekNumber, final Weekday weekday) {
+	private void validateWeekNumberAndWeekdayIsNotNull(
+			final WeekNumber weekNumber, final Weekday weekday) {
 		if (Objects.isNull(weekNumber)) {
 			throw new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_WEEK_NUMBER);
 		}
@@ -93,7 +148,8 @@ public class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 		}
 	}
 
-	private void validateWeekNumberEqualsStartDate(final LocalDate startDate, final WeekNumber weekNumber) {
+	private void validateWeekNumberEqualsStartDate(
+			final LocalDate startDate, final WeekNumber weekNumber) {
 		if (!weekNumber.contains(startDate)) {
 			throw new InvalidRepetitionException(ErrorCode.NOT_EQUAL_TASK_WEEK_NUMBER);
 		}
@@ -116,29 +172,54 @@ public class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 	}
 
 	private Stream<TemporalAmount> monthlyWithDateRepeatingStream() {
-		return Stream
-				.iterate(getRepetitionStartDate(), date -> date.isBefore(getRepetitionEndDate().plusDays(1L)),
-						date -> DateTimeUtils.correctDayOfMonth(date.plusMonths(getRepetitionPeriod()), dayOfMonth()))
+		return Stream.iterate(
+						getRepetitionStartDate(),
+						date -> date.isBefore(getRepetitionEndDate().plusDays(1L)),
+						date ->
+								DateTimeUtils.correctDayOfMonth(
+										date.plusMonths(getRepetitionPeriod()), dayOfMonth()))
 				.filter(date -> date.getDayOfMonth() == dayOfMonth())
-				.map(date -> Period.ofDays((int) ChronoUnit.DAYS.between(getRepetitionStartDate(), date)));
+				.map(
+						date ->
+								Period.ofDays(
+										(int)
+												ChronoUnit.DAYS.between(
+														getRepetitionStartDate(), date)));
 	}
 
 	private Stream<TemporalAmount> monthlyWithWeekdayRepeatingStream() {
-		return Stream
-				.iterate(getRepetitionStartDate(),
-						date -> date
-								.isBefore(getRepetitionEndDate().with(TemporalAdjusters.lastDayOfMonth()).plusDays(1L)),
+		return Stream.iterate(
+						getRepetitionStartDate(),
+						date ->
+								date.isBefore(
+										getRepetitionEndDate()
+												.with(TemporalAdjusters.lastDayOfMonth())
+												.plusDays(1L)),
 						date -> date.plusMonths(getRepetitionPeriod()))
-				.filter(this::hasWeekNumber).map(date -> Period
-						.ofDays((int) ChronoUnit.DAYS.between(getRepetitionStartDate(), findDateByWeekday(date))));
+				.filter(this::hasWeekNumber)
+				.map(
+						date ->
+								Period.ofDays(
+										(int)
+												ChronoUnit.DAYS.between(
+														getRepetitionStartDate(),
+														findDateByWeekday(date))));
 	}
 
 	private Stream<TemporalAmount> monthlyWithLastDayRepeatingStream() {
-		return Stream
-				.iterate(getRepetitionStartDate(), date -> date.isBefore(getRepetitionEndDate().plusDays(1L)),
+		return Stream.iterate(
+						getRepetitionStartDate(),
+						date -> date.isBefore(getRepetitionEndDate().plusDays(1L)),
 						date -> date.plusMonths(getRepetitionPeriod()))
-				.map(date -> Period.ofDays((int) ChronoUnit.DAYS.between(getRepetitionStartDate(),
-						date.with(TemporalAdjusters.lastDayOfMonth()))));
+				.map(
+						date ->
+								Period.ofDays(
+										(int)
+												ChronoUnit.DAYS.between(
+														getRepetitionStartDate(),
+														date.with(
+																TemporalAdjusters
+																		.lastDayOfMonth()))));
 	}
 
 	private boolean hasWeekNumber(final LocalDate date) {
@@ -162,16 +243,26 @@ public class TaskMonthlyRepetitionPattern extends TaskRepetitionPattern {
 	}
 
 	private Integer dayOfMonth() {
-		return getDayOfMonth().orElseThrow(() -> new InvalidRepetitionException(ErrorCode.NULL_TASK_DAY_OF_MONTH));
+		return getDayOfMonth()
+				.orElseThrow(
+						() -> new InvalidRepetitionException(ErrorCode.NULL_TASK_DAY_OF_MONTH));
 	}
 
 	private Integer weekday() {
-		return getWeekday().map(Weekday::getValue)
-				.orElseThrow(() -> new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_WEEKDAY));
+		return getWeekday()
+				.map(Weekday::getValue)
+				.orElseThrow(
+						() ->
+								new InvalidRepetitionException(
+										ErrorCode.NULL_TASK_REPETITION_WEEKDAY));
 	}
 
 	private Integer weekNumber() {
-		return getWeekNumber().map(WeekNumber::getValue)
-				.orElseThrow(() -> new InvalidRepetitionException(ErrorCode.NULL_TASK_REPETITION_WEEKDAY));
+		return getWeekNumber()
+				.map(WeekNumber::getValue)
+				.orElseThrow(
+						() ->
+								new InvalidRepetitionException(
+										ErrorCode.NULL_TASK_REPETITION_WEEKDAY));
 	}
 }

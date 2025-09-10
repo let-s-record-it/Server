@@ -11,28 +11,71 @@ import java.util.Objects;
 
 public class TaskRepetitionPatternFactory {
 
-	public static TaskRepetitionPattern create(final TaskRepetitionType repetitionType, final Integer repetitionPeriod,
-			final LocalDate repetitionStartDate, final LocalDate repetitionEndDate, final Integer monthOfYear,
-			final Integer dayOfMonth, final WeekNumber weekNumber, final Weekday weekday, final Integer weekdayBit,
+	public static TaskRepetitionPattern create(
+			final TaskRepetitionType repetitionType,
+			final Integer repetitionPeriod,
+			final LocalDate repetitionStartDate,
+			final LocalDate repetitionEndDate,
+			final Integer monthOfYear,
+			final Integer dayOfMonth,
+			final WeekNumber weekNumber,
+			final Weekday weekday,
+			final Integer weekdayBit,
 			final TaskGroup taskGroup) {
 		validateRepetitionType(repetitionType);
 		return switch (repetitionType) {
-			case DAILY -> TaskDailyRepetitionPattern.createDaily(repetitionPeriod, repetitionStartDate,
-					repetitionEndDate, taskGroup);
-			case WEEKLY -> TaskWeeklyRepetitionPattern.createWeekly(repetitionPeriod, repetitionStartDate,
-					repetitionEndDate, weekdayBit, taskGroup);
-			case MONTHLY_WITH_DATE -> TaskMonthlyRepetitionPattern.createMonthlyWithDate(repetitionPeriod,
-					repetitionStartDate, repetitionEndDate, dayOfMonth, taskGroup);
-			case MONTHLY_WITH_WEEKDAY -> TaskMonthlyRepetitionPattern.createMonthlyWithWeekday(repetitionPeriod,
-					repetitionStartDate, repetitionEndDate, weekNumber, weekday, taskGroup);
-			case MONTHLY_WITH_LAST_DAY -> TaskMonthlyRepetitionPattern.createMonthlyWithLastDay(repetitionPeriod,
-					repetitionStartDate, repetitionEndDate, taskGroup);
-			case YEARLY_WITH_DATE -> TaskYearlyRepetitionPattern.createYearlyWithDate(repetitionPeriod,
-					repetitionStartDate, repetitionEndDate, monthOfYear, dayOfMonth, taskGroup);
-			case YEARLY_WITH_WEEKDAY -> TaskYearlyRepetitionPattern.createYearlyWithWeekday(repetitionPeriod,
-					repetitionStartDate, repetitionEndDate, monthOfYear, weekNumber, weekday, taskGroup);
-			case YEARLY_WITH_LAST_DAY -> TaskYearlyRepetitionPattern.createYearlyWithLastDay(repetitionPeriod,
-					repetitionStartDate, repetitionEndDate, monthOfYear, taskGroup);
+			case DAILY ->
+					TaskDailyRepetitionPattern.createDaily(
+							repetitionPeriod, repetitionStartDate, repetitionEndDate, taskGroup);
+			case WEEKLY ->
+					TaskWeeklyRepetitionPattern.createWeekly(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							weekdayBit,
+							taskGroup);
+			case MONTHLY_WITH_DATE ->
+					TaskMonthlyRepetitionPattern.createMonthlyWithDate(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							dayOfMonth,
+							taskGroup);
+			case MONTHLY_WITH_WEEKDAY ->
+					TaskMonthlyRepetitionPattern.createMonthlyWithWeekday(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							weekNumber,
+							weekday,
+							taskGroup);
+			case MONTHLY_WITH_LAST_DAY ->
+					TaskMonthlyRepetitionPattern.createMonthlyWithLastDay(
+							repetitionPeriod, repetitionStartDate, repetitionEndDate, taskGroup);
+			case YEARLY_WITH_DATE ->
+					TaskYearlyRepetitionPattern.createYearlyWithDate(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							dayOfMonth,
+							taskGroup);
+			case YEARLY_WITH_WEEKDAY ->
+					TaskYearlyRepetitionPattern.createYearlyWithWeekday(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							weekNumber,
+							weekday,
+							taskGroup);
+			case YEARLY_WITH_LAST_DAY ->
+					TaskYearlyRepetitionPattern.createYearlyWithLastDay(
+							repetitionPeriod,
+							repetitionStartDate,
+							repetitionEndDate,
+							monthOfYear,
+							taskGroup);
 		};
 	}
 

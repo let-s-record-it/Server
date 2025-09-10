@@ -10,19 +10,37 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 
 @Builder
-public record RepetitionPatternResponse(RepetitionType repetitionType, Integer repetitionPeriod,
-		LocalDateTime repetitionStartDate, LocalDateTime repetitionEndDate, Integer monthOfYear, Integer dayOfMonth,
-		WeekNumber weekNumber, Weekday weekday, RepeatedWeekday repeatedWeekday) {
+public record RepetitionPatternResponse(
+		RepetitionType repetitionType,
+		Integer repetitionPeriod,
+		LocalDateTime repetitionStartDate,
+		LocalDateTime repetitionEndDate,
+		Integer monthOfYear,
+		Integer dayOfMonth,
+		WeekNumber weekNumber,
+		Weekday weekday,
+		RepeatedWeekday repeatedWeekday) {
 
 	public static RepetitionPatternResponse from(RepetitionPattern repetitionPattern) {
-		return RepetitionPatternResponse.builder().repetitionType(repetitionPattern.getRepetitionType())
+		return RepetitionPatternResponse.builder()
+				.repetitionType(repetitionPattern.getRepetitionType())
 				.repetitionPeriod(repetitionPattern.getRepetitionPeriod())
 				.repetitionStartDate(repetitionPattern.getRepetitionStartDate())
 				.repetitionEndDate(repetitionPattern.getRepetitionEndDate())
-				.monthOfYear(repetitionPattern.getMonthOfYear().map(MonthOfYear::getMonthOfYear).orElse(null))
-				.dayOfMonth(repetitionPattern.getDayOfMonth().map(DayOfMonth::getDayOfMonth).orElse(null))
+				.monthOfYear(
+						repetitionPattern
+								.getMonthOfYear()
+								.map(MonthOfYear::getMonthOfYear)
+								.orElse(null))
+				.dayOfMonth(
+						repetitionPattern
+								.getDayOfMonth()
+								.map(DayOfMonth::getDayOfMonth)
+								.orElse(null))
 				.weekNumber(repetitionPattern.getWeekNumber().orElse(null))
 				.weekday(repetitionPattern.getWeekday().orElse(null))
-				.repeatedWeekday(repetitionPattern.getWeekdayBit().map(RepeatedWeekday::from).orElse(null)).build();
+				.repeatedWeekday(
+						repetitionPattern.getWeekdayBit().map(RepeatedWeekday::from).orElse(null))
+				.build();
 	}
 }

@@ -16,16 +16,18 @@ class FeedCommentContentTest {
 	void validIfFeedCommentContentLengthIs1000OrUnder() {
 		FeedCommentContent feedCommentContent = new FeedCommentContent("123");
 
-		assertAll(() -> {
-			assertThat(feedCommentContent).isEqualTo(new FeedCommentContent("123"));
-			assertThat(feedCommentContent.getContent()).isEqualTo("123");
-		});
+		assertAll(
+				() -> {
+					assertThat(feedCommentContent).isEqualTo(new FeedCommentContent("123"));
+					assertThat(feedCommentContent.getContent()).isEqualTo("123");
+				});
 	}
 
 	@Test
 	@DisplayName("내용이 null이면 InvalidFeedCommentContentException이 발생한다.")
 	void throwInvalidFeedCommentContentExceptionIfFeedCommentContentIsNull() {
-		assertThatCode(() -> new FeedCommentContent(null)).isInstanceOf(InvalidFeedCommentContentException.class)
+		assertThatCode(() -> new FeedCommentContent(null))
+				.isInstanceOf(InvalidFeedCommentContentException.class)
 				.hasMessage(ErrorCode.NULL_FEED_COMMENT_CONTENT.getDescription());
 	}
 

@@ -33,7 +33,9 @@ public class TaskController {
 	private final TaskQueryService taskQueryService;
 
 	@PostMapping
-	public ResponseEntity<Void> addTasks(@Validated @RequestBody TaskAddRequest request, @PathVariable Long calendarId,
+	public ResponseEntity<Void> addTasks(
+			@Validated @RequestBody TaskAddRequest request,
+			@PathVariable Long calendarId,
 			@CurrentMember Member member) {
 
 		taskCommandService.addTasks(request, calendarId, member.getId());
@@ -41,39 +43,60 @@ public class TaskController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<TaskResponse>> getTaskList(@PathVariable Long calendarId, @RequestParam LocalDate date,
+	public ResponseEntity<List<TaskResponse>> getTaskList(
+			@PathVariable Long calendarId,
+			@RequestParam LocalDate date,
 			@CurrentMember Member member) {
 
-		return ResponseEntity.ok(taskQueryService.searchAllByDate(calendarId, date, member.getId()).stream()
-				.map(TaskResponse::from).toList());
+		return ResponseEntity.ok(
+				taskQueryService.searchAllByDate(calendarId, date, member.getId()).stream()
+						.map(TaskResponse::from)
+						.toList());
 	}
 
 	@GetMapping("/month")
-	public ResponseEntity<List<TaskResponse>> getTaskListInMonth(@PathVariable Long calendarId,
-			@RequestParam Integer year, @RequestParam Integer month, @CurrentMember Member member) {
-		return ResponseEntity.ok(taskQueryService.searchTasksInMonth(calendarId, member.getId(), year, month).stream()
-				.map(TaskResponse::from).toList());
+	public ResponseEntity<List<TaskResponse>> getTaskListInMonth(
+			@PathVariable Long calendarId,
+			@RequestParam Integer year,
+			@RequestParam Integer month,
+			@CurrentMember Member member) {
+		return ResponseEntity.ok(
+				taskQueryService
+						.searchTasksInMonth(calendarId, member.getId(), year, month)
+						.stream()
+						.map(TaskResponse::from)
+						.toList());
 	}
 
 	@GetMapping("/{taskId}")
-	public ResponseEntity<TaskDetailsResponse> getTaskDetails(@PathVariable Long calendarId, @PathVariable Long taskId,
+	public ResponseEntity<TaskDetailsResponse> getTaskDetails(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
 			@CurrentMember Member member) {
 
-		return ResponseEntity.ok(taskQueryService.searchByIdAndCalendarId(taskId, calendarId, member.getId()));
+		return ResponseEntity.ok(
+				taskQueryService.searchByIdAndCalendarId(taskId, calendarId, member.getId()));
 	}
 
 	@PutMapping("/{taskId}/modify-all")
-	public ResponseEntity<Void> modifyAllTasks(@Validated @RequestBody TaskUpdateRequest request,
-			@PathVariable Long calendarId, @PathVariable Long taskId, @CurrentMember Member member) {
+	public ResponseEntity<Void> modifyAllTasks(
+			@Validated @RequestBody TaskUpdateRequest request,
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
 
-		taskCommandService.resetTaskGroupAndAddNewTasks(request, calendarId, taskId, member.getId());
+		taskCommandService.resetTaskGroupAndAddNewTasks(
+				request, calendarId, taskId, member.getId());
 
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/{taskId}/modify-one")
-	public ResponseEntity<Void> modifyOneTask(@Validated @RequestBody TaskUpdateRequest request,
-			@PathVariable Long calendarId, @PathVariable Long taskId, @CurrentMember Member member) {
+	public ResponseEntity<Void> modifyOneTask(
+			@Validated @RequestBody TaskUpdateRequest request,
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
+			@CurrentMember Member member) {
 
 		taskCommandService.modifyOne(request, calendarId, taskId, member.getId());
 
@@ -81,7 +104,9 @@ public class TaskController {
 	}
 
 	@DeleteMapping("/{taskId}/remove-all")
-	public ResponseEntity<Void> removeAllTasks(@PathVariable Long calendarId, @PathVariable Long taskId,
+	public ResponseEntity<Void> removeAllTasks(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
 			@CurrentMember Member member) {
 
 		taskCommandService.removeAll(calendarId, taskId, member.getId());
@@ -90,7 +115,9 @@ public class TaskController {
 	}
 
 	@DeleteMapping("/{taskId}/remove-after-all")
-	public ResponseEntity<Void> removeAfterAllTasks(@PathVariable Long calendarId, @PathVariable Long taskId,
+	public ResponseEntity<Void> removeAfterAllTasks(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
 			@CurrentMember Member member) {
 
 		taskCommandService.removeAllAfterDate(calendarId, taskId, member.getId());
@@ -99,7 +126,9 @@ public class TaskController {
 	}
 
 	@DeleteMapping("/{taskId}/remove-one")
-	public ResponseEntity<Void> removeOneTask(@PathVariable Long calendarId, @PathVariable Long taskId,
+	public ResponseEntity<Void> removeOneTask(
+			@PathVariable Long calendarId,
+			@PathVariable Long taskId,
 			@CurrentMember Member member) {
 
 		taskCommandService.removeOne(calendarId, taskId, member.getId());

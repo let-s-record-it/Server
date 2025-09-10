@@ -26,7 +26,9 @@ public class MemberCommandService {
 	}
 
 	public void modifyMemberProfileImage(MultipartFile newImage, Long memberId) throws IOException {
-		memberQueryService.findByMemberId(memberId).modifyProfileImageUrl(imageUploadService.uploadImage(newImage));
+		memberQueryService
+				.findByMemberId(memberId)
+				.modifyProfileImageUrl(imageUploadService.uploadImage(newImage));
 	}
 
 	public void withdrawMember(Long memberId) {

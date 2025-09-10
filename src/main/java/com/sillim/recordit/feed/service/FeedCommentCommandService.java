@@ -20,14 +20,23 @@ public class FeedCommentCommandService {
 	private final FeedRepository feedRepository;
 
 	public Long addFeedComment(FeedCommentAddRequest request, Long feedId, Long memberId) {
-		Feed feed = feedRepository.findById(feedId)
-				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
-		return feedCommentRepository.save(new FeedComment(request.content(), feed, memberId)).getId();
+		Feed feed =
+				feedRepository
+						.findById(feedId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
+		return feedCommentRepository
+				.save(new FeedComment(request.content(), feed, memberId))
+				.getId();
 	}
 
 	public void removeFeedComment(Long commentId, Long memberId) {
-		FeedComment feedComment = feedCommentRepository.findByIdWithFetch(commentId)
-				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_COMMENT_NOT_FOUND));
+		FeedComment feedComment =
+				feedCommentRepository
+						.findByIdWithFetch(commentId)
+						.orElseThrow(
+								() ->
+										new RecordNotFoundException(
+												ErrorCode.FEED_COMMENT_NOT_FOUND));
 		feedComment.validateAuthenticatedUser(memberId);
 		feedComment.delete();
 	}

@@ -23,19 +23,35 @@ public class FeedLikeService {
 	private final FeedLikeRepository feedLikeRepository;
 	private final FeedRepository feedRepository;
 
-	@Retryable(retryFor = {OptimisticLockException.class, ObjectOptimisticLockingFailureException.class,
-			StaleObjectStateException.class}, maxAttempts = 15, backoff = @Backoff(delay = 30))
+	@Retryable(
+			retryFor = {
+				OptimisticLockException.class,
+				ObjectOptimisticLockingFailureException.class,
+				StaleObjectStateException.class
+			},
+			maxAttempts = 15,
+			backoff = @Backoff(delay = 30))
 	public void feedLike(Long feedId, Long memberId) {
-		Feed feed = feedRepository.findById(feedId)
-				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
+		Feed feed =
+				feedRepository
+						.findById(feedId)
+						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND));
 		feed.like();
 		feedLikeRepository.save(new FeedLike(feed, memberId));
 	}
 
-	@Retryable(retryFor = {OptimisticLockException.class, ObjectOptimisticLockingFailureException.class,
-			StaleObjectStateException.class}, maxAttempts = 15, backoff = @Backoff(delay = 30))
+	@Retryable(
+			retryFor = {
+				OptimisticLockException.class,
+				ObjectOptimisticLockingFailureException.class,
+				StaleObjectStateException.class
+			},
+			maxAttempts = 15,
+			backoff = @Backoff(delay = 30))
 	public void feedUnlike(Long feedId, Long memberId) {
-		feedRepository.findById(feedId).orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND))
+		feedRepository
+				.findById(feedId)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.FEED_NOT_FOUND))
 				.unlike();
 		feedLikeRepository.deleteByFeedIdAndMemberId(feedId, memberId);
 	}

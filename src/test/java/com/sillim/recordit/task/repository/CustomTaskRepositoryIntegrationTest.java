@@ -28,8 +28,7 @@ public class CustomTaskRepositoryIntegrationTest {
 	@Qualifier("customTaskRepositoryImpl") @Autowired
 	CustomTaskRepository taskRepository;
 
-	@Autowired
-	TestEntityManager em;
+	@Autowired TestEntityManager em;
 
 	long memberId = 1L;
 	private CalendarCategory calendarCategory;
@@ -39,7 +38,8 @@ public class CustomTaskRepositoryIntegrationTest {
 
 	@BeforeEach
 	void init() {
-		calendarCategory = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
+		calendarCategory =
+				em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
 		calendar = CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId);
 		em.persist(calendar);
 		taskGroup = new TaskGroup(null, null);
@@ -54,7 +54,8 @@ public class CustomTaskRepositoryIntegrationTest {
 		Task saved = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
 		em.persist(saved);
 
-		Optional<Task> found = taskRepository.findByIdAndCalendarId(saved.getId(), calendar.getId());
+		Optional<Task> found =
+				taskRepository.findByIdAndCalendarId(saved.getId(), calendar.getId());
 
 		assertThat(found).isNotEmpty();
 		assertThat(found.get().getId()).isEqualTo(saved.getId());
@@ -64,8 +65,10 @@ public class CustomTaskRepositoryIntegrationTest {
 	@DisplayName("해당 할 일 그룹에 속하는 모든 할 일을 삭제한다.")
 	void deleteAllByTaskGroupId() {
 
-		List<Task> saved = List.of(TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup),
-				TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
+		List<Task> saved =
+				List.of(
+						TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup));
 		saved.forEach(em::persist);
 
 		taskRepository.deleteAllByTaskGroupId(taskGroup.getId());
@@ -78,13 +81,18 @@ public class CustomTaskRepositoryIntegrationTest {
 	@DisplayName("해당 할 일 그룹에 속하는 모든 할 일 중 특정 날짜 이후의 할일을 삭제한다.")
 	void deleteAllByTaskGroupIdAndDateAfterOrEqual() {
 
-		List<Task> saved = List.of(
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 8, 12), taskCategory, calendar, taskGroup),
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 8, 13), taskCategory, calendar, taskGroup),
-				TaskFixture.DEFAULT.getWithDate(LocalDate.of(2024, 8, 14), taskCategory, calendar, taskGroup));
+		List<Task> saved =
+				List.of(
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 8, 12), taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 8, 13), taskCategory, calendar, taskGroup),
+						TaskFixture.DEFAULT.getWithDate(
+								LocalDate.of(2024, 8, 14), taskCategory, calendar, taskGroup));
 		saved.forEach(em::persist);
 
-		taskRepository.deleteAllByTaskGroupIdAndDateAfterOrEqual(taskGroup.getId(), LocalDate.of(2024, 8, 13));
+		taskRepository.deleteAllByTaskGroupIdAndDateAfterOrEqual(
+				taskGroup.getId(), LocalDate.of(2024, 8, 13));
 
 		assertThat(em.find(Task.class, saved.get(0).getId())).isNotNull();
 		assertThat(em.find(Task.class, saved.get(1).getId())).isNull();

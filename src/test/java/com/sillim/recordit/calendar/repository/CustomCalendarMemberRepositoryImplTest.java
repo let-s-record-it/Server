@@ -26,8 +26,7 @@ class CustomCalendarMemberRepositoryImplTest {
 	@Qualifier("customCalendarMemberRepositoryImpl") @Autowired
 	CustomCalendarMemberRepositoryImpl customCalendarMemberRepository;
 
-	@Autowired
-	TestEntityManager em;
+	@Autowired TestEntityManager em;
 
 	Calendar calendar;
 	CalendarCategory category;
@@ -44,14 +43,16 @@ class CustomCalendarMemberRepositoryImplTest {
 	void findCalendarMember() {
 		em.persist(new CalendarMember(calendar, memberId));
 
-		Optional<CalendarMember> foundCalendarMember = customCalendarMemberRepository
-				.findCalendarMember(calendar.getId(), memberId);
+		Optional<CalendarMember> foundCalendarMember =
+				customCalendarMemberRepository.findCalendarMember(calendar.getId(), memberId);
 
-		assertAll(() -> {
-			assertThat(foundCalendarMember).isNotEmpty();
-			assertThat(foundCalendarMember.get().getCalendar().getId()).isEqualTo(calendar.getId());
-			assertThat(foundCalendarMember.get().getMemberId()).isEqualTo(memberId);
-		});
+		assertAll(
+				() -> {
+					assertThat(foundCalendarMember).isNotEmpty();
+					assertThat(foundCalendarMember.get().getCalendar().getId())
+							.isEqualTo(calendar.getId());
+					assertThat(foundCalendarMember.get().getMemberId()).isEqualTo(memberId);
+				});
 	}
 
 	@Test
@@ -61,7 +62,8 @@ class CustomCalendarMemberRepositoryImplTest {
 		em.persist(new CalendarMember(calendar, memberId));
 		em.persist(new CalendarMember(calendar, member2Id));
 
-		List<CalendarMember> calendarMembers = customCalendarMemberRepository.findCalendarMembers(calendar.getId());
+		List<CalendarMember> calendarMembers =
+				customCalendarMemberRepository.findCalendarMembers(calendar.getId());
 
 		assertThat(calendarMembers).hasSize(2);
 	}
@@ -69,7 +71,8 @@ class CustomCalendarMemberRepositoryImplTest {
 	@Test
 	@DisplayName("특정 멤버의 캘린더들을 조회한다.")
 	void findCalendarsByMemberId() {
-		CalendarCategory category = em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
+		CalendarCategory category =
+				em.persist(CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId));
 		Calendar calendar2 = em.persist(CalendarFixture.DEFAULT.getCalendar(category, memberId));
 		em.persist(new CalendarMember(calendar, memberId));
 		em.persist(new CalendarMember(calendar2, memberId));

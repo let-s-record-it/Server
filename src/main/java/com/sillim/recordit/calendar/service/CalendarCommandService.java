@@ -26,8 +26,8 @@ public class CalendarCommandService {
 	private final ScheduleCategoryCommandService scheduleCategoryCommandService;
 
 	public Calendar addCalendar(CalendarAddRequest request, Long memberId) {
-		CalendarCategory calendarCategory = calendarCategoryQueryService
-				.searchCalendarCategory(request.calendarCategoryId());
+		CalendarCategory calendarCategory =
+				calendarCategoryQueryService.searchCalendarCategory(request.calendarCategoryId());
 		Calendar calendar = calendarRepository.save(request.toCalendar(calendarCategory, memberId));
 		calendarMemberService.addCalendarMember(calendar.getId(), memberId);
 		scheduleCategoryCommandService.addInitialCategories(calendar.getId(), memberId);
@@ -40,7 +40,8 @@ public class CalendarCommandService {
 			throw new InvalidCalendarException(ErrorCode.INVALID_CALENDAR_GET_REQUEST);
 		}
 
-		calendar.modify(request.title(),
+		calendar.modify(
+				request.title(),
 				calendarCategoryQueryService.searchCalendarCategory(request.calendarCategoryId()));
 	}
 
@@ -56,7 +57,8 @@ public class CalendarCommandService {
 	}
 
 	public void replaceCalendarCategoriesWithDefault(Long categoryId, Long memberId) {
-		CalendarCategory defaultCategory = calendarCategoryQueryService.searchDefaultCategory(memberId);
+		CalendarCategory defaultCategory =
+				calendarCategoryQueryService.searchDefaultCategory(memberId);
 		calendarRepository.updateCategorySetDefault(defaultCategory.getId(), categoryId);
 	}
 }

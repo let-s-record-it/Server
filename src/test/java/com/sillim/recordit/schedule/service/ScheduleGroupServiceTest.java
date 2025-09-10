@@ -16,16 +16,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ScheduleGroupServiceTest {
 
-	@Mock
-	ScheduleGroupRepository scheduleGroupRepository;
-	@InjectMocks
-	ScheduleGroupService scheduleGroupService;
+	@Mock ScheduleGroupRepository scheduleGroupRepository;
+	@InjectMocks ScheduleGroupService scheduleGroupService;
 
 	@Test
 	@DisplayName("스케줄 그룹을 추가할 수 있다.")
 	void newScheduleGroup() {
 		ScheduleGroup expectScheduleGroup = new ScheduleGroup(false);
-		given(scheduleGroupRepository.save(any(ScheduleGroup.class))).willReturn(expectScheduleGroup);
+		given(scheduleGroupRepository.save(any(ScheduleGroup.class)))
+				.willReturn(expectScheduleGroup);
 
 		ScheduleGroup scheduleGroup = scheduleGroupService.newScheduleGroup(false);
 

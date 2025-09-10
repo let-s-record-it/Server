@@ -31,23 +31,35 @@ public class PushAlarmService {
 	 *            SCHEDULE/memberId/scheduleGroupId
 	 * @author 서원호
 	 */
-	public void reservePushAlarmJobs(Long memberId, String jobGroupName, String title, String body,
-			Map<String, Object> payload, List<LocalDateTime> dateTimes) throws SchedulerException {
+	public void reservePushAlarmJobs(
+			Long memberId,
+			String jobGroupName,
+			String title,
+			String body,
+			Map<String, Object> payload,
+			List<LocalDateTime> dateTimes)
+			throws SchedulerException {
 		List<String> fcmTokens = memberDeviceService.searchFcmTokensByMemberId(memberId);
 
 		for (LocalDateTime alarm : dateTimes) {
-			JobDetail job = JobBuilder.newJob(ScheduleAlarmJob.class).withIdentity(alarm.toString(), jobGroupName)
-					.build();
+			JobDetail job =
+					JobBuilder.newJob(ScheduleAlarmJob.class)
+							.withIdentity(alarm.toString(), jobGroupName)
+							.build();
 			job.getJobDataMap().put("title", title);
 			job.getJobDataMap().put("body", body);
 			job.getJobDataMap().put("fcmTokens", fcmTokens);
-			payload.forEach((key, value) -> {
-				log.info("{} {}", key, value);
-				job.getJobDataMap().put(key, value);
-			});
+			payload.forEach(
+					(key, value) -> {
+						log.info("{} {}", key, value);
+						job.getJobDataMap().put(key, value);
+					});
 			Date date = Date.from(alarm.atZone(ZoneId.systemDefault()).toInstant());
-			Trigger trigger = TriggerBuilder.newTrigger().withIdentity(alarm.toString(), memberId.toString())
-					.startAt(date).build();
+			Trigger trigger =
+					TriggerBuilder.newTrigger()
+							.withIdentity(alarm.toString(), memberId.toString())
+							.startAt(date)
+							.build();
 
 			scheduler.scheduleJob(job, trigger);
 			scheduler.start();

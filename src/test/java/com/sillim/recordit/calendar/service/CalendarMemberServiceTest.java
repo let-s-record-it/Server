@@ -31,14 +31,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CalendarMemberServiceTest {
 
-	@Mock
-	CalendarMemberRepository calendarMemberRepository;
-	@Mock
-	CalendarQueryService calendarQueryService;
-	@Mock
-	MemberQueryService memberQueryService;
-	@InjectMocks
-	CalendarMemberService calendarMemberService;
+	@Mock CalendarMemberRepository calendarMemberRepository;
+	@Mock CalendarQueryService calendarQueryService;
+	@Mock MemberQueryService memberQueryService;
+	@InjectMocks CalendarMemberService calendarMemberService;
 
 	@Test
 	@DisplayName("캘린더 멤버를 조회할 수 있다.")
@@ -52,7 +48,8 @@ class CalendarMemberServiceTest {
 		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
 				.willReturn(Optional.of(expectCalendarMember));
 
-		CalendarMember calendarMember = calendarMemberService.searchCalendarMember(calendarId, memberId);
+		CalendarMember calendarMember =
+				calendarMemberService.searchCalendarMember(calendarId, memberId);
 
 		assertThat(calendarMember).isEqualTo(expectCalendarMember);
 	}
@@ -62,7 +59,8 @@ class CalendarMemberServiceTest {
 	void throwRecordNotFoundExceptionWhenSearchCalendarMemberIfNotExistsCalendarMember() {
 		long calendarId = 1L;
 		long memberId = 1L;
-		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId))).willReturn(Optional.empty());
+		given(calendarMemberRepository.findCalendarMember(eq(calendarId), eq(memberId)))
+				.willReturn(Optional.empty());
 
 		assertThatCode(() -> calendarMemberService.searchCalendarMember(calendarId, memberId))
 				.isInstanceOf(RecordNotFoundException.class)
@@ -74,7 +72,8 @@ class CalendarMemberServiceTest {
 	void throwRecordNotFoundExceptionWhenCheckExistsCalendarMemberIfNotExistsCalendarMember() {
 		long calendarId = 1L;
 		long memberId = 1L;
-		given(calendarMemberRepository.existsByCalendarIdAndMemberId(eq(calendarId), eq(memberId))).willReturn(false);
+		given(calendarMemberRepository.existsByCalendarIdAndMemberId(eq(calendarId), eq(memberId)))
+				.willReturn(false);
 
 		assertThatCode(() -> calendarMemberService.validateCalendarMember(calendarId, memberId))
 				.isInstanceOf(RecordNotFoundException.class)
@@ -93,7 +92,8 @@ class CalendarMemberServiceTest {
 		CalendarMember expectCalendarMember = mock(CalendarMember.class);
 		given(expectCalendarMember.getId()).willReturn(calendarMemberId);
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
-		given(calendarMemberRepository.save(any(CalendarMember.class))).willReturn(expectCalendarMember);
+		given(calendarMemberRepository.save(any(CalendarMember.class)))
+				.willReturn(expectCalendarMember);
 
 		Long savedCalendarMemberId = calendarMemberService.addCalendarMember(calendarId, memberId);
 
@@ -115,7 +115,10 @@ class CalendarMemberServiceTest {
 				.willReturn(Optional.of(calendarMember));
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
-		assertThatCode(() -> calendarMemberService.removeCalendarMember(calendarId, memberId, ownerId))
+		assertThatCode(
+						() ->
+								calendarMemberService.removeCalendarMember(
+										calendarId, memberId, ownerId))
 				.doesNotThrowAnyException();
 	}
 
@@ -129,7 +132,10 @@ class CalendarMemberServiceTest {
 		Calendar calendar = spy(CalendarFixture.DEFAULT.getCalendar(category, ownerId));
 		given(calendarQueryService.searchByCalendarId(eq(calendarId))).willReturn(calendar);
 
-		assertThatCode(() -> calendarMemberService.removeCalendarMember(calendarId, memberId, memberId))
+		assertThatCode(
+						() ->
+								calendarMemberService.removeCalendarMember(
+										calendarId, memberId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_CALENDAR_MEMBER_GET_REQUEST.getDescription());
 	}

@@ -21,12 +21,20 @@ import org.springframework.web.method.HandlerMethod;
 @RestControllerAdvice(basePackageClasses = TaskController.class)
 public class TaskControllerAdvice {
 
-	@ExceptionHandler({InvalidTitleException.class, InvalidDescriptionException.class, InvalidColorHexException.class,
-			InvalidMonthOfYearException.class, InvalidDayOfMonthException.class, InvalidWeekdayBitException.class,
-			InvalidRepetitionException.class,})
-	public ResponseEntity<ErrorResponse> handleBadRequest(HandlerMethod handlerMethod, ApplicationException exception) {
+	@ExceptionHandler({
+		InvalidTitleException.class,
+		InvalidDescriptionException.class,
+		InvalidColorHexException.class,
+		InvalidMonthOfYearException.class,
+		InvalidDayOfMonthException.class,
+		InvalidWeekdayBitException.class,
+		InvalidRepetitionException.class,
+	})
+	public ResponseEntity<ErrorResponse> handleBadRequest(
+			HandlerMethod handlerMethod, ApplicationException exception) {
 
-		LoggingUtils.exceptionLog(MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception);
+		LoggingUtils.exceptionLog(
+				MethodSignature.extract(handlerMethod), HttpStatus.BAD_REQUEST, exception);
 
 		return ResponseEntity.badRequest().body(ErrorResponse.from(exception.getErrorCode()));
 	}

@@ -39,21 +39,19 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(CalendarController.class)
 class CalendarControllerTest extends RestDocsTest {
 
-	@MockBean
-	CalendarCommandService calendarCommandService;
-	@MockBean
-	CalendarMemberService calendarMemberService;
-	@MockBean
-	MemberQueryService memberQueryService;
-	@MockBean
-	JoinCalendarService joinCalendarService;
+	@MockBean CalendarCommandService calendarCommandService;
+	@MockBean CalendarMemberService calendarMemberService;
+	@MockBean MemberQueryService memberQueryService;
+	@MockBean JoinCalendarService joinCalendarService;
 
 	Member member;
 	long memberId = 1L;
 
 	@BeforeEach
 	void initObjects() {
-		member = Member.createNoJobMember("1234567", OAuthProvider.KAKAO, "name", "m@mail.com", "http://image.com");
+		member =
+				Member.createNoJobMember(
+						"1234567", OAuthProvider.KAKAO, "name", "m@mail.com", "http://image.com");
 	}
 
 	@Test
@@ -67,7 +65,8 @@ class CalendarControllerTest extends RestDocsTest {
 
 		perform.andExpect(status().isOk());
 
-		perform.andDo(print()).andDo(document("calendar-list", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("calendar-list", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -76,14 +75,19 @@ class CalendarControllerTest extends RestDocsTest {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		CalendarAddRequest request = new CalendarAddRequest("calendar1", 1L);
-		given(calendarCommandService.addCalendar(any(CalendarAddRequest.class), any())).willReturn(calendar);
+		given(calendarCommandService.addCalendar(any(CalendarAddRequest.class), any()))
+				.willReturn(calendar);
 
-		ResultActions perform = mockMvc
-				.perform(post("/api/v1/calendars").contentType(MediaType.APPLICATION_JSON).content(toJson(request)));
+		ResultActions perform =
+				mockMvc.perform(
+						post("/api/v1/calendars")
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
 
 		perform.andExpect(status().isCreated());
 
-		perform.andDo(print()).andDo(document("add-calendar", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("add-calendar", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -92,12 +96,16 @@ class CalendarControllerTest extends RestDocsTest {
 		long calendarId = 1L;
 		CalendarModifyRequest request = new CalendarModifyRequest("calendar1", 1L);
 
-		ResultActions perform = mockMvc.perform(put("/api/v1/calendars/{calendarId}", calendarId)
-				.contentType(MediaType.APPLICATION_JSON).content(toJson(request)));
+		ResultActions perform =
+				mockMvc.perform(
+						put("/api/v1/calendars/{calendarId}", calendarId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
 
 		perform.andExpect(status().isNoContent());
 
-		perform.andDo(print()).andDo(document("modify-calendar", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("modify-calendar", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -106,11 +114,13 @@ class CalendarControllerTest extends RestDocsTest {
 		long calendarId = 1L;
 		willDoNothing().given(calendarCommandService).removeByCalendarId(any(), any());
 
-		ResultActions perform = mockMvc.perform(delete("/api/v1/calendars/{calendarId}", calendarId));
+		ResultActions perform =
+				mockMvc.perform(delete("/api/v1/calendars/{calendarId}", calendarId));
 
 		perform.andExpect(status().isNoContent());
 
-		perform.andDo(print()).andDo(document("calendar-delete", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("calendar-delete", getDocumentRequest(), getDocumentResponse()));
 	}
 
 	@Test
@@ -121,14 +131,22 @@ class CalendarControllerTest extends RestDocsTest {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		CalendarMember calendarMember = new CalendarMember(calendar, memberId);
-		CalendarMemberResponse calendarMemberResponse = CalendarMemberResponse.of(calendarMember, member);
-		given(calendarMemberService.searchCalendarMembers(eq(calendarId))).willReturn(List.of(calendarMemberResponse));
+		CalendarMemberResponse calendarMemberResponse =
+				CalendarMemberResponse.of(calendarMember, member);
+		given(calendarMemberService.searchCalendarMembers(eq(calendarId)))
+				.willReturn(List.of(calendarMemberResponse));
 
-		ResultActions perform = mockMvc.perform(get("/api/v1/calendars/{calendarId}/members", calendarId));
+		ResultActions perform =
+				mockMvc.perform(get("/api/v1/calendars/{calendarId}/members", calendarId));
 
 		perform.andExpect(status().isOk());
 
-		perform.andDo(print()).andDo(document("calendar-member-list", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(
+						document(
+								"calendar-member-list",
+								getDocumentRequest(),
+								getDocumentResponse()));
 	}
 
 	@Test
@@ -139,15 +157,25 @@ class CalendarControllerTest extends RestDocsTest {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		CalendarMember calendarMember = new CalendarMember(calendar, memberId);
-		given(calendarMemberService.searchCalendarMember(eq(calendarId), eq(memberId))).willReturn(calendarMember);
+		given(calendarMemberService.searchCalendarMember(eq(calendarId), eq(memberId)))
+				.willReturn(calendarMember);
 		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 
-		ResultActions perform = mockMvc
-				.perform(get("/api/v1/calendars/{calendarId}/members/{memberId}", calendarId, memberId));
+		ResultActions perform =
+				mockMvc.perform(
+						get(
+								"/api/v1/calendars/{calendarId}/members/{memberId}",
+								calendarId,
+								memberId));
 
 		perform.andExpect(status().isOk());
 
-		perform.andDo(print()).andDo(document("calendar-member-details", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(
+						document(
+								"calendar-member-details",
+								getDocumentRequest(),
+								getDocumentResponse()));
 	}
 
 	@Test
@@ -156,12 +184,21 @@ class CalendarControllerTest extends RestDocsTest {
 		long calendarId = 1L;
 		long memberId = 1L;
 
-		ResultActions perform = mockMvc
-				.perform(delete("/api/v1/calendars/{calendarId}/members/{memberId}", calendarId, memberId));
+		ResultActions perform =
+				mockMvc.perform(
+						delete(
+								"/api/v1/calendars/{calendarId}/members/{memberId}",
+								calendarId,
+								memberId));
 
 		perform.andExpect(status().isNoContent());
 
-		perform.andDo(print()).andDo(document("calendar-member-delete", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(
+						document(
+								"calendar-member-delete",
+								getDocumentRequest(),
+								getDocumentResponse()));
 	}
 
 	@Test
@@ -170,13 +207,18 @@ class CalendarControllerTest extends RestDocsTest {
 		String inviteCode = "inviteCode";
 		long calendarMemberId = 1L;
 		JoinInCalendarRequest request = new JoinInCalendarRequest(inviteCode);
-		given(joinCalendarService.joinInCalendar(eq(inviteCode), any())).willReturn(calendarMemberId);
+		given(joinCalendarService.joinInCalendar(eq(inviteCode), any()))
+				.willReturn(calendarMemberId);
 
-		ResultActions perform = mockMvc.perform(
-				post("/api/v1/calendars/join").contentType(MediaType.APPLICATION_JSON).content(toJson(request)));
+		ResultActions perform =
+				mockMvc.perform(
+						post("/api/v1/calendars/join")
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(toJson(request)));
 
 		perform.andExpect(status().isCreated());
 
-		perform.andDo(print()).andDo(document("join-in-calendar", getDocumentRequest(), getDocumentResponse()));
+		perform.andDo(print())
+				.andDo(document("join-in-calendar", getDocumentRequest(), getDocumentResponse()));
 	}
 }

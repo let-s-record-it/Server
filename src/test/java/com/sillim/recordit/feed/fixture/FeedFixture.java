@@ -4,7 +4,8 @@ import com.sillim.recordit.feed.domain.Feed;
 import java.util.List;
 
 public enum FeedFixture {
-	DEFAULT("title", "content", List.of("https://image.url")),;
+	DEFAULT("title", "content", List.of("https://image.url")),
+	;
 	private final String title;
 	private final String content;
 	private final List<String> feedImageUrls;

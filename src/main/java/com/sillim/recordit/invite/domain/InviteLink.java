@@ -32,7 +32,8 @@ public class InviteLink extends BaseTime {
 	@JoinColumn(name = "calendar_id")
 	private Calendar calendar;
 
-	public InviteLink(String inviteCode, LocalDateTime expiredTime, boolean expired, Calendar calendar) {
+	public InviteLink(
+			String inviteCode, LocalDateTime expiredTime, boolean expired, Calendar calendar) {
 		this.inviteCode = inviteCode;
 		this.expiredTime = expiredTime;
 		this.expired = expired;

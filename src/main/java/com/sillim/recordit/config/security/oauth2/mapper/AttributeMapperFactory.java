@@ -8,9 +8,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class AttributeMapperFactory {
 
-	private final Map<OAuthProvider, AttributeMapper> mapperMap = new EnumMap<>(OAuthProvider.class);
+	private final Map<OAuthProvider, AttributeMapper> mapperMap =
+			new EnumMap<>(OAuthProvider.class);
 
-	public AttributeMapperFactory(KakaoAttributeMapper kakaoAttributeMapper, NaverAttributeMapper naverAttributeMapper,
+	public AttributeMapperFactory(
+			KakaoAttributeMapper kakaoAttributeMapper,
+			NaverAttributeMapper naverAttributeMapper,
 			GoogleAttributeMapper googleAttributeMapper) {
 		mapperMap.put(OAuthProvider.KAKAO, kakaoAttributeMapper);
 		mapperMap.put(OAuthProvider.NAVER, naverAttributeMapper);

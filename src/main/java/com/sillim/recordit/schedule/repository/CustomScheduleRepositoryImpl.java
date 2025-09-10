@@ -12,7 +12,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport implements CustomScheduleRepository {
+public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport
+		implements CustomScheduleRepository {
 
 	public CustomScheduleRepositoryImpl() {
 		super(Schedule.class);
@@ -20,57 +21,95 @@ public class CustomScheduleRepositoryImpl extends QuerydslRepositorySupport impl
 
 	@Override
 	public Optional<Schedule> findByScheduleId(Long scheduleId) {
-		return Optional.ofNullable(selectFrom(schedule).leftJoin(schedule.calendar).fetchJoin()
-				// .leftJoin(schedule.calendar.member)
-				// .fetchJoin()
-				.leftJoin(schedule.scheduleGroup).fetchJoin()
-				.where(schedule.id.eq(scheduleId).and(schedule.deleted.isFalse())).fetchOne());
+		return Optional.ofNullable(
+				selectFrom(schedule)
+						.leftJoin(schedule.calendar)
+						.fetchJoin()
+						// .leftJoin(schedule.calendar.member)
+						// .fetchJoin()
+						.leftJoin(schedule.scheduleGroup)
+						.fetchJoin()
+						.where(schedule.id.eq(scheduleId).and(schedule.deleted.isFalse()))
+						.fetchOne());
 	}
 
 	@Override
 	public List<Schedule> findScheduleInMonth(Long calendarId, Integer year, Integer month) {
-		return selectFrom(schedule).where(schedule.calendar.id.eq(calendarId).and(schedule.deleted.isFalse()))
+		return selectFrom(schedule)
+				.where(schedule.calendar.id.eq(calendarId).and(schedule.deleted.isFalse()))
 				.where(startLtYear(year).or(startEqYear(year).and(StartLoeMonth(month))))
 				.where(endGtYear(year).or(endEqYear(year).and(endGoeMonth(month))))
-				.orderBy(schedule.scheduleDuration.startDateTime.asc()).fetch();
+				.orderBy(schedule.scheduleDuration.startDateTime.asc())
+				.fetch();
 	}
 
 	@Override
 	public List<Schedule> findScheduleInDay(Long calendarId, LocalDate date) {
-		return selectFrom(schedule).leftJoin(schedule.calendar).fetchJoin().leftJoin(schedule.scheduleGroup).fetchJoin()
-				.leftJoin(schedule.scheduleGroup.repetitionPattern).fetchJoin()
+		return selectFrom(schedule)
+				.leftJoin(schedule.calendar)
+				.fetchJoin()
+				.leftJoin(schedule.scheduleGroup)
+				.fetchJoin()
+				.leftJoin(schedule.scheduleGroup.repetitionPattern)
+				.fetchJoin()
 				.where(schedule.calendar.id.eq(calendarId).and(schedule.deleted.isFalse()))
 				.where(schedule.scheduleDuration.startDateTime.loe(date.atStartOfDay()))
-				.where(schedule.scheduleDuration.endDateTime.goe(date.atStartOfDay())).fetch();
+				.where(schedule.scheduleDuration.endDateTime.goe(date.atStartOfDay()))
+				.fetch();
 	}
 
 	@Override
 	public List<Schedule> findGroupSchedules(Long scheduleGroupId) {
-		return selectFrom(schedule).where(schedule.scheduleGroup.id.eq(scheduleGroupId).and(schedule.deleted.isFalse()))
+		return selectFrom(schedule)
+				.where(
+						schedule.scheduleGroup
+								.id
+								.eq(scheduleGroupId)
+								.and(schedule.deleted.isFalse()))
 				.fetch();
 	}
 
-	public List<Schedule> findGroupSchedulesAfterCurrent(Long scheduleGroupId, LocalDateTime dateTime) {
-		return selectFrom(schedule).where(schedule.scheduleGroup.id.eq(scheduleGroupId).and(schedule.deleted.isFalse()))
-				.where(schedule.scheduleDuration.startDateTime.goe(dateTime)).fetch();
+	public List<Schedule> findGroupSchedulesAfterCurrent(
+			Long scheduleGroupId, LocalDateTime dateTime) {
+		return selectFrom(schedule)
+				.where(
+						schedule.scheduleGroup
+								.id
+								.eq(scheduleGroupId)
+								.and(schedule.deleted.isFalse()))
+				.where(schedule.scheduleDuration.startDateTime.goe(dateTime))
+				.fetch();
 	}
 
 	@Override
 	public List<Schedule> findScheduleMatchedQuery(String query, Long calendarId) {
-		return selectFrom(schedule).leftJoin(schedule.calendar).fetchJoin().leftJoin(schedule.scheduleGroup).fetchJoin()
-				.leftJoin(schedule.scheduleGroup.repetitionPattern).fetchJoin().where(schedule.deleted.isFalse())
-				.where(schedule.calendar.id.eq(calendarId)).where(schedule.title.title.contains(query)).fetch();
+		return selectFrom(schedule)
+				.leftJoin(schedule.calendar)
+				.fetchJoin()
+				.leftJoin(schedule.scheduleGroup)
+				.fetchJoin()
+				.leftJoin(schedule.scheduleGroup.repetitionPattern)
+				.fetchJoin()
+				.where(schedule.deleted.isFalse())
+				.where(schedule.calendar.id.eq(calendarId))
+				.where(schedule.title.title.contains(query))
+				.fetch();
 	}
 
 	@Override
 	public void updateCategorySetDefault(Long defaultCategoryId, Long categoryId) {
-		update(schedule).set(schedule.category.id, defaultCategoryId).where(schedule.category.id.eq(categoryId))
+		update(schedule)
+				.set(schedule.category.id, defaultCategoryId)
+				.where(schedule.category.id.eq(categoryId))
 				.execute();
 	}
 
 	@Override
 	public void deleteSchedulesInCalendar(Long calendarId) {
-		update(schedule).set(schedule.deleted, true).where(schedule.calendar.id.eq(calendarId)).execute();
+		update(schedule)
+				.set(schedule.deleted, true)
+				.where(schedule.calendar.id.eq(calendarId))
+				.execute();
 	}
 
 	private static BooleanExpression endGoeMonth(Integer month) {

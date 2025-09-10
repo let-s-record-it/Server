@@ -21,16 +21,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(MockitoExtension.class)
 class JwtProviderTest {
 
-	@Mock
-	AESEncryptor aesEncryptor;
-	@InjectMocks
-	JwtProvider jwtProvider;
+	@Mock AESEncryptor aesEncryptor;
+	@InjectMocks JwtProvider jwtProvider;
 
 	@Test
 	@DisplayName("인가 토큰을 생성한다.")
 	void generateAuthorizationToken() throws Exception {
-		String signature = "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest"
-				+ "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest" + "testtest";
+		String signature =
+				"testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest"
+						+ "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest"
+						+ "testtest";
 		String email = "test@mail.com";
 		String secret = "secret";
 		String encrypted = "encrypted";
@@ -41,9 +41,21 @@ class JwtProviderTest {
 
 		AuthorizationToken token = jwtProvider.generateAuthorizationToken(email);
 
-		assertThat(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token.accessToken()).getBody()
-				.getSubject()).isEqualTo(encrypted);
-		assertThat(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token.refreshToken()).getBody()
-				.getSubject()).isEqualTo(encrypted);
+		assertThat(
+						Jwts.parserBuilder()
+								.setSigningKey(secretKey)
+								.build()
+								.parseClaimsJws(token.accessToken())
+								.getBody()
+								.getSubject())
+				.isEqualTo(encrypted);
+		assertThat(
+						Jwts.parserBuilder()
+								.setSigningKey(secretKey)
+								.build()
+								.parseClaimsJws(token.refreshToken())
+								.getBody()
+								.getSubject())
+				.isEqualTo(encrypted);
 	}
 }

@@ -38,17 +38,25 @@ class TaskTest {
 	@DisplayName("할 일을 생성할 수 있다.")
 	void createTask() {
 		Task expected = TaskFixture.DEFAULT.get(taskCategory, calendar, taskGroup);
-		Task task = Task.builder().title(expected.getTitle()).description(expected.getDescription())
-				.date(expected.getDate()).category(taskCategory).calendar(calendar).taskGroup(taskGroup).build();
+		Task task =
+				Task.builder()
+						.title(expected.getTitle())
+						.description(expected.getDescription())
+						.date(expected.getDate())
+						.category(taskCategory)
+						.calendar(calendar)
+						.taskGroup(taskGroup)
+						.build();
 
-		assertAll(() -> {
-			assertThat(task.getTitle()).isEqualTo(expected.getTitle());
-			assertThat(task.getDescription()).isEqualTo(expected.getDescription());
-			assertThat(task.getDate()).isEqualTo(expected.getDate());
-			assertThat(task.getColorHex()).isEqualTo(expected.getColorHex());
-			assertThat(task.isAchieved()).isEqualTo(false);
-			assertThat(task.getCalendar()).isEqualTo(expected.getCalendar());
-			assertThat(task.getTaskGroup()).isEqualTo(expected.getTaskGroup());
-		});
+		assertAll(
+				() -> {
+					assertThat(task.getTitle()).isEqualTo(expected.getTitle());
+					assertThat(task.getDescription()).isEqualTo(expected.getDescription());
+					assertThat(task.getDate()).isEqualTo(expected.getDate());
+					assertThat(task.getColorHex()).isEqualTo(expected.getColorHex());
+					assertThat(task.isAchieved()).isEqualTo(false);
+					assertThat(task.getCalendar()).isEqualTo(expected.getCalendar());
+					assertThat(task.getTaskGroup()).isEqualTo(expected.getTaskGroup());
+				});
 	}
 }

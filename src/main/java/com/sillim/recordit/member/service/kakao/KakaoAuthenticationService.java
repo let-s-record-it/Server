@@ -33,11 +33,16 @@ public class KakaoAuthenticationService implements AuthenticationService {
 
 	@Override
 	public MemberInfo getMemberInfoByAccessToken(String accessToken) {
-		KakaoUserInfo kakaoUserInfo = kakaoUserInfoClient
-				.getKakaoUserInfo(TokenType.BEARER.getValueWithSpace() + accessToken);
+		KakaoUserInfo kakaoUserInfo =
+				kakaoUserInfoClient.getKakaoUserInfo(
+						TokenType.BEARER.getValueWithSpace() + accessToken);
 
-		return MemberInfo.builder().oauthAccount(kakaoUserInfo.id().toString()).oAuthProvider(OAuthProvider.KAKAO)
-				.name(kakaoUserInfo.kakaoAccount().profile().nickname()).email(kakaoUserInfo.kakaoAccount().email())
-				.profileImageUrl(kakaoUserInfo.kakaoAccount().profile().profileImageUrl()).build();
+		return MemberInfo.builder()
+				.oauthAccount(kakaoUserInfo.id().toString())
+				.oAuthProvider(OAuthProvider.KAKAO)
+				.name(kakaoUserInfo.kakaoAccount().profile().nickname())
+				.email(kakaoUserInfo.kakaoAccount().email())
+				.profileImageUrl(kakaoUserInfo.kakaoAccount().profile().profileImageUrl())
+				.build();
 	}
 }

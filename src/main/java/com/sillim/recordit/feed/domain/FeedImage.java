@@ -18,8 +18,7 @@ public class FeedImage extends BaseTime {
 	@Column(nullable = false, name = "feed_image_id")
 	private Long id;
 
-	@Embedded
-	private FeedImageUrl imageUrl;
+	@Embedded private FeedImageUrl imageUrl;
 
 	@Column(nullable = false)
 	@ColumnDefault("false")

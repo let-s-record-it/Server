@@ -28,17 +28,20 @@ public class LoginController {
 	private final LoginService loginService;
 
 	@PostMapping("/login")
-	public ResponseEntity<OAuthTokenResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
+	public ResponseEntity<OAuthTokenResponse> login(@RequestBody LoginRequest loginRequest)
+			throws Exception {
 		return ResponseEntity.ok(loginService.login(loginRequest));
 	}
 
 	@PostMapping("/web-login")
-	public ResponseEntity<OAuthTokenResponse> webLogin(@RequestBody WebLoginRequest webLoginRequest) throws Exception {
+	public ResponseEntity<OAuthTokenResponse> webLogin(@RequestBody WebLoginRequest webLoginRequest)
+			throws Exception {
 		return ResponseEntity.ok(loginService.login(webLoginRequest.exchangeToken()));
 	}
 
 	@PostMapping("/activate")
-	public ResponseEntity<Void> activateMember(@RequestBody @Valid @NotBlank @Size(max = 10) String personalId,
+	public ResponseEntity<Void> activateMember(
+			@RequestBody @Valid @NotBlank @Size(max = 10) String personalId,
 			@CurrentMember Member member) {
 		loginService.activateMember(personalId, member.getId());
 
