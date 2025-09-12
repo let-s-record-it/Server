@@ -7,7 +7,6 @@ import com.sillim.recordit.member.repository.MemberRepository;
 import com.sillim.recordit.pushalarm.dto.PushMessage;
 import com.sillim.recordit.pushalarm.service.AlarmService;
 import jakarta.persistence.OptimisticLockException;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -33,7 +32,7 @@ public class MemberFollowService {
 			},
 			maxAttempts = 15,
 			backoff = @Backoff(delay = 30))
-	public void follow(Long followerId, Long followedId) throws IOException {
+	public void follow(Long followerId, Long followedId) {
 		Member follower = memberQueryService.findByMemberId(followerId);
 		Member followed = memberQueryService.findByMemberId(followedId);
 
