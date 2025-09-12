@@ -6,7 +6,7 @@ import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
-import com.sillim.recordit.pushalarm.service.PushAlarmService;
+import com.sillim.recordit.pushalarm.service.PushAlarmReserver;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleAlarm;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
@@ -38,7 +38,7 @@ public class ScheduleCommandService {
 	private final CalendarQueryService calendarQueryService;
 	private final ScheduleGroupService scheduleGroupService;
 	private final RepetitionPatternService repetitionPatternService;
-	private final PushAlarmService pushAlarmService;
+	private final PushAlarmReserver pushAlarmReserver;
 	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
 
 	public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId)
@@ -74,7 +74,7 @@ public class ScheduleCommandService {
 		}
 
 		Schedule standSchedule = schedules.get(0);
-		pushAlarmService.reservePushAlarmJobs(
+		pushAlarmReserver.reservePushAlarmJobs(
 				standSchedule.getCalendar().getMemberId(),
 				SCHEDULE_GROUP_PREFIX
 						+ standSchedule.getCalendar().getMemberId()
@@ -107,7 +107,7 @@ public class ScheduleCommandService {
 		ScheduleGroup newScheduleGroup =
 				scheduleGroupService.newScheduleGroup(request.isRepeated());
 
-		pushAlarmService.deletePushAlarmJobs(
+		pushAlarmReserver.deletePushAlarmJobs(
 				SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
 		schedule.modify(
 				request.title(),
@@ -124,7 +124,7 @@ public class ScheduleCommandService {
 				category,
 				calendar,
 				newScheduleGroup);
-		pushAlarmService.reservePushAlarmJobs(
+		pushAlarmReserver.reservePushAlarmJobs(
 				memberId,
 				SCHEDULE_GROUP_PREFIX + memberId + "/" + newScheduleGroup.getId(),
 				schedule.getTitle(),
@@ -159,7 +159,7 @@ public class ScheduleCommandService {
 				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		ScheduleGroup scheduleGroup = schedule.getScheduleGroup();
 
-		pushAlarmService.deletePushAlarmJobs(
+		pushAlarmReserver.deletePushAlarmJobs(
 				SCHEDULE_GROUP_PREFIX + memberId + "/" + scheduleGroup.getId());
 		scheduleRepository.findGroupSchedules(scheduleGroup.getId()).forEach(Schedule::delete);
 
@@ -181,7 +181,7 @@ public class ScheduleCommandService {
 					request.toSchedule(Period.ZERO, category, calendar, scheduleGroup));
 		}
 
-		pushAlarmService.reservePushAlarmJobs(
+		pushAlarmReserver.reservePushAlarmJobs(
 				memberId,
 				SCHEDULE_GROUP_PREFIX + memberId + "/" + scheduleGroup.getId(),
 				request.title(),
@@ -210,7 +210,7 @@ public class ScheduleCommandService {
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		schedule.validateAuthenticatedMember(memberId);
-		pushAlarmService.deletePushAlarmJobs(
+		pushAlarmReserver.deletePushAlarmJobs(
 				SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
 
 		schedule.delete();
@@ -223,7 +223,7 @@ public class ScheduleCommandService {
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
 		schedule.validateAuthenticatedMember(memberId);
-		pushAlarmService.deletePushAlarmJobs(
+		pushAlarmReserver.deletePushAlarmJobs(
 				SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
 
 		scheduleRepository

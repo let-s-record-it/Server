@@ -130,7 +130,7 @@ spotless {
         importOrder()
         removeUnusedImports()
         cleanthat()
-        googleJavaFormat().aosp().reflowLongStrings().skipJavadocFormatting()
+        googleJavaFormat().aosp().skipJavadocFormatting()
         formatAnnotations()
         indentWithTabs()
         trimTrailingWhitespace()

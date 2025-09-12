@@ -24,6 +24,12 @@ public class MemberQueryService {
 				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 	}
 
+	public Member findByEmail(String email) {
+		return memberRepository
+				.findByEmail(email)
+				.orElseThrow(() -> new RecordNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+	}
+
 	public ProfileResponse searchProfileByMemberId(Long memberId, Long myId) {
 		Member me = findByMemberId(myId);
 		Member other = findByMemberId(memberId);
@@ -37,6 +43,10 @@ public class MemberQueryService {
 
 	public List<Member> searchByPersonalIdPrefix(String personalIdPrefix) {
 		return memberRepository.findByPersonalIdStartingWith(personalIdPrefix);
+	}
+
+	public List<Member> searchFollowings(String personalId) {
+		return memberRepository.findFollowings(personalId);
 	}
 
 	public boolean existsFollower(String myPersonalId, String otherPersonalId) {

@@ -1,9 +1,14 @@
-package com.sillim.recordit.schedule.service;
+package com.sillim.recordit.pushalarm.job;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.ApplicationException;
+import com.sillim.recordit.pushalarm.dto.PushMessage;
+import com.sillim.recordit.pushalarm.service.AlarmService;
+import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
@@ -18,8 +23,11 @@ public class ScheduleAlarmJob implements Job {
 		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 		String title = jobDataMap.getString("title");
 		String body = jobDataMap.getString("body");
+		Long memberId = jobDataMap.getLong("memberId");
+		AlarmService alarmService = (AlarmService) jobDataMap.get("alarmService");
 		List<String> fcmTokens = (List<String>) jobDataMap.get("fcmTokens");
-		String scheduleId = String.valueOf(jobDataMap.getLong("scheduleId"));
+		long scheduleId = jobDataMap.getLong("scheduleId");
+		String scheduleIdString = String.valueOf(scheduleId);
 
 		fcmTokens.forEach(
 				fcmToken -> {
@@ -31,7 +39,7 @@ public class ScheduleAlarmJob implements Job {
 														.setTitle(title)
 														.setBody(body)
 														.build())
-										.putData("scheduleId", scheduleId)
+										.putData("scheduleId", scheduleIdString)
 										.setToken(fcmToken)
 										.build();
 
@@ -41,5 +49,12 @@ public class ScheduleAlarmJob implements Job {
 						throw new RuntimeException(e);
 					}
 				});
+
+		try {
+			alarmService.pushAlarm(
+					-1L, memberId, PushMessage.fromSchedule(scheduleId, title, body));
+		} catch (IOException e) {
+			throw new ApplicationException(ErrorCode.UNHANDLED_EXCEPTION, e.getMessage());
+		}
 	}
 }

@@ -64,10 +64,10 @@ public class LoginService {
 		authenticationServiceMap.put(OAuthProvider.NAVER, naverAuthenticationService);
 	}
 
-	public OAuthTokenResponse login(String exchangeToken) {
-		Long memberId = jwtValidator.getMemberIdIfValid(exchangeToken);
-		AuthorizationToken token = jwtProvider.generateAuthorizationToken(memberId);
-		Optional<Member> member = memberRepository.findById(memberId);
+	public OAuthTokenResponse login(String exchangeToken) throws Exception {
+		String sub = jwtValidator.getSubIfValid(exchangeToken);
+		AuthorizationToken token = jwtProvider.generateAuthorizationToken(sub);
+		Optional<Member> member = memberRepository.findByEmail(sub);
 		boolean activated = false;
 		if (member.isPresent()) {
 			activated = member.get().getActivated();
@@ -76,7 +76,7 @@ public class LoginService {
 		return new OAuthTokenResponse(token.accessToken(), token.refreshToken(), activated);
 	}
 
-	public OAuthTokenResponse login(LoginRequest loginRequest) throws IOException {
+	public OAuthTokenResponse login(LoginRequest loginRequest) throws Exception {
 		AuthenticationService authenticationService =
 				authenticationServiceMap.get(loginRequest.provider());
 
@@ -95,7 +95,7 @@ public class LoginService {
 		memberDeviceService.addMemberDeviceIfNotExists(
 				loginRequest.deviceId(), loginRequest.model(), loginRequest.fcmToken(), member);
 
-		AuthorizationToken token = jwtProvider.generateAuthorizationToken(member.getId());
+		AuthorizationToken token = jwtProvider.generateAuthorizationToken(member.getEmail());
 		return new OAuthTokenResponse(
 				token.accessToken(), token.refreshToken(), member.getActivated());
 	}
@@ -111,7 +111,8 @@ public class LoginService {
 	}
 
 	private OAuthTokenResponse loginWithoutOidc(
-			LoginRequest loginRequest, AuthenticationService authenticationService) {
+			LoginRequest loginRequest, AuthenticationService authenticationService)
+			throws Exception {
 		MemberInfo memberInfo =
 				authenticationService.getMemberInfoByAccessToken(loginRequest.accessToken());
 		Member member =
@@ -120,7 +121,7 @@ public class LoginService {
 						.orElseGet(() -> signupService.signup(memberInfo));
 		member = validateQuickRejoinMember(member, memberInfo);
 
-		AuthorizationToken token = jwtProvider.generateAuthorizationToken(member.getId());
+		AuthorizationToken token = jwtProvider.generateAuthorizationToken(member.getEmail());
 		return new OAuthTokenResponse(
 				token.accessToken(), token.refreshToken(), member.getActivated());
 	}

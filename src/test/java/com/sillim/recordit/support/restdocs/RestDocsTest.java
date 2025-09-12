@@ -81,7 +81,8 @@ public abstract class RestDocsTest {
 	/**
 	 * Authorization Header와 다른 Header를 함께 사용하는 경우
 	 *
-	 * @param headers 추가적으로 사용할 Header
+	 * @param headers
+	 *            추가적으로 사용할 Header
 	 */
 	protected HttpHeaders withAuthorizationHeader(Map<String, List<String>> headers) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<>(headers);

@@ -21,7 +21,7 @@ import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
-import com.sillim.recordit.pushalarm.service.PushAlarmService;
+import com.sillim.recordit.pushalarm.service.PushAlarmReserver;
 import com.sillim.recordit.schedule.domain.RepetitionPattern;
 import com.sillim.recordit.schedule.domain.RepetitionType;
 import com.sillim.recordit.schedule.domain.Schedule;
@@ -49,7 +49,7 @@ class ScheduleCommandServiceTest {
 	@Mock CalendarQueryService calendarQueryService;
 	@Mock ScheduleGroupService scheduleGroupService;
 	@Mock RepetitionPatternService repetitionPatternService;
-	@Mock PushAlarmService pushAlarmService;
+	@Mock PushAlarmReserver pushAlarmReserver;
 	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
 	@InjectMocks ScheduleCommandService scheduleCommandService;
 

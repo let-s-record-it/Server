@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<profiles version="12">
+    <profile kind="CodeFormatterProfile" name="MyJavaStyle" version="12">
+        <!-- 줄 길이 제한 -->
+        <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="120"/>
+    </profile>
+</profiles>

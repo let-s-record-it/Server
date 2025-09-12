@@ -35,10 +35,6 @@ public class LoginMember implements OAuth2User {
 
 	@Override
 	public String getName() {
-		return member.getId().toString();
-	}
-
-	public Long getId() {
-		return member.getId();
+		return member.getEmail();
 	}
 }

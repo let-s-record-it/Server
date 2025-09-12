@@ -249,8 +249,9 @@ public class MonthlyGoalControllerTest extends RestDocsTest {
 								getDocumentResponse(),
 								requestHeaders(authorizationDesc()),
 								pathParameters(
-										parameterWithName("id").description("조회할 월 목표 id"),
-										parameterWithName("calendarId").description("캘린더 id"))));
+										parameterWithName("id").description("조회할 월 목표 activeId"),
+										parameterWithName("calendarId")
+												.description("캘린더 activeId"))));
 	}
 
 	@Test

@@ -33,9 +33,9 @@ class BatchTaskRepositoryTest {
 
 	private static final String EXPECTED_SQL =
 			"""
-					INSERT INTO TASK (title, description, date, achieved, task_category_id, calendar_id, task_group_id, deleted, created_at, modified_at)
-					VALUES (?,?,?,?,?,?,?,?,?,?)
-					""";
+			INSERT INTO TASK (title, description, date, achieved, task_category_id, calendar_id, task_group_id, deleted, created_at, modified_at)
+			VALUES (?,?,?,?,?,?,?,?,?,?)
+			""";
 
 	BatchTaskRepository batchTaskRepository;
 	@Mock JdbcTemplate jdbcTemplate;

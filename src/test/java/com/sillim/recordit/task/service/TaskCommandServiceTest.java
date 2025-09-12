@@ -165,8 +165,8 @@ class TaskCommandServiceTest {
 
 		Calendar newCalendar = spy(CalendarFixture.DEFAULT.getCalendar(calendarCategory, memberId));
 		//
-		//	given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
-		//		willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
+		// given(calendarQueryService.searchByCalendarId(eq(newCalendarId))).willReturn(newCalendar);
+		// willDoNothing().given(newCalendar).validateAuthenticatedMember(anyLong());
 
 		TaskGroup newTaskGroup = new TaskGroup(null, null);
 		TaskRepetitionPattern newRepetitionPattern =

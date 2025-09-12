@@ -1,8 +1,20 @@
 package com.sillim.recordit.invite.service;
 
+import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.invite.domain.InviteLink;
+import com.sillim.recordit.invite.domain.InviteLog;
+import com.sillim.recordit.invite.domain.InviteState;
 import com.sillim.recordit.invite.repository.InviteLinkRepository;
+import com.sillim.recordit.invite.repository.InviteLogRepository;
+import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.pushalarm.dto.PushMessage;
+import com.sillim.recordit.pushalarm.service.AlarmService;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
@@ -18,6 +30,9 @@ public class InviteService {
 
 	private final InviteLinkRepository inviteLinkRepository;
 	private final CalendarQueryService calendarQueryService;
+	private final InviteLogRepository inviteLogRepository;
+	private final AlarmService alarmService;
+	private final CalendarMemberService calendarMemberService;
 
 	public String getOrGenerateInviteLink(Long calendarId) {
 		Optional<InviteLink> inviteLink =
@@ -58,5 +73,52 @@ public class InviteService {
 	public InviteLink searchInviteInfo(String inviteCode) {
 		return inviteLinkRepository.findInfoByInviteCode(
 				new String(Base64.getUrlDecoder().decode(inviteCode)));
+	}
+
+	public void inviteMember(Long calendarId, Long invitedMemberId, Member inviter)
+			throws IOException {
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
+		calendar.validateAuthenticatedMember(inviter.getId());
+
+		InviteLog inviteLog =
+				inviteLogRepository.save(
+						new InviteLog(
+								inviter.getId(), invitedMemberId, calendarId, InviteState.WAIT));
+		alarmService.pushAlarm(
+				inviter.getId(),
+				invitedMemberId,
+				PushMessage.fromInvite(
+						inviteLog.getId(), calendar.getTitle(), inviter.getPersonalId()));
+	}
+
+	public void acceptInvite(Long inviteLogId, Long alarmLogId, Long memberId) {
+		InviteLog inviteLog =
+				inviteLogRepository
+						.findById(inviteLogId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.INVITE_LOG_NOT_FOUND));
+
+		if (!inviteLog.isInvitedMember(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
+
+		calendarMemberService.addCalendarMember(inviteLog.getCalendarId(), memberId);
+		inviteLog.accept();
+		alarmService.deleteAlarm(alarmLogId);
+	}
+
+	public void rejectInvite(Long inviteLogId, Long alarmLogId, Long memberId) {
+		InviteLog inviteLog =
+				inviteLogRepository
+						.findById(inviteLogId)
+						.orElseThrow(
+								() -> new RecordNotFoundException(ErrorCode.INVITE_LOG_NOT_FOUND));
+
+		if (!inviteLog.isInvitedMember(memberId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
+
+		inviteLog.reject();
+		alarmService.deleteAlarm(alarmLogId);
 	}
 }

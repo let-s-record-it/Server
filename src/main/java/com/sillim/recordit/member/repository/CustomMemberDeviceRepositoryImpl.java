@@ -18,8 +18,8 @@ public class CustomMemberDeviceRepositoryImpl extends QuerydslRepositorySupport
 		return getJpaQueryFactory()
 				.select(memberDevice.fcmToken)
 				.from(memberDevice)
-				//				.where(memberDevice.member.deleted.isFalse())
-				//				.where(memberDevice.eq(memberId))
+				// .where(memberDevice.member.deleted.isFalse())
+				// .where(memberDevice.eq(memberId))
 				.fetch();
 	}
 
@@ -28,7 +28,7 @@ public class CustomMemberDeviceRepositoryImpl extends QuerydslRepositorySupport
 		update(memberDevice)
 				.set(memberDevice.fcmToken, fcmToken)
 				.where(memberDevice.identifier.eq(deviceId))
-				//				.where(memberDevice.member.id.eq(memberId))
+				// .where(memberDevice.member.activeId.eq(memberId))
 				.execute();
 	}
 }

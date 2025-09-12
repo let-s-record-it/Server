@@ -15,6 +15,8 @@ public interface MemberRepository extends Neo4jRepository<Member, Long> {
 	@Query("MATCH (m:Member) WHERE m.oauthAccount = $oauthAccount RETURN m")
 	Optional<Member> findByOauthAccount(@Param("oauthAccount") String oauthAccount);
 
+	Optional<Member> findByEmail(String email);
+
 	List<Member> findByPersonalIdStartingWith(String prefix);
 
 	@Query(
@@ -27,12 +29,10 @@ public interface MemberRepository extends Neo4jRepository<Member, Long> {
 
 	@Query(
 			"""
-			MATCH (a:Member)-[r:FOLLOWS]->(b:Member)
-			WHERE ID(a) = $follower AND ID(b) = $followed
-			DELETE r
+			MATCH (a:Member {personalId: $personalId})-[r:FOLLOWS]->(b:Member)
+			RETURN b
 			""")
-	void deleteFollowRelation(
-			@Param("follower") Long followerId, @Param("followed") Long followedId);
+	List<Member> findFollowings(@Param("personalId") String personalId);
 
 	@Query(
 			"""

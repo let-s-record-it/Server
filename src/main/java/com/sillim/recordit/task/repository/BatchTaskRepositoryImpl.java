@@ -17,9 +17,9 @@ public class BatchTaskRepositoryImpl implements BatchTaskRepository {
 	private static final int BATCH_SIZE = 1000;
 	private static final String SQL =
 			"""
-					INSERT INTO TASK (title, description, date, achieved, task_category_id, calendar_id, task_group_id, deleted, created_at, modified_at)
-					VALUES (?,?,?,?,?,?,?,?,?,?)
-					""";
+			INSERT INTO TASK (title, description, date, achieved, task_category_id, calendar_id, task_group_id, deleted, created_at, modified_at)
+			VALUES (?,?,?,?,?,?,?,?,?,?)
+			""";
 	private final JdbcTemplate jdbcTemplate;
 
 	@Override

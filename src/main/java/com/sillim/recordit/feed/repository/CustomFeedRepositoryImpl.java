@@ -25,8 +25,8 @@ public class CustomFeedRepositoryImpl extends QuerydslRepositorySupport
 				selectFrom(feed)
 						.leftJoin(feed.feedImages.feedImages)
 						.fetchJoin()
-						//						.leftJoin(feed.member)
-						//						.fetchJoin()
+						// .leftJoin(feed.member)
+						// .fetchJoin()
 						.where(feed.deleted.isFalse())
 						.where(feed.id.eq(feedId))
 						.fetchOne());
@@ -36,8 +36,8 @@ public class CustomFeedRepositoryImpl extends QuerydslRepositorySupport
 	public Slice<Feed> findOrderByCreatedAtDesc(Pageable pageable) {
 		List<Feed> feeds =
 				selectFrom(feed)
-						//						.leftJoin(feed.member)
-						//						.fetchJoin()
+						// .leftJoin(feed.member)
+						// .fetchJoin()
 						.where(feed.deleted.isFalse())
 						.orderBy(feed.createdAt.desc())
 						.offset(pageable.getOffset())
@@ -51,8 +51,8 @@ public class CustomFeedRepositoryImpl extends QuerydslRepositorySupport
 	public Slice<Feed> findByMemberIdOrderByCreatedAtDesc(Pageable pageable, Long memberId) {
 		List<Feed> feeds =
 				selectFrom(feed)
-						//						.leftJoin(feed.member)
-						//						.fetchJoin()
+						// .leftJoin(feed.member)
+						// .fetchJoin()
 						.where(feed.deleted.isFalse().and(feed.memberId.eq(memberId)))
 						.orderBy(feed.createdAt.desc())
 						.offset(pageable.getOffset())

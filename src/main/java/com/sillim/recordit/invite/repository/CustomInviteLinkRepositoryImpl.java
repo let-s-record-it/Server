@@ -19,8 +19,8 @@ public class CustomInviteLinkRepositoryImpl extends QuerydslRepositorySupport
 		return selectFrom(inviteLink)
 				.leftJoin(inviteLink.calendar)
 				.fetchJoin()
-				//				.leftJoin(inviteLink.calendar.member)
-				//				.fetchJoin()
+				// .leftJoin(inviteLink.calendar.member)
+				// .fetchJoin()
 				.where(inviteLink.inviteCode.eq(inviteCode))
 				.fetchOne();
 	}

@@ -19,10 +19,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		basePackages = {"com.sillim.recordit"})
 public class Neo4jConfig {
 
-	//	@Bean
-	//	Configuration cypherDslConfiguration() {
-	//		return Configuration.newConfig().withDialect(Dialect.NEO4J_5).build();
-	//	}
+	// @Bean
+	// Configuration cypherDslConfiguration() {
+	// return Configuration.newConfig().withDialect(Dialect.NEO4J_5).build();
+	// }
 
 	@Bean
 	public Neo4jTransactionManager neo4jTransactionManager(

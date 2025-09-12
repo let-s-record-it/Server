@@ -3,7 +3,6 @@ package com.sillim.recordit.config.security.oauth2;
 import com.sillim.recordit.config.security.jwt.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -24,16 +23,21 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	@Override
 	public void onAuthenticationSuccess(
-			HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-			throws IOException {
+			HttpServletRequest request,
+			HttpServletResponse response,
+			Authentication authentication) {
 		LoginMember loginMember = (LoginMember) authentication.getPrincipal();
-		getRedirectStrategy()
-				.sendRedirect(
-						request,
-						response,
-						clientUrl
-								+ redirectEndpoint
-								+ "?token="
-								+ jwtProvider.generateExchangeToken(loginMember.getId()));
+		try {
+			getRedirectStrategy()
+					.sendRedirect(
+							request,
+							response,
+							clientUrl
+									+ redirectEndpoint
+									+ "?token="
+									+ jwtProvider.generateExchangeToken(loginMember.getName()));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

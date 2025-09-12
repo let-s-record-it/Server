@@ -23,8 +23,8 @@ public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport
 	public Slice<FeedComment> findPaginatedOrderByCreatedAtAsc(Pageable pageable, Long feedId) {
 		List<FeedComment> feedComments =
 				selectFrom(feedComment)
-						//						.leftJoin(feedComment.member)
-						//						.fetchJoin()
+						// .leftJoin(feedComment.member)
+						// .fetchJoin()
 						.where(feedComment.deleted.isFalse())
 						.where(feedComment.feed.id.eq(feedId))
 						.orderBy(feedComment.createdAt.asc())
@@ -39,8 +39,8 @@ public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport
 	public Slice<FeedComment> findByMemberIdOrderByCreatedAtAsc(Pageable pageable, Long memberId) {
 		List<FeedComment> feedComments =
 				selectFrom(feedComment)
-						//						.leftJoin(feedComment.member)
-						//						.fetchJoin()
+						// .leftJoin(feedComment.member)
+						// .fetchJoin()
 						.where(feedComment.deleted.isFalse())
 						.where(feedComment.memberId.eq(memberId))
 						.orderBy(feedComment.createdAt.asc())
@@ -55,8 +55,8 @@ public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport
 	public Optional<FeedComment> findByIdWithFetch(Long commentId) {
 		return Optional.ofNullable(
 				selectFrom(feedComment)
-						//						.leftJoin(feedComment.member)
-						//						.fetchJoin()
+						// .leftJoin(feedComment.member)
+						// .fetchJoin()
 						.where(feedComment.deleted.isFalse())
 						.where(feedComment.id.eq(commentId))
 						.fetchFirst());
