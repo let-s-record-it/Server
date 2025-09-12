@@ -1,21 +1,29 @@
 package com.sillim.recordit.invite.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.*;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.invite.domain.InviteLink;
+import com.sillim.recordit.invite.domain.InviteLog;
+import com.sillim.recordit.invite.domain.InviteState;
 import com.sillim.recordit.invite.repository.InviteLinkRepository;
+import com.sillim.recordit.invite.repository.InviteLogRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
+import com.sillim.recordit.pushalarm.service.AlarmService;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
@@ -32,6 +40,9 @@ class InviteServiceTest {
 
 	@Mock InviteLinkRepository inviteLinkRepository;
 	@Mock CalendarQueryService calendarQueryService;
+	@Mock InviteLogRepository inviteLogRepository;
+	@Mock CalendarMemberService calendarMemberService;
+	@Mock AlarmService alarmService;
 	@InjectMocks InviteService inviteService;
 
 	@DisplayName("유효한 초대 코드가 있다면 가져온다.")
@@ -102,5 +113,61 @@ class InviteServiceTest {
 					assertThat(inviteLink.getCalendar().getId()).isEqualTo(calendar.getId());
 					assertThat(inviteLink.getCalendar().getMemberId()).isEqualTo(member.getId());
 				});
+	}
+
+	@Test
+	@DisplayName("캘린더 초대를 수락한다.")
+	void acceptInvite() {
+		long inviteLogId = 1L;
+		long alarmLogId = 1L;
+		long memberId = 1L;
+		InviteLog inviteLog = new InviteLog(1L, 1L, 1L, InviteState.WAIT);
+		given(inviteLogRepository.findById(eq(inviteLogId))).willReturn(Optional.of(inviteLog));
+
+		inviteService.acceptInvite(inviteLogId, alarmLogId, memberId);
+
+		verify(alarmService, times(1)).deleteAlarm(eq(alarmLogId));
+	}
+
+	@Test
+	@DisplayName("초대된 멤버가 아니면 초대를 수락할 때 InvalidRequestException이 발생한다.")
+	void throwInvalidRequestExceptionIfNotInvitedMemberWhenAcceptInvitation() {
+		long inviteLogId = 1L;
+		long alarmLogId = 1L;
+		long memberId = 1L;
+		InviteLog inviteLog = new InviteLog(1L, 2L, 1L, InviteState.WAIT);
+		given(inviteLogRepository.findById(eq(inviteLogId))).willReturn(Optional.of(inviteLog));
+
+		assertThatCode(() -> inviteService.acceptInvite(inviteLogId, alarmLogId, memberId))
+				.isInstanceOf(InvalidRequestException.class)
+				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
+	}
+
+	@Test
+	@DisplayName("캘린더 초대를 거절한다.")
+	void rejectInvite() {
+		long inviteLogId = 1L;
+		long alarmLogId = 1L;
+		long memberId = 1L;
+		InviteLog inviteLog = new InviteLog(1L, 1L, 1L, InviteState.WAIT);
+		given(inviteLogRepository.findById(eq(inviteLogId))).willReturn(Optional.of(inviteLog));
+
+		inviteService.rejectInvite(inviteLogId, alarmLogId, memberId);
+
+		verify(alarmService, times(1)).deleteAlarm(eq(alarmLogId));
+	}
+
+	@Test
+	@DisplayName("초대된 멤버가 아니면 초대를 거절할 때 InvalidRequestException이 발생한다.")
+	void throwInvalidRequestExceptionIfNotInvitedMemberWhenRejectInvitation() {
+		long inviteLogId = 1L;
+		long alarmLogId = 1L;
+		long memberId = 1L;
+		InviteLog inviteLog = new InviteLog(1L, 2L, 1L, InviteState.WAIT);
+		given(inviteLogRepository.findById(eq(inviteLogId))).willReturn(Optional.of(inviteLog));
+
+		assertThatCode(() -> inviteService.rejectInvite(inviteLogId, alarmLogId, memberId))
+				.isInstanceOf(InvalidRequestException.class)
+				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
 	}
 }

@@ -45,6 +45,10 @@ public class MemberQueryService {
 		return memberRepository.findByPersonalIdStartingWith(personalIdPrefix);
 	}
 
+	public List<Member> searchFollowings(String personalId) {
+		return memberRepository.findFollowings(personalId);
+	}
+
 	public boolean existsFollower(String myPersonalId, String otherPersonalId) {
 		return memberRepository.existsByFollower(myPersonalId, otherPersonalId);
 	}

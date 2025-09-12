@@ -1,18 +1,17 @@
 package com.sillim.recordit.invite.controller;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.config.security.authenticate.CurrentMember;
 import com.sillim.recordit.invite.domain.InviteLink;
 import com.sillim.recordit.invite.dto.response.InviteInfoResponse;
 import com.sillim.recordit.invite.dto.response.InviteLinkResponse;
 import com.sillim.recordit.invite.service.InviteService;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/invite")
@@ -36,5 +35,36 @@ public class InviteController {
 		return ResponseEntity.ok(
 				new InviteInfoResponse(
 						calendar.getId(), calendar.getTitle(), member.getId(), member.getName()));
+	}
+
+	@PostMapping("/members/{inviteMemberId}")
+	public ResponseEntity<Void> inviteMember(
+			@PathVariable Long inviteMemberId,
+			@RequestParam Long calendarId,
+			@CurrentMember Member member)
+			throws IOException {
+		inviteService.inviteMember(calendarId, inviteMemberId, member);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/accept/{inviteId}")
+	public ResponseEntity<Void> acceptInvite(
+			@PathVariable Long inviteId,
+			@RequestParam Long alarmLogId,
+			@CurrentMember Member member) {
+		inviteService.acceptInvite(inviteId, alarmLogId, member.getId());
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/reject/{inviteId}")
+	public ResponseEntity<Void> rejectInvite(
+			@PathVariable Long inviteId,
+			@RequestParam Long alarmLogId,
+			@CurrentMember Member member) {
+		inviteService.rejectInvite(inviteId, alarmLogId, member.getId());
+
+		return ResponseEntity.noContent().build();
 	}
 }

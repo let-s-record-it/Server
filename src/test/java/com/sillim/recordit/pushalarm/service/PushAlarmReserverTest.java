@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.domain.OAuthProvider;
 import com.sillim.recordit.member.service.MemberDeviceService;
+import com.sillim.recordit.member.service.MemberQueryService;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -26,11 +27,12 @@ import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 
 @ExtendWith(MockitoExtension.class)
-class PushAlarmServiceTest {
+class PushAlarmReserverTest {
 
 	@Mock MemberDeviceService memberDeviceService;
 	@Mock Scheduler scheduler;
-	@InjectMocks PushAlarmService pushAlarmService;
+	@Mock MemberQueryService memberQueryService;
+	@InjectMocks PushAlarmReserver pushAlarmReserver;
 
 	@Test
 	@DisplayName("일정 푸시 알람 Job을 등록할 수 있다.")
@@ -47,8 +49,9 @@ class PushAlarmServiceTest {
 		List<LocalDateTime> alarmTimes = List.of(LocalDateTime.of(2024, 1, 1, 0, 0));
 		given(memberDeviceService.searchFcmTokensByMemberId(eq(memberId)))
 				.willReturn(List.of("token"));
+		given(memberQueryService.findByMemberId(eq(memberId))).willReturn(member);
 
-		pushAlarmService.reservePushAlarmJobs(
+		pushAlarmReserver.reservePushAlarmJobs(
 				memberId, jobGroupName, title, body, Map.of("test", "test"), alarmTimes);
 
 		assertAll(
@@ -80,7 +83,7 @@ class PushAlarmServiceTest {
 		when(scheduler.getTriggersOfJob(eq(jobKey)))
 				.thenAnswer(unused -> Collections.singletonList(trigger));
 
-		pushAlarmService.deletePushAlarmJobs(jobGroupName);
+		pushAlarmReserver.deletePushAlarmJobs(jobGroupName);
 
 		assertAll(
 				() -> {
