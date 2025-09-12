@@ -1,5 +1,7 @@
 package com.sillim.recordit.member.service;
 
+import com.sillim.recordit.global.exception.ErrorCode;
+import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.repository.MemberRepository;
 import com.sillim.recordit.pushalarm.dto.PushMessage;
@@ -34,6 +36,10 @@ public class MemberFollowService {
 	public void follow(Long followerId, Long followedId) throws IOException {
 		Member follower = memberQueryService.findByMemberId(followerId);
 		Member followed = memberQueryService.findByMemberId(followedId);
+
+		if (follower.equalsId(followedId)) {
+			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+		}
 
 		follower.follow(followed);
 		memberRepository.save(follower);
