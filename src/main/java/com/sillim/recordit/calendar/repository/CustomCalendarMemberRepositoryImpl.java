@@ -29,7 +29,7 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 						// .fetchJoin()
 						.where(calendarMember.deleted.isFalse())
 						.where(calendarMember.calendar.id.eq(calendarId))
-						// .where(calendarMember.member.id.eq(memberId))
+						// .where(calendarMember.member.activeId.eq(memberId))
 						.fetchOne());
 	}
 

@@ -153,6 +153,10 @@ public enum ErrorCode {
 	INVALID_FEED_COMMENT_CONTENT_LENGTH("ERR_FEED_012", "피드 댓글의 길이는 1000자를 넘을 수 없습니다."),
 	FEED_COMMENT_NOT_FOUND("ERR_FEED_003", "요청한 피드 댓글을 찾을 수 없습니다."),
 
+	INVITE_LOG_NOT_FOUND("ERR_INVITE_001", "초대 이력을 찾을 수 없습니다."),
+
+	ALARM_LOG_NOT_FOUND("ERR_ALARM_001", "알림 이력을 찾을 수 없습니다."),
+
 	FILE_GENERATE_FAIL("ERR_FILE_001", "새 파일을 생성할 수 없습니다."),
 	FILE_NOT_FOUND("ERR_FILE_002", "파일을 찾을 수 없습니다."),
 
