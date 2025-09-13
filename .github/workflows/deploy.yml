@@ -94,7 +94,7 @@ jobs:
             INTERVAL=10
             
             for i in $(seq 1 $MAX_ATTEMPTS); do
-              status=$(curl -IsS --max-time 5 "HEALTH_CHECK_URL" | head -n 1 | cut -d$' ' -f2)
+              status=$(curl -IsS --max-time 5 "$HEALTH_CHECK_URL" | head -n 1 | cut -d$' ' -f2)
               if [ "$status" = "200" ]; then
                 echo "Health check success"
                 exit 0
