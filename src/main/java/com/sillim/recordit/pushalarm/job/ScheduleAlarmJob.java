@@ -4,11 +4,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.ApplicationException;
 import com.sillim.recordit.pushalarm.dto.PushMessage;
 import com.sillim.recordit.pushalarm.service.AlarmService;
-import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
@@ -50,11 +47,6 @@ public class ScheduleAlarmJob implements Job {
 					}
 				});
 
-		try {
-			alarmService.pushAlarm(
-					-1L, memberId, PushMessage.fromSchedule(scheduleId, title, body));
-		} catch (IOException e) {
-			throw new ApplicationException(ErrorCode.UNHANDLED_EXCEPTION, e.getMessage());
-		}
+		alarmService.pushAlarm(-1L, memberId, PushMessage.fromSchedule(scheduleId, title, body));
 	}
 }

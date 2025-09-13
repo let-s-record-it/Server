@@ -14,7 +14,6 @@ import com.sillim.recordit.invite.repository.InviteLogRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.pushalarm.dto.PushMessage;
 import com.sillim.recordit.pushalarm.service.AlarmService;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
@@ -75,8 +74,7 @@ public class InviteService {
 				new String(Base64.getUrlDecoder().decode(inviteCode)));
 	}
 
-	public void inviteMember(Long calendarId, Long invitedMemberId, Member inviter)
-			throws IOException {
+	public void inviteMember(Long calendarId, Long invitedMemberId, Member inviter) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		calendar.validateAuthenticatedMember(inviter.getId());
 

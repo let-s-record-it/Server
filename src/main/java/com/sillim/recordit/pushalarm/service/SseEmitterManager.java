@@ -10,10 +10,13 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Slf4j
 @Service
 public class SseEmitterManager {
+
+	private static final Long TIMEOUT = 60L * 60 * 1000;
+
 	private final ConcurrentHashMap<Long, SseEmitter> clients = new ConcurrentHashMap<>();
 
 	public SseEmitter subscribe(Long memberId) {
-		SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+		SseEmitter emitter = new SseEmitter(TIMEOUT);
 		clients.put(memberId, emitter);
 
 		emitter.onCompletion(() -> clients.remove(memberId));
@@ -24,12 +27,18 @@ public class SseEmitterManager {
 		return emitter;
 	}
 
-	public boolean sendToClient(Long memberId, PushMessage message) throws IOException {
+	public boolean sendToClient(Long memberId, PushMessage message) {
 		SseEmitter emitter = clients.get(memberId);
 
 		if (emitter != null) {
-			emitter.send(SseEmitter.event().name(message.type().name()).data(message));
-			return true;
+			try {
+				emitter.send(SseEmitter.event().name(message.type().name()).data(message));
+				return true;
+			} catch (IOException exception) {
+				clients.remove(memberId);
+				emitter.completeWithError(exception);
+				return false;
+			}
 		}
 		return false;
 	}
