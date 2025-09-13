@@ -79,3 +79,29 @@ jobs:
             docker images -q ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest && docker rmi ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
             sudo docker-compose up -d
+
+      - name: Health Check
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.GCP_VM_IP }}
+          username: ${{ secrets.GCP_USERNAME }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          envs: GITHUB_SHA
+          script: |
+            echo "Health check for Spring application"
+            
+            MAX_ATTEMPTS=10
+            INTERVAL=10
+            
+            for i in $(seq 1 $MAX_ATTEMPTS); do
+              status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/actuator/health)
+              if [ "$status" = "200" ]; then
+                echo "Health check success"
+                exit 0
+              fi
+              echo "Attempt $i/$MAX_ATTEMPTS failed (HTTP $status), waiting 10s..."
+              sleep $INTERVAL
+            done
+            
+            echo "Health check failed"
+            exit 1
