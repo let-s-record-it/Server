@@ -110,3 +110,14 @@ server:
     threads:
       min-spare: 10
       max: 200
+
+management:
+  endpoint:
+    health:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
