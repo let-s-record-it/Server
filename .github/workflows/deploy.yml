@@ -99,9 +99,9 @@ jobs:
                 echo "Health check success"
                 exit 0
               fi
-              echo "Attempt $i/30 failed (HTTP $status), waiting 10s..."
+              echo "Attempt $i/$MAX_ATTEMPTS failed (HTTP $status), waiting 10s..."
               sleep $INTERVAL
             done
             
             echo "Health check failed"
-            exit
+            exit 1
