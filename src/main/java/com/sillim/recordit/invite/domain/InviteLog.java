@@ -26,6 +26,7 @@ public class InviteLog extends BaseTime {
 	private Long calendarId;
 
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private InviteState state;
 
 	public InviteLog(Long inviterId, Long invitedId, Long calendarId, InviteState state) {
