@@ -82,11 +82,13 @@ jobs:
 
       - name: Health Check
         uses: appleboy/ssh-action@master
+        env:
+            HEALTH_CHECK_URL: ${{ secrets.HEALTH_CHECK_URL }}
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_USERNAME }}
           key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
-          envs: GITHUB_SHA
+          envs: HEALTH_CHECK_URL
           script: |
             echo "Health check for Spring application"
             
