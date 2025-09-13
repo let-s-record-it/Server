@@ -84,13 +84,19 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
             HEALTH_CHECK_URL: ${{ secrets.HEALTH_CHECK_URL }}
+            HEALTH_CHECK_CONTAINER_NAME: ${{ secrets.HEALTH_CHECK_CONTAINER_NAME }}
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_USERNAME }}
           key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
-          envs: HEALTH_CHECK_URL
+          envs: HEALTH_CHECK_URL, HEALTH_CHECK_CONTAINER_NAME
           script: |
             echo "Health check for Spring application"
+            
+            if [ -z "$HEALTH_CHECK_URL" ]; then
+              echo "HEALTH_CHECK_URL not set, please add it on github actions secrets"
+              exit 1
+            fi
             
             MAX_ATTEMPTS=10
             INTERVAL=10
@@ -106,4 +112,9 @@ jobs:
             done
             
             echo "Health check failed"
+            if [ -z "$HEALTH_CHECK_CONTAINER_NAME" ]; then
+              echo "HEALTH_CHECK_CONTAINER_NAME not set, please add it on github actions secrets"
+            else
+              docker logs --since "10m" "$HEALTH_CHECK_CONTAINER_NAME" 2>&1 || echo "Could not get logs for container: $HEALTH_CHECK_CONTAINER_NAME"
+            fi
             exit 1
