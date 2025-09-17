@@ -9,6 +9,7 @@ public enum ErrorCode {
 	INVALID_ARGUMENT("ERR_GLOBAL_001", "올바르지 않은 값이 전달되었습니다."),
 	REQUEST_NOT_FOUND("ERR_GLOBAL_002", "요청을 찾을 수 없습니다."),
 	INVALID_REQUEST("ERR_GLOBAL_003", "유효하지 않은 요청입니다."),
+	TOO_MANY_REQUEST("ERR_GLOBAL_004", "너무 많은 요청을 보냈습니다."),
 	UNHANDLED_EXCEPTION("ERR_GLOBAL_999", "예상치 못한 오류가 발생했습니다."),
 
 	ID_TOKEN_UNSUPPORTED("ERR_OIDC_001", "지원되지 않는 ID Token 입니다."),

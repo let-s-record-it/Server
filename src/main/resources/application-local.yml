@@ -111,6 +111,12 @@ server:
       min-spare: 10
       max: 200
 
+rate-limiter:
+  capacity: 5
+  refill-token-amount: 5
+  refill-duration-seconds: 10
+  bucket-ttl-seconds: 600
+
 management:
   endpoint:
     health:

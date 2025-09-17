@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sillim.recordit.config.filter.ApiThrottlingFilter;
 import com.sillim.recordit.config.security.filter.AuthExceptionTranslationFilter;
 import com.sillim.recordit.config.security.filter.JwtAuthenticationFilter;
 import com.sillim.recordit.config.security.handler.AuthenticationExceptionHandler;
@@ -48,6 +49,7 @@ public abstract class RestDocsTest {
 	@MockBean AuthenticationExceptionHandler handler;
 	@MockBean AuthExceptionTranslationFilter exceptionTranslationFilter;
 	@MockBean JwtAuthenticationFilter jwtAuthenticationFilter;
+	@MockBean ApiThrottlingFilter apiThrottlingFilter;
 
 	protected MockMvc mockMvc;
 
