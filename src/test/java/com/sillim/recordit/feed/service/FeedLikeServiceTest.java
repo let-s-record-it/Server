@@ -14,6 +14,7 @@ import com.sillim.recordit.feed.repository.FeedRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.member.service.MemberQueryService;
+import com.sillim.recordit.pushalarm.service.AlarmService;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ class FeedLikeServiceTest {
 	@Mock FeedLikeRepository feedLikeRepository;
 	@Mock FeedRepository feedRepository;
 	@Mock MemberQueryService memberQueryService;
+	@Mock AlarmService alarmService;
 	@InjectMocks FeedLikeService feedLikeService;
 
 	@Test
@@ -37,7 +39,9 @@ class FeedLikeServiceTest {
 		long memberId = 1L;
 		Member member = MemberFixture.DEFAULT.getMember();
 		Feed feed = spy(FeedFixture.DEFAULT.getFeed(memberId));
+		FeedLike feedLike = mock(FeedLike.class);
 		given(feedRepository.findById(eq(feedId))).willReturn(Optional.of(feed));
+		given(feedLikeRepository.save(any())).willReturn(feedLike);
 
 		feedLikeService.feedLike(feedId, memberId);
 
