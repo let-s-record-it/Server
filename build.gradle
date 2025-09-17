@@ -91,6 +91,8 @@ dependencies {
 
     // bucket4j
     implementation 'com.bucket4j:bucket4j_jdk17-core:8.15.0'
+    implementation 'com.bucket4j:bucket4j_jdk17-redis:8.14.0'
+    implementation 'com.bucket4j:bucket4j_jdk17-lettuce:8.15.0'
 
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 

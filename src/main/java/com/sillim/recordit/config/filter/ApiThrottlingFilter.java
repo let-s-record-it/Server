@@ -1,15 +1,15 @@
 package com.sillim.recordit.config.filter;
 
 import io.github.bucket4j.Bucket;
+import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -17,6 +17,7 @@ import org.springframework.util.AntPathMatcher;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ApiThrottlingFilter implements Filter {
 
 	private static final List<LimitApi> LIMIT_APIS =
@@ -25,7 +26,8 @@ public class ApiThrottlingFilter implements Filter {
 					LimitApi.pattern("POST", "/api/v1/members/*/follow"),
 					LimitApi.pattern("POST", "/api/v1/feeds/**"));
 
-	private final ConcurrentMap<String, Bucket> buckets = new ConcurrentHashMap<>();
+	private final ProxyManager<String> proxyManager;
+	private final BucketConfiguration bucketConfiguration;
 	private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
 	@Override
@@ -40,9 +42,7 @@ public class ApiThrottlingFilter implements Filter {
 			return;
 		}
 
-		Bucket bucket =
-				buckets.computeIfAbsent(
-						auth, id -> createIntervalBucket(5, 5, Duration.ofSeconds(5)));
+		Bucket bucket = proxyManager.getProxy(auth, () -> bucketConfiguration);
 		for (LimitApi limitApi : LIMIT_APIS) {
 			if (antPathMatcher.match(limitApi.getUrl(), request.getRequestURI())
 					&& (limitApi.noMethod() || limitApi.getMethod().equals(request.getMethod()))) {
@@ -52,12 +52,6 @@ public class ApiThrottlingFilter implements Filter {
 		}
 
 		filterChain.doFilter(servletRequest, servletResponse);
-	}
-
-	private Bucket createIntervalBucket(int capacity, int refill, Duration duration) {
-		return Bucket.builder()
-				.addLimit(limit -> limit.capacity(capacity).refillIntervally(refill, duration))
-				.build();
 	}
 
 	private void checkApiToken(
