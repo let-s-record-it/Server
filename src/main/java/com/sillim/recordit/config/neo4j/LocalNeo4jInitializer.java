@@ -8,9 +8,9 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-/// <summary>
-/// (Local 환경 한정) Spring Application 실행 시 Neo4j DB 데이터를 초기화
-/// </summary>
+/**
+ * (Local 환경 한정) Spring Application 실행 시 Neo4j DB 데이터를 초기화
+ */
 @Component
 @RequiredArgsConstructor
 @Profile("local")
