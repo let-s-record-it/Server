@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Profile("local")
 public class LocalNeo4jInitializer implements ApplicationRunner {
 
-	private static final String INIT_QUERY = "CREATE OR REPLACE DATABASE neo4j";
+	private static final String INIT_QUERY = "MATCH (n) DETACH DELETE n";
 	private final Driver neo4jDriver;
 
 	@Override
