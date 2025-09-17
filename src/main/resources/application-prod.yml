@@ -116,3 +116,9 @@ management:
     web:
       exposure:
         include: health, prometheus
+
+rate-limiter:
+  capacity: ${RATE_LIMITER_CAPACITY}
+  refill-token-amount: ${RATE_LIMITER_REFILL_TOKEN_AMOUNT}
+  refill-duration-seconds: ${RATE_LIMITER_REFILL_DURATION_SECONDS}
+  bucket-ttl-seconds: ${RATE_LIMITER_BUCKET_TTL_SECONDS}
