@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.distributed.BucketProxy;
@@ -26,6 +27,7 @@ class ApiThrottlingFilterTest {
 
 	@Mock ProxyManager<String> proxyManager;
 	@Mock BucketConfiguration bucketConfiguration;
+	@Mock ObjectMapper objectMapper;
 	@InjectMocks ApiThrottlingFilter apiThrottlingFilter;
 
 	@Test
@@ -94,6 +96,7 @@ class ApiThrottlingFilterTest {
 							}
 							return ConsumptionProbe.consumed(1, 5_000_000_000L);
 						});
+		given(objectMapper.writeValueAsString(any())).willReturn("result");
 
 		for (int i = 0; i < 6; i++) {
 			apiThrottlingFilter.doFilter(httpServletRequest, httpServletResponse, filterChain);
