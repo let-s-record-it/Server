@@ -22,6 +22,7 @@ public class AlarmLog extends BaseTime {
 	private Long activeId;
 
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private AlarmType alarmType;
 
 	@Column(nullable = false)

@@ -79,3 +79,42 @@ jobs:
             docker images -q ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest && docker rmi ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
             sudo docker-compose up -d
+
+      - name: Health Check
+        uses: appleboy/ssh-action@master
+        env:
+            HEALTH_CHECK_URL: ${{ secrets.HEALTH_CHECK_URL }}
+            HEALTH_CHECK_CONTAINER_NAME: ${{ secrets.HEALTH_CHECK_CONTAINER_NAME }}
+        with:
+          host: ${{ secrets.GCP_VM_IP }}
+          username: ${{ secrets.GCP_USERNAME }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          envs: HEALTH_CHECK_URL, HEALTH_CHECK_CONTAINER_NAME
+          script: |
+            echo "Health check for Spring application"
+            
+            if [ -z "$HEALTH_CHECK_URL" ]; then
+              echo "HEALTH_CHECK_URL not set, please add it on github actions secrets"
+              exit 1
+            fi
+            
+            MAX_ATTEMPTS=10
+            INTERVAL=10
+            
+            for i in $(seq 1 $MAX_ATTEMPTS); do
+              status=$(curl -IsS --max-time 5 "$HEALTH_CHECK_URL" | head -n 1 | cut -d$' ' -f2)
+              if [ "$status" = "200" ]; then
+                echo "Health check success"
+                exit 0
+              fi
+              echo "Attempt $i/$MAX_ATTEMPTS failed (HTTP $status), waiting 10s..."
+              sleep $INTERVAL
+            done
+            
+            echo "Health check failed"
+            if [ -z "$HEALTH_CHECK_CONTAINER_NAME" ]; then
+              echo "HEALTH_CHECK_CONTAINER_NAME not set, please add it on github actions secrets"
+            else
+              docker logs --since "10m" "$HEALTH_CHECK_CONTAINER_NAME" 2>&1 || echo "Could not get logs for container: $HEALTH_CHECK_CONTAINER_NAME"
+            fi
+            exit 1

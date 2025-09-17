@@ -108,12 +108,14 @@ server:
 
 management:
   endpoint:
+    health:
+      enabled: true
     prometheus:
       enabled: true
   endpoints:
     web:
       exposure:
-        include: prometheus
+        include: health, prometheus
 
 rate-limiter:
   capacity: ${RATE_LIMITER_CAPACITY}

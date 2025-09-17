@@ -116,3 +116,14 @@ rate-limiter:
   refill-token-amount: 5
   refill-duration-seconds: 10
   bucket-ttl-seconds: 600
+
+management:
+  endpoint:
+    health:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
