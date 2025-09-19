@@ -34,7 +34,7 @@ public class FeedLikeService {
 				ObjectOptimisticLockingFailureException.class,
 				StaleObjectStateException.class
 			},
-			maxAttempts = 15,
+			maxAttempts = 20,
 			backoff = @Backoff(delay = 30))
 	public void feedLike(Long feedId, Long memberId) {
 		Feed feed =
@@ -61,7 +61,7 @@ public class FeedLikeService {
 				ObjectOptimisticLockingFailureException.class,
 				StaleObjectStateException.class
 			},
-			maxAttempts = 15,
+			maxAttempts = 20,
 			backoff = @Backoff(delay = 30))
 	public void feedUnlike(Long feedId, Long memberId) {
 		feedRepository

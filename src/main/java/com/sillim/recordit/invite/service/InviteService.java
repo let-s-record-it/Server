@@ -1,6 +1,7 @@
 package com.sillim.recordit.invite.service;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.dto.response.CalendarMemberResponse;
 import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
@@ -12,10 +13,12 @@ import com.sillim.recordit.invite.domain.InviteState;
 import com.sillim.recordit.invite.repository.InviteLinkRepository;
 import com.sillim.recordit.invite.repository.InviteLogRepository;
 import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.service.MemberQueryService;
 import com.sillim.recordit.pushalarm.dto.PushMessage;
 import com.sillim.recordit.pushalarm.service.AlarmService;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,7 @@ public class InviteService {
 	private final InviteLogRepository inviteLogRepository;
 	private final AlarmService alarmService;
 	private final CalendarMemberService calendarMemberService;
+	private final MemberQueryService memberQueryService;
 
 	public String getOrGenerateInviteLink(Long calendarId) {
 		Optional<InviteLink> inviteLink =
@@ -72,6 +76,23 @@ public class InviteService {
 	public InviteLink searchInviteInfo(String inviteCode) {
 		return inviteLinkRepository.findInfoByInviteCode(
 				new String(Base64.getUrlDecoder().decode(inviteCode)));
+	}
+
+	@Transactional(readOnly = true)
+	public List<Member> searchFollowingsNotInvited(Long calendarId, String personalId) {
+		List<CalendarMemberResponse> calendarMembers =
+				calendarMemberService.searchCalendarMembers(calendarId);
+		return memberQueryService.searchFollowings(personalId).stream()
+				.filter(
+						follow -> {
+							for (var calendarMember : calendarMembers) {
+								if (calendarMember.memberId().equals(follow.getId())) {
+									return false;
+								}
+							}
+							return true;
+						})
+				.toList();
 	}
 
 	public void inviteMember(Long calendarId, Long invitedMemberId, Member inviter) {
