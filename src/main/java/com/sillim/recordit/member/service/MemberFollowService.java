@@ -61,7 +61,7 @@ public class MemberFollowService {
 		Member followed = memberQueryService.findByMemberId(followedId);
 
 		follower.unfollow(followed);
-		memberRepository.save(follower);
 		memberRepository.save(followed);
+		memberRepository.save(follower);
 	}
 }
