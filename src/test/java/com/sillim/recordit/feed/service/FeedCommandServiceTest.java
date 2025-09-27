@@ -11,7 +11,6 @@ import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.feed.repository.FeedRepository;
-import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.service.MemberQueryService;
 import com.sillim.recordit.rabbitmq.service.MessagePublisher;
 import java.io.IOException;
@@ -37,7 +36,6 @@ class FeedCommandServiceTest {
 	@Test
 	@DisplayName("피드를 추가할 수 있다.")
 	void addFeed() throws IOException {
-		Member member = mock(Member.class);
 		Feed feed = mock(Feed.class);
 		MockMultipartFile multipartFile =
 				new MockMultipartFile(
@@ -50,6 +48,19 @@ class FeedCommandServiceTest {
 
 		FeedAddRequest feedAddRequest = new FeedAddRequest("title", "content");
 		Long feedId = feedCommandService.addFeed(feedAddRequest, List.of(multipartFile), 1L);
+
+		assertThat(feedId).isEqualTo(1L);
+	}
+
+	@Test
+	@DisplayName("이미지 없이 피드를 추가할 수 있다.")
+	void addFeedWithoutImage() throws IOException {
+		Feed feed = mock(Feed.class);
+		given(feed.getId()).willReturn(1L);
+		given(feedRepository.save(any(Feed.class))).willReturn(feed);
+
+		FeedAddRequest feedAddRequest = new FeedAddRequest("title", "content");
+		Long feedId = feedCommandService.addFeed(feedAddRequest, null, 1L);
 
 		assertThat(feedId).isEqualTo(1L);
 	}

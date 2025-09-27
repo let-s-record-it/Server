@@ -32,6 +32,9 @@ public class FeedCommandService {
 	public Long addFeed(FeedAddRequest request, List<MultipartFile> images, Long memberId) {
 		Long feedId = feedRepository.save(request.toFeed(memberId)).getId();
 
+		if (images == null || images.isEmpty()) {
+			return feedId;
+		}
 		messagePublisher.send(
 				new Message<>(
 						MessageType.IMAGES.name(),
