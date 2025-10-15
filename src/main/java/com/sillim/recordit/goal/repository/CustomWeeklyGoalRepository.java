@@ -10,6 +10,7 @@ public interface CustomWeeklyGoalRepository {
 
 	List<WeeklyGoal> findWeeklyGoalInMonth(Integer year, Integer month, Long calendarId);
 
-	@Query("select wg from WeeklyGoal wg left join fetch wg.calendar where wg.id = :id")
+	@Query(
+			"select wg from WeeklyGoal wg left join fetch wg.calendar left join fetch wg.category left join fetch wg.relatedMonthlyGoal where wg.id = :id")
 	Optional<WeeklyGoal> findWeeklyGoalById(@Param("id") Long id);
 }
