@@ -71,14 +71,6 @@ public class MemberController {
 		return ResponseEntity.ok(body);
 	}
 
-	@GetMapping("/me/followings")
-	public ResponseEntity<List<MemberListResponse>> myFollowingList(@CurrentMember Member member) {
-		return ResponseEntity.ok(
-				memberQueryService.searchFollowings(member.getPersonalId()).stream()
-						.map(MemberListResponse::of)
-						.toList());
-	}
-
 	@PostMapping("/{memberId}/follow")
 	public ResponseEntity<Void> follow(@PathVariable Long memberId, @CurrentMember Member member)
 			throws IOException {

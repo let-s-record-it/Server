@@ -10,6 +10,7 @@ import static org.mockito.Mockito.*;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarCategory;
+import com.sillim.recordit.calendar.dto.response.CalendarMemberResponse;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarMemberService;
@@ -23,9 +24,11 @@ import com.sillim.recordit.invite.repository.InviteLinkRepository;
 import com.sillim.recordit.invite.repository.InviteLogRepository;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
+import com.sillim.recordit.member.service.MemberQueryService;
 import com.sillim.recordit.pushalarm.service.AlarmService;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -43,6 +46,7 @@ class InviteServiceTest {
 	@Mock InviteLogRepository inviteLogRepository;
 	@Mock CalendarMemberService calendarMemberService;
 	@Mock AlarmService alarmService;
+	@Mock MemberQueryService memberQueryService;
 	@InjectMocks InviteService inviteService;
 
 	@DisplayName("유효한 초대 코드가 있다면 가져온다.")
@@ -169,5 +173,24 @@ class InviteServiceTest {
 		assertThatCode(() -> inviteService.rejectInvite(inviteLogId, alarmLogId, memberId))
 				.isInstanceOf(InvalidRequestException.class)
 				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
+	}
+
+	@Test
+	@DisplayName("초대하지 않은 팔로우 목록을 가져온다.")
+	void searchFollowingsNotInvited() {
+		long calendarId = 1L;
+		long memberId = 1L;
+		String personalId = "test";
+		CalendarMemberResponse calendarMember = new CalendarMemberResponse(1L, 2L, "name", "url");
+		Member member = mock(Member.class);
+		given(calendarMemberService.searchCalendarMembers(eq(calendarId)))
+				.willReturn(List.of(calendarMember));
+		given(memberQueryService.searchFollowings(eq(personalId))).willReturn(List.of(member));
+		given(member.getId()).willReturn(memberId);
+
+		List<Member> followings = inviteService.searchFollowingsNotInvited(calendarId, personalId);
+
+		assertThat(followings).hasSize(1);
+		assertThat(followings.get(0).getId()).isEqualTo(1L);
 	}
 }

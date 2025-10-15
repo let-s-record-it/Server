@@ -7,8 +7,10 @@ import com.sillim.recordit.invite.dto.response.InviteInfoResponse;
 import com.sillim.recordit.invite.dto.response.InviteLinkResponse;
 import com.sillim.recordit.invite.service.InviteService;
 import com.sillim.recordit.member.domain.Member;
+import com.sillim.recordit.member.dto.response.MemberListResponse;
 import com.sillim.recordit.member.service.MemberQueryService;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,17 @@ public class InviteController {
 		return ResponseEntity.ok(
 				new InviteInfoResponse(
 						calendar.getId(), calendar.getTitle(), member.getId(), member.getName()));
+	}
+
+	@GetMapping("/followings")
+	public ResponseEntity<List<MemberListResponse>> myFollowingList(
+			@RequestParam Long calendarId, @CurrentMember Member member) {
+		return ResponseEntity.ok(
+				inviteService
+						.searchFollowingsNotInvited(calendarId, member.getPersonalId())
+						.stream()
+						.map(MemberListResponse::of)
+						.toList());
 	}
 
 	@PostMapping("/members/{inviteMemberId}")

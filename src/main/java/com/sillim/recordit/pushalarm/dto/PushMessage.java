@@ -36,4 +36,14 @@ public record PushMessage(Long id, AlarmType type, Long activeId, String title, 
 				alarmLog.getTitle(),
 				alarmLog.getBody());
 	}
+
+	public static PushMessage fromFeedLike(
+			Long feedLikeId, String likerPersonalId, String feedTitle) {
+		return new PushMessage(
+				null,
+				AlarmType.FEED_LIKE,
+				feedLikeId,
+				likerPersonalId + "님이 " + feedTitle + " 피드에 좋아요를 눌렀습니다.",
+				"");
+	}
 }
