@@ -27,6 +27,7 @@ public record WeeklyGoalDetailsResponse(
 					.week(weeklyGoal.getWeek())
 					.startDate(weeklyGoal.getStartDate())
 					.endDate(weeklyGoal.getEndDate())
+					.calendarId(weeklyGoal.getCalendar().getId())
 					.categoryId(weeklyGoal.getCategory().getId())
 					.colorHex(weeklyGoal.getColorHex())
 					.build();
@@ -38,6 +39,7 @@ public record WeeklyGoalDetailsResponse(
 				.week(weeklyGoal.getWeek())
 				.startDate(weeklyGoal.getStartDate())
 				.endDate(weeklyGoal.getEndDate())
+				.calendarId(weeklyGoal.getCalendar().getId())
 				.categoryId(weeklyGoal.getCategory().getId())
 				.colorHex(weeklyGoal.getColorHex())
 				.relatedMonthlyGoal(

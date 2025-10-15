@@ -7,10 +7,9 @@ import lombok.Builder;
 public record WeeklyGoalResponse(
 		Long id,
 		String title,
-		Long categoryId,
+		Integer week,
 		String colorHex,
 		Boolean achieved,
-		Long calendarId,
 		RelatedMonthlyGoalResponse relatedMonthlyGoal) {
 
 	public static WeeklyGoalResponse from(final WeeklyGoal weeklyGoal) {
@@ -19,19 +18,17 @@ public record WeeklyGoalResponse(
 			return WeeklyGoalResponse.builder()
 					.id(weeklyGoal.getId())
 					.title(weeklyGoal.getTitle())
-					.categoryId(weeklyGoal.getCategory().getId())
+					.week(weeklyGoal.getWeek())
 					.colorHex(weeklyGoal.getColorHex())
 					.achieved(weeklyGoal.isAchieved())
-					.calendarId(weeklyGoal.getCalendar().getId())
 					.build();
 		}
 		return WeeklyGoalResponse.builder()
 				.id(weeklyGoal.getId())
 				.title(weeklyGoal.getTitle())
-				.categoryId(weeklyGoal.getCategory().getId())
+				.week(weeklyGoal.getWeek())
 				.colorHex(weeklyGoal.getColorHex())
 				.achieved(weeklyGoal.isAchieved())
-				.calendarId(weeklyGoal.getCalendar().getId())
 				.relatedMonthlyGoal(
 						RelatedMonthlyGoalResponse.from(weeklyGoal.getRelatedMonthlyGoal().get()))
 				.build();
