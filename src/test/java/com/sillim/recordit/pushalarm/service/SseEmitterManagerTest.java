@@ -19,7 +19,7 @@ class SseEmitterManagerTest {
 
 		boolean result =
 				sseEmitterManager.sendToClient(
-						memberId, new PushMessage(1L, AlarmType.INVITE, 1L, "title", "body"));
+						memberId, new PushMessage<>(1L, AlarmType.INVITE, "content"));
 
 		assertThat(result).isTrue();
 	}
@@ -31,7 +31,7 @@ class SseEmitterManagerTest {
 
 		boolean result =
 				sseEmitterManager.sendToClient(
-						memberId, new PushMessage(1L, AlarmType.INVITE, 1L, "title", "body"));
+						memberId, new PushMessage<>(1L, AlarmType.INVITE, "content"));
 
 		assertThat(result).isFalse();
 	}

@@ -17,7 +17,7 @@ public class AlarmLogController {
 	private final AlarmLogService alarmLogService;
 
 	@GetMapping
-	public ResponseEntity<SliceResponse<PushMessage>> alarmLogList(
+	public ResponseEntity<SliceResponse<PushMessage<String>>> alarmLogList(
 			Pageable pageable, @CurrentMember Member member) {
 		return ResponseEntity.ok(alarmLogService.searchRecentCreated(pageable, member.getId()));
 	}

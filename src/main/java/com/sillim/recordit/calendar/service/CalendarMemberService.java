@@ -3,6 +3,7 @@ package com.sillim.recordit.calendar.service;
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.dto.response.CalendarMemberResponse;
+import com.sillim.recordit.calendar.dto.response.CalendarResponse;
 import com.sillim.recordit.calendar.repository.CalendarMemberRepository;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
@@ -50,8 +51,10 @@ public class CalendarMemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Calendar> searchCalendarsByMemberId(Long memberId) {
-		return calendarMemberRepository.findCalendarsByMemberId(memberId);
+	public List<CalendarResponse> searchCalendarsByMemberId(Long memberId) {
+		return calendarMemberRepository.findCalendarsByMemberId(memberId).stream()
+				.map(CalendarResponse::from)
+				.toList();
 	}
 
 	public Long addCalendarMember(Long calendarId, Long memberId) {

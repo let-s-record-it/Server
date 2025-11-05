@@ -1,11 +1,17 @@
 package com.sillim.recordit.schedule.service;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.dto.response.CalendarMemberResponse;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
+import com.sillim.recordit.pushalarm.dto.AlarmType;
+import com.sillim.recordit.pushalarm.dto.PushMessage;
+import com.sillim.recordit.pushalarm.dto.ScheduleDeleteMessage;
+import com.sillim.recordit.pushalarm.service.AlarmService;
 import com.sillim.recordit.pushalarm.service.PushAlarmReserver;
 import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleAlarm;
@@ -33,6 +39,8 @@ public class ScheduleCommandService {
 	private static final long TO_SKIP_ADD_TEMPORAL = 0L;
 	private static final long TO_SKIP_MODIFY_TEMPORAL = 1L;
 	private static final String SCHEDULE_GROUP_PREFIX = "SCHEDULE/";
+	public static final DateTimeFormatter ALARM_FORMATTER =
+			DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)");
 
 	private final ScheduleRepository scheduleRepository;
 	private final CalendarQueryService calendarQueryService;
@@ -40,16 +48,19 @@ public class ScheduleCommandService {
 	private final RepetitionPatternService repetitionPatternService;
 	private final PushAlarmReserver pushAlarmReserver;
 	private final ScheduleCategoryQueryService scheduleCategoryQueryService;
+	private final AlarmService alarmService;
+	private final CalendarMemberService calendarMemberService;
 
-	public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId)
+	public List<Schedule> addSchedules(ScheduleAddRequest request, Long calendarId, Long memberId)
 			throws SchedulerException {
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
 		ScheduleCategory scheduleCategory =
 				scheduleCategoryQueryService.searchScheduleCategory(request.categoryId());
 		ScheduleGroup scheduleGroup = scheduleGroupService.newScheduleGroup(request.isRepeated());
+		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		List<Schedule> schedules;
 
 		if (request.isRepeated()) {
-			Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 			schedules =
 					addRepeatingSchedule(
 							temporalAmount ->
@@ -62,15 +73,11 @@ public class ScheduleCommandService {
 							request.repetition(),
 							scheduleGroup,
 							TO_SKIP_ADD_TEMPORAL);
-
 		} else {
 			schedules =
 					List.of(
 							scheduleRepository.save(
-									request.toSchedule(
-											scheduleCategory,
-											calendarQueryService.searchByCalendarId(calendarId),
-											scheduleGroup)));
+									request.toSchedule(scheduleCategory, calendar, scheduleGroup)));
 		}
 
 		Schedule standSchedule = schedules.get(0);
@@ -89,6 +96,14 @@ public class ScheduleCommandService {
 						.map(ScheduleAlarm::getAlarmTime)
 						.toList());
 
+		calendarMemberService
+				.searchCalendarMembers(calendarId)
+				.forEach(
+						member ->
+								alarmService.pushAlarm(
+										memberId,
+										member.id(),
+										PushMessage.fromAddSchedules(schedules)));
 		return schedules;
 	}
 
@@ -128,8 +143,7 @@ public class ScheduleCommandService {
 				memberId,
 				SCHEDULE_GROUP_PREFIX + memberId + "/" + newScheduleGroup.getId(),
 				schedule.getTitle(),
-				schedule.getStartDateTime()
-						.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)")),
+				schedule.getStartDateTime().format(ALARM_FORMATTER),
 				Map.of("scheduleId", schedule.getId()),
 				schedule.getScheduleAlarms().stream().map(ScheduleAlarm::getAlarmTime).toList());
 
@@ -209,11 +223,21 @@ public class ScheduleCommandService {
 						.findByScheduleId(scheduleId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
-		schedule.validateAuthenticatedMember(memberId);
+		Long calendarId = schedule.getCalendar().getId();
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
+
 		pushAlarmReserver.deletePushAlarmJobs(
 				SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
-
 		schedule.delete();
+
+		List<CalendarMemberResponse> calendarMembers =
+				calendarMemberService.searchCalendarMembers(calendarId);
+		calendarMembers.forEach(
+				calendarMember ->
+						alarmService.pushAlarm(
+								memberId,
+								calendarMember.memberId(),
+								PushMessage.fromDeleteSchedules(List.of(schedule))));
 	}
 
 	public void removeGroupSchedules(Long scheduleId, Long memberId) throws SchedulerException {
@@ -222,13 +246,28 @@ public class ScheduleCommandService {
 						.findByScheduleId(scheduleId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
-		schedule.validateAuthenticatedMember(memberId);
+		Long calendarId = schedule.getCalendar().getId();
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
+
 		pushAlarmReserver.deletePushAlarmJobs(
 				SCHEDULE_GROUP_PREFIX + memberId + "/" + schedule.getScheduleGroup().getId());
+		List<ScheduleDeleteMessage> messages =
+				scheduleRepository.findGroupSchedules(schedule.getScheduleGroup().getId()).stream()
+						.map(
+								s -> {
+									s.delete();
+									return ScheduleDeleteMessage.from(s);
+								})
+						.toList();
 
-		scheduleRepository
-				.findGroupSchedules(schedule.getScheduleGroup().getId())
-				.forEach(Schedule::delete);
+		List<CalendarMemberResponse> calendarMembers =
+				calendarMemberService.searchCalendarMembers(calendarId);
+		calendarMembers.forEach(
+				calendarMember ->
+						alarmService.pushAlarm(
+								memberId,
+								calendarMember.memberId(),
+								new PushMessage<>(null, AlarmType.SCHEDULE_DELETE, messages)));
 	}
 
 	public void removeGroupSchedulesAfterCurrent(Long scheduleId, Long memberId) {
@@ -237,12 +276,29 @@ public class ScheduleCommandService {
 						.findByScheduleId(scheduleId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
-		schedule.validateAuthenticatedMember(memberId);
+		Long calendarId = schedule.getCalendar().getId();
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
 
-		scheduleRepository
-				.findGroupSchedulesAfterCurrent(
-						schedule.getScheduleGroup().getId(), schedule.getStartDateTime())
-				.forEach(Schedule::delete);
+		List<ScheduleDeleteMessage> messages =
+				scheduleRepository
+						.findGroupSchedulesAfterCurrent(
+								schedule.getScheduleGroup().getId(), schedule.getStartDateTime())
+						.stream()
+						.map(
+								s -> {
+									s.delete();
+									return ScheduleDeleteMessage.from(s);
+								})
+						.toList();
+
+		List<CalendarMemberResponse> calendarMembers =
+				calendarMemberService.searchCalendarMembers(calendarId);
+		calendarMembers.forEach(
+				calendarMember ->
+						alarmService.pushAlarm(
+								memberId,
+								calendarMember.memberId(),
+								new PushMessage<>(null, AlarmType.SCHEDULE_DELETE, messages)));
 	}
 
 	public void replaceScheduleCategoriesWithDefaultCategory(

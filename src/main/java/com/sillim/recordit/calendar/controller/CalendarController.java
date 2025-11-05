@@ -32,10 +32,7 @@ public class CalendarController {
 
 	@GetMapping
 	public ResponseEntity<List<CalendarResponse>> calendarList(@CurrentMember Member member) {
-		return ResponseEntity.ok(
-				calendarMemberService.searchCalendarsByMemberId(member.getId()).stream()
-						.map(CalendarResponse::from)
-						.toList());
+		return ResponseEntity.ok(calendarMemberService.searchCalendarsByMemberId(member.getId()));
 	}
 
 	@PostMapping

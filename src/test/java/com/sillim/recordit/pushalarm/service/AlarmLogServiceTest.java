@@ -35,14 +35,14 @@ class AlarmLogServiceTest {
 	void searchRecentCreated() {
 		long memberId = 1L;
 		PageRequest pageable = PageRequest.of(0, 1);
-		AlarmLog alarmLog = new AlarmLog(1L, AlarmType.FOLLOWING, "title", "body", 1L, 1L);
+		AlarmLog alarmLog = new AlarmLog(AlarmType.FOLLOWING, "content", 1L, 1L);
 		SliceImpl<AlarmLog> slice = new SliceImpl<>(List.of(alarmLog), pageable, false);
 		given(
 						alarmLogRepository.findByDeletedIsFalseAndReceiverIdOrderByCreatedAtDesc(
 								eq(pageable), eq(memberId)))
 				.willReturn(slice);
 
-		SliceResponse<PushMessage> response =
+		SliceResponse<PushMessage<String>> response =
 				alarmLogService.searchRecentCreated(pageable, memberId);
 
 		assertThat(response.content()).hasSize(1);
@@ -53,7 +53,7 @@ class AlarmLogServiceTest {
 	void deleteAlarmLog() {
 		long alarmLogId = 1L;
 		long memberId = 1L;
-		AlarmLog alarmLog = spy(new AlarmLog(1L, AlarmType.FOLLOWING, "title", "body", 1L, 1L));
+		AlarmLog alarmLog = spy(new AlarmLog(AlarmType.FOLLOWING, "content", 1L, 1L));
 		given(alarmLogRepository.findById(eq(alarmLogId))).willReturn(Optional.of(alarmLog));
 
 		alarmLogService.deleteAlarmLog(alarmLogId, memberId);
@@ -66,7 +66,7 @@ class AlarmLogServiceTest {
 	void throwInvalidRequestExceptionIfNotReceiverWhenDeleteAlarmLog() {
 		long alarmLogId = 1L;
 		long memberId = 1L;
-		AlarmLog alarmLog = new AlarmLog(1L, AlarmType.FOLLOWING, "title", "body", 1L, 2L);
+		AlarmLog alarmLog = new AlarmLog(AlarmType.FOLLOWING, "content", 1L, 2L);
 		given(alarmLogRepository.findById(eq(alarmLogId))).willReturn(Optional.of(alarmLog));
 
 		assertThatCode(() -> alarmLogService.deleteAlarmLog(alarmLogId, memberId))
