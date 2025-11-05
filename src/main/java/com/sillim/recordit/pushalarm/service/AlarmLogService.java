@@ -20,14 +20,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class AlarmLogService {
 	private final AlarmLogRepository alarmLogRepository;
 
-	public SliceResponse<PushMessage> searchRecentCreated(Pageable pageable, Long memberId) {
+	public SliceResponse<PushMessage<String>> searchRecentCreated(
+			Pageable pageable, Long memberId) {
 		Slice<AlarmLog> alarmSlice =
 				alarmLogRepository.findByDeletedIsFalseAndReceiverIdOrderByCreatedAtDesc(
 						pageable, memberId);
 
 		return SliceResponse.of(
 				new SliceImpl<>(
-						alarmSlice.stream().map(PushMessage::fromAlarmLog).toList(),
+						alarmSlice.stream()
+								.map(
+										alarmLog ->
+												new PushMessage<>(
+														alarmLog.getId(),
+														alarmLog.getAlarmType(),
+														alarmLog.getContent()))
+								.toList(),
 						pageable,
 						alarmSlice.hasNext()));
 	}

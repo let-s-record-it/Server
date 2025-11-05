@@ -3,22 +3,22 @@ package com.sillim.recordit.schedule.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.category.service.ScheduleCategoryQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
-import com.sillim.recordit.global.exception.common.InvalidRequestException;
+import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.pushalarm.service.PushAlarmReserver;
@@ -48,6 +48,7 @@ class ScheduleCommandServiceTest {
 	@Mock ScheduleRepository scheduleRepository;
 	@Mock CalendarQueryService calendarQueryService;
 	@Mock ScheduleGroupService scheduleGroupService;
+	@Mock CalendarMemberService calendarMemberService;
 	@Mock RepetitionPatternService repetitionPatternService;
 	@Mock PushAlarmReserver pushAlarmReserver;
 	@Mock ScheduleCategoryQueryService scheduleCategoryQueryService;
@@ -85,7 +86,8 @@ class ScheduleCommandServiceTest {
 		given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 		given(scheduleGroupService.newScheduleGroup(any())).willReturn(scheduleGroup);
 
-		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest, 1L);
+		List<Schedule> schedules =
+				scheduleCommandService.addSchedules(scheduleAddRequest, 1L, memberId);
 
 		assertAll(
 				() -> {
@@ -152,7 +154,8 @@ class ScheduleCommandServiceTest {
 		given(repetitionPatternService.addRepetitionPattern(repetitionUpdateRequest, scheduleGroup))
 				.willReturn(repetitionPattern);
 
-		List<Schedule> schedules = scheduleCommandService.addSchedules(scheduleAddRequest, 1L);
+		List<Schedule> schedules =
+				scheduleCommandService.addSchedules(scheduleAddRequest, 1L, memberId);
 
 		assertAll(
 				() -> {
@@ -363,8 +366,10 @@ class ScheduleCommandServiceTest {
 	@Test
 	@DisplayName("일정을 삭제할 수 있다.")
 	void removeSchedule() throws SchedulerException {
+		Calendar calendar = mock(Calendar.class);
 		Schedule schedule = mock(Schedule.class);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
+		given(schedule.getCalendar()).willReturn(calendar);
 		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 
@@ -378,7 +383,9 @@ class ScheduleCommandServiceTest {
 	void removeGroupSchedules() throws SchedulerException {
 		Schedule schedule = mock(Schedule.class);
 		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
+		Calendar calendar = mock(Calendar.class);
 		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
+		given(schedule.getCalendar()).willReturn(calendar);
 		given(scheduleGroup.getId()).willReturn(1L);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
 		given(scheduleRepository.findGroupSchedules(eq(1L)))
@@ -392,8 +399,10 @@ class ScheduleCommandServiceTest {
 	@Test
 	@DisplayName("그룹 내 특정 일 이후 일정을 삭제할 수 있다.")
 	void removeGroupSchedulesAfter() {
+		Calendar calendar = mock(Calendar.class);
 		Schedule schedule = mock(Schedule.class);
 		ScheduleGroup scheduleGroup = mock(ScheduleGroup.class);
+		given(schedule.getCalendar()).willReturn(calendar);
 		given(schedule.getScheduleGroup()).willReturn(scheduleGroup);
 		given(schedule.getStartDateTime()).willReturn(LocalDateTime.of(2024, 1, 1, 0, 0));
 		given(scheduleGroup.getId()).willReturn(1L);
@@ -407,10 +416,9 @@ class ScheduleCommandServiceTest {
 	}
 
 	@Test
-	@DisplayName("그룹 내 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
-	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveGroupSchedules() {
+	@DisplayName("그룹 내 일정 삭제 시 해당 일정의 유저가 아니면 RecordNotFoundException이 발생한다.")
+	void throwRecordNotFoundExceptionIfNotOwnerWhenRemoveGroupSchedules() {
 		long memberId = 1L;
-		Member member = mock(Member.class);
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		ScheduleGroup scheduleGroup = new ScheduleGroup(false);
@@ -419,15 +427,18 @@ class ScheduleCommandServiceTest {
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+		willThrow(new RecordNotFoundException(ErrorCode.CALENDAR_MEMBER_NOT_FOUND))
+				.given(calendarMemberService)
+				.validateCalendarMember(any(), eq(2L));
 
 		assertThatCode(() -> scheduleCommandService.removeGroupSchedules(schedule.getId(), 2L))
-				.isInstanceOf(InvalidRequestException.class)
-				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
+				.isInstanceOf(RecordNotFoundException.class)
+				.hasMessage(ErrorCode.CALENDAR_MEMBER_NOT_FOUND.getDescription());
 	}
 
 	@Test
-	@DisplayName("그룹 내 특정 일 이후 일정 삭제 시 해당 일정의 유저가 아니면 InvalidRequestException이 발생한다.")
-	void throwInvalidRequestExceptionIfNotOwnerWhenRemoveGroupSchedulesAfter() {
+	@DisplayName("그룹 내 특정 일 이후 일정 삭제 시 해당 일정의 유저가 아니면 RecordNotFoundException이 발생한다.")
+	void throwRecordNotFoundExceptionIfNotOwnerWhenRemoveGroupSchedulesAfter() {
 		long memberId = 1L;
 		Member member = mock(Member.class);
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
@@ -438,12 +449,15 @@ class ScheduleCommandServiceTest {
 		Schedule schedule =
 				ScheduleFixture.DEFAULT.getSchedule(scheduleCategory, scheduleGroup, calendar);
 		given(scheduleRepository.findByScheduleId(any())).willReturn(Optional.of(schedule));
+		willThrow(new RecordNotFoundException(ErrorCode.CALENDAR_MEMBER_NOT_FOUND))
+				.given(calendarMemberService)
+				.validateCalendarMember(any(), eq(2L));
 
 		assertThatCode(
 						() ->
 								scheduleCommandService.removeGroupSchedulesAfterCurrent(
 										schedule.getId(), 2L))
-				.isInstanceOf(InvalidRequestException.class)
-				.hasMessage(ErrorCode.INVALID_REQUEST.getDescription());
+				.isInstanceOf(RecordNotFoundException.class)
+				.hasMessage(ErrorCode.CALENDAR_MEMBER_NOT_FOUND.getDescription());
 	}
 }

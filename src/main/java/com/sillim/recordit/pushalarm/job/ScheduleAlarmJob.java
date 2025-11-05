@@ -47,6 +47,7 @@ public class ScheduleAlarmJob implements Job {
 					}
 				});
 
-		alarmService.pushAlarm(-1L, memberId, PushMessage.fromSchedule(scheduleId, title, body));
+		alarmService.pushAlarm(
+				-1L, memberId, PushMessage.fromScheduleAlarm(scheduleId, title, body));
 	}
 }

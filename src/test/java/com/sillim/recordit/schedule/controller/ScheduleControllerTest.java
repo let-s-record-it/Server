@@ -72,6 +72,7 @@ class ScheduleControllerTest extends RestDocsTest {
 	@DisplayName("일정을 생성한다.")
 	void addSchedule() throws Exception {
 		long calendarId = 1L;
+		long memberId = 1L;
 		ScheduleAddRequest scheduleAddRequest =
 				new ScheduleAddRequest(
 						"title",
@@ -97,7 +98,7 @@ class ScheduleControllerTest extends RestDocsTest {
 						calendar,
 						LocalDateTime.of(2024, 1, 1, 0, 0),
 						LocalDateTime.of(2024, 2, 1, 0, 0));
-		given(scheduleCommandService.addSchedules(scheduleAddRequest, calendarId))
+		given(scheduleCommandService.addSchedules(scheduleAddRequest, calendarId, memberId))
 				.willReturn(List.of(schedule));
 
 		ResultActions perform =

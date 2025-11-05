@@ -18,6 +18,7 @@ import com.sillim.recordit.calendar.dto.request.CalendarAddRequest;
 import com.sillim.recordit.calendar.dto.request.CalendarModifyRequest;
 import com.sillim.recordit.calendar.dto.request.JoinInCalendarRequest;
 import com.sillim.recordit.calendar.dto.response.CalendarMemberResponse;
+import com.sillim.recordit.calendar.dto.response.CalendarResponse;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.calendar.service.CalendarCommandService;
@@ -59,7 +60,9 @@ class CalendarControllerTest extends RestDocsTest {
 	void calendarList() throws Exception {
 		CalendarCategory category = CalendarCategoryFixture.DEFAULT.getCalendarCategory(memberId);
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
-		given(calendarMemberService.searchCalendarsByMemberId(any())).willReturn(List.of(calendar));
+		CalendarResponse calendarResponse = CalendarResponse.from(calendar);
+		given(calendarMemberService.searchCalendarsByMemberId(any()))
+				.willReturn(List.of(calendarResponse));
 
 		ResultActions perform = mockMvc.perform(get("/api/v1/calendars"));
 
