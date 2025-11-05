@@ -1,6 +1,7 @@
 package com.sillim.recordit.goal.service;
 
 import com.sillim.recordit.calendar.domain.Calendar;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
@@ -18,11 +19,12 @@ public class WeeklyGoalQueryService {
 
 	private final CalendarQueryService calendarQueryService;
 	private final WeeklyGoalRepository weeklyGoalRepository;
+	private final CalendarMemberService calendarMemberService;
 
 	public List<WeeklyGoal> searchAllWeeklyGoalByDate(
 			final Integer year, final Integer month, final Long memberId, final Long calendarId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
-		calendar.validateAuthenticatedMember(memberId);
+		calendarMemberService.validateCalendarMember(calendar.getId(), memberId);
 
 		return weeklyGoalRepository.findWeeklyGoalInMonth(year, month, calendarId);
 	}

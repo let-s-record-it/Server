@@ -19,17 +19,11 @@ public class AlarmLog extends BaseTime {
 	private Long id;
 
 	@Column(nullable = false)
-	private Long activeId;
-
-	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private AlarmType alarmType;
 
 	@Column(nullable = false)
-	private String title;
-
-	@Column(nullable = false)
-	private String body;
+	private String content;
 
 	@Column(nullable = false)
 	private Long senderId;
@@ -41,17 +35,9 @@ public class AlarmLog extends BaseTime {
 	private boolean deleted;
 
 	@Builder
-	public AlarmLog(
-			Long activeId,
-			AlarmType alarmType,
-			String title,
-			String body,
-			Long senderId,
-			Long receiverId) {
-		this.activeId = activeId;
+	public AlarmLog(AlarmType alarmType, String content, Long senderId, Long receiverId) {
 		this.alarmType = alarmType;
-		this.title = title;
-		this.body = body;
+		this.content = content;
 		this.senderId = senderId;
 		this.receiverId = receiverId;
 		this.deleted = false;

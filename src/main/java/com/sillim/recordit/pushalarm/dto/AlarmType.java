@@ -1,7 +1,9 @@
 package com.sillim.recordit.pushalarm.dto;
 
 public enum AlarmType {
-	SCHEDULE,
+	SCHEDULE_ADD,
+	SCHEDULE_DELETE,
+	SCHEDULE_ALARM,
 	INVITE,
 	FOLLOWING,
 	FEED_LIKE,

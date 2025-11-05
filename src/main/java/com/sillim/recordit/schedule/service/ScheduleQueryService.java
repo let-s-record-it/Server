@@ -1,6 +1,6 @@
 package com.sillim.recordit.schedule.service;
 
-import com.sillim.recordit.calendar.service.CalendarQueryService;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.schedule.domain.Schedule;
@@ -22,7 +22,7 @@ public class ScheduleQueryService {
 
 	private final ScheduleRepository scheduleRepository;
 	private final RepetitionPatternService repetitionPatternService;
-	private final CalendarQueryService calendarQueryService;
+	private final CalendarMemberService calendarMemberService;
 
 	public DayScheduleResponse searchSchedule(Long scheduleId, Long memberId) {
 		Schedule schedule =
@@ -51,7 +51,7 @@ public class ScheduleQueryService {
 
 	public List<MonthScheduleResponse> searchSchedulesInMonth(
 			Long calendarId, Integer year, Integer month, Long memberId) {
-		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
 		return scheduleRepository.findScheduleInMonth(calendarId, year, month).stream()
 				.map(MonthScheduleResponse::from)
 				.toList();
@@ -59,7 +59,7 @@ public class ScheduleQueryService {
 
 	public List<DayScheduleResponse> searchSchedulesInDay(
 			Long calendarId, LocalDate date, Long memberId) {
-		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
 		return scheduleRepository.findScheduleInDay(calendarId, date).stream()
 				.map(
 						schedule ->
@@ -78,7 +78,7 @@ public class ScheduleQueryService {
 
 	public List<DayScheduleResponse> searchSchedulesContainQuery(
 			String query, Long calendarId, Long memberId) {
-		calendarQueryService.searchByCalendarId(calendarId).validateAuthenticatedMember(memberId);
+		calendarMemberService.validateCalendarMember(calendarId, memberId);
 		return scheduleRepository.findScheduleMatchedQuery(query, calendarId).stream()
 				.map(
 						schedule ->

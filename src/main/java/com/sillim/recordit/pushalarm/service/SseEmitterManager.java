@@ -16,30 +16,53 @@ public class SseEmitterManager {
 	private final ConcurrentHashMap<Long, SseEmitter> clients = new ConcurrentHashMap<>();
 
 	public SseEmitter subscribe(Long memberId) {
+		SseEmitter oldEmitter = clients.get(memberId);
+		if (oldEmitter != null) {
+			log.info("[SSE CLEANUP] Old Connection 삭제, Member: {}", memberId);
+			oldEmitter.complete();
+			clients.remove(memberId);
+		}
+
 		SseEmitter emitter = new SseEmitter(TIMEOUT);
 		clients.put(memberId, emitter);
 
-		emitter.onCompletion(() -> clients.remove(memberId));
-		emitter.onTimeout(() -> clients.remove(memberId));
+		emitter.onCompletion(
+				() -> {
+					log.info("[SSE COMPLETE] Member: {}", memberId);
+					clients.remove(memberId);
+				});
+		emitter.onTimeout(
+				() -> {
+					log.info("[SSE TIMEOUT] Member: {}", memberId);
+					clients.remove(memberId);
+				});
+		emitter.onError(
+				throwable -> {
+					log.info("[SSE ERROR] Member: {}, Error: {}", memberId, throwable.getMessage());
+					clients.remove(memberId);
+				});
 
 		log.info("[SSE SUBSCRIBE] {}", memberId);
 
 		return emitter;
 	}
 
-	public boolean sendToClient(Long memberId, PushMessage message) {
+	public <T> boolean sendToClient(Long memberId, PushMessage<T> message) {
 		SseEmitter emitter = clients.get(memberId);
 
-		if (emitter != null) {
-			try {
-				emitter.send(SseEmitter.event().name(message.type().name()).data(message));
-				return true;
-			} catch (IOException exception) {
-				clients.remove(memberId);
-				emitter.completeWithError(exception);
-				return false;
-			}
+		if (emitter == null) {
+			log.warn("[SSE NOT FOUND] Member: {}", memberId);
+			return false;
 		}
-		return false;
+
+		log.info("[SSE SEND] {} {}", memberId, emitter);
+		try {
+			emitter.send(SseEmitter.event().name(message.type().name()).data(message));
+			return true;
+		} catch (IOException exception) {
+			clients.remove(memberId);
+			emitter.completeWithError(exception);
+			return false;
+		}
 	}
 }

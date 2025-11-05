@@ -27,10 +27,12 @@ public class ScheduleController {
 
 	@PostMapping
 	public ResponseEntity<List<MonthScheduleResponse>> schedulesAdd(
-			@Validated @RequestBody ScheduleAddRequest request, @PathVariable Long calendarId)
+			@Validated @RequestBody ScheduleAddRequest request,
+			@PathVariable Long calendarId,
+			@CurrentMember Member member)
 			throws SchedulerException {
 		return ResponseEntity.ok(
-				scheduleCommandService.addSchedules(request, calendarId).stream()
+				scheduleCommandService.addSchedules(request, calendarId, member.getId()).stream()
 						.map(MonthScheduleResponse::from)
 						.toList());
 	}

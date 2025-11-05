@@ -9,7 +9,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.calendar.service.CalendarQueryService;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
@@ -35,7 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ScheduleQueryServiceTest {
 
 	@Mock ScheduleRepository scheduleRepository;
-	@Mock CalendarQueryService calendarQueryService;
+	@Mock CalendarMemberService calendarMemberService;
 	@Mock RepetitionPatternService repetitionPatternService;
 	@InjectMocks ScheduleQueryService scheduleQueryService;
 
@@ -167,7 +167,6 @@ class ScheduleQueryServiceTest {
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(calendarQueryService.searchByCalendarId(anyLong())).willReturn(calendar);
 		given(scheduleRepository.findScheduleInMonth(anyLong(), eq(2024), eq(1)))
 				.willReturn(List.of(expectedSchedule));
 
@@ -201,7 +200,6 @@ class ScheduleQueryServiceTest {
 						.calendar(calendar)
 						.scheduleAlarms(List.of(LocalDateTime.of(2024, 1, 1, 0, 0)))
 						.build();
-		given(calendarQueryService.searchByCalendarId(anyLong())).willReturn(calendar);
 		given(scheduleRepository.findScheduleInDay(anyLong(), eq(LocalDate.of(2024, 1, 15))))
 				.willReturn(List.of(expectedSchedule));
 

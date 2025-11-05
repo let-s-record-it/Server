@@ -11,6 +11,7 @@ import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.calendar.service.CalendarMemberService;
 import com.sillim.recordit.calendar.service.CalendarQueryService;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
@@ -36,6 +37,7 @@ public class WeeklyGoalQueryServiceTest {
 
 	@Mock WeeklyGoalRepository weeklyGoalRepository;
 	@Mock CalendarQueryService calendarQueryService;
+	@Mock CalendarMemberService calendarMemberService;
 	@InjectMocks WeeklyGoalQueryService weeklyGoalQueryService;
 
 	long memberId = 1L;
