@@ -2,12 +2,10 @@ name: LetsRecordIt Server Deploy with Gradle
 
 on:
   pull_request:
-    branches: [ "develop" ]
-#  pull_request:
-#    branches:
-#      - main
-#    types:
-#      - closed
+    branches:
+      - main
+    types:
+      - closed
 
 jobs:
   setup-build-publish-deploy:
