@@ -22,7 +22,6 @@ spring:
   cloud:
     gcp:
       storage:
-        project-id: ${GCP_PROJECT_ID}
         bucket: ${GCP_BUCKET_NAME}
   security:
     oauth2:
