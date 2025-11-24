@@ -22,8 +22,6 @@ spring:
   cloud:
     gcp:
       storage:
-        credentials:
-          location: ${GCP_CREDENTIAL_LOCATION}
         project-id: ${GCP_PROJECT_ID}
         bucket: ${GCP_BUCKET_NAME}
   security:
