@@ -75,10 +75,10 @@ jobs:
           key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
           envs: GITHUB_SHA
           script: |
-            docker ps -q -f letsrecordit-server && docker stop letsrecordit-server && docker rm letsrecordit-server
-            docker images -q ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest && docker rmi ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
-            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
-            sudo docker-compose up -d
+            sudo docker ps -q -f name=letsrecordit-server && sudo docker stop letsrecordit-server && sudo docker rm letsrecordit-server
+            sudo docker images -q ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest && sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
+            sudo docker compose up -d
 
       - name: Health Check
         uses: appleboy/ssh-action@master
@@ -115,6 +115,6 @@ jobs:
             if [ -z "$HEALTH_CHECK_CONTAINER_NAME" ]; then
               echo "HEALTH_CHECK_CONTAINER_NAME not set, please add it on github actions secrets"
             else
-              docker logs --since "10m" "$HEALTH_CHECK_CONTAINER_NAME" 2>&1 || echo "Could not get logs for container: $HEALTH_CHECK_CONTAINER_NAME"
+              sudo docker logs --since "10m" "$HEALTH_CHECK_CONTAINER_NAME" 2>&1 || echo "Could not get logs for container: $HEALTH_CHECK_CONTAINER_NAME"
             fi
             exit 1
