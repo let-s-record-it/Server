@@ -1,0 +1,61 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Seoul
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    depends_on:
+      - certbot
+    networks:
+      - didim
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: >
+      /bin/sh -c 'trap exit TERM; while :; do certbot renew --deploy-hook "nginx -s reload"; sleep 12h & wait $${!}; done;'
+    networks:
+      - didim
+
+  spring:
+    image: rt3310/letsrecordit:latest
+    container_name: spring
+    restart: on-failure:3
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      TZ: Asia/Seoul
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_KEY}
+      AWS_REGION: ${AWS_REGION}
+    networks:
+      - didim
+    volumes:
+      - ./:/app/local
+      - /var/log/${APP_NAME}:/var/log/${APP_NAME}
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail-config.dev.yml:/etc/promtail/config.yml
+      - /var/log/${APP_NAME}:/var/log/app
+      - /var/lib/promtail:/var/lib/promtail
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - didim
+
+networks:
+  didim:
+    driver: bridge

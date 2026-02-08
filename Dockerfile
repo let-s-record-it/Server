@@ -10,5 +10,8 @@ FROM azul/zulu-openjdk-alpine:17-latest
 WORKDIR /app
 
 COPY --from=builder /app/build/libs/*.jar app.jar
+
+RUN apk add --no-cache curl
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

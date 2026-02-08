@@ -1,8 +1,8 @@
 spring:
   config:
     activate:
-      on-profile: prod
-    import: aws-secretsmanager:prod/letsrecordit
+      on-profile: dev
+    import: aws-secretsmanager:dev/letsrecordit
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,6 +18,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         hbm2ddl:
           auto: validate
+
   cloud:
     gcp:
       storage:
