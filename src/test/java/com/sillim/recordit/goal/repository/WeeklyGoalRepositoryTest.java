@@ -10,6 +10,7 @@ import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
 import com.sillim.recordit.goal.domain.WeeklyGoal;
 import com.sillim.recordit.goal.fixture.WeeklyGoalFixture;
+import com.sillim.recordit.support.repository.RepositoryTest;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -18,16 +19,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@EnableJpaAuditing
-@DataJpaTest
-public class WeeklyGoalRepositoryTest {
+public class WeeklyGoalRepositoryTest extends RepositoryTest {
 
 	@Autowired WeeklyGoalRepository weeklyGoalRepository;
-	@Autowired TestEntityManager em;
 
 	long memberId = 1L;
 	private ScheduleCategory category;

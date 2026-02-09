@@ -3,17 +3,14 @@ package com.sillim.recordit.member.service.kakao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sillim.recordit.member.dto.oidc.OidcPublicKeys;
+import com.sillim.recordit.support.integration.SpringTest;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@SpringBootTest
-class KakaoOidcClientTest {
+class KakaoOidcClientTest extends SpringTest {
 
 	@Autowired CacheManager cacheManager;
 	@Autowired KakaoOidcClient kakaoOidcClient;

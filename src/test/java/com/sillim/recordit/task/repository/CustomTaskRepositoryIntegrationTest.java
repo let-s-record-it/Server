@@ -8,6 +8,7 @@ import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
 import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.category.fixture.ScheduleCategoryFixture;
+import com.sillim.recordit.support.repository.RepositoryTest;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.fixture.TaskFixture;
@@ -19,16 +20,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-@DataJpaTest
-public class CustomTaskRepositoryIntegrationTest {
+public class CustomTaskRepositoryIntegrationTest extends RepositoryTest {
 
 	@Qualifier("customTaskRepositoryImpl") @Autowired
 	CustomTaskRepository taskRepository;
-
-	@Autowired TestEntityManager em;
 
 	long memberId = 1L;
 	private CalendarCategory calendarCategory;

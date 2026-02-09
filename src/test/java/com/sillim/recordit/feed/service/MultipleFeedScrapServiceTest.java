@@ -10,6 +10,7 @@ import com.sillim.recordit.feed.repository.FeedRepository;
 import com.sillim.recordit.global.lock.RedisLockUtil;
 import com.sillim.recordit.member.domain.Member;
 import com.sillim.recordit.member.repository.MemberRepository;
+import com.sillim.recordit.support.integration.SpringTest;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -18,13 +19,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@SpringBootTest
-class MultipleFeedScrapServiceTest {
+class MultipleFeedScrapServiceTest extends SpringTest {
 
 	@MockBean MemberRepository memberRepository;
 	@Autowired FeedRepository feedRepository;

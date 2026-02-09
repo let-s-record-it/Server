@@ -13,6 +13,7 @@ import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
 import com.sillim.recordit.schedule.fixture.ScheduleFixture;
+import com.sillim.recordit.support.repository.RepositoryTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,19 +23,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@EnableJpaAuditing
-@DataJpaTest
-class CustomScheduleRepositoryTest {
+class CustomScheduleRepositoryTest extends RepositoryTest {
 
 	@Qualifier("customScheduleRepositoryImpl") @Autowired
 	CustomScheduleRepository customScheduleRepository;
 
 	@Autowired ScheduleRepository scheduleRepository;
-	@Autowired TestEntityManager em;
 
 	long memberId = 1L;
 	CalendarCategory category;

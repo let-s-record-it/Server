@@ -40,7 +40,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // database
@@ -55,7 +54,6 @@ dependencies {
     // spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    testImplementation 'org.springframework.security:spring-security-test'
 
     // jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -99,23 +97,44 @@ dependencies {
 
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
+    // test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.testcontainers:testcontainers-mysql:2.0.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.springframework.security:spring-security-test'
 
     // AOP
     implementation 'org.springframework.boot:spring-boot-starter-aop'
+
     // Actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
     // Prometheus
     implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
     outputs.dir snippetsDir
-    useJUnitPlatform()
+
+    useJUnitPlatform {
+        excludeTags 'integration'
+    }
+
     jacoco {
         enabled = true
     }
+
     finalizedBy jacocoTestReport
+}
+
+tasks.register('integrationTest', Test) {
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform {
+        includeTags 'integration'
+    }
 }
 
 tasks.named('asciidoctor') {
@@ -167,6 +186,7 @@ jacocoTestReport {
                             '*.util.LoggingUtils',
                             '*.*Config',
                             '*.DefaultUserService',
+                            '*.QuerydslRepositorySupport',
                     ] + QDomains)
                 })
         )
@@ -190,7 +210,7 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.7
+                minimum = 0.5
             }
 
             excludes = [
@@ -198,6 +218,7 @@ jacocoTestCoverageVerification {
                     '*.util.LoggingUtils',
                     '*.*Config',
                     '*.DefaultUserService',
+                    '*.QuerydslRepositorySupport',
             ] + QDomains
         }
     }

@@ -1,13 +1,14 @@
 package com.sillim.recordit.calendar.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.support.repository.RepositoryTest;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,18 +16,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@EnableJpaAuditing
-@DataJpaTest
-class CustomCalendarMemberRepositoryImplTest {
+class CustomCalendarMemberRepositoryImplTest extends RepositoryTest {
 
 	@Qualifier("customCalendarMemberRepositoryImpl") @Autowired
 	CustomCalendarMemberRepositoryImpl customCalendarMemberRepository;
-
-	@Autowired TestEntityManager em;
 
 	Calendar calendar;
 	CalendarCategory category;

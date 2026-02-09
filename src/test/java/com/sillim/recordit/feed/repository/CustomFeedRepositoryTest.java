@@ -5,90 +5,86 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.fixture.FeedFixture;
+import com.sillim.recordit.support.repository.RepositoryTest;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@EnableJpaAuditing
-@DataJpaTest
-class CustomFeedRepositoryTest {
+class CustomFeedRepositoryTest extends RepositoryTest {
 
-	@Qualifier("customFeedRepositoryImpl") @Autowired
-	CustomFeedRepository customFeedRepository;
+    @Qualifier("customFeedRepositoryImpl")
+    @Autowired
+    CustomFeedRepository customFeedRepository;
 
-	@Autowired TestEntityManager em;
+    long memberId = 1L;
 
-	long memberId = 1L;
+    @Test
+    @DisplayName("피드 id로 피드를 조회한다.")
+    void findById() {
+        Feed feed = em.persist(FeedFixture.DEFAULT.getFeed(memberId));
 
-	@Test
-	@DisplayName("피드 id로 피드를 조회한다.")
-	void findById() {
-		Feed feed = em.persist(FeedFixture.DEFAULT.getFeed(memberId));
+        Optional<Feed> foundFeed = customFeedRepository.findByIdWithFetchJoin(feed.getId());
 
-		Optional<Feed> foundFeed = customFeedRepository.findByIdWithFetchJoin(feed.getId());
+        assertThat(foundFeed).isNotEmpty();
+        assertThat(foundFeed.get().getId()).isEqualTo(feed.getId());
+    }
 
-		assertThat(foundFeed).isNotEmpty();
-		assertThat(foundFeed.get().getId()).isEqualTo(feed.getId());
-	}
+    @Test
+    @DisplayName("피드를 pagination해서 created 내림차순으로 조회한다.")
+    void findPaginatedOrderByCreatedDesc() {
+        IntStream.range(0, 10)
+                .mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(memberId)))
+                .toList();
 
-	@Test
-	@DisplayName("피드를 pagination해서 created 내림차순으로 조회한다.")
-	void findPaginatedOrderByCreatedDesc() {
-		List<Feed> feeds =
-				IntStream.range(0, 10)
-						.mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(memberId)))
-						.toList();
+        Slice<Feed> foundFeeds =
+                customFeedRepository.findOrderByCreatedAtDesc(PageRequest.of(0, 5));
 
-		Slice<Feed> foundFeeds =
-				customFeedRepository.findOrderByCreatedAtDesc(PageRequest.of(0, 5));
+        Slice<Feed> foundFeeds2 =
+                customFeedRepository.findOrderByCreatedAtDesc(PageRequest.of(3, 3));
 
-		Slice<Feed> foundFeeds2 =
-				customFeedRepository.findOrderByCreatedAtDesc(PageRequest.of(3, 3));
+        assertAll(
+                () -> {
+                    assertThat(foundFeeds).hasSize(5);
+                    assertThat(foundFeeds.isLast()).isFalse();
+                    assertThat(foundFeeds.getContent().get(0).getCreatedAt())
+                            .isAfterOrEqualTo(foundFeeds.getContent().get(1).getCreatedAt());
+                    assertThat(foundFeeds2).hasSize(1);
+                    assertThat(foundFeeds2.isLast()).isTrue();
+                });
+    }
 
-		assertAll(
-				() -> {
-					assertThat(foundFeeds).hasSize(5);
-					assertThat(foundFeeds.isLast()).isFalse();
-					assertThat(foundFeeds.getContent().get(0).getCreatedAt())
-							.isAfterOrEqualTo(foundFeeds.getContent().get(1).getCreatedAt());
-					assertThat(foundFeeds2).hasSize(1);
-					assertThat(foundFeeds2.isLast()).isTrue();
-				});
-	}
+    @Test
+    @DisplayName("특정 멤버의 피드를 pagination해서 created 내림차순으로 조회한다.")
+    void findByMemberIdPaginatedOrderByCreatedDesc() {
+        List<Feed> feeds =
+                IntStream.range(0, 10)
+                        .mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(memberId)))
+                        .toList();
 
-	@Test
-	@DisplayName("특정 멤버의 피드를 pagination해서 created 내림차순으로 조회한다.")
-	void findByMemberIdPaginatedOrderByCreatedDesc() {
-		List<Feed> feeds =
-				IntStream.range(0, 10)
-						.mapToObj(i -> em.persist(FeedFixture.DEFAULT.getFeed(memberId)))
-						.toList();
+        Slice<Feed> foundFeeds =
+                customFeedRepository.findByMemberIdOrderByCreatedAtDesc(
+                        PageRequest.of(0, 5), memberId);
 
-		Slice<Feed> foundFeeds =
-				customFeedRepository.findByMemberIdOrderByCreatedAtDesc(
-						PageRequest.of(0, 5), memberId);
+        Slice<Feed> foundFeeds2 =
+                customFeedRepository.findByMemberIdOrderByCreatedAtDesc(
+                        PageRequest.of(3, 3), memberId);
 
-		Slice<Feed> foundFeeds2 =
-				customFeedRepository.findByMemberIdOrderByCreatedAtDesc(
-						PageRequest.of(3, 3), memberId);
-
-		assertAll(
-				() -> {
-					assertThat(foundFeeds).hasSize(5);
-					assertThat(foundFeeds.isLast()).isFalse();
-					assertThat(foundFeeds.getContent().get(0).getId())
-							.isEqualTo(feeds.get(9).getId());
-					assertThat(foundFeeds2).hasSize(1);
-					assertThat(foundFeeds2.isLast()).isTrue();
-				});
-	}
+        assertAll(
+                () -> {
+                    assertThat(foundFeeds).hasSize(5);
+                    assertThat(foundFeeds.isLast()).isFalse();
+                    assertThat(foundFeeds.getContent().get(0).getId())
+                            .isEqualTo(feeds.get(9).getId());
+                    assertThat(foundFeeds2).hasSize(1);
+                    assertThat(foundFeeds2.isLast()).isTrue();
+                });
+    }
 }
