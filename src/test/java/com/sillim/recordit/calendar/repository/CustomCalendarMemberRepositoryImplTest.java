@@ -8,6 +8,7 @@ import com.sillim.recordit.calendar.domain.CalendarCategory;
 import com.sillim.recordit.calendar.domain.CalendarMember;
 import com.sillim.recordit.calendar.fixture.CalendarCategoryFixture;
 import com.sillim.recordit.calendar.fixture.CalendarFixture;
+import com.sillim.recordit.calendar.repository.custom.CustomCalendarMemberRepositoryImpl;
 import com.sillim.recordit.support.repository.RepositoryTest;
 import java.util.List;
 import java.util.Optional;

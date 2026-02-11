@@ -25,7 +25,7 @@ public class FeedCommentQueryService {
 	public FeedCommentInListResponse searchFeedCommentById(Long commentId, Long memberId) {
 		FeedComment feedComment =
 				feedCommentRepository
-						.findByIdWithFetch(commentId)
+						.findCommentById(commentId)
 						.orElseThrow(
 								() ->
 										new RecordNotFoundException(

@@ -1,4 +1,4 @@
-package com.sillim.recordit.calendar.repository;
+package com.sillim.recordit.calendar.repository.custom;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.calendar.domain.CalendarMember;
@@ -13,5 +13,5 @@ public interface CustomCalendarMemberRepository {
 
 	List<Calendar> findCalendarsByMemberId(Long memberId);
 
-	void updateMemberIsNull(Long memberId);
+	void deleteByCalendarId(Long calendarId);
 }

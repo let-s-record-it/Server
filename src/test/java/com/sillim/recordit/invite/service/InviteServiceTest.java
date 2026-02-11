@@ -60,7 +60,9 @@ class InviteServiceTest {
 		Calendar calendar = CalendarFixture.DEFAULT.getCalendar(category, memberId);
 		InviteLink inviteLink =
 				new InviteLink(expectInviteCode, LocalDateTime.now().plusDays(7), false, calendar);
-		given(inviteLinkRepository.findByCalendarIdAndExpiredIsFalse(eq(calendarId)))
+		given(
+						inviteLinkRepository.findByDeletedIsFalseAndCalendarIdAndExpiredIsFalse(
+								eq(calendarId)))
 				.willReturn(Optional.of(inviteLink));
 
 		String inviteCode = inviteService.getOrGenerateInviteLink(calendarId);
@@ -85,7 +87,9 @@ class InviteServiceTest {
 						LocalDateTime.now().minusDays(1),
 						false,
 						calendar);
-		given(inviteLinkRepository.findByCalendarIdAndExpiredIsFalse(eq(calendarId)))
+		given(
+						inviteLinkRepository.findByDeletedIsFalseAndCalendarIdAndExpiredIsFalse(
+								eq(calendarId)))
 				.willReturn(Optional.of(inviteLink));
 		given(inviteLinkRepository.save(any(InviteLink.class))).willReturn(expectInviteLink);
 

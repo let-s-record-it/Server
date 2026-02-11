@@ -13,6 +13,7 @@ import com.sillim.recordit.schedule.domain.Schedule;
 import com.sillim.recordit.schedule.domain.ScheduleGroup;
 import com.sillim.recordit.schedule.dto.request.ScheduleAddRequest;
 import com.sillim.recordit.schedule.fixture.ScheduleFixture;
+import com.sillim.recordit.schedule.repository.custom.CustomScheduleRepository;
 import com.sillim.recordit.support.repository.RepositoryTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

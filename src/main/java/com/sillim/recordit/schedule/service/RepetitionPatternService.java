@@ -36,7 +36,7 @@ public class RepetitionPatternService {
 	@Transactional(readOnly = true)
 	public RepetitionPattern searchByScheduleGroupId(Long scheduleGroupId) {
 		return repetitionPatternRepository
-				.findByScheduleGroupId(scheduleGroupId)
+				.findByDeletedIsFalseAndScheduleGroupId(scheduleGroupId)
 				.orElseThrow(
 						() -> new RecordNotFoundException(ErrorCode.REPETITION_PATTERN_NOT_FOUND));
 	}

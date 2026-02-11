@@ -32,7 +32,7 @@ public class WeeklyGoalQueryService {
 	public WeeklyGoal searchByIdAndCheckAuthority(final Long weeklyGoalId) {
 		WeeklyGoal weeklyGoal =
 				weeklyGoalRepository
-						.findWeeklyGoalById(weeklyGoalId)
+						.findWeeklyGoal(weeklyGoalId)
 						.orElseThrow(
 								() -> new RecordNotFoundException(ErrorCode.WEEKLY_GOAL_NOT_FOUND));
 

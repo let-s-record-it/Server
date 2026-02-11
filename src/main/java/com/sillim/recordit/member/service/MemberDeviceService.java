@@ -17,7 +17,8 @@ public class MemberDeviceService {
 
 	public void addMemberDeviceIfNotExists(
 			String id, String model, String fcmToken, Member member) {
-		if (!memberDeviceRepository.existsByIdentifierAndMemberId(id, member.getId())) {
+		if (!memberDeviceRepository.existsByDeletedIsFalseAndIdentifierAndMemberId(
+				id, member.getId())) {
 			memberDeviceRepository.save(
 					MemberDevice.builder()
 							.identifier(id)

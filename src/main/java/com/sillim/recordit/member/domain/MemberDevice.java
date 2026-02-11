@@ -1,6 +1,6 @@
 package com.sillim.recordit.member.domain;
 
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "member_device", indexes = @Index(name = "idx_identifier", columnList = "identifier"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberDevice extends BaseTime {
+public class MemberDevice extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package com.sillim.recordit.calendar.repository;
+package com.sillim.recordit.calendar.repository.custom;
 
 import static com.sillim.recordit.calendar.domain.QCalendarMember.calendarMember;
 
@@ -25,11 +25,9 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 						.fetchJoin()
 						.leftJoin(calendarMember.calendar.category)
 						.fetchJoin()
-						// .leftJoin(calendarMember.member)
-						// .fetchJoin()
-						.where(calendarMember.deleted.isFalse())
-						.where(calendarMember.calendar.id.eq(calendarId))
-						// .where(calendarMember.member.activeId.eq(memberId))
+						.where(
+								calendarMember.deleted.isFalse(),
+								calendarMember.calendar.id.eq(calendarId))
 						.fetchOne());
 	}
 
@@ -40,10 +38,7 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 				.fetchJoin()
 				.leftJoin(calendarMember.calendar.category)
 				.fetchJoin()
-				// .leftJoin(calendarMember.memberId)
-				// .fetchJoin()
-				.where(calendarMember.deleted.isFalse())
-				.where(calendarMember.calendar.id.eq(calendarId))
+				.where(calendarMember.deleted.isFalse(), calendarMember.calendar.id.eq(calendarId))
 				.fetch();
 	}
 
@@ -54,18 +49,15 @@ public class CustomCalendarMemberRepositoryImpl extends QuerydslRepositorySuppor
 				.from(calendarMember)
 				.leftJoin(calendarMember.calendar.category)
 				.fetchJoin()
-				.where(calendarMember.deleted.isFalse())
-				.where(calendarMember.calendar.deleted.isFalse())
-				.where(calendarMember.memberId.eq(memberId))
+				.where(calendarMember.deleted.isFalse(), calendarMember.memberId.eq(memberId))
 				.fetch();
 	}
 
 	@Override
-	public void updateMemberIsNull(Long memberId) {
+	public void deleteByCalendarId(Long calendarId) {
 		update(calendarMember)
-				.setNull(calendarMember.memberId)
 				.set(calendarMember.deleted, true)
-				.where(calendarMember.memberId.eq(memberId))
+				.where(calendarMember.deleted.isFalse(), calendarMember.calendar.id.eq(calendarId))
 				.execute();
 	}
 }

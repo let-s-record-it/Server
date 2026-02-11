@@ -64,7 +64,7 @@ public class WeeklyGoalTest {
 	void remove() {
 
 		WeeklyGoal weeklyGoal = WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar);
-		weeklyGoal.remove();
+		weeklyGoal.delete();
 
 		assertThat(weeklyGoal.isDeleted()).isTrue();
 	}

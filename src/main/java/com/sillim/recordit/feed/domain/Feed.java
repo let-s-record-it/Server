@@ -3,7 +3,7 @@ package com.sillim.recordit.feed.domain;
 import com.sillim.recordit.feed.domain.vo.FeedContent;
 import com.sillim.recordit.feed.domain.vo.FeedImages;
 import com.sillim.recordit.feed.domain.vo.FeedTitle;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.global.exception.feed.InvalidFeedLikeException;
@@ -15,14 +15,13 @@ import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 @Getter
 @Entity
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Feed extends BaseTime {
+public class Feed extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +31,6 @@ public class Feed extends BaseTime {
 	@Embedded private FeedTitle title;
 
 	@Embedded private FeedContent content;
-
-	@Column(nullable = false)
-	@ColumnDefault("false")
-	private Boolean deleted;
 
 	@Column(nullable = false)
 	private Long likeCount;
@@ -52,7 +47,6 @@ public class Feed extends BaseTime {
 		this.content = new FeedContent(content);
 		this.memberId = memberId;
 		this.likeCount = 0L;
-		this.deleted = false;
 	}
 
 	public String getTitle() {
@@ -107,9 +101,5 @@ public class Feed extends BaseTime {
 			throw new InvalidFeedLikeException(ErrorCode.INVALID_FEED_UNLIKE);
 		}
 		this.likeCount--;
-	}
-
-	public void delete() {
-		this.deleted = true;
 	}
 }

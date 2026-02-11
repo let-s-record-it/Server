@@ -1,4 +1,4 @@
-package com.sillim.recordit.calendar.repository;
+package com.sillim.recordit.calendar.repository.custom;
 
 import static com.sillim.recordit.calendar.domain.QCalendar.calendar;
 
@@ -20,8 +20,7 @@ public class CustomCalendarRepositoryImpl extends QuerydslRepositorySupport
 				selectFrom(calendar)
 						.leftJoin(calendar.category)
 						.fetchJoin()
-						.where(calendar.deleted.isFalse())
-						.where(calendar.id.eq(calendarId))
+						.where(calendar.deleted.isFalse(), calendar.id.eq(calendarId))
 						.fetchOne());
 	}
 
@@ -30,21 +29,15 @@ public class CustomCalendarRepositoryImpl extends QuerydslRepositorySupport
 		return selectFrom(calendar)
 				.leftJoin(calendar.category)
 				.fetchJoin()
-				.where(calendar.deleted.isFalse())
-				.where(calendar.memberId.eq(memberId))
+				.where(calendar.deleted.isFalse(), calendar.memberId.eq(memberId))
 				.fetch();
-	}
-
-	@Override
-	public void updateMemberIsNull(Long memberId) {
-		update(calendar).setNull(calendar.memberId).where(calendar.memberId.eq(memberId)).execute();
 	}
 
 	@Override
 	public void updateCategorySetDefault(Long defaultCategoryId, Long categoryId) {
 		update(calendar)
 				.set(calendar.category.id, defaultCategoryId)
-				.where(calendar.category.id.eq(categoryId))
+				.where(calendar.deleted.isFalse(), calendar.category.id.eq(categoryId))
 				.execute();
 	}
 }

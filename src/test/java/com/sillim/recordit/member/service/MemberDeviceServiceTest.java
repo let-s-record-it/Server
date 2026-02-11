@@ -26,7 +26,9 @@ class MemberDeviceServiceTest {
 	@Test
 	@DisplayName("디바이스가 존재하지 않으면 추가할 수 있다.")
 	void addedMemberDeviceIfNotExists() {
-		given(memberDeviceRepository.existsByIdentifierAndMemberId(eq("id"), any()))
+		given(
+						memberDeviceRepository.existsByDeletedIsFalseAndIdentifierAndMemberId(
+								eq("id"), any()))
 				.willReturn(false);
 
 		memberDeviceService.addMemberDeviceIfNotExists(
@@ -34,13 +36,15 @@ class MemberDeviceServiceTest {
 
 		then(memberDeviceRepository)
 				.should(times(1))
-				.existsByIdentifierAndMemberId(eq("id"), any());
+				.existsByDeletedIsFalseAndIdentifierAndMemberId(eq("id"), any());
 	}
 
 	@Test
 	@DisplayName("디바이스가 존재하면 추가되지 않는다.")
 	void notAddedMemberDeviceIfExists() {
-		given(memberDeviceRepository.existsByIdentifierAndMemberId(eq("id"), any()))
+		given(
+						memberDeviceRepository.existsByDeletedIsFalseAndIdentifierAndMemberId(
+								eq("id"), any()))
 				.willReturn(true);
 
 		memberDeviceService.addMemberDeviceIfNotExists(

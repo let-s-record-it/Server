@@ -1,4 +1,4 @@
-package com.sillim.recordit.goal.repository;
+package com.sillim.recordit.goal.repository.custom;
 
 import static com.sillim.recordit.goal.domain.QMonthlyGoal.monthlyGoal;
 
@@ -17,14 +17,14 @@ public class CustomMonthlyGoalRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public Optional<MonthlyGoal> findByIdWithFetch(Long monthlyGoalId) {
+	public Optional<MonthlyGoal> findMonthlyGoal(Long monthlyGoalId) {
 		return Optional.ofNullable(
 				selectFrom(monthlyGoal)
 						.leftJoin(monthlyGoal.category)
 						.fetchJoin()
 						.leftJoin(monthlyGoal.calendar)
 						.fetchJoin()
-						.where(monthlyGoal.id.eq(monthlyGoalId))
+						.where(monthlyGoal.deleted.isFalse(), monthlyGoal.id.eq(monthlyGoalId))
 						.fetchOne());
 	}
 
@@ -35,14 +35,11 @@ public class CustomMonthlyGoalRepositoryImpl extends QuerydslRepositorySupport
 				.fetchJoin()
 				.leftJoin(monthlyGoal.calendar)
 				.fetchJoin()
-				.where(monthlyGoal.calendar.id.eq(calendarId))
 				.where(
-						monthlyGoal
-								.period
-								.startDate
-								.year()
-								.eq(year)
-								.and(monthlyGoal.period.startDate.month().eq(month)))
+						monthlyGoal.deleted.isFalse(),
+						monthlyGoal.calendar.id.eq(calendarId),
+						monthlyGoal.period.startDate.year().eq(year),
+						monthlyGoal.period.startDate.month().eq(month))
 				.fetch();
 	}
 }

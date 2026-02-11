@@ -7,11 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(
-		uniqueConstraints =
-				@UniqueConstraint(
-						name = "feedScrapMember",
-						columnNames = {"feed_id", "member_id"}))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FeedScrap {
 
@@ -21,7 +16,10 @@ public class FeedScrap {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "feed_id")
+	@JoinColumn(
+			name = "feed_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Feed feed;
 
 	@Column(name = "member_id", nullable = false)

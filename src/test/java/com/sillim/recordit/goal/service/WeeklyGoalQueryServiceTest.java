@@ -91,7 +91,7 @@ public class WeeklyGoalQueryServiceTest {
 	void searchByIdAndCheckAuthority() {
 		Long weeklyGoalId = 2L;
 		WeeklyGoal expected = spy(WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
-		given(weeklyGoalRepository.findWeeklyGoalById(eq(weeklyGoalId)))
+		given(weeklyGoalRepository.findWeeklyGoal(eq(weeklyGoalId)))
 				.willReturn(Optional.of(expected));
 
 		WeeklyGoal found = weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);

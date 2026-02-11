@@ -2,6 +2,7 @@ package com.sillim.recordit.schedule.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.schedule.domain.vo.AlarmTime;
@@ -9,17 +10,7 @@ import com.sillim.recordit.schedule.domain.vo.Location;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDescription;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
 import com.sillim.recordit.schedule.domain.vo.ScheduleTitle;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +20,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Schedule {
+public class Schedule extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,15 +49,24 @@ public class Schedule {
 	private boolean setAlarm;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "schedule_category_id")
+	@JoinColumn(
+			name = "schedule_category_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private ScheduleCategory category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "calendar_id")
+	@JoinColumn(
+			name = "calendar_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Calendar calendar;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "schedule_group_id")
+	@JoinColumn(
+			name = "schedule_group_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private ScheduleGroup scheduleGroup;
 
 	@OneToMany(
@@ -76,10 +75,6 @@ public class Schedule {
 			cascade = CascadeType.PERSIST,
 			orphanRemoval = true)
 	private List<ScheduleAlarm> scheduleAlarms = new ArrayList<>();
-
-	@Column(nullable = false)
-	@ColumnDefault("false")
-	private boolean deleted;
 
 	public Schedule(
 			ScheduleTitle title,
@@ -107,7 +102,6 @@ public class Schedule {
 				scheduleAlarms.stream()
 						.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
 						.collect(Collectors.toList());
-		this.deleted = false;
 	}
 
 	@Builder
@@ -211,10 +205,6 @@ public class Schedule {
 				.map(AlarmTime::create)
 				.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
 				.forEach(scheduleAlarm -> this.scheduleAlarms.add(scheduleAlarm));
-	}
-
-	public void delete() {
-		this.deleted = true;
 	}
 
 	public boolean isOwnedBy(Long memberId) {

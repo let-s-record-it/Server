@@ -1,6 +1,8 @@
 package com.sillim.recordit.task.repository;
 
 import com.sillim.recordit.task.domain.Task;
+import com.sillim.recordit.task.repository.custom.BatchTaskRepository;
+import com.sillim.recordit.task.repository.custom.CustomTaskRepository;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

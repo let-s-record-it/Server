@@ -1,4 +1,4 @@
-package com.sillim.recordit.feed.repository;
+package com.sillim.recordit.feed.repository.custom;
 
 import static com.sillim.recordit.feed.domain.QFeed.feed;
 
@@ -25,10 +25,7 @@ public class CustomFeedRepositoryImpl extends QuerydslRepositorySupport
 				selectFrom(feed)
 						.leftJoin(feed.feedImages.feedImages)
 						.fetchJoin()
-						// .leftJoin(feed.member)
-						// .fetchJoin()
-						.where(feed.deleted.isFalse())
-						.where(feed.id.eq(feedId))
+						.where(feed.deleted.isFalse(), feed.id.eq(feedId))
 						.fetchOne());
 	}
 
@@ -36,8 +33,6 @@ public class CustomFeedRepositoryImpl extends QuerydslRepositorySupport
 	public Slice<Feed> findOrderByCreatedAtDesc(Pageable pageable) {
 		List<Feed> feeds =
 				selectFrom(feed)
-						// .leftJoin(feed.member)
-						// .fetchJoin()
 						.where(feed.deleted.isFalse())
 						.orderBy(feed.createdAt.desc())
 						.offset(pageable.getOffset())
@@ -51,23 +46,12 @@ public class CustomFeedRepositoryImpl extends QuerydslRepositorySupport
 	public Slice<Feed> findByMemberIdOrderByCreatedAtDesc(Pageable pageable, Long memberId) {
 		List<Feed> feeds =
 				selectFrom(feed)
-						// .leftJoin(feed.member)
-						// .fetchJoin()
-						.where(feed.deleted.isFalse().and(feed.memberId.eq(memberId)))
+						.where(feed.deleted.isFalse(), feed.memberId.eq(memberId))
 						.orderBy(feed.createdAt.desc())
 						.offset(pageable.getOffset())
 						.limit(pageable.getPageSize() + 1)
 						.fetch();
 
 		return new SliceImpl<>(feeds, pageable, hasNext(pageable, feeds));
-	}
-
-	@Override
-	public void updateMemberIsNull(Long memberId) {
-		update(feed)
-				.setNull(feed.memberId)
-				.set(feed.deleted, true)
-				.where(feed.memberId.eq(memberId))
-				.execute();
 	}
 }

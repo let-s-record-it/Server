@@ -1,5 +1,6 @@
 package com.sillim.recordit.global.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
@@ -11,9 +12,23 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseTime {
+public abstract class BaseEntity {
 
 	@CreatedDate private LocalDateTime createdAt;
 
 	@LastModifiedDate private LocalDateTime modifiedAt;
+
+	@Column private LocalDateTime deletedAt;
+
+	@Column(nullable = false)
+	private boolean deleted;
+
+	protected BaseEntity() {
+		this.deleted = false;
+	}
+
+	public void delete() {
+		this.deleted = true;
+		this.deletedAt = LocalDateTime.now();
+	}
 }

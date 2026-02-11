@@ -1,4 +1,4 @@
-package com.sillim.recordit.feed.repository;
+package com.sillim.recordit.feed.repository.custom;
 
 import com.sillim.recordit.feed.domain.Feed;
 import java.util.Optional;
@@ -12,6 +12,4 @@ public interface CustomFeedRepository {
 	Slice<Feed> findOrderByCreatedAtDesc(Pageable pageable);
 
 	Slice<Feed> findByMemberIdOrderByCreatedAtDesc(Pageable pageable, Long memberId);
-
-	void updateMemberIsNull(Long memberId);
 }

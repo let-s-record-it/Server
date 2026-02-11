@@ -1,4 +1,4 @@
-package com.sillim.recordit.goal.repository;
+package com.sillim.recordit.goal.repository.custom;
 
 import static com.sillim.recordit.goal.domain.QWeeklyGoal.weeklyGoal;
 
@@ -25,11 +25,25 @@ public class CustomWeeklyGoalRepositoryImpl extends QuerydslRepositorySupport
 				.fetchJoin()
 				.leftJoin(weeklyGoal.category)
 				.fetchJoin()
-				.where(weeklyGoal.calendar.id.eq(calendarId))
-				.where(containStartDateOrEndDate(year, month))
-				.where(notNextMonth(month))
-				.where(notPrevMonth(month))
+				.where(
+						weeklyGoal.deleted.isFalse(),
+						weeklyGoal.calendar.id.eq(calendarId),
+						containStartDateOrEndDate(year, month),
+						notNextMonth(month),
+						notPrevMonth(month))
 				.fetch();
+	}
+
+	@Override
+	public Optional<WeeklyGoal> findWeeklyGoal(Long id) {
+		return Optional.ofNullable(
+				selectFrom(weeklyGoal)
+						.leftJoin(weeklyGoal.relatedMonthlyGoal)
+						.fetchJoin()
+						.leftJoin(weeklyGoal.category)
+						.fetchJoin()
+						.where(weeklyGoal.deleted.isFalse(), weeklyGoal.id.eq(id))
+						.fetchOne());
 	}
 
 	private static BooleanExpression containStartDateOrEndDate(Integer year, Integer month) {
@@ -56,17 +70,5 @@ public class CustomWeeklyGoalRepositoryImpl extends QuerydslRepositorySupport
 	private BooleanExpression notPrevMonth(Integer month) {
 		return (weeklyGoal.period.startDate.month().ne(month).and(weeklyGoal.period.week.ne(1)))
 				.not();
-	}
-
-	@Override
-	public Optional<WeeklyGoal> findWeeklyGoalById(Long id) {
-		return Optional.ofNullable(
-				selectFrom(weeklyGoal)
-						.leftJoin(weeklyGoal.relatedMonthlyGoal)
-						.fetchJoin()
-						.leftJoin(weeklyGoal.category)
-						.fetchJoin()
-						.where(weeklyGoal.id.eq(id))
-						.fetchOne());
 	}
 }

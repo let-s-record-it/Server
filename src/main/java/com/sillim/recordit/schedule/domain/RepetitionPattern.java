@@ -2,23 +2,13 @@ package com.sillim.recordit.schedule.domain;
 
 import com.sillim.recordit.enums.date.WeekNumber;
 import com.sillim.recordit.enums.date.Weekday;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
 import com.sillim.recordit.schedule.domain.vo.DayOfMonth;
 import com.sillim.recordit.schedule.domain.vo.MonthOfYear;
 import com.sillim.recordit.schedule.domain.vo.WeekdayBit;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -35,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RepetitionPattern extends BaseTime {
+public class RepetitionPattern extends BaseEntity {
 
 	private static final int MAX_PERIOD = 999;
 	private static final int MIN_PERIOD = 1;
@@ -69,7 +59,11 @@ public class RepetitionPattern extends BaseTime {
 	@Embedded private WeekdayBit weekdayBit;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "schedule_group_id", unique = true)
+	@JoinColumn(
+			name = "schedule_group_id",
+			unique = true,
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private ScheduleGroup scheduleGroup;
 
 	@Builder(access = AccessLevel.PRIVATE)

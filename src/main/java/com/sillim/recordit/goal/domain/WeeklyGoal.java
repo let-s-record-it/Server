@@ -2,19 +2,11 @@ package com.sillim.recordit.goal.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
 import com.sillim.recordit.goal.domain.vo.WeeklyGoalPeriod;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.Optional;
 import lombok.AccessLevel;
@@ -28,7 +20,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted = false")
-public class WeeklyGoal extends BaseTime {
+public class WeeklyGoal extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,24 +33,29 @@ public class WeeklyGoal extends BaseTime {
 
 	@Embedded private WeeklyGoalPeriod period;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "weekly_goal_category_id")
-	private ScheduleCategory category;
-
 	@Column(nullable = false)
 	@ColumnDefault("false")
 	private boolean achieved;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "monthly_goal_id")
-	private MonthlyGoal relatedMonthlyGoal;
-
-	@Column(nullable = false)
-	@ColumnDefault("false")
-	private boolean deleted;
+	@JoinColumn(
+			name = "weekly_goal_category_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private ScheduleCategory category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "calendar_id")
+	@JoinColumn(
+			name = "monthly_goal_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private MonthlyGoal relatedMonthlyGoal;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(
+			name = "calendar_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Calendar calendar;
 
 	@Builder
@@ -78,7 +75,6 @@ public class WeeklyGoal extends BaseTime {
 		this.achieved = false;
 		this.relatedMonthlyGoal = relatedMonthlyGoal;
 		this.calendar = calendar;
-		this.deleted = false;
 	}
 
 	public void changeAchieveStatus(final Boolean status) {
@@ -123,10 +119,6 @@ public class WeeklyGoal extends BaseTime {
 
 	public void unlinkRelatedMonthlyGoal() {
 		this.relatedMonthlyGoal = null;
-	}
-
-	public void remove() {
-		this.deleted = true;
 	}
 
 	public String getTitle() {

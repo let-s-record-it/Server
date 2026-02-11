@@ -1,7 +1,7 @@
 package com.sillim.recordit.calendar.domain;
 
 import com.sillim.recordit.calendar.domain.vo.CalendarTitle;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import jakarta.persistence.*;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Calendar extends BaseTime {
+public class Calendar extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,11 +22,11 @@ public class Calendar extends BaseTime {
 
 	@Embedded private CalendarTitle title;
 
-	@Column(nullable = false)
-	private boolean deleted;
-
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "calendar_category_id")
+	@JoinColumn(
+			name = "calendar_category_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private CalendarCategory category;
 
 	@Column(name = "member_id", nullable = false)
@@ -34,7 +34,6 @@ public class Calendar extends BaseTime {
 
 	public Calendar(String title, CalendarCategory category, Long memberId) {
 		this.title = new CalendarTitle(title);
-		this.deleted = false;
 		this.memberId = memberId;
 		this.category = category;
 	}
@@ -56,10 +55,6 @@ public class Calendar extends BaseTime {
 	public void modify(String title, CalendarCategory category) {
 		this.title = new CalendarTitle(title);
 		this.category = category;
-	}
-
-	public void delete() {
-		this.deleted = true;
 	}
 
 	public String getColorHex() {
