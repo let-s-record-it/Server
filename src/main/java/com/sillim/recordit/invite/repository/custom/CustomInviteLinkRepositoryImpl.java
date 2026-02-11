@@ -1,4 +1,4 @@
-package com.sillim.recordit.invite.repository;
+package com.sillim.recordit.invite.repository.custom;
 
 import static com.sillim.recordit.invite.domain.QInviteLink.inviteLink;
 
@@ -19,8 +19,6 @@ public class CustomInviteLinkRepositoryImpl extends QuerydslRepositorySupport
 		return selectFrom(inviteLink)
 				.leftJoin(inviteLink.calendar)
 				.fetchJoin()
-				// .leftJoin(inviteLink.calendar.member)
-				// .fetchJoin()
 				.where(inviteLink.inviteCode.eq(inviteCode))
 				.fetchOne();
 	}

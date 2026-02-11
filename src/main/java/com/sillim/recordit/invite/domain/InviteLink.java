@@ -29,7 +29,10 @@ public class InviteLink extends BaseEntity {
 	private boolean expired;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "calendar_id")
+	@JoinColumn(
+			name = "calendar_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Calendar calendar;
 
 	public InviteLink(

@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 @Getter
@@ -103,5 +102,4 @@ public class Feed extends BaseEntity {
 		}
 		this.likeCount--;
 	}
-
 }

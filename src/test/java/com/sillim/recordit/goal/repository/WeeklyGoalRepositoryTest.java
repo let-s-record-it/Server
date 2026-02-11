@@ -145,7 +145,7 @@ public class WeeklyGoalRepositoryTest extends RepositoryTest {
 				weeklyGoalRepository.save(
 						WeeklyGoalFixture.DEFAULT.getWithMember(category, calendar));
 
-		Optional<WeeklyGoal> found = weeklyGoalRepository.findWeeklyGoalById(saved.getId());
+		Optional<WeeklyGoal> found = weeklyGoalRepository.findWeeklyGoal(saved.getId());
 
 		assertThat(found).isNotEmpty();
 		assertThat(found.get())

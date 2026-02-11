@@ -72,7 +72,9 @@ class CalendarMemberServiceTest {
 	void throwRecordNotFoundExceptionWhenCheckExistsCalendarMemberIfNotExistsCalendarMember() {
 		long calendarId = 1L;
 		long memberId = 1L;
-		given(calendarMemberRepository.existsByCalendarIdAndMemberId(eq(calendarId), eq(memberId)))
+		given(
+						calendarMemberRepository.existsByDeletedIsFalseAndCalendarIdAndMemberId(
+								eq(calendarId), eq(memberId)))
 				.willReturn(false);
 
 		assertThatCode(() -> calendarMemberService.validateCalendarMember(calendarId, memberId))

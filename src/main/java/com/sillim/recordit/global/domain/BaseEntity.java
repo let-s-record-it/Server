@@ -18,18 +18,17 @@ public abstract class BaseEntity {
 
 	@LastModifiedDate private LocalDateTime modifiedAt;
 
-    @Column
-    private LocalDateTime deletedAt;
+	@Column private LocalDateTime deletedAt;
 
-    @Column(nullable = false)
-    private boolean deleted;
+	@Column(nullable = false)
+	private boolean deleted;
 
-    protected BaseEntity() {
-        this.deleted = false;
-    }
+	protected BaseEntity() {
+		this.deleted = false;
+	}
 
-    public void delete() {
-        this.deleted = true;
-        this.deletedAt = LocalDateTime.now();
-    }
+	public void delete() {
+		this.deleted = true;
+		this.deletedAt = LocalDateTime.now();
+	}
 }

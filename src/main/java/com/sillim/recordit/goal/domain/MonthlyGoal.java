@@ -6,15 +6,7 @@ import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
 import com.sillim.recordit.goal.domain.vo.MonthlyGoalPeriod;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,16 +32,22 @@ public class MonthlyGoal extends BaseEntity {
 
 	@Embedded private MonthlyGoalPeriod period;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "monthly_goal_category_id")
-	private ScheduleCategory category;
-
 	@Column(nullable = false)
 	@ColumnDefault("false")
 	private boolean achieved;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "calendar_id")
+	@JoinColumn(
+			name = "monthly_goal_category_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private ScheduleCategory category;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(
+			name = "calendar_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Calendar calendar;
 
 	@Builder

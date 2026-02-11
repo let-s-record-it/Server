@@ -33,7 +33,8 @@ public class CalendarMemberService {
 
 	@Transactional(readOnly = true)
 	public void validateCalendarMember(Long calendarId, Long memberId) {
-		if (!calendarMemberRepository.existsByCalendarIdAndMemberId(calendarId, memberId)) {
+		if (!calendarMemberRepository.existsByDeletedIsFalseAndCalendarIdAndMemberId(
+				calendarId, memberId)) {
 			throw new RecordNotFoundException(ErrorCode.CALENDAR_MEMBER_NOT_FOUND);
 		}
 	}
@@ -71,7 +72,7 @@ public class CalendarMemberService {
 	public void removeCalendarMembersInCalendar(Long calendarId, Long ownerId) {
 		Calendar calendar = calendarQueryService.searchByCalendarId(calendarId);
 		validateIsCalendarOwner(ownerId, calendar);
-		calendarMemberRepository.deleteCalendarMembersInCalendar(calendarId);
+		calendarMemberRepository.deleteByCalendarId(calendarId);
 	}
 
 	private void validateIsCalendarOwner(Long ownerId, Calendar calendar) {

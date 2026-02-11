@@ -15,11 +15,9 @@ public class CustomMemberDeviceRepositoryImpl extends QuerydslRepositorySupport
 
 	@Override
 	public List<String> findFcmTokensByMemberId(Long memberId) {
-		return getJpaQueryFactory()
-				.select(memberDevice.fcmToken)
+		return select(memberDevice.fcmToken)
 				.from(memberDevice)
-				// .where(memberDevice.member.deleted.isFalse())
-				// .where(memberDevice.eq(memberId))
+				.where(memberDevice.deleted.isFalse(), memberDevice.memberId.eq(memberId))
 				.fetch();
 	}
 
@@ -27,8 +25,10 @@ public class CustomMemberDeviceRepositoryImpl extends QuerydslRepositorySupport
 	public void updateFcmToken(String deviceId, String fcmToken, Long memberId) {
 		update(memberDevice)
 				.set(memberDevice.fcmToken, fcmToken)
-				.where(memberDevice.identifier.eq(deviceId))
-				// .where(memberDevice.member.activeId.eq(memberId))
+				.where(
+						memberDevice.deleted.isFalse(),
+						memberDevice.memberId.eq(memberId),
+						memberDevice.identifier.eq(deviceId))
 				.execute();
 	}
 }

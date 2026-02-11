@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
@@ -20,18 +19,16 @@ public class FeedImage extends BaseEntity {
 
 	@Embedded private FeedImageUrl imageUrl;
 
-	@Column(nullable = false)
-	@ColumnDefault("false")
-	private Boolean deleted;
-
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "feed_id")
+	@JoinColumn(
+			name = "feed_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Feed feed;
 
 	public FeedImage(String imageUrl, Feed feed) {
 		this.imageUrl = new FeedImageUrl(imageUrl);
 		this.feed = feed;
-		this.deleted = false;
 	}
 
 	public String getImageUrl() {

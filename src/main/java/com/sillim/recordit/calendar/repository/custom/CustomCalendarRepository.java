@@ -1,4 +1,4 @@
-package com.sillim.recordit.calendar.repository;
+package com.sillim.recordit.calendar.repository.custom;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import java.util.List;
@@ -9,8 +9,6 @@ public interface CustomCalendarRepository {
 	Optional<Calendar> findByIdWithFetchCategory(Long calendarId);
 
 	List<Calendar> findByMemberId(Long memberId);
-
-	void updateMemberIsNull(Long memberId);
 
 	void updateCategorySetDefault(Long defaultCategoryId, Long categoryId);
 }

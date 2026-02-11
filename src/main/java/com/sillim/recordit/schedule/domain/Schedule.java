@@ -10,17 +10,7 @@ import com.sillim.recordit.schedule.domain.vo.Location;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDescription;
 import com.sillim.recordit.schedule.domain.vo.ScheduleDuration;
 import com.sillim.recordit.schedule.domain.vo.ScheduleTitle;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +20,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
@@ -60,15 +49,24 @@ public class Schedule extends BaseEntity {
 	private boolean setAlarm;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "schedule_category_id")
+	@JoinColumn(
+			name = "schedule_category_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private ScheduleCategory category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "calendar_id")
+	@JoinColumn(
+			name = "calendar_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Calendar calendar;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "schedule_group_id")
+	@JoinColumn(
+			name = "schedule_group_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private ScheduleGroup scheduleGroup;
 
 	@OneToMany(

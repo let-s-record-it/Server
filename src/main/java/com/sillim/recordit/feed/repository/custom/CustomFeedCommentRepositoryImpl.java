@@ -1,4 +1,4 @@
-package com.sillim.recordit.feed.repository;
+package com.sillim.recordit.feed.repository.custom;
 
 import static com.sillim.recordit.feed.domain.QFeedComment.feedComment;
 
@@ -23,10 +23,7 @@ public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport
 	public Slice<FeedComment> findPaginatedOrderByCreatedAtAsc(Pageable pageable, Long feedId) {
 		List<FeedComment> feedComments =
 				selectFrom(feedComment)
-						// .leftJoin(feedComment.member)
-						// .fetchJoin()
-						.where(feedComment.deleted.isFalse())
-						.where(feedComment.feed.id.eq(feedId))
+						.where(feedComment.deleted.isFalse(), feedComment.feed.id.eq(feedId))
 						.orderBy(feedComment.createdAt.asc())
 						.offset(pageable.getOffset())
 						.limit(pageable.getPageSize() + 1)
@@ -39,10 +36,7 @@ public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport
 	public Slice<FeedComment> findByMemberIdOrderByCreatedAtAsc(Pageable pageable, Long memberId) {
 		List<FeedComment> feedComments =
 				selectFrom(feedComment)
-						// .leftJoin(feedComment.member)
-						// .fetchJoin()
-						.where(feedComment.deleted.isFalse())
-						.where(feedComment.memberId.eq(memberId))
+						.where(feedComment.deleted.isFalse(), feedComment.memberId.eq(memberId))
 						.orderBy(feedComment.createdAt.asc())
 						.offset(pageable.getOffset())
 						.limit(pageable.getPageSize() + 1)
@@ -52,21 +46,10 @@ public class CustomFeedCommentRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public Optional<FeedComment> findByIdWithFetch(Long commentId) {
+	public Optional<FeedComment> findCommentById(Long commentId) {
 		return Optional.ofNullable(
 				selectFrom(feedComment)
-						// .leftJoin(feedComment.member)
-						// .fetchJoin()
-						.where(feedComment.deleted.isFalse())
-						.where(feedComment.id.eq(commentId))
+						.where(feedComment.deleted.isFalse(), feedComment.id.eq(commentId))
 						.fetchFirst());
-	}
-
-	@Override
-	public void updateMemberIsNull(Long memberId) {
-		update(feedComment)
-				.setNull(feedComment.memberId)
-				.where(feedComment.memberId.eq(memberId))
-				.execute();
 	}
 }

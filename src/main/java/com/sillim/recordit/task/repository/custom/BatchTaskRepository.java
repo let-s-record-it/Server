@@ -1,4 +1,4 @@
-package com.sillim.recordit.task.repository;
+package com.sillim.recordit.task.repository.custom;
 
 import com.sillim.recordit.task.domain.Task;
 import java.util.List;

@@ -4,19 +4,11 @@ import com.sillim.recordit.feed.domain.vo.FeedCommentContent;
 import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 @Getter
@@ -32,12 +24,11 @@ public class FeedComment extends BaseEntity {
 
 	private FeedCommentContent content;
 
-	@Column(nullable = false)
-	@ColumnDefault("false")
-	private Boolean deleted;
-
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "feed_id")
+	@JoinColumn(
+			name = "feed_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Feed feed;
 
 	@Column(name = "member_id", nullable = false)
@@ -45,7 +36,6 @@ public class FeedComment extends BaseEntity {
 
 	public FeedComment(String content, Feed feed, Long memberId) {
 		this.content = new FeedCommentContent(content);
-		this.deleted = false;
 		this.feed = feed;
 		this.memberId = memberId;
 	}
@@ -62,9 +52,5 @@ public class FeedComment extends BaseEntity {
 		if (!isOwner(memberId)) {
 			throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
 		}
-	}
-
-	public void delete() {
-		this.deleted = true;
 	}
 }

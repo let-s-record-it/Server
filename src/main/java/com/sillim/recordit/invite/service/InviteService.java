@@ -39,7 +39,7 @@ public class InviteService {
 
 	public String getOrGenerateInviteLink(Long calendarId) {
 		Optional<InviteLink> inviteLink =
-				inviteLinkRepository.findByCalendarIdAndExpiredIsFalse(calendarId);
+				inviteLinkRepository.findByDeletedIsFalseAndCalendarIdAndExpiredIsFalse(calendarId);
 		if (isValidInviteLink(inviteLink)) {
 			return Base64.getUrlEncoder()
 					.encodeToString(inviteLink.get().getInviteCode().getBytes());

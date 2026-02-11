@@ -60,7 +60,7 @@ class FeedCommentCommandServiceTest {
 		long memberId = 1L;
 		Feed feed = FeedFixture.DEFAULT.getFeed(memberId);
 		FeedComment feedComment = spy(new FeedComment("content", feed, memberId));
-		given(feedCommentRepository.findByIdWithFetch(eq(feedCommentId)))
+		given(feedCommentRepository.findCommentById(eq(feedCommentId)))
 				.willReturn(Optional.of(feedComment));
 
 		feedCommentCommandService.removeFeedComment(feedCommentId, memberId);

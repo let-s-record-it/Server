@@ -5,15 +5,7 @@ import com.sillim.recordit.category.domain.ScheduleCategory;
 import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.task.domain.vo.TaskDescription;
 import com.sillim.recordit.task.domain.vo.TaskTitle;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,15 +37,24 @@ public class Task extends BaseEntity {
 	private boolean achieved = false;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "task_category_id")
+	@JoinColumn(
+			name = "task_category_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private ScheduleCategory category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "calendar_id", nullable = false)
+	@JoinColumn(
+			name = "calendar_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Calendar calendar;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "task_group_id", nullable = false)
+	@JoinColumn(
+			name = "task_group_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private TaskGroup taskGroup;
 
 	public Task(

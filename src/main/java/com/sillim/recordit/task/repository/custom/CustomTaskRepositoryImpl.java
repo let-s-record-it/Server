@@ -1,8 +1,5 @@
-package com.sillim.recordit.task.repository;
+package com.sillim.recordit.task.repository.custom;
 
-import static com.sillim.recordit.calendar.domain.QCalendar.calendar;
-import static com.sillim.recordit.goal.domain.QMonthlyGoal.monthlyGoal;
-import static com.sillim.recordit.goal.domain.QWeeklyGoal.weeklyGoal;
 import static com.sillim.recordit.task.domain.QTask.task;
 import static com.sillim.recordit.task.domain.QTaskGroup.taskGroup;
 
@@ -25,18 +22,19 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 	public Optional<Task> findByIdAndCalendarId(Long taskId, Long calendarId) {
 		return Optional.ofNullable(
 				selectFrom(task)
-						.leftJoin(task.calendar, calendar)
+						.leftJoin(task.calendar)
 						.fetchJoin()
-						.leftJoin(task.taskGroup, taskGroup)
+						.leftJoin(task.taskGroup)
 						.fetchJoin()
-						.leftJoin(taskGroup.monthlyGoal, monthlyGoal)
+						.leftJoin(taskGroup.monthlyGoal)
 						.fetchJoin()
-						.leftJoin(taskGroup.weeklyGoal, weeklyGoal)
+						.leftJoin(taskGroup.weeklyGoal)
 						.fetchJoin()
 						.leftJoin(task.category)
 						.fetchJoin()
-						.where(task.deleted.isFalse())
-						.where(task.id.eq(taskId).and(task.calendar.id.eq(calendarId)))
+						.where(
+								task.deleted.isFalse(),
+								task.id.eq(taskId).and(task.calendar.id.eq(calendarId)))
 						.fetchOne());
 	}
 
@@ -45,28 +43,37 @@ public class CustomTaskRepositoryImpl extends QuerydslRepositorySupport
 		return selectFrom(task)
 				.leftJoin(task.category)
 				.fetchJoin()
-				.where(task.deleted.isFalse())
-				.where(task.calendar.id.eq(calendarId))
-				.where(task.date.year().eq(year).and(task.date.month().eq(month)))
+				.where(
+						task.deleted.isFalse(),
+						task.calendar.id.eq(calendarId),
+						task.date.year().eq(year).and(task.date.month().eq(month)))
 				.fetch();
 	}
 
 	@Override
 	public void deleteAllByTaskGroupId(Long taskGroupId) {
-
 		getEntityManager().flush();
-		update(task).set(task.deleted, true).where(task.taskGroup.id.eq(taskGroupId)).execute();
+
+		update(task)
+				.set(task.deleted, true)
+				.where(task.deleted.isFalse(), task.taskGroup.id.eq(taskGroupId))
+				.execute();
+
 		getEntityManager().clear();
 	}
 
 	@Override
 	public void deleteAllByTaskGroupIdAndDateAfterOrEqual(Long taskGroupId, LocalDate date) {
-
 		getEntityManager().flush();
+
 		update(task)
 				.set(task.deleted, true)
-				.where(task.taskGroup.id.eq(taskGroupId).and(task.date.goe(date)))
+				.where(
+						task.deleted.isFalse(),
+						task.taskGroup.id.eq(taskGroupId),
+						task.date.goe(date))
 				.execute();
+
 		getEntityManager().clear();
 	}
 }

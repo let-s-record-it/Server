@@ -108,7 +108,7 @@ public class TaskCommandService {
 		ScheduleCategory newCategory =
 				scheduleCategoryQueryService.searchScheduleCategory(request.newCategoryId());
 		if (request.isRepeated()) {
-            selectedTask.delete();
+			selectedTask.delete();
 			TaskGroup newTaskGroup =
 					taskGroupService.modifyTaskGroupAndMakeRepeatable(
 							taskGroup.getId(),

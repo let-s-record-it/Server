@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sillim.recordit.feed.domain.Feed;
 import com.sillim.recordit.feed.fixture.FeedFixture;
+import com.sillim.recordit.feed.repository.custom.CustomFeedRepository;
 import com.sillim.recordit.support.repository.RepositoryTest;
 import java.util.List;
 import java.util.Optional;

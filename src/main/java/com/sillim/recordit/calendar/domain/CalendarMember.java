@@ -24,7 +24,10 @@ public class CalendarMember extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "calendar_id")
+	@JoinColumn(
+			name = "calendar_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Calendar calendar;
 
 	@Column(name = "member_id", nullable = false)

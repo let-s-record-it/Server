@@ -32,7 +32,7 @@ public class FeedCommentCommandService {
 	public void removeFeedComment(Long commentId, Long memberId) {
 		FeedComment feedComment =
 				feedCommentRepository
-						.findByIdWithFetch(commentId)
+						.findCommentById(commentId)
 						.orElseThrow(
 								() ->
 										new RecordNotFoundException(

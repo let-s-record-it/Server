@@ -58,7 +58,7 @@ public class MonthlyGoalQueryServiceTest {
 	void searchTest() {
 		Long monthlyGoalId = 1L;
 		MonthlyGoal expected = spy(MonthlyGoalFixture.DEFAULT.getWithMember(category, calendar));
-		given(monthlyGoalRepository.findByIdWithFetch(eq(monthlyGoalId)))
+		given(monthlyGoalRepository.findMonthlyGoal(eq(monthlyGoalId)))
 				.willReturn(Optional.of(expected));
 
 		MonthlyGoal found = monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
@@ -69,7 +69,7 @@ public class MonthlyGoalQueryServiceTest {
 	@DisplayName("id에 해당하는 월 목표가 존재하지 않을 경우 RecordNotFoundException을 발생시킨다.")
 	void searchTestMonthlyGoalNotFound() {
 		Long monthlyGoalId = 1L;
-		given(monthlyGoalRepository.findByIdWithFetch(eq(monthlyGoalId)))
+		given(monthlyGoalRepository.findMonthlyGoal(eq(monthlyGoalId)))
 				.willThrow(new RecordNotFoundException(ErrorCode.MONTHLY_GOAL_NOT_FOUND));
 
 		assertThatThrownBy(() -> monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId))

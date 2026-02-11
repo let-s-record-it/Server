@@ -1,4 +1,4 @@
-package com.sillim.recordit.feed.repository;
+package com.sillim.recordit.feed.repository.custom;
 
 import com.sillim.recordit.feed.domain.FeedComment;
 import java.util.Optional;
@@ -11,7 +11,5 @@ public interface CustomFeedCommentRepository {
 
 	Slice<FeedComment> findByMemberIdOrderByCreatedAtAsc(Pageable pageable, Long memberId);
 
-	Optional<FeedComment> findByIdWithFetch(Long commentId);
-
-	void updateMemberIsNull(Long memberId);
+	Optional<FeedComment> findCommentById(Long commentId);
 }

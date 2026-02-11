@@ -20,7 +20,7 @@ public class MonthlyGoalQueryService {
 
 		MonthlyGoal monthlyGoal =
 				monthlyGoalRepository
-						.findByIdWithFetch(monthlyGoalId)
+						.findMonthlyGoal(monthlyGoalId)
 						.orElseThrow(
 								() ->
 										new RecordNotFoundException(

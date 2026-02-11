@@ -16,6 +16,8 @@ import com.sillim.recordit.member.fixture.MemberFixture;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.fixture.TaskFixture;
+import com.sillim.recordit.task.repository.custom.BatchTaskRepository;
+import com.sillim.recordit.task.repository.custom.BatchTaskRepositoryImpl;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

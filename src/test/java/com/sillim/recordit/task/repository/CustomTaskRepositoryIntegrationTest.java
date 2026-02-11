@@ -12,6 +12,7 @@ import com.sillim.recordit.support.repository.RepositoryTest;
 import com.sillim.recordit.task.domain.Task;
 import com.sillim.recordit.task.domain.TaskGroup;
 import com.sillim.recordit.task.fixture.TaskFixture;
+import com.sillim.recordit.task.repository.custom.CustomTaskRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

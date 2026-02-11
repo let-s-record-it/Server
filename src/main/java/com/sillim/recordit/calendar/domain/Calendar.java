@@ -23,7 +23,10 @@ public class Calendar extends BaseEntity {
 	@Embedded private CalendarTitle title;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "calendar_category_id")
+	@JoinColumn(
+			name = "calendar_category_id",
+			nullable = false,
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private CalendarCategory category;
 
 	@Column(name = "member_id", nullable = false)
