@@ -2,6 +2,7 @@ package com.sillim.recordit.schedule.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import com.sillim.recordit.schedule.domain.vo.AlarmTime;
@@ -34,7 +35,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Schedule {
+public class Schedule extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,10 +78,6 @@ public class Schedule {
 			orphanRemoval = true)
 	private List<ScheduleAlarm> scheduleAlarms = new ArrayList<>();
 
-	@Column(nullable = false)
-	@ColumnDefault("false")
-	private boolean deleted;
-
 	public Schedule(
 			ScheduleTitle title,
 			ScheduleDescription description,
@@ -107,7 +104,6 @@ public class Schedule {
 				scheduleAlarms.stream()
 						.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
 						.collect(Collectors.toList());
-		this.deleted = false;
 	}
 
 	@Builder
@@ -211,10 +207,6 @@ public class Schedule {
 				.map(AlarmTime::create)
 				.map(alarmTime -> new ScheduleAlarm(alarmTime, this))
 				.forEach(scheduleAlarm -> this.scheduleAlarms.add(scheduleAlarm));
-	}
-
-	public void delete() {
-		this.deleted = true;
 	}
 
 	public boolean isOwnedBy(Long memberId) {

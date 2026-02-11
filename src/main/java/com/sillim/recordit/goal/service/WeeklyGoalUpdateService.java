@@ -87,7 +87,7 @@ public class WeeklyGoalUpdateService {
 	public void remove(final Long weeklyGoalId, final Long memberId) {
 		WeeklyGoal weeklyGoal = weeklyGoalQueryService.searchByIdAndCheckAuthority(weeklyGoalId);
 		validateExistsCalendarMember(weeklyGoal.getCalendar().getId(), memberId);
-		weeklyGoal.remove();
+		weeklyGoal.delete();
 	}
 
 	public void linkRelatedMonthlyGoal(

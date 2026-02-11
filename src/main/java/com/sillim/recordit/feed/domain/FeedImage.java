@@ -1,7 +1,7 @@
 package com.sillim.recordit.feed.domain;
 
 import com.sillim.recordit.feed.domain.vo.FeedImageUrl;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FeedImage extends BaseTime {
+public class FeedImage extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

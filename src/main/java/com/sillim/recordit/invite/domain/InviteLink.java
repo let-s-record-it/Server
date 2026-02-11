@@ -1,7 +1,7 @@
 package com.sillim.recordit.invite.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(indexes = {@Index(name = "invite_code_idx", columnList = "inviteCode", unique = true)})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class InviteLink extends BaseTime {
+public class InviteLink extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

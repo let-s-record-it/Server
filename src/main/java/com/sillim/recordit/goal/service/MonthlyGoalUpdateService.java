@@ -64,7 +64,7 @@ public class MonthlyGoalUpdateService {
 		MonthlyGoal monthlyGoal =
 				monthlyGoalQueryService.searchByIdAndCheckAuthority(monthlyGoalId);
 		validateExistsCalendarMember(monthlyGoal.getCalendar().getId(), memberId);
-		monthlyGoal.remove();
+		monthlyGoal.delete();
 	}
 
 	private void validateExistsCalendarMember(Long calendarId, Long memberId) {

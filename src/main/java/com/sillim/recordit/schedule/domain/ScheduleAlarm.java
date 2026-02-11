@@ -1,5 +1,6 @@
 package com.sillim.recordit.schedule.domain;
 
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.schedule.domain.vo.AlarmTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ScheduleAlarm {
+public class ScheduleAlarm extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

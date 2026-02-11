@@ -42,7 +42,7 @@ public class Member {
 
 	private Boolean activated;
 
-	private LocalDateTime deletedTime;
+	private LocalDateTime deletedAt;
 
 	private LocalDateTime createdAt;
 
@@ -68,7 +68,7 @@ public class Member {
 			Boolean activated,
 			LocalDateTime createdAt,
 			LocalDateTime modifiedAt,
-			LocalDateTime deletedTime,
+			LocalDateTime deletedAt,
 			List<Member> followings,
 			List<MemberRole> memberRole) {
 		this.oauthAccount = oauthAccount;
@@ -86,7 +86,7 @@ public class Member {
 		this.modifiedAt = modifiedAt;
 		this.personalId = personalId;
 		this.followings = followings;
-		this.deletedTime = deletedTime;
+		this.deletedAt = deletedAt;
 	}
 
 	public static Member createNoJobMember(
@@ -152,7 +152,7 @@ public class Member {
 
 	public void delete() {
 		this.deleted = true;
-		this.deletedTime = LocalDateTime.now();
+		this.deletedAt = LocalDateTime.now();
 	}
 
 	public void active(String personalId) {
@@ -161,6 +161,6 @@ public class Member {
 	}
 
 	public boolean isCanRejoin() {
-		return this.deletedTime.plusDays(DO_NOT_REJOIN_DAYS).isBefore(LocalDateTime.now());
+		return this.deletedAt.plusDays(DO_NOT_REJOIN_DAYS).isBefore(LocalDateTime.now());
 	}
 }

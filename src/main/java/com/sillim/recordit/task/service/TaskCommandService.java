@@ -108,7 +108,7 @@ public class TaskCommandService {
 		ScheduleCategory newCategory =
 				scheduleCategoryQueryService.searchScheduleCategory(request.newCategoryId());
 		if (request.isRepeated()) {
-			selectedTask.remove();
+            selectedTask.delete();
 			TaskGroup newTaskGroup =
 					taskGroupService.modifyTaskGroupAndMakeRepeatable(
 							taskGroup.getId(),
@@ -169,7 +169,7 @@ public class TaskCommandService {
 				taskRepository
 						.findByIdAndCalendarId(selectedTaskId, calendarId)
 						.orElseThrow(() -> new RecordNotFoundException(ErrorCode.TASK_NOT_FOUND));
-		selectedTask.remove();
+		selectedTask.delete();
 	}
 
 	private void addRepeatingTasks(

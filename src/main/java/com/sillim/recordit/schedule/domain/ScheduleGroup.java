@@ -2,6 +2,7 @@ package com.sillim.recordit.schedule.domain;
 
 import com.sillim.recordit.enums.date.WeekNumber;
 import com.sillim.recordit.enums.date.Weekday;
+import com.sillim.recordit.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ScheduleGroup {
+public class ScheduleGroup extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

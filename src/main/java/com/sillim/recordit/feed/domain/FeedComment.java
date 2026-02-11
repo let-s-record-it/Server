@@ -1,7 +1,7 @@
 package com.sillim.recordit.feed.domain;
 
 import com.sillim.recordit.feed.domain.vo.FeedCommentContent;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.InvalidRequestException;
 import jakarta.persistence.Column;
@@ -23,7 +23,7 @@ import org.hibernate.annotations.DynamicInsert;
 @Entity
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FeedComment extends BaseTime {
+public class FeedComment extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

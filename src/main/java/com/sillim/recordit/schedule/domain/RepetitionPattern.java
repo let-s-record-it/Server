@@ -2,7 +2,7 @@ package com.sillim.recordit.schedule.domain;
 
 import com.sillim.recordit.enums.date.WeekNumber;
 import com.sillim.recordit.enums.date.Weekday;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
 import com.sillim.recordit.schedule.domain.vo.DayOfMonth;
@@ -35,7 +35,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RepetitionPattern extends BaseTime {
+public class RepetitionPattern extends BaseEntity {
 
 	private static final int MAX_PERIOD = 999;
 	private static final int MIN_PERIOD = 1;

@@ -2,7 +2,7 @@ package com.sillim.recordit.task.domain.repetition;
 
 import com.sillim.recordit.enums.date.WeekNumber;
 import com.sillim.recordit.enums.date.Weekday;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.schedule.InvalidRepetitionException;
 import com.sillim.recordit.task.domain.TaskGroup;
@@ -40,7 +40,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted = false")
-public abstract class TaskRepetitionPattern extends BaseTime {
+public abstract class TaskRepetitionPattern extends BaseEntity {
 
 	private static final int MAX_PERIOD = 999;
 	private static final int MIN_PERIOD = 1;

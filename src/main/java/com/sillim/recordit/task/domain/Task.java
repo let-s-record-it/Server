@@ -2,7 +2,7 @@ package com.sillim.recordit.task.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.task.domain.vo.TaskDescription;
 import com.sillim.recordit.task.domain.vo.TaskTitle;
 import jakarta.persistence.Column;
@@ -26,7 +26,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted = false")
-public class Task extends BaseTime {
+public class Task extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,10 +55,6 @@ public class Task extends BaseTime {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "task_group_id", nullable = false)
 	private TaskGroup taskGroup;
-
-	@Column(nullable = false)
-	@ColumnDefault("false")
-	private boolean deleted = false;
 
 	public Task(
 			TaskTitle title,
@@ -105,10 +101,6 @@ public class Task extends BaseTime {
 		this.category = category;
 		this.calendar = calendar;
 		this.taskGroup = taskGroup;
-	}
-
-	public void remove() {
-		this.deleted = true;
 	}
 
 	public String getTitle() {

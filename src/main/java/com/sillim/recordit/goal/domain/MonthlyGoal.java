@@ -2,7 +2,7 @@ package com.sillim.recordit.goal.domain;
 
 import com.sillim.recordit.calendar.domain.Calendar;
 import com.sillim.recordit.category.domain.ScheduleCategory;
-import com.sillim.recordit.global.domain.BaseTime;
+import com.sillim.recordit.global.domain.BaseEntity;
 import com.sillim.recordit.goal.domain.vo.GoalDescription;
 import com.sillim.recordit.goal.domain.vo.GoalTitle;
 import com.sillim.recordit.goal.domain.vo.MonthlyGoalPeriod;
@@ -27,7 +27,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted = false")
-public class MonthlyGoal extends BaseTime {
+public class MonthlyGoal extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,10 +48,6 @@ public class MonthlyGoal extends BaseTime {
 	@ColumnDefault("false")
 	private boolean achieved;
 
-	@Column(nullable = false)
-	@ColumnDefault("false")
-	private boolean deleted;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "calendar_id")
 	private Calendar calendar;
@@ -69,7 +65,6 @@ public class MonthlyGoal extends BaseTime {
 		this.period = new MonthlyGoalPeriod(startDate, endDate);
 		this.category = category;
 		this.achieved = false;
-		this.deleted = false;
 		this.calendar = calendar;
 	}
 
@@ -89,10 +84,6 @@ public class MonthlyGoal extends BaseTime {
 
 	public void changeAchieveStatus(final Boolean status) {
 		this.achieved = status;
-	}
-
-	public void remove() {
-		this.deleted = true;
 	}
 
 	public String getTitle() {
