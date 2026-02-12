@@ -44,6 +44,7 @@ services:
     volumes:
       - ./:/app/local
       - /var/log/${APP_NAME}:/var/log/${APP_NAME}
+      - ./auth:/auth
 
   promtail:
     image: grafana/promtail:latest
