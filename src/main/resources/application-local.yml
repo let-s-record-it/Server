@@ -68,6 +68,7 @@ spring:
     redis:
       host: localhost
       port: 6379
+      password: guest
 
   rabbitmq:
     host: localhost
