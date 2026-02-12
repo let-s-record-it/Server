@@ -19,16 +19,16 @@ public class RedisConfig {
 	@Value("${spring.data.redis.port}")
 	private int port;
 
-    @Value("${spring.data.redis.password}")
-    private String password;
+	@Value("${spring.data.redis.password}")
+	private String password;
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
-        if (password != null && !password.isEmpty()) {
-            config.setPassword(password);
-        }
-        return new LettuceConnectionFactory(config);
+		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
+		if (password != null && !password.isEmpty()) {
+			config.setPassword(password);
+		}
+		return new LettuceConnectionFactory(config);
 	}
 
 	@Bean
@@ -43,10 +43,10 @@ public class RedisConfig {
 
 	@Bean
 	public RedisClient redisClient() {
-        String url = "redis://%s:%d".formatted(host, port);
-        if (password != null && !password.isEmpty()) {
-            url = "redis://:%s@%s:%d".formatted(password, host, port);
-        }
+		String url = "redis://%s:%d".formatted(host, port);
+		if (password != null && !password.isEmpty()) {
+			url = "redis://:%s@%s:%d".formatted(password, host, port);
+		}
 		return RedisClient.create(url);
 	}
 }
