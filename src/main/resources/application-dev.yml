@@ -22,7 +22,10 @@ spring:
   cloud:
     gcp:
       storage:
+        credentials:
+          location: ${GCP_KEY_LOCATION}
         bucket: ${GCP_BUCKET_NAME}
+        project-id: ${GCP_PROJECT_ID}
 
   security:
     oauth2:
@@ -76,11 +79,6 @@ spring:
     authentication:
       username: ${NEO4J_USERNAME}
       password: ${NEO4J_PASSWORD}
-
-rabbitmq:
-  queue.name: feedimage.queue
-  exchange.name: direct.exchange
-  routing.key: feedimage.key
 
 firebase:
   credentials:

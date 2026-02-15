@@ -12,6 +12,8 @@ public enum ErrorCode {
 	TOO_MANY_REQUEST("ERR_GLOBAL_004", "너무 많은 요청을 보냈습니다."),
 	UNHANDLED_EXCEPTION("ERR_GLOBAL_999", "예상치 못한 오류가 발생했습니다."),
 
+	IMAGE_UPLOAD_FAILED("ERR_IMAGE_001", "이미지 업로드에 실패했습니다."),
+
 	ID_TOKEN_UNSUPPORTED("ERR_OIDC_001", "지원되지 않는 ID Token 입니다."),
 	ID_TOKEN_EXPIRED("ERR_OIDC_002", "ID Token이 만료되었습니다."),
 	ID_TOKEN_INVALID_KEY("ERR_OIDC_003", "App Key가 유효하지 않습니다."),

@@ -12,7 +12,6 @@ import com.sillim.recordit.feed.dto.request.FeedAddRequest;
 import com.sillim.recordit.feed.fixture.FeedFixture;
 import com.sillim.recordit.feed.repository.FeedRepository;
 import com.sillim.recordit.member.service.MemberQueryService;
-import com.sillim.recordit.rabbitmq.service.MessagePublisher;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -30,7 +29,7 @@ class FeedCommandServiceTest {
 
 	@Mock FeedRepository feedRepository;
 	@Mock MemberQueryService memberQueryService;
-	@Mock MessagePublisher messagePublisher;
+	@Mock FeedImageUploader feedImageUploader;
 	@InjectMocks FeedCommandService feedCommandService;
 
 	@Test
