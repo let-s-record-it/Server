@@ -9,9 +9,6 @@ import com.sillim.recordit.gcp.service.ImageUploadService;
 import com.sillim.recordit.global.exception.ErrorCode;
 import com.sillim.recordit.global.exception.common.RecordNotFoundException;
 import com.sillim.recordit.global.util.FileUtils;
-import com.sillim.recordit.rabbitmq.dto.Message;
-import com.sillim.recordit.rabbitmq.dto.MessageType;
-import com.sillim.recordit.rabbitmq.service.MessagePublisher;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
@@ -27,7 +24,7 @@ public class FeedCommandService {
 
 	private final FeedRepository feedRepository;
 	private final ImageUploadService imageUploadService;
-	private final MessagePublisher messagePublisher;
+	private final FeedImageUploader feedImageUploader;
 
 	public Long addFeed(FeedAddRequest request, List<MultipartFile> images, Long memberId) {
 		Long feedId = feedRepository.save(request.toFeed(memberId)).getId();
@@ -35,23 +32,22 @@ public class FeedCommandService {
 		if (images == null || images.isEmpty()) {
 			return feedId;
 		}
-		messagePublisher.send(
-				new Message<>(
-						MessageType.IMAGES.name(),
-						images.stream()
-								.map(
-										image -> {
-											try {
-												return new FeedImageMessage(
-														feedId,
-														generateImageName(image),
-														image.getContentType(),
-														image.getBytes());
-											} catch (IOException e) {
-												throw new RuntimeException(e);
-											}
-										}),
-						MessageType.IMAGES));
+
+		feedImageUploader.uploadImages(
+				images.stream()
+						.map(
+								image -> {
+									try {
+										return new FeedImageMessage(
+												feedId,
+												generateImageName(image),
+												image.getContentType(),
+												image.getBytes());
+									} catch (IOException e) {
+										throw new RuntimeException(e);
+									}
+								})
+						.toList());
 		return feedId;
 	}
 

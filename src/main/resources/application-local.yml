@@ -27,7 +27,10 @@ spring:
   cloud:
     gcp:
       storage:
+        credentials:
+          location: ${GCP_KEY_LOCATION}
         bucket: ${GCP_BUCKET_NAME}
+        project-id: ${GCP_PROJECT_ID}
 
   security:
     oauth2:
@@ -81,12 +84,6 @@ spring:
     authentication:
       username: neo4j
       password: verysecret
-
-rabbitmq:
-  queue.name: sample.queue
-  exchange.name: sample.exchange
-  routing.key: sample.key
-
 
 firebase:
   credentials:
